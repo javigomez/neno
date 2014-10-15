@@ -22,6 +22,7 @@ class LingoControllerLangfiles extends JControllerLegacy
     
     public function export() {
         
+        /* @var $model LingoModelLangfiles */
         $model = $this->getModel('Langfiles');
         $model->export();
         
@@ -33,6 +34,7 @@ class LingoControllerLangfiles extends JControllerLegacy
      */
     public function import() {
 
+        /* @var $model LingoModelLangfiles */
         $model = $this->getModel('Langfiles');
         $model->import();
             
