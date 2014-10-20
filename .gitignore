@@ -497,3 +497,6 @@ administrator/language/en-GB/install.xml
 administrator/language/da-DK/da-DK.xml
 administrator/language/da-DK/index.html
 administrator/language/da-DK/install.xml
+.idea/*
+.idea/dataSources.xml
+.idea/dataSources.xml

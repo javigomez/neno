@@ -7,7 +7,6 @@
  * @author      Soren Beck Jensen <soren@notwebdesign.com> - http://www.notwebdesign.com
  */
 
-
 // no direct access
 defined('_JEXEC') or die;
 
@@ -19,6 +18,7 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_lingo'))
 
 // Include dependancies
 jimport('joomla.application.component.controller');
+require_once (JPATH_COMPONENT_ADMINISTRATOR.'/helpers/debug.php');
 
 $controller	= JControllerLegacy::getInstance('Lingo');
 $controller->execute(JFactory::getApplication()->input->get('task'));
