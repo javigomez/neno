@@ -16,8 +16,9 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_lingo'))
 	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
-// Include dependancies
+// Include dependencies
 jimport('joomla.application.component.controller');
+require_once (JPATH_COMPONENT_ADMINISTRATOR.'/helpers/lingo.php');
 require_once (JPATH_COMPONENT_ADMINISTRATOR.'/helpers/debug.php');
 
 $controller	= JControllerLegacy::getInstance('Lingo');

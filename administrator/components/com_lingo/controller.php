@@ -22,9 +22,10 @@ class LingoController extends JControllerLegacy {
      * @since	1.5
      */
     public function display($cachable = false, $urlparams = false) {
+        
         require_once JPATH_COMPONENT . '/helpers/lingo.php';
 
-        $view = JFactory::getApplication()->input->getCmd('view', 'translations');
+        $view = JFactory::getApplication()->input->getCmd('view', 'dashboard');
         JFactory::getApplication()->input->set('view', $view);
 
         parent::display($cachable, $urlparams);

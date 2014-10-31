@@ -20,9 +20,10 @@ class LingoDebug extends JLog {
      * A static method that allows logging of errors and messages
      * @param string $string The log line that should be saved
      * @param int $level 1=error, 2=info, 3=debug
+     * @param bool $display_message Weather or not the logged message should be displayed to the user
      * @return bool true on success
      */
-    public static function log($string, $level = 2) {
+    public static function log($string, $level = 2, $display_message=false) {
 
         //Add an extra tab to debug messages
         if ($level > 2) {
@@ -37,7 +38,12 @@ class LingoDebug extends JLog {
 
         //Add the log entry
         self::add($string, $priority, 'com_lingo');
-
+        
+        //Show message
+        if ($display_message === true) {
+            JFactory::getApplication()->enqueueMessage($string);
+        }
+        
         return true;
 
     }
