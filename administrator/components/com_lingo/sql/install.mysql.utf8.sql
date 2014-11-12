@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `jos_lingo_langfile_translations` (
+CREATE TABLE IF NOT EXISTS `#__lingo_langfile_translations` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `source_id` int(11) NOT NULL,
   `string` text NOT NULL,
