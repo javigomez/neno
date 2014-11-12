@@ -15,7 +15,8 @@ define('NOT_MODIFIED', 2);
  * @author Component Creator
  * @version 0.2b
  */
-class com_lingoInstallerScript {
+class com_lingoInstallerScript
+{
 
     /**
      * Method called before install/update the component. Note: This method won't be called during uninstall process.
@@ -23,7 +24,8 @@ class com_lingoInstallerScript {
      * @param mixed $parent Object who called this method
      * @return boolean True if the process should continue, false otherwise
      */
-    public function preflight($type, $parent) {
+    public function preflight($type, $parent)
+    {
         $jversion = new JVersion();
 
         // Installing component manifest file version
@@ -32,7 +34,8 @@ class com_lingoInstallerScript {
 
         // abort if the component wasn't build for the current Joomla version
         if (!$jversion->isCompatible($this->release)) {
-            JFactory::getApplication()->enqueueMessage(JText::_('This component is not compatible with installed Joomla version'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::_('This component is not compatible with installed Joomla version'),
+                    'error');
             return false;
         }
     }
@@ -41,7 +44,8 @@ class com_lingoInstallerScript {
      * Method to install the component
      * @param mixed $parent Object who called this method.
      */
-    public function install($parent) {
+    public function install($parent)
+    {
         $this->installDb($parent);
         $this->installPlugins($parent);
         $this->installModules($parent);
@@ -51,7 +55,8 @@ class com_lingoInstallerScript {
      * Method to update the component
      * @param mixed $parent Object who called this method.
      */
-    public function update($parent) {
+    public function update($parent)
+    {
         $this->installDb($parent);
         $this->installPlugins($parent);
         $this->installModules($parent);
@@ -61,7 +66,8 @@ class com_lingoInstallerScript {
      * Method to uninstall the component
      * @param mixed $parent Object who called this method.
      */
-    public function uninstall($parent) {
+    public function uninstall($parent)
+    {
         $this->uninstallPlugins($parent);
         $this->uninstallModules($parent);
     }
@@ -70,7 +76,8 @@ class com_lingoInstallerScript {
      * Installs plugins for this component
      * @param mixed $parent Object who called the install/update method
      */
-    private function installPlugins($parent) {
+    private function installPlugins($parent)
+    {
         $installation_folder = $parent->getParent()->getPath('source');
         $app = JFactory::getApplication();
 
@@ -94,7 +101,8 @@ class com_lingoInstallerScript {
                 if ($result) {
                     $app->enqueueMessage('Plugin ' . $pname . ' was installed successfully');
                 } else {
-                    $app->enqueueMessage('There was an issue installing the plugin ' . $pname, 'error');
+                    $app->enqueueMessage('There was an issue installing the plugin ' . $pname,
+                            'error');
                 }
 
                 $query
@@ -118,7 +126,8 @@ class com_lingoInstallerScript {
      * Uninstalls plugins
      * @param mixed $parent Object who called the uninstall method
      */
-    private function uninstallPlugins($parent) {
+    private function uninstallPlugins($parent)
+    {
         $db = JFactory::getDBO();
         $app = JFactory::getApplication();
         $plugins = $parent->get("manifest")->plugins;
@@ -149,7 +158,8 @@ class com_lingoInstallerScript {
                     if ($result) {
                         $app->enqueueMessage('Plugin ' . $pname . ' was uninstalled successfully');
                     } else {
-                        $app->enqueueMessage('There was an issue uninstalling the plugin ' . $pname, 'error');
+                        $app->enqueueMessage('There was an issue uninstalling the plugin ' . $pname,
+                                'error');
                     }
                 }
             }
@@ -160,7 +170,8 @@ class com_lingoInstallerScript {
      * Installs plugins for this component
      * @param mixed $parent Object who called the install/update method
      */
-    private function installModules($parent) {
+    private function installModules($parent)
+    {
         $installation_folder = $parent->getParent()->getPath('source');
         $app = JFactory::getApplication();
 
@@ -181,7 +192,8 @@ class com_lingoInstallerScript {
                     if ($result) {
                         $app->enqueueMessage('Module ' . $moduleName . ' was installed successfully');
                     } else {
-                        $app->enqueueMessage('There was an issue installing the module ' . $moduleName, 'error');
+                        $app->enqueueMessage('There was an issue installing the module ' . $moduleName,
+                                'error');
                     }
                 }
             }
@@ -192,7 +204,8 @@ class com_lingoInstallerScript {
      * Uninstalls plugins
      * @param mixed $parent Object who called the uninstall method
      */
-    private function uninstallModules($parent) {
+    private function uninstallModules($parent)
+    {
         $db = JFactory::getDBO();
         $app = JFactory::getApplication();
 
@@ -223,7 +236,8 @@ class com_lingoInstallerScript {
                         if ($result) {
                             $app->enqueueMessage('Module ' . $moduleName . ' was uninstalled successfully');
                         } else {
-                            $app->enqueueMessage('There was an issue uninstalling the module ' . $moduleName, 'error');
+                            $app->enqueueMessage('There was an issue uninstalling the module ' . $moduleName,
+                                    'error');
                         }
                     }
                 }
@@ -238,7 +252,8 @@ class com_lingoInstallerScript {
      * @param mixed $folder
      * @return type
      */
-    private function isAlreadyInstalled($type, $name, $folder = null) {
+    private function isAlreadyInstalled($type, $name, $folder = null)
+    {
         $result = false;
         switch ($type) {
             case 'plugin':
@@ -256,20 +271,23 @@ class com_lingoInstallerScript {
      * Method to update the DB of the component
      * @param mixed $parent Object who started the upgrading process
      */
-    private function installDb($parent) {
+    private function installDb($parent)
+    {
         $installation_folder = $parent->getParent()->getPath('source');
 
         $app = JFactory::getApplication();
 
-        if (function_exists('simplexml_load_file')) {
+        if (function_exists('simplexml_load_file') && file_exists($installation_folder . '/administrator/installer/structure.xml')) {
             $component_data = simplexml_load_file($installation_folder . '/administrator/installer/structure.xml');
 
             //Check if there are tables to import.
             foreach ($component_data->children() as $table) {
                 $this->processTable($app, $table);
             }
-        } else {
+        } else if (!function_exists('simplexml_load_file')) {
             $app->enqueueMessage(JText::_('This script needs \'simplexml_load_file\' to update the component'));
+        } else {
+            $app->enqueueMessage(JText::_('Structure file wasn\'t found.'));
         }
     }
 
@@ -278,7 +296,8 @@ class com_lingoInstallerScript {
      * @param JApplicationCms $app Application object
      * @param SimpleXMLElement $table Table to process
      */
-    private function processTable($app, $table) {
+    private function processTable($app, $table)
+    {
         $db = JFactory::getDbo();
 
         $table_added = false;
@@ -294,10 +313,13 @@ class com_lingoInstallerScript {
 
                         try {
                             $db->execute();
-                            $app->enqueueMessage(JText::sprintf('Table `%s` has been succesfully created', (string) $table['table_name']));
+                            $app->enqueueMessage(JText::sprintf('Table `%s` has been succesfully created',
+                                            (string) $table['table_name']));
                             $table_added = true;
                         } catch (Exception $ex) {
-                            $app->enqueueMessage(JText::sprintf('There was an error creating the table `%s`. Error: %s', (string) $table['table_name'], $ex->getMessage()), 'error');
+                            $app->enqueueMessage(JText::sprintf('There was an error creating the table `%s`. Error: %s',
+                                            (string) $table['table_name'],
+                                            $ex->getMessage()), 'error');
                         }
                     }
                     break;
@@ -306,10 +328,15 @@ class com_lingoInstallerScript {
                     //Check if the table exists first to avoid errors.
                     if ($this->existsTable($table['old_name']) && !$this->existsTable($table['new_name'])) {
                         try {
-                            $db->renameTable($table['old_name'], $table['new_name']);
-                            $app->enqueueMessage(JText::sprintf('Table `%s` was succesfully renamed to `%s`', $table['old_name'], $table['new_name']));
+                            $db->renameTable($table['old_name'],
+                                    $table['new_name']);
+                            $app->enqueueMessage(JText::sprintf('Table `%s` was succesfully renamed to `%s`',
+                                            $table['old_name'],
+                                            $table['new_name']));
                         } catch (Exception $ex) {
-                            $app->enqueueMessage(JText::sprintf('There was an error renaming the table `%s`. Error: %s', $table['old_name'], $ex->getMessage()), 'error');
+                            $app->enqueueMessage(JText::sprintf('There was an error renaming the table `%s`. Error: %s',
+                                            $table['old_name'],
+                                            $ex->getMessage()), 'error');
                         }
                     } else {
 
@@ -320,10 +347,13 @@ class com_lingoInstallerScript {
 
                             try {
                                 $db->execute();
-                                $app->enqueueMessage(JText::sprintf('Table `%s` has been succesfully created', $table['table_name']));
+                                $app->enqueueMessage(JText::sprintf('Table `%s` has been succesfully created',
+                                                $table['table_name']));
                                 $table_added = true;
                             } catch (Exception $ex) {
-                                $app->enqueueMessage(JText::sprintf('There was an error creating the table `%s`. Error: %s', $table['table_name'], $ex->getMessage()), 'error');
+                                $app->enqueueMessage(JText::sprintf('There was an error creating the table `%s`. Error: %s',
+                                                $table['table_name'],
+                                                $ex->getMessage()), 'error');
                             }
                         }
                     }
@@ -333,9 +363,12 @@ class com_lingoInstallerScript {
                     try {
                         //We make sure that the table will be removed only if it exists specifying ifExists argument as true.
                         $db->dropTable($table['table_name'], true);
-                        $app->enqueueMessage(JText::sprintf('Table `%s` was succesfully deleted', $table['table_name']));
+                        $app->enqueueMessage(JText::sprintf('Table `%s` was succesfully deleted',
+                                        $table['table_name']));
                     } catch (Exception $ex) {
-                        $app->enqueueMessage(JText::sprintf('There was an error deleting Table `%s`. Error: %s', $table['table_name'], $ex->getMessage()), 'error');
+                        $app->enqueueMessage(JText::sprintf('There was an error deleting Table `%s`. Error: %s',
+                                        $table['table_name'], $ex->getMessage()),
+                                'error');
                     }
 
                     break;
@@ -356,7 +389,8 @@ class com_lingoInstallerScript {
      * @param SimpleXMLElement $table Table of the database
      * @return string 'CREATE TABLE' statement
      */
-    private function generateCreateTableStatement($table) {
+    private function generateCreateTableStatement($table)
+    {
 
         $create_table_statement = '';
         if (isset($table->field)) {
@@ -378,11 +412,14 @@ class com_lingoInstallerScript {
             }
 
             foreach ($indexes as $index) {
-                $fields_definitions[] = JText::sprintf('INDEX %s (%s ASC)', $db->quoteName((string) $index), $index);
+                $fields_definitions[] = JText::sprintf('INDEX %s (%s ASC)',
+                                $db->quoteName((string) $index), $index);
             }
-            
+
             $fields_definitions[] = 'PRIMARY KEY (`id`)';
-            $create_table_statement = JText::sprintf('CREATE TABLE IF NOT EXISTS %s (%s)', $table['table_name'], implode(',', $fields_definitions));
+            $create_table_statement = JText::sprintf('CREATE TABLE IF NOT EXISTS %s (%s)',
+                            $table['table_name'],
+                            implode(',', $fields_definitions));
         }
 
         return $create_table_statement;
@@ -392,7 +429,8 @@ class com_lingoInstallerScript {
      * Updates all the fields related to a table.
      * @param SimpleXMLElement $table Table information.
      */
-    private function executeFieldsUpdating($app, $table) {
+    private function executeFieldsUpdating($app, $table)
+    {
         if (isset($table->field)) {
             foreach ($table->children() as $field) {
                 $this->processField($app, $table['table_name'], $field);
@@ -406,16 +444,19 @@ class com_lingoInstallerScript {
      * @param string $table_name The name of the table that contains the field.
      * @param SimpleXMLElement $field Field Information.
      */
-    private function processField($app, $table_name, $field) {
+    private function processField($app, $table_name, $field)
+    {
         $db = JFactory::getDbo();
         if (isset($field['action'])) {
             switch ($field['action']) {
                 case 'add':
                     $result = $this->addField($table_name, $field);
                     if ($result === MODIFIED) {
-                        $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully added', $field['field_name']));
+                        $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully added',
+                                        $field['field_name']));
                     } else if ($result !== NOT_MODIFIED) {
-                        $app->enqueueMessage(JText::sprintf('There was an error adding the field `%s`. Error: %s', $field['field_name'], $result), 'error');
+                        $app->enqueueMessage(JText::sprintf('There was an error adding the field `%s`. Error: %s',
+                                        $field['field_name'], $result), 'error');
                     }
                     break;
                 case 'change':
@@ -423,28 +464,40 @@ class com_lingoInstallerScript {
                     if (isset($field['old_name']) && isset($field['new_name'])) {
 
                         if ($this->existsField($table_name, $field['old_name'])) {
-                            $renaming_statement = JText::sprintf('ALTER TABLE %s CHANGE %s %s %s', $table_name, $field['old_name'], $field['new_name'], $this->getFieldType($field));
+                            $renaming_statement = JText::sprintf('ALTER TABLE %s CHANGE %s %s %s',
+                                            $table_name, $field['old_name'],
+                                            $field['new_name'],
+                                            $this->getFieldType($field));
                             $db->setQuery($renaming_statement);
                             try {
                                 $db->execute();
-                                $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully modified', $field['old_name']));
+                                $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully modified',
+                                                $field['old_name']));
                             } catch (Exception $ex) {
-                                $app->enqueueMessage(JText::sprintf('There was an error modifying the field `%s`. Error: %s', $field['field_name'], $ex->getMessage()), 'error');
+                                $app->enqueueMessage(JText::sprintf('There was an error modifying the field `%s`. Error: %s',
+                                                $field['field_name'],
+                                                $ex->getMessage()), 'error');
                             }
                         } else {
                             $result = $this->addField($table_name, $field);
                             if ($result === MODIFIED) {
-                                $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully modified', $field['field_name']));
+                                $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully modified',
+                                                $field['field_name']));
                             } else if ($result !== NOT_MODIFIED) {
-                                $app->enqueueMessage(JText::sprintf('There was an error modifying the field `%s`. Error: %s', $field['field_name'], $result), 'error');
+                                $app->enqueueMessage(JText::sprintf('There was an error modifying the field `%s`. Error: %s',
+                                                $field['field_name'], $result),
+                                        'error');
                             }
                         }
                     } else {
                         $result = $this->addField($table_name, $field);
                         if ($result === MODIFIED) {
-                            $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully added', $field['field_name']));
+                            $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully added',
+                                            $field['field_name']));
                         } else if ($result !== NOT_MODIFIED) {
-                            $app->enqueueMessage(JText::sprintf('There was an error adding the field `%s`. Error: %s', $field['field_name'], $result), 'error');
+                            $app->enqueueMessage(JText::sprintf('There was an error adding the field `%s`. Error: %s',
+                                            $field['field_name'], $result),
+                                    'error');
                         }
                     }
 
@@ -453,13 +506,17 @@ class com_lingoInstallerScript {
 
                     //Check if the field exists first to prevent issue removing the field
                     if ($this->existsField($table_name, $field['field_name'])) {
-                        $drop_statement = JText::sprintf('ALTER TABLE %s DROP COLUMN %s', $table_name, $field['field_name']);
+                        $drop_statement = JText::sprintf('ALTER TABLE %s DROP COLUMN %s',
+                                        $table_name, $field['field_name']);
                         $db->setQuery($drop_statement);
                         try {
                             $db->execute();
-                            $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully deleted', $field['field_name']));
+                            $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully deleted',
+                                            $field['field_name']));
                         } catch (Exception $ex) {
-                            $app->enqueueMessage(JText::sprintf('There was an error deleting the field `%s`. Error: %s', $field['field_name'], $ex->getMessage()), 'error');
+                            $app->enqueueMessage(JText::sprintf('There was an error deleting the field `%s`. Error: %s',
+                                            $field['field_name'],
+                                            $ex->getMessage()), 'error');
                         }
                     }
 
@@ -468,9 +525,11 @@ class com_lingoInstallerScript {
         } else {
             $result = $this->addField($table_name, $field);
             if ($result === MODIFIED) {
-                $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully added', $field['field_name']));
+                $app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully added',
+                                $field['field_name']));
             } else if ($result !== NOT_MODIFIED) {
-                $app->enqueueMessage(JText::sprintf('There was an error adding the field `%s`. Error: %s', $field['field_name'], $result), 'error');
+                $app->enqueueMessage(JText::sprintf('There was an error adding the field `%s`. Error: %s',
+                                $field['field_name'], $result), 'error');
             }
         }
     }
@@ -481,7 +540,8 @@ class com_lingoInstallerScript {
      * @param SimpleXMLElement $field Field Information
      * @return mixed Constant on success(self::$MODIFIED | self::$NOT_MODIFIED), error message if an error occurred
      */
-    private function addField($table_name, $field) {
+    private function addField($table_name, $field)
+    {
         $db = JFactory::getDbo();
 
         $query_generated = false;
@@ -489,12 +549,14 @@ class com_lingoInstallerScript {
         //Check if the field exists first to prevent issues adding the field
         if ($this->existsField($table_name, $field['field_name'])) {
             if ($this->needsToUpdate($table_name, $field)) {
-                $change_statement = $this->generateChangeFieldStatement($table_name, $field);
+                $change_statement = $this->generateChangeFieldStatement($table_name,
+                        $field);
                 $db->setQuery($change_statement);
                 $query_generated = true;
             }
         } else {
-            $add_statement = $this->generateAddFieldStatement($table_name, $field);
+            $add_statement = $this->generateAddFieldStatement($table_name,
+                    $field);
             $db->setQuery($add_statement);
             $query_generated = true;
         }
@@ -517,9 +579,11 @@ class com_lingoInstallerScript {
      * @param SimpleXMLElement $field Field Information
      * @return string Add column statement
      */
-    private function generateAddFieldStatement($table_name, $field) {
+    private function generateAddFieldStatement($table_name, $field)
+    {
         $column_declaration = $this->generateColumnDeclaration($field);
-        return JText::sprintf('ALTER TABLE %s ADD %s', $table_name, $column_declaration);
+        return JText::sprintf('ALTER TABLE %s ADD %s', $table_name,
+                        $column_declaration);
     }
 
     /**
@@ -528,9 +592,11 @@ class com_lingoInstallerScript {
      * @param SimpleXMLElement $field Field Information
      * @return string Change column statement
      */
-    private function generateChangeFieldStatement($table_name, $field) {
+    private function generateChangeFieldStatement($table_name, $field)
+    {
         $column_declaration = $this->generateColumnDeclaration($field);
-        return JText::sprintf('ALTER TABLE %s MODIFY %s', $table_name, $column_declaration);
+        return JText::sprintf('ALTER TABLE %s MODIFY %s', $table_name,
+                        $column_declaration);
     }
 
     /**
@@ -538,7 +604,8 @@ class com_lingoInstallerScript {
      * @param SimpleXMLElement $field
      * @return string Column declaration
      */
-    private function generateColumnDeclaration($field) {
+    private function generateColumnDeclaration($field)
+    {
         $db = JFactory::getDbo();
         $col_name = $db->quoteName((string) $field['field_name']);
         $data_type = $this->getFieldType($field);
@@ -553,7 +620,8 @@ class com_lingoInstallerScript {
 
         $comment_value = (isset($field['description'])) ? 'COMMENT ' . $db->quote((string) $field['description']) : '';
 
-        return JText::sprintf('%s %s NOT NULL %s %s %s', $col_name, $data_type, $default_value, $other_data, $comment_value);
+        return JText::sprintf('%s %s NOT NULL %s %s %s', $col_name, $data_type,
+                        $default_value, $other_data, $comment_value);
     }
 
     /**
@@ -561,7 +629,8 @@ class com_lingoInstallerScript {
      * @param SimpleXMLElement $field Field information
      * @return string SQL data type
      */
-    private function getFieldType($field) {
+    private function getFieldType($field)
+    {
         $data_type = (string) $field['field_type'];
 
         if (isset($field['field_length']) && $this->allowsLengthField($data_type)) {
@@ -576,7 +645,8 @@ class com_lingoInstallerScript {
      * @param string $field_type SQL type
      * @return boolean True if it allows length values, false if it does not.
      */
-    private function allowsLengthField($field_type) {
+    private function allowsLengthField($field_type)
+    {
         $allow_lenght = array(
             'INT', 'VARCHAR', 'CHAR',
             'TINYINT', 'SMALLINT', 'MEDIUMINT',
@@ -592,7 +662,8 @@ class com_lingoInstallerScript {
      * @param string $table_name Name of the table
      * @return boolean True if it exists, false if it does not.
      */
-    private function existsTable($table_name) {
+    private function existsTable($table_name)
+    {
         $db = JFactory::getDbo();
 
         $table_name = str_replace('#__', $db->getPrefix(), (string) $table_name);
@@ -605,9 +676,11 @@ class com_lingoInstallerScript {
      * @param string $field_name Field name
      * @return boolean True if exists, false if it do
      */
-    private function existsField($table_name, $field_name) {
+    private function existsField($table_name, $field_name)
+    {
         $db = JFactory::getDbo();
-        return in_array((string) $field_name, array_keys($db->getTableColumns($table_name)));
+        return in_array((string) $field_name,
+                array_keys($db->getTableColumns($table_name)));
     }
 
     /**
@@ -616,10 +689,12 @@ class com_lingoInstallerScript {
      * @param SimpleXMLElement $field Field information
      * @return boolean True if the field has to be updated, false otherwise
      */
-    private function needsToUpdate($table_name, $field) {
+    private function needsToUpdate($table_name, $field)
+    {
         $db = JFactory::getDbo();
 
-        $query = JText::sprintf('SHOW FULL COLUMNS FROM `%s` WHERE Field LIKE %s', $table_name, $db->quote((string) $field['field_name']));
+        $query = JText::sprintf('SHOW FULL COLUMNS FROM `%s` WHERE Field LIKE %s',
+                        $table_name, $db->quote((string) $field['field_name']));
         $db->setQuery($query);
 
         $field_info = $db->loadObject();
