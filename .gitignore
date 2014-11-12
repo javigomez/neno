@@ -474,6 +474,8 @@
 *.localise.php
 *.ini
 !*.com_lingo.ini
+!*.plg_system_lingo.ini
+!*.plg_system_lingo.sys.ini
 libraries/classmap.php
 libraries/import.legacy.php
 layouts/index.html
