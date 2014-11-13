@@ -33,6 +33,8 @@
 
 namespace PHPSQL\Parser;
 
+defined('JPATH_LINGO') or die;
+
 /**
  * This class implements some helper functions.
  * @author arothe

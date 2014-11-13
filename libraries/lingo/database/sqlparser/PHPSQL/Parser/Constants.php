@@ -33,6 +33,8 @@
 
 namespace PHPSQL\Parser;
 
+defined('JPATH_LINGO') or die;
+
 class Constants {
 
     protected static $reserved = array('ABS', 'ACOS', 'ADDDATE', 'ADDTIME', 'AES_ENCRYPT', 'AES_DECRYPT', 'AGAINST',

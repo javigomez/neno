@@ -34,6 +34,8 @@
 
 namespace PHPSQL\Parser;
 
+defined('JPATH_LINGO') or die;
+
 /**
  * 
  * This class calculates the positions 

@@ -34,6 +34,8 @@
 
 namespace PHPSQL\Expression;
 
+defined('JPATH_LINGO') or die;
+
 class Token {
 
     private $subTree;

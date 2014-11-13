@@ -6,6 +6,7 @@
  * 
  * @copyright (c) 2014, Jensen Technologies S.L. All rights reserved
  */
+defined('JPATH_LINGO') or die;
 
 /**
  * Description of mysql
@@ -16,9 +17,7 @@ class LingoDatabaseDriverMysql extends JDatabaseDriverMysql
 {
 
     public function replacePrefix($sql, $prefix = '#__')
-    {
-        
-        var_dump(JFactory::getLanguage()->getLocale());
+    {        
         return parent::replacePrefix($sql, $prefix);
     }
 

@@ -31,6 +31,8 @@
 
 namespace PHPSQL\Exception;
 
+defined('JPATH_LINGO') or die;
+
 class UnsupportedFeature extends \PHPSQL\Exception\Exception {
 
 	protected $key;

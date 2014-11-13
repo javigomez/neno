@@ -6,7 +6,7 @@
  * 
  * @copyright (c) 2014, Jensen Technologies S.L. All rights reserved
  */
-defined('JPATH_BASE') or die;
+defined('JPATH_LINGO') or die;
 
 /**
  * Description of LingoFactory

@@ -34,6 +34,8 @@
 
 namespace PHPSQL\Parser\Lexer;
 
+defined('JPATH_LINGO') or die;
+
 class Splitter {
 
     private static $splitters = array("\r\n", "!=", ">=", "<=", "<>", ":=", "\\", "&&", ">", "<", "|", "=", "^", "(",

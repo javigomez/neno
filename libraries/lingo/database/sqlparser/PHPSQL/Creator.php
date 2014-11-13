@@ -33,6 +33,8 @@
 
 namespace PHPSQL;
 
+defined('JPATH_LINGO') or die;
+
 class Creator {
 
 	public $created;

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @package Lingo
+ * 
+ * @copyright (c) 2014, Jensen Technologies S.L. All rights reserved
+ */
+defined('JPATH_BASE') or die;
+
 // Define Lingo path constant
 if (!defined('JPATH_LINGO')) {
     define('JPATH_LINGO', dirname(__FILE__));

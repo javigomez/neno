@@ -6,6 +6,7 @@
  * 
  * @copyright (c) 2014, Jensen Technologies S.L. All rights reserved
  */
+defined('JPATH_LINGO') or die;
 
 /**
  * Database driver class extends from Joomla Platform Database Driver class

@@ -34,6 +34,8 @@
 
 namespace PHPSQL\Expression;
 
+defined('JPATH_LINGO') or die;
+
 class Type {
 
     const USER_VARIABLE = "user_variable";

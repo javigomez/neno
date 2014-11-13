@@ -33,6 +33,8 @@
 
 namespace PHPSQL\Parser;
 
+defined('JPATH_LINGO') or die;
+
 /**
  * This class splits the SQL string into little parts, which the parser can
  * use to build the result array.
