@@ -10,8 +10,11 @@ class LingoLoader
 
     public static function init()
     {
+        //Registering Lingo libraries prefix
         JLoader::registerPrefix('Lingo', JPATH_LINGO);
-        JLoader::setup();
+
+        //Registering SQL parser Namespace
+        JLoader::registerNamespace('PHPSQL', JPATH_LINGO . '/database/sqlparser');
     }
 
 }
