@@ -92,7 +92,7 @@ class LingoDatabaseParser
      */
     private static function cleanLanguageTag($languageTag)
     {
-        return strtolower(str_replace(array('-'), array('_'), $languageTag));
+        return strtolower(str_replace(array('-'), array(''), $languageTag));
     }
 
 }
