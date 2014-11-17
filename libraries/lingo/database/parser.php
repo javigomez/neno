@@ -21,6 +21,36 @@ use PHPSQL\Parser;
 class LingoDatabaseParser
 {
 
+    /**
+     * Select query constant
+     */
+    const SELECT_QUERY = 1;
+
+    /**
+     * Insert query constant
+     */
+    const INSERT_QUERY = 2;
+
+    /**
+     * Update query constant
+     */
+    const UPDATE_QUERY = 3;
+
+    /**
+     * Replace query constant
+     */
+    const REPLACE_QUERY = 4;
+
+    /**
+     * Delete query constant
+     */
+    const DELETE_QUERY = 5;
+
+    /**
+     * Other query constant, such as SHOW TABLES, etc...
+     */
+    const OTHER_QUERY = 6;
+
     public static function getCurrentShadowTableName($sql)
     {
         $parser = new Parser();
@@ -63,6 +93,29 @@ class LingoDatabaseParser
         }
 
         return $sql;
+    }
+
+    /**
+     * Get the type of query
+     * @param string $sql
+     * @return integer (Check Class constants)
+     */
+    public static function getQueryType($sql)
+    {
+        $parser = new Parser((string) $sql);
+        if (!empty($parser->parsed['SELECT'])) {
+            return self::SELECT_QUERY;
+        } else if (!empty($parser->parsed['UPDATE'])) {
+            return self::UPDATE_QUERY;
+        } else if (!empty($parser->parsed['INSERT'])) {
+            return self::INSERT_QUERY;
+        } else if (!empty($parser->parsed['DELETE'])) {
+            return self::DELETE_QUERY;
+        } else if (!empty($parser->parsed['REPLACE'])) {
+            return self::REPLACE_QUERY;
+        } else {
+            return self::OTHER_QUERY;
+        }
     }
 
     /**
