@@ -33,11 +33,8 @@ abstract class LingoDatabaseDriver extends JDatabaseDriver
         // Check if the driver has been already instanciated
         if (empty(self::$instances[$driverSignature])) {
 
-            // Generate Driver Class name
-            $class = 'LingoDatabaseDriver' . ucfirst(strtolower($options['driver']));
-
             // If the class doesn't exists, we cannot work with this driver.
-            if (!class_exists($class)) {
+            if (!self::isMySQL($options['driver'])) {
 
                 // Let's using parent method
                 return parent::getInstance($options);
@@ -45,7 +42,7 @@ abstract class LingoDatabaseDriver extends JDatabaseDriver
 
             // Let's create our driver instance using the options given.s
             try {
-                $instance = new $class($options);
+                $instance = new LingoDatabaseDriverMysqlx($options);
             } catch (RuntimeException $ex) {
                 throw new RuntimeException(sprintf('Unable to connect to the database. Error: %s',
                         $ex->getMessage()));
@@ -66,6 +63,16 @@ abstract class LingoDatabaseDriver extends JDatabaseDriver
     public static function clearInstances()
     {
         self::$instances = null;
+    }
+
+    /**
+     * Check if the driver is MySQL
+     * @param string $driver driver name
+     * @return boolean True if it's a mysql driver, false otherwise
+     */
+    public static function isMySQL($driver)
+    {
+        return strpos(strtolower($driver), 'mysql') !== false;
     }
 
 }

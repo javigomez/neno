@@ -14,7 +14,7 @@ use PHPSQL\Parser;
 /**
  * Database driver class extends from Joomla Platform Database Driver class
  *
- * @package Redcore
+ * @package Lingo
  * @subpackage Database
  * @since 1.0
  */
@@ -50,7 +50,9 @@ class LingoDatabaseParser
 
                 // If it's not the same, let's append it to the table name
                 if ($languageCode !== '') {
-                    $fromTable['table'] = $fromTable['table'] . '_' . $languageCode;
+
+                    $fromTable['table'] = self::generateShadowTableName($fromTable['table'],
+                                    $languageCode);
                     $sqlElements['FROM'][$index] = $fromTable;
                 }
 
@@ -93,6 +95,28 @@ class LingoDatabaseParser
     private static function cleanLanguageTag($languageTag)
     {
         return strtolower(str_replace(array('-'), array(''), $languageTag));
+    }
+
+    /**
+     * Get table name without Joomla prefixes
+     * @param string $tableName
+     * @return string clean table name
+     */
+    private static function cleanTableName($tableName)
+    {
+        return str_replace(array('#__', JFactory::getConfig()->get('dbprefix')),
+                '', $tableName);
+    }
+
+    /**
+     * Generate shadow table name
+     * @param string $tableName Table name
+     * @param string $languageTag clean language tag
+     * @return string shadow table name.
+     */
+    private static function generateShadowTableName($tableName, $languageTag)
+    {
+        return '#__lingo_sh_' . $languageTag . '_' . self::cleanTableName($tableName);
     }
 
 }
