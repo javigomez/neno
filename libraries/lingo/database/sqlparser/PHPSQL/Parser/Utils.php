@@ -40,99 +40,123 @@ defined('JPATH_LINGO') or die;
  * @author arothe
  *
  */
-class Utils extends \PHPSQL\Parser\Constants {
+class Utils extends \PHPSQL\Parser\Constants
+{
 
-    /**
-     * Ends the given string $haystack with the string $needle?
-     * @param string $haystack
-     * @param string $needle
-     * @return bool $in
-     */
-    protected function endsWith($haystack, $needle) {
-        $length = strlen($needle);
-        if ($length == 0) {
-            return true;
-        }
+	public function getLastOf($array)
+	{
+		// $array is a copy of the original array, so we can change it without sideeffects
+		if (!is_array($array))
+		{
+			return false;
+		}
 
-        $start = $length * -1;
-        return (substr($haystack, $start) === $needle);
-    }
+		return array_pop($array);
+	}
 
-    /**
-     * Revokes the escaping characters from an expression
-     */
-    protected function revokeEscaping($sql) {
-        $result = trim($sql);
-        if (($result[0] === '`') && ($result[strlen($result) - 1] === '`')) {
-            $result = substr($result, 1, -1);
-        }
-        return str_replace('``', '`', $result);
-    }
+	/**
+	 * translates an array of objects into an associative array
+	 */
+	public function toArray($tokenList)
+	{
+		$expr = array();
+		foreach ($tokenList as $token)
+		{
+			/**
+			 * @var $token \PHPSQL\Expression\Token
+			 */
+			$expr[] = $token->toArray();
+		}
 
-    /**
-     * This method removes parenthesis from start of the given string.
-     * It removes also the associated closing parenthesis.
-     */
-    protected function removeParenthesisFromStart($token) {
+		return (empty($expr) ? false : $expr);
+	}
 
-        $parenthesisRemoved = 0;
+	/**
+	 * Ends the given string $haystack with the string $needle?
+	 *
+	 * @param string $haystack
+	 * @param string $needle
+	 *
+	 * @return bool $in
+	 */
+	protected function endsWith($haystack, $needle)
+	{
+		$length = strlen($needle);
+		if ($length == 0)
+		{
+			return true;
+		}
 
-        $trim = trim($token);
-        if ($trim !== "" && $trim[0] === "(") { // remove only one parenthesis pair now!
-            $parenthesisRemoved++;
-            $trim[0] = " ";
-            $trim = trim($trim);
-        }
+		$start = $length * -1;
 
-        $parenthesis = $parenthesisRemoved;
-        $i = 0;
-        $string = 0;
-        while ($i < strlen($trim)) {
+		return (substr($haystack, $start) === $needle);
+	}
 
-            if ($trim[$i] === "\\") {
-                $i += 2; # an escape character, the next character is irrelevant
-                continue;
-            }
+	/**
+	 * Revokes the escaping characters from an expression
+	 */
+	protected function revokeEscaping($sql)
+	{
+		$result = trim($sql);
+		if (($result[0] === '`') && ($result[strlen($result) - 1] === '`'))
+		{
+			$result = substr($result, 1, -1);
+		}
 
-            if ($trim[$i] === "'" || $trim[$i] === '"') {
-                $string++;
-            }
+		return str_replace('``', '`', $result);
+	}
 
-            if (($string % 2 === 0) && ($trim[$i] === "(")) {
-                $parenthesis++;
-            }
+	/**
+	 * This method removes parenthesis from start of the given string.
+	 * It removes also the associated closing parenthesis.
+	 */
+	protected function removeParenthesisFromStart($token)
+	{
 
-            if (($string % 2 === 0) && ($trim[$i] === ")")) {
-                if ($parenthesis == $parenthesisRemoved) {
-                    $trim[$i] = " ";
-                    $parenthesisRemoved--;
-                }
-                $parenthesis--;
-            }
-            $i++;
-        }
-        return trim($trim);
-    }
+		$parenthesisRemoved = 0;
 
-    public function getLastOf($array) {
-        // $array is a copy of the original array, so we can change it without sideeffects
-        if (!is_array($array)) {
-            return false;
-        }
-        return array_pop($array);
-    }
+		$trim = trim($token);
+		if ($trim !== "" && $trim[0] === "(")
+		{ // remove only one parenthesis pair now!
+			$parenthesisRemoved++;
+			$trim[0] = " ";
+			$trim    = trim($trim);
+		}
 
-    /**
-     * translates an array of objects into an associative array
-     */
-    public function toArray($tokenList) {
-        $expr = array();
-        foreach ($tokenList as $token) {
-	        /**
-	         * @var $token \PHPSQL\Expression\Token
-	         */
-	        $expr[] = $token->toArray();
-        }
-        return (empty($expr) ? false : $expr);
-    }
+		$parenthesis = $parenthesisRemoved;
+		$i           = 0;
+		$string      = 0;
+		while ($i < strlen($trim))
+		{
+
+			if ($trim[$i] === "\\")
+			{
+				$i += 2; # an escape character, the next character is irrelevant
+				continue;
+			}
+
+			if ($trim[$i] === "'" || $trim[$i] === '"')
+			{
+				$string++;
+			}
+
+			if (($string % 2 === 0) && ($trim[$i] === "("))
+			{
+				$parenthesis++;
+			}
+
+			if (($string % 2 === 0) && ($trim[$i] === ")"))
+			{
+				if ($parenthesis == $parenthesisRemoved)
+				{
+					$trim[$i] = " ";
+					$parenthesisRemoved--;
+				}
+				$parenthesis--;
+			}
+			$i++;
+		}
+
+		return trim($trim);
+	}
 }

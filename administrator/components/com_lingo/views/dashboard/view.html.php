@@ -15,30 +15,33 @@ jimport('joomla.application.component.view');
 /**
  * View to edit
  */
-class LingoViewDashboard extends JViewLegacy {
+class LingoViewDashboard extends JViewLegacy
+{
 
 
-    /**
-     * Display the view
-     */
-    public function display($tpl = null) {
-        
-        $this->addToolbar();
-        
-        parent::display($tpl);
-    }
+	/**
+	 * Display the view
+	 */
+	public function display($tpl = null)
+	{
 
-    /**
-     * Add the page title and toolbar.
-     */
-    protected function addToolbar() {
-        JFactory::getApplication()->input->set('hidemainmenu', true);
+		$this->addToolbar();
 
-        $user = JFactory::getUser();
-        $canDo = LingoHelper::getActions();
+		parent::display($tpl);
+	}
 
-        JToolBarHelper::title(JText::_('COM_LINGO_TITLE_DASHBOARD'), 'dashboard.png');
+	/**
+	 * Add the page title and toolbar.
+	 */
+	protected function addToolbar()
+	{
+		JFactory::getApplication()->input->set('hidemainmenu', true);
 
-    }
+		$user  = JFactory::getUser();
+		$canDo = LingoHelper::getActions();
+
+		JToolBarHelper::title(JText::_('COM_LINGO_TITLE_DASHBOARD'), 'dashboard.png');
+
+	}
 
 }

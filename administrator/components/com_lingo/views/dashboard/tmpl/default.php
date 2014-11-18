@@ -15,10 +15,10 @@ defined('_JEXEC') or die;
 
 
 <form action="index.php" method="get">
-    <input type="hidden" name="option" value="com_lingo" />
-    <input type="hidden" name="view" value="langfilesimport" />
-    <button type="submit" class="btn btn-info">
-        <span class="icon-download "></span>
-        Import language files
-    </button>
+	<input type="hidden" name="option" value="com_lingo"/>
+	<input type="hidden" name="view" value="langfilesimport"/>
+	<button type="submit" class="btn btn-info">
+		<span class="icon-download "></span>
+		Import language files
+	</button>
 </form>

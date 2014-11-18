@@ -36,130 +36,159 @@ namespace PHPSQL\Expression;
 
 defined('JPATH_LINGO') or die;
 
-class Token {
+class Token
+{
 
-    private $subTree;
-    private $expression;
-    private $key;
-    private $token;
-    private $tokenType;
-    private $trim;
-    private $upper;
+	private $subTree;
+	private $expression;
+	private $key;
+	private $token;
+	private $tokenType;
+	private $trim;
+	private $upper;
 
-    public function __construct($key = "", $token = "") {
-        $this->subTree = false;
-        $this->expression = "";
-        $this->key = $key;
-        $this->token = $token;
-        $this->tokenType = false;
-        $this->trim = trim($token);
-        $this->upper = strtoupper($this->trim);
-    }
+	public function __construct($key = "", $token = "")
+	{
+		$this->subTree    = false;
+		$this->expression = "";
+		$this->key        = $key;
+		$this->token      = $token;
+		$this->tokenType  = false;
+		$this->trim       = trim($token);
+		$this->upper      = strtoupper($this->trim);
+	}
 
-    # TODO: we could replace it with a constructor new \PHPSQL\Expression\Token(this, "*")
-    public function addToken($string) {
-        $this->token .= $string;
-    }
+	# TODO: we could replace it with a constructor new \PHPSQL\Expression\Token(this, "*")
+	public function addToken($string)
+	{
+		$this->token .= $string;
+	}
 
-    public function isEnclosedWithinParenthesis() {
-        return ($this->upper[0] === '(' && substr($this->upper, -1) === ')');
-    }
+	public function isEnclosedWithinParenthesis()
+	{
+		return ($this->upper[0] === '(' && substr($this->upper, -1) === ')');
+	}
 
-    public function setSubTree($tree) {
-        $this->subTree = $tree;
-    }
+	public function getSubTree()
+	{
+		return $this->subTree;
+	}
 
-    public function getSubTree() {
-        return $this->subTree;
-    }
+	public function setSubTree($tree)
+	{
+		$this->subTree = $tree;
+	}
 
-    public function getUpper($idx = false) {
-        return $idx !== false ? $this->upper[$idx] : $this->upper;
-    }
+	public function getUpper($idx = false)
+	{
+		return $idx !== false ? $this->upper[$idx] : $this->upper;
+	}
 
-    public function getTrim($idx = false) {
-        return $idx !== false ? $this->trim[$idx] : $this->trim;
-    }
+	public function getTrim($idx = false)
+	{
+		return $idx !== false ? $this->trim[$idx] : $this->trim;
+	}
 
-    public function getToken($idx = false) {
-        return $idx !== false ? $this->token[$idx] : $this->token;
-    }
+	public function getToken($idx = false)
+	{
+		return $idx !== false ? $this->token[$idx] : $this->token;
+	}
 
-    public function setTokenType($type) {
-        $this->tokenType = $type;
-    }
+	public function setTokenType($type)
+	{
+		$this->tokenType = $type;
+	}
 
-    public function endsWith($needle) {
-        $length = strlen($needle);
-        if ($length == 0) {
-            return true;
-        }
+	public function endsWith($needle)
+	{
+		$length = strlen($needle);
+		if ($length == 0)
+		{
+			return true;
+		}
 
-        $start = $length * -1;
-        return (substr($this->token, $start) === $needle);
-    }
+		$start = $length * -1;
 
-    public function isWhitespaceToken() {
-        return ($this->trim === "");
-    }
+		return (substr($this->token, $start) === $needle);
+	}
 
-    public function isCommaToken() {
-        return ($this->trim === ",");
-    }
+	public function isWhitespaceToken()
+	{
+		return ($this->trim === "");
+	}
 
-    public function isVariableToken() {
-        return $this->upper[0] === '@';
-    }
+	public function isCommaToken()
+	{
+		return ($this->trim === ",");
+	}
 
-    public function isSubQueryToken() {
-        return preg_match("/^\\(\\s*SELECT/i", $this->trim);
-    }
+	public function isVariableToken()
+	{
+		return $this->upper[0] === '@';
+	}
 
-    public function isExpression() {
-        return $this->tokenType === \PHPSQL\Expression\Type::EXPRESSION;
-    }
+	public function isSubQueryToken()
+	{
+		return preg_match("/^\\(\\s*SELECT/i", $this->trim);
+	}
 
-    public function isBracketExpression() {
-        return $this->tokenType === \PHPSQL\Expression\Type::BRACKET_EXPRESSION;
-    }
+	public function isExpression()
+	{
+		return $this->tokenType === \PHPSQL\Expression\Type::EXPRESSION;
+	}
 
-    public function isOperator() {
-        return $this->tokenType === \PHPSQL\Expression\Type::OPERATOR;
-    }
+	public function isBracketExpression()
+	{
+		return $this->tokenType === \PHPSQL\Expression\Type::BRACKET_EXPRESSION;
+	}
 
-    public function isInList() {
-        return $this->tokenType === \PHPSQL\Expression\Type::IN_LIST;
-    }
+	public function isOperator()
+	{
+		return $this->tokenType === \PHPSQL\Expression\Type::OPERATOR;
+	}
 
-    public function isFunction() {
-        return $this->tokenType === \PHPSQL\Expression\Type::SIMPLE_FUNCTION;
-    }
+	public function isInList()
+	{
+		return $this->tokenType === \PHPSQL\Expression\Type::IN_LIST;
+	}
 
-    public function isUnspecified() {
-        return ($this->tokenType === false);
-    }
+	public function isFunction()
+	{
+		return $this->tokenType === \PHPSQL\Expression\Type::SIMPLE_FUNCTION;
+	}
 
-    public function isAggregateFunction() {
-        return $this->tokenType === \PHPSQL\Expression\Type::AGGREGATE_FUNCTION;
-    }
+	public function isUnspecified()
+	{
+		return ($this->tokenType === false);
+	}
 
-    public function isColumnReference() {
-        return $this->tokenType === \PHPSQL\Expression\Type::COLREF;
-    }
+	public function isAggregateFunction()
+	{
+		return $this->tokenType === \PHPSQL\Expression\Type::AGGREGATE_FUNCTION;
+	}
 
-    public function isConstant() {
-        return $this->tokenType === \PHPSQL\Expression\Type::CONSTANT;
-    }
+	public function isColumnReference()
+	{
+		return $this->tokenType === \PHPSQL\Expression\Type::COLREF;
+	}
 
-    public function isSign() {
-        return $this->tokenType === \PHPSQL\Expression\Type::SIGN;
-    }
+	public function isConstant()
+	{
+		return $this->tokenType === \PHPSQL\Expression\Type::CONSTANT;
+	}
 
-    public function isSubQuery() {
-        return $this->tokenType === \PHPSQL\Expression\Type::SUBQUERY;
-    }
+	public function isSign()
+	{
+		return $this->tokenType === \PHPSQL\Expression\Type::SIGN;
+	}
 
-    public function toArray() {
-        return array('expr_type' => $this->tokenType, 'base_expr' => $this->token, 'sub_tree' => $this->subTree);
-    }
+	public function isSubQuery()
+	{
+		return $this->tokenType === \PHPSQL\Expression\Type::SUBQUERY;
+	}
+
+	public function toArray()
+	{
+		return array('expr_type' => $this->tokenType, 'base_expr' => $this->token, 'sub_tree' => $this->subTree);
+	}
 }

@@ -15,58 +15,62 @@ jimport('joomla.application.component.view');
 /**
  * View class for a list of Lingo.
  */
-class LingoViewLangfilesimporttargetchanges extends JViewLegacy {
+class LingoViewLangfilesimporttargetchanges extends JViewLegacy
+{
 
-    protected $items;
+	protected $items;
 
-    /**
-     * Display the view
-     */
-    public function display($tpl = null) {
-        
-        $this->items = $this->get('ChangedStrings');
+	/**
+	 * Display the view
+	 */
+	public function display($tpl = null)
+	{
 
-        // Check for errors.
-        if (count($errors = $this->get('Errors'))) {
-            throw new Exception(implode("\n", $errors));
-        }
+		$this->items = $this->get('ChangedStrings');
 
-        LingoHelper::addSubmenu('translations');
+		// Check for errors.
+		if (count($errors = $this->get('Errors')))
+		{
+			throw new Exception(implode("\n", $errors));
+		}
 
-        $this->addToolbar();
+		LingoHelper::addSubmenu('translations');
 
-        $this->sidebar = JHtmlSidebar::render();
-        parent::display($tpl);
-    }
+		$this->addToolbar();
 
-    /**
-     * Add the page title and toolbar.
-     *
-     * @since	1.6
-     */
-    protected function addToolbar() {
-        require_once JPATH_COMPONENT . '/helpers/lingo.php';
+		$this->sidebar = JHtmlSidebar::render();
+		parent::display($tpl);
+	}
 
-        $state = $this->get('State');
-        $canDo = LingoHelper::getActions($state->get('filter.category_id'));
+	/**
+	 * Add the page title and toolbar.
+	 *
+	 * @since    1.6
+	 */
+	protected function addToolbar()
+	{
+		require_once JPATH_COMPONENT . '/helpers/lingo.php';
 
-        JToolBarHelper::title(JText::_('COM_LINGO_TITLE_LANGFILESIMPORTTARGETCHANGES'), 'loop.png');
+		$state = $this->get('State');
+		$canDo = LingoHelper::getActions($state->get('filter.category_id'));
 
-        JToolBarHelper::custom('langfiles.pulltargetstrings', 'arrow-right.png', 'arrow-right.png', 'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PULL', true);
-        JToolBarHelper::custom('langfiles.pushtargetstrings', 'arrow-left.png', 'arrow-left.png', 'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PUSH', true);
-        JToolBarHelper::cancel('langfiles.cancel');
+		JToolBarHelper::title(JText::_('COM_LINGO_TITLE_LANGFILESIMPORTTARGETCHANGES'), 'loop.png');
 
-        
-    }
+		JToolBarHelper::custom('langfiles.pulltargetstrings', 'arrow-right.png', 'arrow-right.png', 'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PULL', true);
+		JToolBarHelper::custom('langfiles.pushtargetstrings', 'arrow-left.png', 'arrow-left.png', 'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PUSH', true);
+		JToolBarHelper::cancel('langfiles.cancel');
+
+
+	}
 
 	protected function getSortFields()
 	{
 		return array(
-		'a.id' => JText::_('JGRID_HEADING_ID'),
-		'a.source_id' => JText::_('COM_LINGO_TRANSLATIONS_SOURCE_ID'),
-		'a.time_translated' => JText::_('COM_LINGO_TRANSLATIONS_TIME_TRANSLATED'),
-		'a.version' => JText::_('COM_LINGO_TRANSLATIONS_VERSION'),
-		'a.lang' => JText::_('COM_LINGO_TRANSLATIONS_LANG'),
+			'a.id'              => JText::_('JGRID_HEADING_ID'),
+			'a.source_id'       => JText::_('COM_LINGO_TRANSLATIONS_SOURCE_ID'),
+			'a.time_translated' => JText::_('COM_LINGO_TRANSLATIONS_TIME_TRANSLATED'),
+			'a.version'         => JText::_('COM_LINGO_TRANSLATIONS_VERSION'),
+			'a.lang'            => JText::_('COM_LINGO_TRANSLATIONS_LANG'),
 		);
 	}
 

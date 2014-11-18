@@ -9,9 +9,9 @@
     <authorUrl>http://www.notwebdesign.com</authorUrl>
     <version>1.0.0</version>
     <description>The complete translation solution for Joomla</description>
-    
+
     <scriptfile>script.php</scriptfile>
-    
+
     <install> <!-- Runs on install -->
         <sql>
             <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
@@ -35,16 +35,21 @@
         <folder>assets</folder>
     </files>
     <languages folder="site">
-        
-			<language tag="en-GB">language/en-GB/en-GB.com_lingo.ini</language>
+
+        <language tag="en-GB">language/en-GB/en-GB.com_lingo.ini</language>
     </languages>
     <administration>
-        <menu img="components/com_lingo/assets/images/s_com_lingo.png" >COM_LINGO</menu>
+        <menu img="components/com_lingo/assets/images/s_com_lingo.png">COM_LINGO</menu>
         <submenu>
-            
-			<menu link="option=com_lingo&amp;view=translations" view="translations" img="components/com_lingo/assets/images/s_translations.png" alt="Lingo/Translations">COM_LINGO_TITLE_TRANSLATIONS</menu>
 
-			<menu link="option=com_lingo&amp;view=sources" view="sources" img="components/com_lingo/assets/images/s_sources.png" alt="Lingo/Sources">COM_LINGO_TITLE_SOURCES</menu>
+            <menu link="option=com_lingo&amp;view=translations" view="translations"
+                  img="components/com_lingo/assets/images/s_translations.png" alt="Lingo/Translations">
+                COM_LINGO_TITLE_TRANSLATIONS
+            </menu>
+
+            <menu link="option=com_lingo&amp;view=sources" view="sources"
+                  img="components/com_lingo/assets/images/s_sources.png" alt="Lingo/Sources">COM_LINGO_TITLE_SOURCES
+            </menu>
 
         </submenu>
         <files folder="administrator">
@@ -63,15 +68,15 @@
             <folder>language</folder>
         </files>
         <languages folder="administrator">
-            
-			<language tag="en-GB">language/en-GB/en-GB.com_lingo.ini</language>
-			<language tag="en-GB">language/en-GB/en-GB.com_lingo.sys.ini</language>
+
+            <language tag="en-GB">language/en-GB/en-GB.com_lingo.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.com_lingo.sys.ini</language>
         </languages>
     </administration>
     <plugins>
         <plugin group="search" plugin="lingo"/>
     </plugins>
-    
+
 </extension>
-<!-- Component built by the Joomla Component Creator -->
-<!-- http://www.component-creator.com/ -->
+        <!-- Component built by the Joomla Component Creator -->
+        <!-- http://www.component-creator.com/ -->

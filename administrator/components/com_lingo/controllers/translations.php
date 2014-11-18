@@ -18,17 +18,6 @@ jimport('joomla.application.component.controlleradmin');
 class LingoControllerTranslations extends JControllerAdmin
 {
 	/**
-	 * Proxy for getModel.
-	 * @since	1.6
-	 */
-	public function getModel($name = 'translation', $prefix = 'LingoModel')
-	{
-		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
-		return $model;
-	}
-    
-    
-	/**
 	 * Method to save the submitted ordering values for records via AJAX.
 	 *
 	 * @return  void
@@ -60,7 +49,17 @@ class LingoControllerTranslations extends JControllerAdmin
 		// Close the application
 		JFactory::getApplication()->close();
 	}
-    
-    
-    
+
+	/**
+	 * Proxy for getModel.
+	 * @since    1.6
+	 */
+	public function getModel($name = 'translation', $prefix = 'LingoModel')
+	{
+		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
+
+		return $model;
+	}
+
+
 }

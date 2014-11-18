@@ -33,16 +33,19 @@ namespace PHPSQL\Exception;
 
 defined('JPATH_LINGO') or die;
 
-class UnsupportedFeature extends \PHPSQL\Exception\Exception {
+class UnsupportedFeature extends \PHPSQL\Exception\Exception
+{
 
 	protected $key;
 
-	public function __construct($key) {
+	public function __construct($key)
+	{
 		$this->key = $key;
 		parent::__construct($key . " not implemented.", 20);
 	}
 
-	public function getKey() {
+	public function getKey()
+	{
 		return $this->key;
 	}
 }

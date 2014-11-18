@@ -31,6 +31,7 @@ namespace PHPSQL\Exception;
 
 defined('JPATH_LINGO') or die;
 
-class Exception extends \Exception {
+class Exception extends \Exception
+{
 
 }

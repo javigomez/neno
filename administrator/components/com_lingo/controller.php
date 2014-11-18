@@ -10,27 +10,29 @@
 // No direct access
 defined('_JEXEC') or die;
 
-class LingoController extends JControllerLegacy {
+class LingoController extends JControllerLegacy
+{
 
-    /**
-     * Method to display a view.
-     *
-     * @param	boolean			$cachable	If true, the view output will be cached
-     * @param	array			$urlparams	An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
-     *
-     * @return	JController		This object to support chaining.
-     * @since	1.5
-     */
-    public function display($cachable = false, $urlparams = false) {
-        
-        require_once JPATH_COMPONENT . '/helpers/lingo.php';
+	/**
+	 * Method to display a view.
+	 *
+	 * @param    boolean $cachable  If true, the view output will be cached
+	 * @param    array   $urlparams An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+	 *
+	 * @return    JController        This object to support chaining.
+	 * @since    1.5
+	 */
+	public function display($cachable = false, $urlparams = false)
+	{
 
-        $view = JFactory::getApplication()->input->getCmd('view', 'dashboard');
-        JFactory::getApplication()->input->set('view', $view);
+		require_once JPATH_COMPONENT . '/helpers/lingo.php';
 
-        parent::display($cachable, $urlparams);
+		$view = JFactory::getApplication()->input->getCmd('view', 'dashboard');
+		JFactory::getApplication()->input->set('view', $view);
 
-        return $this;
-    }
+		parent::display($cachable, $urlparams);
+
+		return $this;
+	}
 
 }

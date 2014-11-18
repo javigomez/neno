@@ -38,330 +38,435 @@ defined('JPATH_LINGO') or die;
 /**
  * This class splits the SQL string into little parts, which the parser can
  * use to build the result array.
- * 
+ *
  * @author arothe
  *
  */
-class Lexer extends \PHPSQL\Parser\Utils {
+class Lexer extends \PHPSQL\Parser\Utils
+{
 
-    private $splitters;
+	private $splitters;
 
-    public function __construct() {
-        $this->splitters = new \PHPSQL\Parser\Lexer\Splitter();
-    }
+	public function __construct()
+	{
+		$this->splitters = new \PHPSQL\Parser\Lexer\Splitter();
+	}
 
-    public function split($sql) {
-        if (!is_string($sql)) {
-            throw new \PHPSQL\Exception\InvalidParameter($sql);
-        }
+	public function split($sql)
+	{
+		if (!is_string($sql))
+		{
+			throw new \PHPSQL\Exception\InvalidParameter($sql);
+		}
 
-        $tokens = array();
-        $token = "";
+		$tokens = array();
+		$token  = "";
 
-        $splitLen = $this->splitters->getMaxLengthOfSplitter();
-        $found = false;
-        $len = strlen($sql);
-        $pos = 0;
+		$splitLen = $this->splitters->getMaxLengthOfSplitter();
+		$found    = false;
+		$len      = strlen($sql);
+		$pos      = 0;
 
-        while ($pos < $len) {
+		while ($pos < $len)
+		{
 
-            for ($i = $splitLen; $i > 0; $i--) {
-                $substr = substr($sql, $pos, $i);
-                if ($this->splitters->isSplitter($substr)) {
+			for ($i = $splitLen; $i > 0; $i--)
+			{
+				$substr = substr($sql, $pos, $i);
+				if ($this->splitters->isSplitter($substr))
+				{
 
-                    if ($token !== "") {
-                        $tokens[] = $token;
-                    }
+					if ($token !== "")
+					{
+						$tokens[] = $token;
+					}
 
-                    $tokens[] = $substr;
-                    $pos += $i;
-                    $token = "";
+					$tokens[] = $substr;
+					$pos += $i;
+					$token = "";
 
-                    continue 2;
-                }
-            }
+					continue 2;
+				}
+			}
 
-            $token .= $sql[$pos];
-            $pos++;
-        }
+			$token .= $sql[$pos];
+			$pos++;
+		}
 
-        if ($token !== "") {
-            $tokens[] = $token;
-        }
+		if ($token !== "")
+		{
+			$tokens[] = $token;
+		}
 
-        $tokens = $this->concatEscapeSequences($tokens);
-        $tokens = $this->balanceBackticks($tokens);
-        $tokens = $this->concatColReferences($tokens);
-        $tokens = $this->balanceParenthesis($tokens);
-        $tokens = $this->balanceMultilineComments($tokens);
-        $tokens = $this->concatInlineComments($tokens);
-        $tokens = $this->concatUserDefinedVariables($tokens);
-        return $tokens;
-    }
+		$tokens = $this->concatEscapeSequences($tokens);
+		$tokens = $this->balanceBackticks($tokens);
+		$tokens = $this->concatColReferences($tokens);
+		$tokens = $this->balanceParenthesis($tokens);
+		$tokens = $this->balanceMultilineComments($tokens);
+		$tokens = $this->concatInlineComments($tokens);
+		$tokens = $this->concatUserDefinedVariables($tokens);
 
-    private function concatUserDefinedVariables($tokens) {
-        $i = 0;
-        $cnt = count($tokens);
-        $userdef = false;
+		return $tokens;
+	}
 
-        while ($i < $cnt) {
+	private function concatEscapeSequences($tokens)
+	{
+		$tokenCount = count($tokens);
+		$i          = 0;
+		while ($i < $tokenCount)
+		{
 
-            if (!isset($tokens[$i])) {
-                $i++;
-                continue;
-            }
+			if ($this->endsWith($tokens[$i], "\\"))
+			{
+				$i++;
+				if (isset($tokens[$i]))
+				{
+					$tokens[$i - 1] .= $tokens[$i];
+					unset($tokens[$i]);
+				}
+			}
+			$i++;
+		}
 
-            $token = $tokens[$i];
+		return array_values($tokens);
+	}
 
-            if ($userdef !== false) {
-                $tokens[$userdef] .= $token;
-                unset($tokens[$i]);
-                if ($token !== "@") {
-                    $userdef = false;
-                }
-            }
+	private function balanceBackticks($tokens)
+	{
+		$i   = 0;
+		$cnt = count($tokens);
+		while ($i < $cnt)
+		{
 
-            if ($userdef === false && $token === "@") {
-                $userdef = $i;
-            }
+			if (!isset($tokens[$i]))
+			{
+				$i++;
+				continue;
+			}
 
-            $i++;
-        }
+			$token = $tokens[$i];
 
-        return array_values($tokens);
-    }
+			if ($this->isBacktick($token))
+			{
+				$tokens = $this->balanceCharacter($tokens, $i, $token);
+			}
 
-    private function concatInlineComments($tokens) {
+			$i++;
+		}
 
-        $i = 0;
-        $cnt = count($tokens);
-        $comment = false;
+		return $tokens;
+	}
 
-        while ($i < $cnt) {
+	private function isBacktick($token)
+	{
+		return ($token === "'" || $token === "\"" || $token === "`");
+	}
 
-            if (!isset($tokens[$i])) {
-                $i++;
-                continue;
-            }
+	private function balanceCharacter($tokens, $idx, $char)
+	{
 
-            $token = $tokens[$i];
+		$token_count = count($tokens);
+		$i           = $idx + 1;
+		while ($i < $token_count)
+		{
 
-            if ($comment !== false) {
-                if ($token === "\n" || $token === "\r\n") {
-                    $comment = false;
-                } else {
-                    unset($tokens[$i]);
-                    $tokens[$comment] .= $token;
-                }
-            }
+			if (!isset($tokens[$i]))
+			{
+				$i++;
+				continue;
+			}
 
-            if (($comment === false) && ($token === "-")) {
-                if (isset($tokens[$i + 1]) && $tokens[$i + 1] === "-") {
-                    $comment = $i;
-                    $tokens[$i] = "--";
-                    $i++;
-                    unset($tokens[$i]);
-                    continue;
-                }
-            }
+			$token = $tokens[$i];
+			$tokens[$idx] .= $token;
+			unset($tokens[$i]);
 
-            $i++;
-        }
+			if ($token === $char)
+			{
+				break;
+			}
 
-        return array_values($tokens);
-    }
+			$i++;
+		}
 
-    private function balanceMultilineComments($tokens) {
+		return array_values($tokens);
+	}
 
-        $i = 0;
-        $cnt = count($tokens);
-        $comment = false;
+	private function concatColReferences($tokens)
+	{
 
-        while ($i < $cnt) {
+		$cnt = count($tokens);
+		$i   = 0;
+		while ($i < $cnt)
+		{
 
-            if (!isset($tokens[$i])) {
-                $i++;
-                continue;
-            }
+			if (!isset($tokens[$i]))
+			{
+				$i++;
+				continue;
+			}
 
-            $token = $tokens[$i];
+			if ($tokens[$i][0] === ".")
+			{
 
-            if ($comment !== false) {
-                unset($tokens[$i]);
-                $tokens[$comment] .= $token;
-                if ($token === "*" && isset($tokens[$i + 1]) && $tokens[$i + 1] === "/") {
-                    unset($tokens[$i + 1]);
-                    $tokens[$comment] .= "/";
-                    $comment = false;
-                }
-            }
+				// concat the previous tokens, till the token has been changed
+				$k   = $i - 1;
+				$len = strlen($tokens[$i]);
+				while (($k >= 0) && ($len == strlen($tokens[$i])))
+				{
+					if (!isset($tokens[$k]))
+					{ # FIXME: this can be wrong if we have schema . table . column
+						$k--;
+						continue;
+					}
+					$tokens[$i] = $tokens[$k] . $tokens[$i];
+					unset($tokens[$k]);
+					$k--;
+				}
+			}
 
-            if (($comment === false) && ($token === "/")) {
-                if (isset($tokens[$i + 1]) && $tokens[$i + 1] === "*") {
-                    $comment = $i;
-                    $tokens[$i] = "/*";
-                    $i++;
-                    unset($tokens[$i]);
-                    continue;
-                }
-            }
+			if ($this->endsWith($tokens[$i], '.'))
+			{
 
-            $i++;
-        }
-        return array_values($tokens);
-    }
+				// concat the next tokens, till the token has been changed
+				$k   = $i + 1;
+				$len = strlen($tokens[$i]);
+				while (($k < $cnt) && ($len == strlen($tokens[$i])))
+				{
+					if (!isset($tokens[$k]))
+					{
+						$k++;
+						continue;
+					}
+					$tokens[$i] .= $tokens[$k];
+					unset($tokens[$k]);
+					$k++;
+				}
+			}
 
-    private function isBacktick($token) {
-        return ($token === "'" || $token === "\"" || $token === "`");
-    }
+			$i++;
+		}
 
-    private function balanceBackticks($tokens) {
-        $i = 0;
-        $cnt = count($tokens);
-        while ($i < $cnt) {
+		return array_values($tokens);
+	}
 
-            if (!isset($tokens[$i])) {
-                $i++;
-                continue;
-            }
+	# backticks are not balanced within one token, so we have
+	# to re-combine some tokens
 
-            $token = $tokens[$i];
+	private function balanceParenthesis($tokens)
+	{
+		$token_count = count($tokens);
+		$i           = 0;
+		while ($i < $token_count)
+		{
+			if ($tokens[$i] !== '(')
+			{
+				$i++;
+				continue;
+			}
+			$count = 1;
+			for ($n = $i + 1; $n < $token_count; $n++)
+			{
+				$token = $tokens[$n];
+				if ($token === '(')
+				{
+					$count++;
+				}
+				if ($token === ')')
+				{
+					$count--;
+				}
+				$tokens[$i] .= $token;
+				unset($tokens[$n]);
+				if ($count === 0)
+				{
+					$n++;
+					break;
+				}
+			}
+			$i = $n;
+		}
 
-            if ($this->isBacktick($token)) {
-                $tokens = $this->balanceCharacter($tokens, $i, $token);
-            }
+		return array_values($tokens);
+	}
 
-            $i++;
-        }
+	/*
+	 * does the token ends with dot?
+	 * concat it with the next token
+	 *
+	 * does the token starts with a dot?
+	 * concat it with the previous token
+	 */
 
-        return $tokens;
-    }
+	private function balanceMultilineComments($tokens)
+	{
 
-    # backticks are not balanced within one token, so we have
-    # to re-combine some tokens
-    private function balanceCharacter($tokens, $idx, $char) {
+		$i       = 0;
+		$cnt     = count($tokens);
+		$comment = false;
 
-        $token_count = count($tokens);
-        $i = $idx + 1;
-        while ($i < $token_count) {
+		while ($i < $cnt)
+		{
 
-            if (!isset($tokens[$i])) {
-                $i++;
-                continue;
-            }
+			if (!isset($tokens[$i]))
+			{
+				$i++;
+				continue;
+			}
 
-            $token = $tokens[$i];
-            $tokens[$idx] .= $token;
-            unset($tokens[$i]);
+			$token = $tokens[$i];
 
-            if ($token === $char) {
-                break;
-            }
+			if ($comment !== false)
+			{
+				unset($tokens[$i]);
+				$tokens[$comment] .= $token;
+				if ($token === "*" && isset($tokens[$i + 1]) && $tokens[$i + 1] === "/")
+				{
+					unset($tokens[$i + 1]);
+					$tokens[$comment] .= "/";
+					$comment = false;
+				}
+			}
 
-            $i++;
-        }
-        return array_values($tokens);
-    }
+			if (($comment === false) && ($token === "/"))
+			{
+				if (isset($tokens[$i + 1]) && $tokens[$i + 1] === "*")
+				{
+					$comment    = $i;
+					$tokens[$i] = "/*";
+					$i++;
+					unset($tokens[$i]);
+					continue;
+				}
+			}
 
-    /*
-     * does the token ends with dot?
-     * concat it with the next token
-     * 
-     * does the token starts with a dot?
-     * concat it with the previous token
-     */
-    private function concatColReferences($tokens) {
+			$i++;
+		}
 
-        $cnt = count($tokens);
-        $i = 0;
-        while ($i < $cnt) {
+		return array_values($tokens);
+	}
 
-            if (!isset($tokens[$i])) {
-                $i++;
-                continue;
-            }
+	private function concatInlineComments($tokens)
+	{
 
-            if ($tokens[$i][0] === ".") {
+		$i       = 0;
+		$cnt     = count($tokens);
+		$comment = false;
 
-                // concat the previous tokens, till the token has been changed
-                $k = $i - 1;
-                $len = strlen($tokens[$i]);
-                while (($k >= 0) && ($len == strlen($tokens[$i]))) {
-                    if (!isset($tokens[$k])) { # FIXME: this can be wrong if we have schema . table . column
-                        $k--;
-                        continue;
-                    }
-                    $tokens[$i] = $tokens[$k] . $tokens[$i];
-                    unset($tokens[$k]);
-                    $k--;
-                }
-            }
+		while ($i < $cnt)
+		{
 
-            if ($this->endsWith($tokens[$i], '.')) {
+			if (!isset($tokens[$i]))
+			{
+				$i++;
+				continue;
+			}
 
-                // concat the next tokens, till the token has been changed
-                $k = $i + 1;
-                $len = strlen($tokens[$i]);
-                while (($k < $cnt) && ($len == strlen($tokens[$i]))) {
-                    if (!isset($tokens[$k])) {
-                        $k++;
-                        continue;
-                    }
-                    $tokens[$i] .= $tokens[$k];
-                    unset($tokens[$k]);
-                    $k++;
-                }
-            }
+			$token = $tokens[$i];
 
-            $i++;
-        }
+			if ($comment !== false)
+			{
+				if ($token === "\n" || $token === "\r\n")
+				{
+					$comment = false;
+				}
+				else
+				{
+					unset($tokens[$i]);
+					$tokens[$comment] .= $token;
+				}
+			}
 
-        return array_values($tokens);
-    }
+			if (($comment === false) && ($token === "-"))
+			{
+				if (isset($tokens[$i + 1]) && $tokens[$i + 1] === "-")
+				{
+					$comment    = $i;
+					$tokens[$i] = "--";
+					$i++;
+					unset($tokens[$i]);
+					continue;
+				}
+			}
 
-    private function concatEscapeSequences($tokens) {
-        $tokenCount = count($tokens);
-        $i = 0;
-        while ($i < $tokenCount) {
+			$i++;
+		}
 
-            if ($this->endsWith($tokens[$i], "\\")) {
-                $i++;
-                if (isset($tokens[$i])) {
-                    $tokens[$i - 1] .= $tokens[$i];
-                    unset($tokens[$i]);
-                }
-            }
-            $i++;
-        }
-        return array_values($tokens);
-    }
+		return array_values($tokens);
+	}
 
-    private function balanceParenthesis($tokens) {
-        $token_count = count($tokens);
-        $i = 0;
-        while ($i < $token_count) {
-            if ($tokens[$i] !== '(') {
-                $i++;
-                continue;
-            }
-            $count = 1;
-            for ($n = $i + 1; $n < $token_count; $n++) {
-                $token = $tokens[$n];
-                if ($token === '(') {
-                    $count++;
-                }
-                if ($token === ')') {
-                    $count--;
-                }
-                $tokens[$i] .= $token;
-                unset($tokens[$n]);
-                if ($count === 0) {
-                    $n++;
-                    break;
-                }
-            }
-            $i = $n;
-        }
-        return array_values($tokens);
-    }
+	private function concatUserDefinedVariables($tokens)
+	{
+		$i       = 0;
+		$cnt     = count($tokens);
+		$userdef = false;
+
+		while ($i < $cnt)
+		{
+
+			if (!isset($tokens[$i]))
+			{
+				$i++;
+				continue;
+			}
+
+			$token = $tokens[$i];
+
+			if ($userdef !== false)
+			{
+				$tokens[$userdef] .= $token;
+				unset($tokens[$i]);
+				if ($token !== "@")
+				{
+					$userdef = false;
+				}
+			}
+
+			if ($userdef === false && $token === "@")
+			{
+				$userdef = $i;
+			}
+
+			$i++;
+		}
+
+		return array_values($tokens);
+	}
+
+	private function concatUserDefinedVariables($tokens)
+	{
+		$i       = 0;
+		$cnt     = count($tokens);
+		$userdef = false;
+
+		while ($i < $cnt)
+		{
+
+			if (!isset($tokens[$i]))
+			{
+				$i++;
+				continue;
+			}
+
+			$token = $tokens[$i];
+
+			if ($userdef !== false)
+			{
+				$tokens[$userdef] .= $token;
+				unset($tokens[$i]);
+				if ($token !== "@")
+				{
+					$userdef = false;
+				}
+			}
+
+			if ($userdef === false && $token === "@")
+			{
+				$userdef = $i;
+			}
+
+			$i++;
+		}
+
+		return array_values($tokens);
+	}
 }

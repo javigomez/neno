@@ -18,9 +18,10 @@ jimport('joomla.application.component.controllerform');
 class LingoControllerTranslation extends JControllerForm
 {
 
-    function __construct() {
-        $this->view_list = 'translations';
-        parent::__construct();
-    }
+	function __construct()
+	{
+		$this->view_list = 'translations';
+		parent::__construct();
+	}
 
 }

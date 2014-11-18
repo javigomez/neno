@@ -11,16 +11,16 @@
 defined('_JEXEC') or die;
 
 // Access check.
-if (!JFactory::getUser()->authorise('core.manage', 'com_lingo')) 
+if (!JFactory::getUser()->authorise('core.manage', 'com_lingo'))
 {
 	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
 // Include dependencies
 jimport('joomla.application.component.controller');
-require_once (JPATH_COMPONENT_ADMINISTRATOR.'/helpers/lingo.php');
-require_once (JPATH_COMPONENT_ADMINISTRATOR.'/helpers/debug.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/lingo.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/debug.php');
 
-$controller	= JControllerLegacy::getInstance('Lingo');
+$controller = JControllerLegacy::getInstance('Lingo');
 $controller->execute(JFactory::getApplication()->input->get('task'));
 $controller->redirect();

@@ -33,16 +33,19 @@ namespace PHPSQL\Exception;
 
 defined('JPATH_LINGO') or die;
 
-class InvalidParameter extends \InvalidArgumentException {
+class InvalidParameter extends \InvalidArgumentException
+{
 
 	protected $argument;
 
-	public function __construct($argument) {
+	public function __construct($argument)
+	{
 		$this->argument = $argument;
 		parent::__construct("no SQL string to parse: \n" . $argument, 10);
 	}
 
-	public function getArgument() {
+	public function getArgument()
+	{
 		return $this->argument;
 	}
 }

@@ -33,22 +33,26 @@ namespace PHPSQL\Exception;
 
 defined('JPATH_LINGO') or die;
 
-class UnableToCalculatePosition extends \PHPSQL\Exception\Exception {
+class UnableToCalculatePosition extends \PHPSQL\Exception\Exception
+{
 
 	protected $needle;
 	protected $haystack;
 
-	public function __construct($needle, $haystack) {
+	public function __construct($needle, $haystack)
+	{
 		$this->needle = $needle;
 		$this->haystack = $haystack;
 		parent::__construct("cannot calculate position of " . $needle . " within " . $haystack, 5);
 	}
 
-	public function getNeedle() {
+	public function getNeedle()
+	{
 		return $this->needle;
 	}
 
-	public function getHaystack() {
+	public function getHaystack()
+	{
 		return $this->haystack;
 	}
 }
