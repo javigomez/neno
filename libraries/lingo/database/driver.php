@@ -35,7 +35,7 @@ abstract class LingoDatabaseDriver extends JDatabaseDriver
 		// Get an option hash to identify the instance
 		$driverSignature = md5(serialize($options));
 
-		// Check if the driver has been already instanciated
+		// Check if the driver has been already instantiated
 		if (empty(self::$instances[$driverSignature]))
 		{
 

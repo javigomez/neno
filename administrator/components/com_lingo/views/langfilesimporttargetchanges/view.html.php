@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View class for a list of Lingo.
  */
-class LingoViewLangfilesimporttargetchanges extends JViewLegacy
+class LingoViewLangfilesImportTargetChanges extends JViewLegacy
 {
 
 	protected $items;

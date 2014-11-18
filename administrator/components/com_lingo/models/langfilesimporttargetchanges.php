@@ -15,7 +15,7 @@ require_once JPATH_COMPONENT_ADMINISTRATOR . '/models/langfiles.php';
 /**
  * Methods supporting a list of Lingo records.
  */
-class LingoModelLangfilesimporttargetchanges extends JModelList
+class LingoModelLangfilesImportTargetChanges extends JModelList
 {
 
 	/**

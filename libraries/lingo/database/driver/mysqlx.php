@@ -100,7 +100,7 @@ class LingoDatabaseDriverMysqlx extends CommonDriver
 	 * @param string  $shadowTable        Shadow table name
 	 * @param integer $autoincrementIndex Auto increment index
 	 *
-	 * @return boolean True on sucess, false otherwise
+	 * @return boolean True on success, false otherwise
 	 */
 	public function setAutoincrementIndex($shadowTable, $autoincrementIndex)
 	{

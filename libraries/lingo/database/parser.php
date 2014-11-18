@@ -1,10 +1,9 @@
 <?php
 
 /**
- * @package       Lingo
- * @subpackage    Database
- *
- * @copyright (c) 2014, Jensen Technologies S.L. All rights reserved
+ * @package    Lingo
+ * @subpackage Database
+ * @copyright  Copyright (C) 2014. All rights reserved.
  */
 defined('JPATH_LINGO') or die;
 
@@ -143,7 +142,7 @@ class LingoDatabaseParser
 	 *
 	 * @param array $fromStatement
 	 *
-	 * @return boolean True if it's a from statement, false othewise
+	 * @return boolean True if it's a from statement, false otherwise
 	 */
 	public static function isFromStatement(array $fromStatement)
 	{

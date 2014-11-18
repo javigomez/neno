@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View to edit
  */
-class LingoViewLangfilesimport extends JViewLegacy
+class LingoViewLangfilesImport extends JViewLegacy
 {
 
 	var $source_language = null;

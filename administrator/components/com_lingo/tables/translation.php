@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 /**
  * translation Table class
  */
-class LingoTabletranslation extends JTable
+class LingoTableTranslation extends JTable
 {
 
 	/**
@@ -73,9 +73,7 @@ class LingoTabletranslation extends JTable
 	}
 
 	/**
-	 * This function convert an array of JAccessRule objects into an rules array.
-	 *
-	 * @param type $jaccessrules an arrao of JAccessRule objects.
+	 * {@inheritdoc}
 	 */
 	private function JAccessRulestoArray($jaccessrules)
 	{
@@ -141,7 +139,7 @@ class LingoTabletranslation extends JTable
 			// Nothing to set publishing state on, return false.
 			else
 			{
-				$this->setError(JText::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
+				JFactory::getApplication()->enqueueMessage(JText::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'), 'error');
 
 				return false;
 			}
@@ -169,14 +167,6 @@ class LingoTabletranslation extends JTable
 		);
 		$this->_db->query();
 
-		// Check for a database error.
-		if ($this->_db->getErrorNum())
-		{
-			$this->setError($this->_db->getErrorMsg());
-
-			return false;
-		}
-
 		// If checkin is supported and all rows were adjusted, check them in.
 		if ($checkin && (count($pks) == $this->_db->getAffectedRows()))
 		{
@@ -192,8 +182,6 @@ class LingoTabletranslation extends JTable
 		{
 			$this->state = $state;
 		}
-
-		$this->setError('');
 
 		return true;
 	}

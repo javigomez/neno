@@ -196,6 +196,7 @@ class Lexer extends \PHPSQL\Parser\Utils
 
 		$cnt = count($tokens);
 		$i   = 0;
+
 		while ($i < $cnt)
 		{
 
@@ -204,6 +205,7 @@ class Lexer extends \PHPSQL\Parser\Utils
 				$i++;
 				continue;
 			}
+
 
 			if ($tokens[$i][0] === ".")
 			{
@@ -256,6 +258,7 @@ class Lexer extends \PHPSQL\Parser\Utils
 	{
 		$token_count = count($tokens);
 		$i           = 0;
+
 		while ($i < $token_count)
 		{
 			if ($tokens[$i] !== '(')
@@ -263,15 +266,18 @@ class Lexer extends \PHPSQL\Parser\Utils
 				$i++;
 				continue;
 			}
+
 			$count = 1;
+
 			for ($n = $i + 1; $n < $token_count; $n++)
 			{
 				$token = $tokens[$n];
+
 				if ($token === '(')
 				{
 					$count++;
 				}
-				if ($token === ')')
+				else if ($token === ')')
 				{
 					$count--;
 				}
@@ -386,44 +392,6 @@ class Lexer extends \PHPSQL\Parser\Utils
 					unset($tokens[$i]);
 					continue;
 				}
-			}
-
-			$i++;
-		}
-
-		return array_values($tokens);
-	}
-
-	private function concatUserDefinedVariables($tokens)
-	{
-		$i       = 0;
-		$cnt     = count($tokens);
-		$userdef = false;
-
-		while ($i < $cnt)
-		{
-
-			if (!isset($tokens[$i]))
-			{
-				$i++;
-				continue;
-			}
-
-			$token = $tokens[$i];
-
-			if ($userdef !== false)
-			{
-				$tokens[$userdef] .= $token;
-				unset($tokens[$i]);
-				if ($token !== "@")
-				{
-					$userdef = false;
-				}
-			}
-
-			if ($userdef === false && $token === "@")
-			{
-				$userdef = $i;
 			}
 
 			$i++;
