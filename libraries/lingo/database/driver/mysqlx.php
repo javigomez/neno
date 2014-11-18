@@ -35,17 +35,41 @@ class LingoDatabaseDriverMysqlx extends CommonDriver
 {
 
     /**
+     *  Lingo tables
+     * @var array
+     */
+    private static $lingoTables = array(
+        '#__lingo_langfile_translations'
+        , '#__lingo_langfile_source'
+        , '#__lingo_tables_information'
+        , '#__lingo_table_fields_information'
+    );
+
+    /**
+     * Tables configured to be translatable
+     * @var array
+     */
+    private $translatableTables;
+
+    /**
      * @inheritdoc
      */
     public function replacePrefix($sql, $prefix = '#__')
     {
+        // Get query type
         $queryType = LingoDatabaseParser::getQueryType($sql);
-        
-        // If the query is a select statement let's
-        if ($queryType === LingoDatabaseParser::SELECT_QUERY) {
-            $sql = LingoDatabaseParser::getCurrentShadowTableName($sql);
+
+        // Get table name 
+        $tableName = LingoDatabaseParser::getFromTableName($sql);
+
+        // If the query is a select statement let's get the sql query using its shadow table name
+        if (!in_array($tableName, self::$lingoTables)) {
+            if ($queryType === LingoDatabaseParser::SELECT_QUERY && $this->isTranslatable($tableName)) {
+                $sql = LingoDatabaseParser::getSqlQueryUsingShadowTable($sql);
+            }
         }
 
+        // Call to the parent replacePrefix
         return parent::replacePrefix($sql, $prefix);
     }
 
@@ -113,6 +137,32 @@ class LingoDatabaseDriverMysqlx extends CommonDriver
         if ($preservePreviousQuery) {
             $this->sql = $currentSql;
         }
+    }
+
+    /**
+     * Check if a table is translatable
+     * @param string $tableName
+     * @return boolean
+     */
+    public function isTranslatable($tableName)
+    {
+        return in_array($tableName, $this->translatableTables);
+    }
+
+    /**
+     * Refresh the translatable tables
+     * @return void
+     */
+    public function refreshTranslatableTables()
+    {
+        $query = $this->getQuery(true);
+        $query
+                ->select('table_name')
+                ->from('#__lingo_tables_information');
+
+        $this->executeQuery($query);
+
+        $this->translatableTables = $this->loadRowList('table_name');
     }
 
 }

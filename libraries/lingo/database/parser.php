@@ -51,26 +51,17 @@ class LingoDatabaseParser
      */
     const OTHER_QUERY = 6;
 
-    public static function getCurrentShadowTableName($sql)
+    /**
+     * Get the name of shadow table for a particular table
+     * @param string $sql
+     * @return string
+     */
+    public static function getSqlQueryUsingShadowTable($sql)
     {
-        $parser = new Parser();
-        $sqlElements = $parser->parse($sql);
+        $sqlElements = self::parseSql($sql);
         if (!empty($sqlElements['FROM'])) {
-            $fromStatements = $sqlElements['FROM'];
 
-            // Initialise variables
-            $found = false;
-            $fromTable = null;
-            $index = -1;
-
-            // Go through all the from statements (it includes both FROM and JOIN statements)
-            for ($i = 0; $i < count($fromStatements) && !$found; $i++) {
-                if ($fromStatements[$i]['join_type'] === 'JOIN' && $fromStatements[$i]['ref_type'] === false) {
-                    $fromTable = $fromStatements[$i];
-                    $found = true;
-                    $index = $i;
-                }
-            }
+            $fromTable = self::getRealFromStatement($sqlElements['FROM']);
 
             // If a from statement was found
             if ($fromTable !== null) {
@@ -81,9 +72,9 @@ class LingoDatabaseParser
                 // If it's not the same, let's append it to the table name
                 if ($languageCode !== '') {
 
-                    $fromTable['table'] = self::generateShadowTableName($fromTable['table'],
+                    $fromTable[1]['table'] = self::generateShadowTableName($fromTable['table'],
                                     $languageCode);
-                    $sqlElements['FROM'][$index] = $fromTable;
+                    $sqlElements['FROM'][$fromTable[0]] = $fromTable[1];
                 }
 
                 // Put together the query again
@@ -170,6 +161,81 @@ class LingoDatabaseParser
     private static function generateShadowTableName($tableName, $languageTag)
     {
         return '#__lingo_sh_' . $languageTag . '_' . self::cleanTableName($tableName);
+    }
+
+    /**
+     * Get table name of a particular query
+     * @param string $sql
+     * @return string|false
+     */
+    public static function getFromTableName($sql)
+    {
+        $sqlElements = self::parseSql($sql);
+        if (!empty($sqlElements['FROM'])) {
+
+            $fromTable = self::getRealFromStatement($sqlElements['FROM']);
+
+            // If a from statement was found
+            if ($fromTable !== null) {
+
+                return $fromTable[1]['table'];
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Parse SQL clause
+     * @param string $sql
+     * @return array
+     */
+    public static function parseSql($sql)
+    {
+        $parser = new Parser((string) $sql);
+        return $parser->parsed;
+    }
+
+    /**
+     * Get the real from statement
+     * @param array $fromStatements
+     * @return array|false [0 => From index, 1 => From data]
+     */
+    public static function getRealFromStatement(array $fromStatements)
+    {
+        // Initialise variables
+        $found = false;
+        $fromTable = null;
+        $index = -1;
+
+        // Go through all the from statements (it includes both FROM and JOIN statements)
+        for ($i = 0; $i < count($fromStatements) && !$found; $i++) {
+            if (self::isFromStatement($fromStatements[$i])) {
+                $fromTable = $fromStatements[$i];
+                $found = true;
+                $index = $i;
+            }
+        }
+
+        if ($fromTable !== null) {
+            return array($index, $fromTable);
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a from statement data is the real one.
+     * @param array $fromStatement
+     * @return boolean True if it's a from statement, false othewise
+     */
+    public static function isFromStatement(array $fromStatement)
+    {
+        if ($fromStatement['join_type'] === 'JOIN' && $fromStatement['ref_type'] === false) {
+            return true;
+        }
+
+        return false;
     }
 
 }

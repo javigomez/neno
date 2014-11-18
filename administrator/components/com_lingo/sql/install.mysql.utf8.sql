@@ -28,3 +28,22 @@ CREATE TABLE IF NOT EXISTS `#__lingo_langfile_source` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `SECONDARY` (`constant`,`extension`,`lang`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `#__lingo_tables_information` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `table_name` VARCHAR(255) NOT NULL,
+  `primary_key` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`)
+)ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `#__lingo_table_fields_information` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `table_id` INT NOT NULL,
+  `field` VARCHAR(45) NOT NULL,
+  `translate` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `table_id` (`table_id` ASC),
+  CONSTRAINT `fk_table_id` FOREIGN KEY (`table_id`)
+    REFERENCES `#__lingo_tables_information` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION
+)ENGINE = InnoDB

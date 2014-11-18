@@ -42,7 +42,8 @@ abstract class LingoDatabaseDriver extends JDatabaseDriver
 
             // Let's create our driver instance using the options given.s
             try {
-                $instance = new LingoDatabaseDriverMysqlx($options);
+                /* @var $instance LingoDatabaseDriverMysqlx  */
+                $instance = LingoDatabaseDriverMysqlx::getInstance($options);
             } catch (RuntimeException $ex) {
                 throw new RuntimeException(sprintf('Unable to connect to the database. Error: %s',
                         $ex->getMessage()));
@@ -50,6 +51,9 @@ abstract class LingoDatabaseDriver extends JDatabaseDriver
 
             // Save the instance into the instances set.
             self::$instances[$driverSignature] = $instance;
+
+            // Load the tables configured to be translatable
+            $instance->refreshTranslatableTables();
         }
 
         return self::$instances[$driverSignature];

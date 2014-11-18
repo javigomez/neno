@@ -37,6 +37,7 @@ class PlgSystemLingo extends JPlugin
                 // Register the Class prefix in the autoloader
                 LingoLoader::init();
 
+                // Load custom driver.
                 JFactory::$database = null;
                 JFactory::$database = LingoFactory::getDbo();
             }
