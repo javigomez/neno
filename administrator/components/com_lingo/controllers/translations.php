@@ -54,7 +54,7 @@ class LingoControllerTranslations extends JControllerAdmin
 	 * Proxy for getModel.
 	 * @since    1.6
 	 */
-	public function getModel($name = 'translation', $prefix = 'LingoModel')
+	public function getModel($name = 'translation', $prefix = 'LingoModel', $config = array())
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 
