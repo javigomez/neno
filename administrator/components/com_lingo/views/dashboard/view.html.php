@@ -19,29 +19,29 @@ class LingoViewDashboard extends JViewLegacy
 {
 
 
-	/**
-	 * Display the view
-	 */
-	public function display($tpl = null)
-	{
+    /**
+     * Display the view
+     */
+    public function display($tpl = null)
+    {
 
-		$this->addToolbar();
+        $this->addToolbar();
 
-		parent::display($tpl);
-	}
+        parent::display($tpl);
+    }
 
-	/**
-	 * Add the page title and toolbar.
-	 */
-	protected function addToolbar()
-	{
-		JFactory::getApplication()->input->set('hidemainmenu', true);
+    /**
+     * Add the page title and toolbar.
+     */
+    protected function addToolbar()
+    {
+        JFactory::getApplication()->input->set('hidemainmenu', true);
 
-		$user  = JFactory::getUser();
-		$canDo = LingoHelper::getActions();
+        $user  = JFactory::getUser();
+        $canDo = LingoHelper::getActions();
 
-		JToolBarHelper::title(JText::_('COM_LINGO_TITLE_DASHBOARD'), 'dashboard.png');
+        JToolBarHelper::title(JText::_('COM_LINGO_TITLE_DASHBOARD'), 'dashboard.png');
 
-	}
+    }
 
 }

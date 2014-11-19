@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 // Access check.
 if (!JFactory::getUser()->authorise('core.manage', 'com_lingo'))
 {
-	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
+    throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
 // Include dependencies
