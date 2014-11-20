@@ -1,12 +1,11 @@
 <?php
-
 /**
- * @author    Soren Beck Jensen <soren@notwebdesign.com>
- * @copyright Copyright (C) 2014. All rights reserved.
- * @license   GNU General Public License version 2 or later; see LICENSE.txt
- * @version   GIT: 1.0.0
- * @since     1.0.0
+ * @package     Lingo
+ * @subpackage  Views
  *
+ * @author      Jensen Technologies S.L. <info@notwebdesign.com>
+ * @copyright   Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 // No direct access
