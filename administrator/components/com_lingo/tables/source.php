@@ -30,66 +30,76 @@ class LingoTableSource extends JTable
 	/**
 	 * Overloaded bind function to pre-process the params.
 	 *
-	 * @param    array        Named array
+	 * @param   mixed  $src     An associative array or object to bind to the JTable instance.
+	 * @param   mixed  $ignore  An optional array or space separated list of properties to ignore while binding.
 	 *
-	 * @return    null|string    null is operation was satisfactory, otherwise returns an error
+	 * @return null|string null is operation was satisfactory, otherwise returns an error
+	 *
 	 * @see        JTable:bind
 	 * @since      1.5
 	 */
-	public function bind($array, $ignore = '')
+	public function bind($src, $ignore = '')
 	{
-
-		if ($array['id'] == 0)
+		if ($src['id'] == 0)
 		{
-			$array['time_added'] = date("Y-m-d H:i:s");
+			$src['time_added'] = date("Y-m-d H:i:s");
 		}
 
-		if (isset($array['params']) && is_array($array['params']))
+		if (isset($src['params']) && is_array($src['params']))
 		{
-			$registry = new JRegistry();
-			$registry->loadArray($array['params']);
-			$array['params'] = (string) $registry;
+			$registry = new JRegistry;
+			$registry->loadArray($src['params']);
+			$src['params'] = (string) $registry;
 		}
 
-		if (isset($array['metadata']) && is_array($array['metadata']))
+		if (isset($src['metadata']) && is_array($src['metadata']))
 		{
-			$registry = new JRegistry();
-			$registry->loadArray($array['metadata']);
-			$array['metadata'] = (string) $registry;
+			$registry = new JRegistry;
+			$registry->loadArray($src['metadata']);
+			$src['metadata'] = (string) $registry;
 		}
-		if (!JFactory::getUser()->authorise('core.admin', 'com_lingo.source.' . $array['id']))
+
+		if (!JFactory::getUser()->authorise('core.admin', 'com_lingo.source.' . $src['id']))
 		{
 			$actions         = JFactory::getACL()->getActions('com_lingo', 'source');
-			$default_actions = JFactory::getACL()->getAssetRules('com_lingo.source.' . $array['id'])->getData();
+			$default_actions = JFactory::getACL()->getAssetRules('com_lingo.source.' . $src['id'])->getData();
 			$array_jaccess   = array();
+
 			foreach ($actions as $action)
 			{
 				$array_jaccess[$action->name] = $default_actions[$action->name];
 			}
-			$array['rules'] = $this->JAccessRulesToArray($array_jaccess);
-		}
-		//Bind the rules for ACL where supported.
-		if (isset($array['rules']) && is_array($array['rules']))
-		{
-			$this->setRules($array['rules']);
+
+			$src['rules'] = $this->JAccessRulesToArray($array_jaccess);
 		}
 
-		return parent::bind($array, $ignore);
+		// Bind the rules for ACL where supported.
+		if (isset($src['rules']) && is_array($src['rules']))
+		{
+			$this->setRules($src['rules']);
+		}
+
+		return parent::bind($src, $ignore);
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * @param $jAccessRules
+	 *
+	 * @return array
 	 */
 	private function JAccessRulesToArray($jAccessRules)
 	{
 		$rules = array();
+
 		foreach ($jAccessRules as $action => $jaccess)
 		{
 			$actions = array();
+
 			foreach ($jaccess->getData() as $group => $allow)
 			{
 				$actions[$group] = ((bool) $allow);
 			}
+
 			$rules[$action] = $actions;
 		}
 
@@ -98,11 +108,12 @@ class LingoTableSource extends JTable
 
 	/**
 	 * Overloaded check function
+	 *
+	 * @return boolean
 	 */
 	public function check()
 	{
-
-		//If there is an ordering column and this is a new row then get the next ordering value
+		// If there is an ordering column and this is a new row then get the next ordering value
 		if (property_exists($this, 'ordering') && $this->id == 0)
 		{
 			$this->ordering = self::getNextOrder();
@@ -116,12 +127,13 @@ class LingoTableSource extends JTable
 	 * table.  The method respects checked out rows by other users and will attempt
 	 * to checkin rows that it can after adjustments are made.
 	 *
-	 * @param    mixed    An optional array of primary key values to update.  If not
-	 *                    set the instance property value is used.
-	 * @param    integer  The publishing state. eg. [0 = unpublished, 1 = published]
-	 * @param    integer  The user id of the user performing the operation.
+	 * @param   mixed    $pks     An optional array of primary key values to update.  If not
+	 *                            set the instance property value is used.
+	 * @param   integer  $state   The publishing state. eg. [0 = unpublished, 1 = published]
+	 * @param   integer  $userId  The user id of the user performing the operation.
 	 *
 	 * @return    boolean    True on success.
+	 *
 	 * @since    1.0.4
 	 */
 	public function publish($pks = null, $state = 1, $userId = 0)
@@ -191,18 +203,6 @@ class LingoTableSource extends JTable
 		return true;
 	}
 
-	public function delete($pk = null)
-	{
-		$this->load($pk);
-		$result = parent::delete($pk);
-		if ($result)
-		{
-
-		}
-
-		return $result;
-	}
-
 	/**
 	 * Define a namespace asset name for inclusion in the #__assets table
 	 *
@@ -218,19 +218,27 @@ class LingoTableSource extends JTable
 	}
 
 	/**
-	 * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key
-	 * field
+	 * {@inheritDoc}
 	 *
+	 * @param   JTable   $table  A JTable object for the asset parent.
+	 * @param   integer  $id     Id to look up
+	 *
+	 * @return  integer
+	 *
+	 * @since   11.1
 	 * @see JTable::_getAssetParentId
 	 */
 	protected function _getAssetParentId(JTable $table = null, $id = null)
 	{
 		// We will retrieve the parent-asset from the Asset-table
 		$assetParent = JTable::getInstance('Asset');
+
 		// Default: if no asset-parent can be found we take the global asset
 		$assetParentId = $assetParent->getRootId();
+
 		// The item has the component as asset-parent
 		$assetParent->loadByName('com_lingo');
+
 		// Return the found asset-parent-id
 		if ($assetParent->id)
 		{
@@ -239,5 +247,4 @@ class LingoTableSource extends JTable
 
 		return $assetParentId;
 	}
-
 }

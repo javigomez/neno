@@ -568,8 +568,6 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Load all language strings from the database
 	 *
-	 * @param string $lang eg. 'en-GB'
-	 *
 	 * @return array object list
 	 */
 	protected function getSourceLanguageStringsFromDatabase()
