@@ -29,21 +29,24 @@ CREATE TABLE IF NOT EXISTS `#__lingo_langfile_source` (
   UNIQUE KEY `SECONDARY` (`constant`,`extension`,`lang`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `#__lingo_tables_information` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `table_name` VARCHAR(255) NOT NULL,
-  `primary_key` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`)
-)ENGINE = InnoDB
+CREATE TABLE IF NOT EXISTS `#__lingo_manifest_tables` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`table_name` VARCHAR(255) NOT NULL,
+	`primary_key` VARCHAR(100) NOT NULL,
+	`enabled` TINYINT(1) NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `#__lingo_table_fields_information` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `table_id` INT NOT NULL,
-  `field` VARCHAR(45) NOT NULL,
-  `translate` TINYINT(1) NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `table_id` (`table_id` ASC),
-  CONSTRAINT `fk_table_id` FOREIGN KEY (`table_id`)
-    REFERENCES `#__lingo_tables_information` (`id`)
-    ON DELETE NO ACTION ON UPDATE NO ACTION
-)ENGINE = InnoDB
+CREATE TABLE IF NOT EXISTS `#__lingo_manifest_fields` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`table_id` INT NOT NULL,
+	`field` VARCHAR(100) NOT NULL,
+	`enabled` TINYINT(1) NOT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `fk_#__lingo_manifest_fields_#__lingo_manifest_tables1_idx` (`table_id` ASC),
+	CONSTRAINT `fk_#__lingo_manifest_fields_#__lingo_manifest_tables1`
+	FOREIGN KEY (`table_id`)
+	REFERENCES `#__lingo_manifest_tables` (`id`)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+) ENGINE = InnoDB;

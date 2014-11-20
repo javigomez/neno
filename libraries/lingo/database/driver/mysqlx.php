@@ -1,192 +1,191 @@
 <?php
 
 /**
- * @package       Lingo
- * @subpackage    Database
+ * @package     Lingo
+ * @subpackage  Database
  *
- * @copyright (c) 2014, Jensen Technologies S.L. All rights reserved
- * @license
+ * @copyright   Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // If the database type is mysqli, let's created a middle class that inherit from the Mysqli drive
 if (JFactory::getConfig()->get('dbtype') === 'mysqli')
 {
-    /**
-     * Class CommonDriver for Mysqli extension
-     */
-    class CommonDriver extends JDatabaseDriverMysqli
-    {
-
-    }
+	/**
+	 * Class CommonDriver for Mysqli extension
+	 *
+	 * @since  1.0
+	 */
+	class CommonDriver extends JDatabaseDriverMysqli
+	{
+	}
 }
 else
 {
-    // @TODO JDatabaseDriverMysql is already deprecated, so we should remove this class when the minimum PHP version don't support this extension
-    /**
-     * Class CommonDriver for Mysql extension
-     */
-    class CommonDriver extends JDatabaseDriverMysql
-    {
-
-    }
-
+	// @TODO JDatabaseDriverMysql is already deprecated, so we should remove this class when the minimum PHP version don't support this extension
+	/**
+	 * Class CommonDriver for Mysql extension
+	 *
+	 * @since  1.0
+	 */
+	class CommonDriver extends JDatabaseDriverMysql
+	{
+	}
 }
 
 /**
  * Database driver class extends from Joomla Platform Database Driver class
  *
- * @package    Lingo
- * @subpackage Database
- * @since      1.0
+ * @package     Lingo
+ * @subpackage  Database
+ * @since       1.0
  */
 class LingoDatabaseDriverMysqlx extends CommonDriver
 {
+	/**
+	 *  Lingo tables
+	 *
+	 * @var array
+	 */
+	private static $lingoTables = array(
+		'#__lingo_langfile_translations'
+	, '#__lingo_langfile_source'
+	, '#__lingo_tables_information'
+	, '#__lingo_table_fields_information'
+	);
 
-    /**
-     *  Lingo tables
-     * @var array
-     */
-    private static $lingoTables = array(
-        '#__lingo_langfile_translations'
-    , '#__lingo_langfile_source'
-    , '#__lingo_tables_information'
-    , '#__lingo_table_fields_information'
-    );
+	/**
+	 * Tables configured to be translatable
+	 *
+	 * @var array
+	 */
+	private $translatableTables;
 
-    /**
-     * Tables configured to be translatable
-     * @var array
-     */
-    private $translatableTables;
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param   string  $sql     SQL Query
+	 * @param   string  $prefix  Prefix to replace.
+	 *
+	 * @return string
+	 *
+	 * @since 1.0
+	 */
+	public function replacePrefix($sql, $prefix = '#__')
+	{
+		// Get query type
+		$queryType = LingoDatabaseParser::getQueryType($sql);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function replacePrefix($sql, $prefix = '#__')
-    {
-        // Get query type
-        $queryType = LingoDatabaseParser::getQueryType($sql);
+		// Get table name
+		$tableName = LingoDatabaseParser::getFromTableName($sql);
 
-        // Get table name
-        $tableName = LingoDatabaseParser::getFromTableName($sql);
+		// If the query is a select statement let's get the sql query using its shadow table name
+		if (!in_array($tableName, self::$lingoTables))
+		{
+			if ($queryType === LingoDatabaseParser::SELECT_QUERY && $this->isTranslatable($tableName))
+			{
+				$sql = LingoDatabaseParser::getSqlQueryUsingShadowTable($sql);
+			}
+		}
 
-        // If the query is a select statement let's get the sql query using its shadow table name
-        if (!in_array($tableName, self::$lingoTables))
-        {
-            if ($queryType === LingoDatabaseParser::SELECT_QUERY && $this->isTranslatable($tableName))
-            {
-                $sql = LingoDatabaseParser::getSqlQueryUsingShadowTable($sql);
-            }
-        }
+		// Call to the parent replacePrefix
+		return parent::replacePrefix($sql, $prefix);
+	}
 
-        // Call to the parent replacePrefix
-        return parent::replacePrefix($sql, $prefix);
-    }
+	/**
+	 * Check if a table is translatable
+	 *
+	 * @param   string  $tableName  Table name
+	 *
+	 * @return boolean
+	 *
+	 * @since 1.0
+	 */
+	public function isTranslatable($tableName)
+	{
+		return in_array($tableName, $this->translatableTables);
+	}
 
-    /**
-     * Check if a table is translatable
-     *
-     * @param string $tableName
-     *
-     * @return boolean
-     */
-    public function isTranslatable($tableName)
-    {
-        return in_array($tableName, $this->translatableTables);
-    }
+	/**
+	 * Set Autoincrement index in a shadow table
+	 *
+	 * @param   string  $originalTable  Original table name
+	 * @param   string  $shadowTable    Shadow table name
+	 *
+	 * @return boolean True on success, false otherwise
+	 */
+	public function setAutoincrementIndex($originalTable, $shadowTable)
+	{
+		// Create a new query object
+		$query = $this->getQuery(true);
 
-    /**
-     * Set Autoincrement index in a shadow table
-     *
-     * @param string  $shadowTable        Shadow table name
-     * @param integer $autoincrementIndex Auto increment index
-     *
-     * @return boolean True on success, false otherwise
-     */
-    public function setAutoincrementIndex($shadowTable, $autoincrementIndex)
-    {
-        $sql = 'ALTER TABLE ' . $shadowTable . ' AUTO_INCREMENT=' . intval($autoincrementIndex);
-        try
-        {
-            $this->executeQuery($sql);
+		$query
+			->select($this->quoteName('AUTO_INCREMENT'))
+			->from('INFORMATION_SCHEMA.TABLES')
+			->where(
+				array(
+					'TABLE_SCHEMA = ' . $this->quote($this->getDatabase()),
+					'TABLE_NAME = ' . $this->quote($originalTable)
+				)
+			);
 
-            return true;
-        }
-        catch (RuntimeException $ex)
-        {
-            return false;
-        }
-    }
+		$sql = 'ALTER TABLE ' . $shadowTable . ' AUTO_INCREMENT=(' . (string) $query . ')';
 
-    /**
-     * Execute a sql preventing to lose the query previously assigned.
-     *
-     * @param mixed   $sql                   JDatabaseQuery object or SQL query
-     * @param boolean $preservePreviousQuery True if the previous query will be saved before, false otherwise
-     *
-     * @return void
-     */
-    public function executeQuery($sql, $preservePreviousQuery = true)
-    {
+		try
+		{
+			$this->executeQuery($sql);
 
-        $currentSql = null;
+			return true;
+		}
+		catch ( RuntimeException $ex )
+		{
+			return false;
+		}
+	}
 
-        // If the flag is activated, let's keep it save
-        if ($preservePreviousQuery)
-        {
-            $currentSql = $this->sql;
-        }
+	/**
+	 * Execute a sql preventing to lose the query previously assigned.
+	 *
+	 * @param   mixed    $sql                    JDatabaseQuery object or SQL query
+	 * @param   boolean  $preservePreviousQuery  True if the previous query will be saved before, false otherwise
+	 *
+	 * @return void
+	 *
+	 * @since 1.0
+	 */
+	public function executeQuery($sql, $preservePreviousQuery = true)
+	{
+		$currentSql = null;
 
-        $this->sql = $sql;
-        $this->execute();
+		// If the flag is activated, let's keep it save
+		if ($preservePreviousQuery)
+		{
+			$currentSql = $this->sql;
+		}
 
-        // If the flag is activated, let's assign to the sql property again.
-        if ($preservePreviousQuery)
-        {
-            $this->sql = $currentSql;
-        }
-    }
+		$this->sql = $sql;
+		$this->execute();
 
-    /**
-     * Get Autoincrement index from a particular table
-     *
-     * @param string $tableName
-     *
-     * @return integer Autoincrement index
-     */
-    public function getAutoincrementIndex($tableName)
-    {
-        // Create a new query object
-        $query = $this->getQuery(true);
+		// If the flag is activated, let's assign to the sql property again.
+		if ($preservePreviousQuery)
+		{
+			$this->sql = $currentSql;
+		}
+	}
 
-        $query
-            ->select($this->quoteName('AUTO_INCREMENT'))
-            ->from('INFORMATION_SCHEMA.TABLES')
-            ->where(
-                array(
-                    'TABLE_SCHEMA = ' . $this->quote($this->getDatabase()),
-                    'TABLE_NAME = ' . $this->quote($tableName)
-                )
-            );
+	/**
+	 * Refresh the translatable tables
+	 *
+	 * @return void
+	 */
+	public function refreshTranslatableTables()
+	{
+		$query = $this->getQuery(true);
+		$query
+			->select('table_name')
+			->from('#__lingo_tables_information');
 
-        $this->executeQuery($query);
+		$this->executeQuery($query);
 
-        return intval($this->loadResult());
-    }
-
-    /**
-     * Refresh the translatable tables
-     * @return void
-     */
-    public function refreshTranslatableTables()
-    {
-        $query = $this->getQuery(true);
-        $query
-            ->select('table_name')
-            ->from('#__lingo_tables_information');
-
-        $this->executeQuery($query);
-
-        $this->translatableTables = $this->loadRowList('table_name');
-    }
-
+		$this->translatableTables = $this->loadRowList('table_name');
+	}
 }

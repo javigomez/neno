@@ -17,81 +17,83 @@ jimport('joomla.log.log');
 class LingoDebug extends JLog
 {
 
-    /**
-     * A static method that allows logging of errors and messages
-     *
-     * @param string $string          The log line that should be saved
-     * @param int    $level           1=error, 2=info, 3=debug
-     * @param bool   $display_message Weather or not the logged message should be displayed to the user
-     *
-     * @return bool true on success
-     */
-    public static function log($string, $level = 2, $display_message = false)
-    {
+	/**
+	 * A static method that allows logging of errors and messages
+	 *
+	 * @param string $string          The log line that should be saved
+	 * @param int    $level           1=error, 2=info, 3=debug
+	 * @param bool   $display_message Weather or not the logged message should be displayed to the user
+	 *
+	 * @return bool true on success
+	 */
+	public static function log($string, $level = 2, $display_message = false)
+	{
 
-        //Add an extra tab to debug messages
-        if ($level > 2)
-        {
-            $string = "\t" . $string;
-        }
+		//Add an extra tab to debug messages
+		if ($level > 2)
+		{
+			$string = "\t" . $string;
+		}
 
-        //Get jLog priority
-        $priority = self::getJlogPriorityFromDebugLevel($level);
+		//Get jLog priority
+		$priority = self::getJlogPriorityFromDebugLevel($level);
 
-        //Setup the logging method
-        self::setLogMethod();
+		//Setup the logging method
+		self::setLogMethod();
 
-        //Add the log entry
-        self::add($string, $priority, 'com_lingo');
+		//Add the log entry
+		self::add($string, $priority, 'com_lingo');
 
-        //Show message
-        if ($display_message === true)
-        {
-            JFactory::getApplication()->enqueueMessage($string);
-        }
+		//Show message
+		if ($display_message === true)
+		{
+			JFactory::getApplication()->enqueueMessage($string);
+		}
 
-        return true;
+		return true;
 
-    }
+	}
 
-    /**
-     * Convert our simple priority 1,2,3 to appropriate jLog error integer
-     *
-     * @param $priority 1,2 or 3
-     *
-     * @return int Jlog priority integer
-     */
-    private static function getJlogPriorityFromDebugLevel($priority)
-    {
+	/**
+	 * Convert our simple priority 1,2,3 to appropriate jLog error integer
+	 *
+	 * @param $priority 1,2 or 3
+	 *
+	 * @return int Jlog priority integer
+	 */
+	private static function getJlogPriorityFromDebugLevel($priority)
+	{
 
-        if ($priority == 1)
-        {
-            return self::ERROR;
-        }
-        else if ($priority == 2)
-        {
-            return self::INFO;
-        }
-        else
-        {
-            return self::DEBUG;
-        }
+		if ($priority == 1)
+		{
+			return self::ERROR;
+		}
+		else
+		{
+			if ($priority == 2)
+			{
+				return self::INFO;
+			}
+			else
+			{
+				return self::DEBUG;
+			}
+		}
 
-    }
+	}
 
-    public static function setLogMethod()
-    {
+	public static function setLogMethod()
+	{
 
-        $options['text_entry_format'] = "{DATETIME}\t{PRIORITY}\t\t{MESSAGE}";
-        $options['text_file']         = 'lingo_log.php';
+		$options['text_entry_format'] = "{DATETIME}\t{PRIORITY}\t\t{MESSAGE}";
+		$options['text_file']         = 'lingo_log.php';
 
-        self::addLogger(
-            $options
-            , self::ALL
-            , array('com_lingo')
-        );
+		self::addLogger(
+			$options
+			, self::ALL
+			, array( 'com_lingo' )
+		);
 
-    }
-
+	}
 
 }
