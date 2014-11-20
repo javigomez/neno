@@ -29,9 +29,11 @@ class LingoTableTranslation extends JTable
 	/**
 	 * Overloaded bind function to pre-process the params.
 	 *
-	 * @param    array        Named array
+	 * @param   array   $array   Named array
+	 * @param   string  $ignore  Fields to be ignored.
 	 *
 	 * @return    null|string    null is operation was satisfactory, otherwise returns an error
+	 *
 	 * @see        JTable:bind
 	 * @since      1.5
 	 */
@@ -60,7 +62,7 @@ class LingoTableTranslation extends JTable
 			{
 				$array_jaccess[$action->name] = $default_actions[$action->name];
 			}
-			$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
+			$array['rules'] = $this->JAccessRulesToArray($array_jaccess);
 		}
 		//Bind the rules for ACL where supported.
 		if (isset($array['rules']) && is_array($array['rules']))
@@ -74,10 +76,10 @@ class LingoTableTranslation extends JTable
 	/**
 	 * {@inheritdoc}
 	 */
-	private function JAccessRulestoArray($jaccessrules)
+	private function JAccessRulesToArray($jAccessRules)
 	{
 		$rules = array();
-		foreach ($jaccessrules as $action => $jaccess)
+		foreach ($jAccessRules as $action => $jaccess)
 		{
 			$actions = array();
 			foreach ($jaccess->getData() as $group => $allow)
@@ -96,7 +98,7 @@ class LingoTableTranslation extends JTable
 	public function check()
 	{
 
-		//If there is an ordering column and this is a new row then get the next ordering value
+		// If there is an ordering column and this is a new row then get the next ordering value
 		if (property_exists($this, 'ordering') && $this->id == 0)
 		{
 			$this->ordering = self::getNextOrder();
@@ -110,12 +112,13 @@ class LingoTableTranslation extends JTable
 	 * table.  The method respects checked out rows by other users and will attempt
 	 * to checkin rows that it can after adjustments are made.
 	 *
-	 * @param    mixed    An optional array of primary key values to update.  If not
-	 *                    set the instance property value is used.
-	 * @param    integer  The publishing state. eg. [0 = unpublished, 1 = published]
-	 * @param    integer  The user id of the user performing the operation.
+	 * @param   mixed    $pks     An optional array of primary key values to update.  If not
+	 *                            set the instance property value is used.
+	 * @param   integer  $state   The publishing state. eg. [0 = unpublished, 1 = published]
+	 * @param   integer  $userId  The user id of the user performing the operation.
 	 *
 	 * @return    boolean    True on success.
+	 *
 	 * @since    1.0.4
 	 */
 	public function publish($pks = null, $state = 1, $userId = 0)
@@ -198,7 +201,7 @@ class LingoTableTranslation extends JTable
 	}
 
 	/**
-	 * Define a namespaced asset name for inclusion in the #__assets table
+	 * Define a namespace asset name for inclusion in the #__assets table
 	 *
 	 * @return string The asset name
 	 *

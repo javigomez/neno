@@ -81,7 +81,7 @@ class com_lingoInstallerScript
 			}
 			else
 			{
-				$app->enqueueMessage(JText::_('Structure file wasn\'t found.'));
+				$app->enqueueMessage(JText::_('Structure file was not found.'));
 			}
 		}
 	}
@@ -113,7 +113,7 @@ class com_lingoInstallerScript
 						try
 						{
 							$db->execute();
-							$app->enqueueMessage(JText::sprintf('Table `%s` has been succesfully created',
+							$app->enqueueMessage(JText::sprintf('Table `%s` has been successfully created',
 								(string) $table['table_name']));
 							$table_added = true;
 						} catch ( Exception $ex )
@@ -133,7 +133,7 @@ class com_lingoInstallerScript
 						{
 							$db->renameTable($table['old_name'],
 								$table['new_name']);
-							$app->enqueueMessage(JText::sprintf('Table `%s` was succesfully renamed to `%s`',
+							$app->enqueueMessage(JText::sprintf('Table `%s` was successfully renamed to `%s`',
 								$table['old_name'],
 								$table['new_name']));
 						} catch ( Exception $ex )
@@ -155,7 +155,7 @@ class com_lingoInstallerScript
 							try
 							{
 								$db->execute();
-								$app->enqueueMessage(JText::sprintf('Table `%s` has been succesfully created',
+								$app->enqueueMessage(JText::sprintf('Table `%s` has been successfully created',
 									$table['table_name']));
 								$table_added = true;
 							} catch ( Exception $ex )
@@ -173,7 +173,7 @@ class com_lingoInstallerScript
 					{
 						//We make sure that the table will be removed only if it exists specifying ifExists argument as true.
 						$db->dropTable($table['table_name'], true);
-						$app->enqueueMessage(JText::sprintf('Table `%s` was succesfully deleted',
+						$app->enqueueMessage(JText::sprintf('Table `%s` was successfully deleted',
 							$table['table_name']));
 					} catch ( Exception $ex )
 					{
@@ -315,14 +315,14 @@ class com_lingoInstallerScript
 	 */
 	private function allowsLengthField($field_type)
 	{
-		$allow_lenght = array(
+		$allow_length = array(
 			'INT', 'VARCHAR', 'CHAR',
 			'TINYINT', 'SMALLINT', 'MEDIUMINT',
 			'INTEGER', 'BIGINT', 'FLOAT',
 			'DOUBLE', 'DECIMAL', 'NUMERIC'
 		);
 
-		return (in_array((string) $field_type, $allow_lenght));
+		return (in_array((string) $field_type, $allow_length));
 	}
 
 	/**
@@ -359,7 +359,7 @@ class com_lingoInstallerScript
 					$result = $this->addField($table_name, $field);
 					if ($result === MODIFIED)
 					{
-						$app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully added',
+						$app->enqueueMessage(JText::sprintf('Field `%s` has been successfully added',
 							$field['field_name']));
 					}
 					else
@@ -386,7 +386,7 @@ class com_lingoInstallerScript
 							try
 							{
 								$db->execute();
-								$app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully modified',
+								$app->enqueueMessage(JText::sprintf('Field `%s` has been successfully modified',
 									$field['old_name']));
 							} catch ( Exception $ex )
 							{
@@ -400,7 +400,7 @@ class com_lingoInstallerScript
 							$result = $this->addField($table_name, $field);
 							if ($result === MODIFIED)
 							{
-								$app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully modified',
+								$app->enqueueMessage(JText::sprintf('Field `%s` has been successfully modified',
 									$field['field_name']));
 							}
 							else
@@ -419,7 +419,7 @@ class com_lingoInstallerScript
 						$result = $this->addField($table_name, $field);
 						if ($result === MODIFIED)
 						{
-							$app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully added',
+							$app->enqueueMessage(JText::sprintf('Field `%s` has been successfully added',
 								$field['field_name']));
 						}
 						else
@@ -445,7 +445,7 @@ class com_lingoInstallerScript
 						try
 						{
 							$db->execute();
-							$app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully deleted',
+							$app->enqueueMessage(JText::sprintf('Field `%s` has been successfully deleted',
 								$field['field_name']));
 						} catch ( Exception $ex )
 						{
@@ -463,7 +463,7 @@ class com_lingoInstallerScript
 			$result = $this->addField($table_name, $field);
 			if ($result === MODIFIED)
 			{
-				$app->enqueueMessage(JText::sprintf('Field `%s` has been succesfully added',
+				$app->enqueueMessage(JText::sprintf('Field `%s` has been successfully added',
 					$field['field_name']));
 			}
 			else
@@ -621,11 +621,11 @@ class com_lingoInstallerScript
 
 			foreach ($plugins->children() as $plugin)
 			{
-				$pname     = (string) $plugin['plugin'];
-				$pgroup    = (string) $plugin['group'];
-				$path      = $installation_folder . '/plugins/' . $pgroup;
+				$pluginName     = (string) $plugin['plugin'];
+				$pluginGroup    = (string) $plugin['group'];
+				$path      = $installation_folder . '/plugins/' . $pluginGroup;
 				$installer = new JInstaller;
-				if (!$this->isAlreadyInstalled('plugin', $pname, $pgroup))
+				if (!$this->isAlreadyInstalled('plugin', $pluginName, $pluginGroup))
 				{
 					$result = $installer->install($path);
 				}
@@ -636,11 +636,11 @@ class com_lingoInstallerScript
 
 				if ($result)
 				{
-					$app->enqueueMessage('Plugin ' . $pname . ' was installed successfully');
+					$app->enqueueMessage('Plugin ' . $pluginName . ' was installed successfully');
 				}
 				else
 				{
-					$app->enqueueMessage('There was an issue installing the plugin ' . $pname,
+					$app->enqueueMessage('There was an issue installing the plugin ' . $pluginName,
 						'error');
 				}
 
@@ -651,8 +651,8 @@ class com_lingoInstallerScript
 					->where(
 						array(
 							'type LIKE ' . $db->quote('plugin'),
-							'element LIKE ' . $db->quote($pname),
-							'folder LIKE ' . $db->quote($pgroup)
+							'element LIKE ' . $db->quote($pluginName),
+							'folder LIKE ' . $db->quote($pluginGroup)
 						)
 					);
 				$db->setQuery($query);
@@ -771,8 +771,8 @@ class com_lingoInstallerScript
 
 			foreach ($plugins->children() as $plugin)
 			{
-				$pname  = (string) $plugin['plugin'];
-				$pgroup = (string) $plugin['group'];
+				$pluginName  = (string) $plugin['plugin'];
+				$pluginGroup = (string) $plugin['group'];
 				$query
 					->clear()
 					->select('extension_id')
@@ -780,8 +780,8 @@ class com_lingoInstallerScript
 					->where(
 						array(
 							'type LIKE ' . $db->quote('plugin'),
-							'element LIKE ' . $db->quote($pname),
-							'folder LIKE ' . $db->quote($pgroup)
+							'element LIKE ' . $db->quote($pluginName),
+							'folder LIKE ' . $db->quote($pluginGroup)
 						)
 					);
 				$db->setQuery($query);
@@ -792,11 +792,11 @@ class com_lingoInstallerScript
 					$result    = $installer->uninstall('plugin', $extension);
 					if ($result)
 					{
-						$app->enqueueMessage('Plugin ' . $pname . ' was uninstalled successfully');
+						$app->enqueueMessage('Plugin ' . $pluginName . ' was uninstalled successfully');
 					}
 					else
 					{
-						$app->enqueueMessage('There was an issue uninstalling the plugin ' . $pname,
+						$app->enqueueMessage('There was an issue uninstalling the plugin ' . $pluginName,
 							'error');
 					}
 				}

@@ -136,10 +136,10 @@ class LingoModelSources extends JModelList
 
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering');
-		$orderDirn = $this->state->get('list.direction');
-		if ($orderCol && $orderDirn)
+		$orderDirection = $this->state->get('list.direction');
+		if ($orderCol && $orderDirection)
 		{
-			$query->order($db->escape($orderCol . ' ' . $orderDirn));
+			$query->order($db->escape($orderCol . ' ' . $orderDirection));
 		}
 
 		return $query;

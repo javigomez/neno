@@ -36,7 +36,7 @@ class LingoDebug extends JLog
 		}
 
 		//Get jLog priority
-		$priority = self::getJlogPriorityFromDebugLevel($level);
+		$priority = self::getJLogPriorityFromDebugLevel($level);
 
 		//Setup the logging method
 		self::setLogMethod();
@@ -59,9 +59,9 @@ class LingoDebug extends JLog
 	 *
 	 * @param $priority 1,2 or 3
 	 *
-	 * @return int Jlog priority integer
+	 * @return int JLog priority integer
 	 */
-	private static function getJlogPriorityFromDebugLevel($priority)
+	private static function getJLogPriorityFromDebugLevel($priority)
 	{
 
 		if ($priority == 1)

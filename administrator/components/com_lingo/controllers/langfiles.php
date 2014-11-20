@@ -55,7 +55,7 @@ class LingoControllerLangfiles extends JControllerLegacy
 	/**
 	 * Move strings from files to database
 	 */
-	public function pulltargetstrings()
+	public function pullTargetStrings()
 	{
 		$cid = JFactory::getApplication()->input->post->get('cid', array(), 'array');
 
@@ -69,7 +69,7 @@ class LingoControllerLangfiles extends JControllerLegacy
 	/**
 	 * Move strings from database to files
 	 */
-	public function pushtargetstrings()
+	public function pushTargetStrings()
 	{
 		$cid = JFactory::getApplication()->input->post->get('cid', array(), 'array');
 

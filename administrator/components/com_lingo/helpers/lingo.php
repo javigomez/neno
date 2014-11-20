@@ -54,7 +54,7 @@ class LingoHelper
 	}
 
 	/**
-	 * Configure the Linkbar.
+	 * Configure the Link bar.
 	 */
 	public static function addSubmenu($vName = '')
 	{

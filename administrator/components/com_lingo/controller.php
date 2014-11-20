@@ -16,7 +16,7 @@ class LingoController extends JControllerLegacy
 	/**
 	 * {@inheritdoc}
 	 */
-	public function display($cachable = false, $urlparams = false)
+	public function display($cachable = false, $urlparams = array())
 	{
 
 		require_once JPATH_COMPONENT . '/helpers/lingo.php';

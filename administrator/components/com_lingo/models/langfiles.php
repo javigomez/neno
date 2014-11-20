@@ -746,20 +746,20 @@ class LingoModelLangfiles extends JModelLegacy
 		}
 
 		//Split by : to separate file name and constant
-		$keyparts         = explode(':', $key);
-		$file_name        = $keyparts[0];
-		$info['constant'] = $keyparts[1];
+		$keyParts         = explode(':', $key);
+		$file_name        = $keyParts[0];
+		$info['constant'] = $keyParts[1];
 
 		//Split the file name by . for additional information
-		$fileparts         = explode('.', $file_name);
-		$info['extension'] = $fileparts[0];
+		$fileParts         = explode('.', $file_name);
+		$info['extension'] = $fileParts[0];
 
 		//Add .sys and other file parts to the name
-		foreach ($fileparts as $k => $filepart)
+		foreach ($fileParts as $k => $filePart)
 		{
-			if ($k > 0 && $filepart != 'ini')
+			if ($k > 0 && $filePart != 'ini')
 			{
-				$info['extension'] .= '.' . $filepart;
+				$info['extension'] .= '.' . $filePart;
 			}
 		}
 
@@ -958,7 +958,7 @@ class LingoModelLangfiles extends JModelLegacy
 
 	/**
 	 * Import translations from language files
-	 * This is quite complicated as it involvescomparing file language strings, source language strings and
+	 * This is quite complicated as it involves comparing file language strings, source language strings and
 	 * target language strings in multiple languages
 	 * To do this properly a few steps are used.
 	 * 1. Deal with one target language at a time
@@ -991,7 +991,7 @@ class LingoModelLangfiles extends JModelLegacy
 	}
 
 	/**
-	 * Finds language files for a given language, extention and replaces the constant with string in each of them
+	 * Finds language files for a given language extension and replaces the constant with string in each of them
 	 *
 	 * @param string $lang
 	 * @param string $extension
@@ -1029,7 +1029,7 @@ class LingoModelLangfiles extends JModelLegacy
 	}
 
 	/**
-	 * Loook for language files for a specific extension in various directories
+	 * Look for language files for a specific extension in various directories
 	 *
 	 * @param string $lang
 	 * @param string $extension
@@ -1043,7 +1043,7 @@ class LingoModelLangfiles extends JModelLegacy
 		//Look for a matching file
 		$file_name = $lang . '.' . $extension . '.ini';
 
-		//Look for lanuguage files in these paths
+		//Look for language files in these paths
 		$folders = $this->getLanguageFileFolders($extension);
 
 		foreach ($folders as $folder)

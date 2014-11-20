@@ -22,13 +22,13 @@ $document->addStyleSheet('components/com_lingo/assets/css/lingo.css');
 $user      = JFactory::getUser();
 $userId    = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
-$listDirn  = $this->state->get('list.direction');
+$listDirection  = $this->state->get('list.direction');
 $canOrder  = $user->authorise('core.edit.state', 'com_lingo');
 $saveOrder = $listOrder == 'a.ordering';
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_lingo&task=sources.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'sourceList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	JHtml::_('sortablelist.sortable', 'sourceList', 'adminForm', strtolower($listDirection), $saveOrderingUrl);
 }
 $sortFields = $this->getSortFields();
 ?>
@@ -91,12 +91,12 @@ if (!empty($this->extra_sidebar))
 		<select name="directionTable" id="directionTable" class="input-medium" onchange="Joomla.orderTable()">
 			<option value=""><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></option>
 			<option
-				value="asc" <?php if ($listDirn == 'asc')
+				value="asc" <?php if ($listDirection == 'asc')
 			{
 				echo 'selected="selected"';
 			} ?>><?php echo JText::_('JGLOBAL_ORDER_ASCENDING'); ?></option>
 			<option
-				value="desc" <?php if ($listDirn == 'desc')
+				value="desc" <?php if ($listDirection == 'desc')
 			{
 				echo 'selected="selected"';
 			} ?>><?php echo JText::_('JGLOBAL_ORDER_DESCENDING'); ?></option>
@@ -116,7 +116,7 @@ if (!empty($this->extra_sidebar))
 	<tr>
 		<?php if (isset($this->items[0]->ordering)): ?>
 			<th width="1%" class="nowrap center hidden-phone">
-				<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+				<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirection, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
 			</th>
 		<?php endif; ?>
 		<th width="1%" class="hidden-phone">
@@ -125,39 +125,39 @@ if (!empty($this->extra_sidebar))
 		</th>
 		<?php if (isset($this->items[0]->state)): ?>
 			<th width="1%" class="nowrap center">
-				<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
+				<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirection, $listOrder); ?>
 			</th>
 		<?php endif; ?>
 
 		<th class='left'>
-			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_STRING', 'a.string', $listDirn, $listOrder); ?>
+			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_STRING', 'a.string', $listDirection, $listOrder); ?>
 		</th>
 		<th class='left'>
-			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_CONSTANT', 'a.constant', $listDirn, $listOrder); ?>
+			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_CONSTANT', 'a.constant', $listDirection, $listOrder); ?>
 		</th>
 		<th class='left'>
-			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_LANG', 'a.lang', $listDirn, $listOrder); ?>
+			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_LANG', 'a.lang', $listDirection, $listOrder); ?>
 		</th>
 		<th class='left'>
-			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_EXTENSION', 'a.extension', $listDirn, $listOrder); ?>
+			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_EXTENSION', 'a.extension', $listDirection, $listOrder); ?>
 		</th>
 		<th class='left'>
-			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_TIME_ADDED', 'a.time_added', $listDirn, $listOrder); ?>
+			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_TIME_ADDED', 'a.time_added', $listDirection, $listOrder); ?>
 		</th>
 		<th class='left'>
-			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_TIME_CHANGED', 'a.time_changed', $listDirn, $listOrder); ?>
+			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_TIME_CHANGED', 'a.time_changed', $listDirection, $listOrder); ?>
 		</th>
 		<th class='left'>
-			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_TIME_DELETED', 'a.time_deleted', $listDirn, $listOrder); ?>
+			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_TIME_DELETED', 'a.time_deleted', $listDirection, $listOrder); ?>
 		</th>
 		<th class='left'>
-			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_VERSION', 'a.version', $listDirn, $listOrder); ?>
+			<?php echo JHtml::_('grid.sort', 'COM_LINGO_SOURCES_VERSION', 'a.version', $listDirection, $listOrder); ?>
 		</th>
 
 
 		<?php if (isset($this->items[0]->id)): ?>
 			<th width="1%" class="nowrap center hidden-phone">
-				<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+				<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirection, $listOrder); ?>
 			</th>
 		<?php endif; ?>
 	</tr>
@@ -274,7 +274,7 @@ if (!empty($this->extra_sidebar))
 <input type="hidden" name="task" value="" />
 <input type="hidden" name="boxchecked" value="0" />
 <input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
+<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirection; ?>" />
 <?php echo JHtml::_('form.token'); ?>
 </div>
 </form>        

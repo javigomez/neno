@@ -65,7 +65,7 @@ class LingoTableSource extends JTable
 			{
 				$array_jaccess[$action->name] = $default_actions[$action->name];
 			}
-			$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
+			$array['rules'] = $this->JAccessRulesToArray($array_jaccess);
 		}
 		//Bind the rules for ACL where supported.
 		if (isset($array['rules']) && is_array($array['rules']))
@@ -79,10 +79,10 @@ class LingoTableSource extends JTable
 	/**
 	 * {@inheritdoc}
 	 */
-	private function JAccessRulestoArray($jaccessrules)
+	private function JAccessRulesToArray($jAccessRules)
 	{
 		$rules = array();
-		foreach ($jaccessrules as $action => $jaccess)
+		foreach ($jAccessRules as $action => $jaccess)
 		{
 			$actions = array();
 			foreach ($jaccess->getData() as $group => $allow)
@@ -203,7 +203,7 @@ class LingoTableSource extends JTable
 	}
 
 	/**
-	 * Define a namespaced asset name for inclusion in the #__assets table
+	 * Define a namespace asset name for inclusion in the #__assets table
 	 *
 	 * @return string The asset name
 	 *

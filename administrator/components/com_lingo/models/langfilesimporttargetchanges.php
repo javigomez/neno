@@ -85,8 +85,8 @@ class LingoModelLangfilesImportTargetChanges extends JModelList
 					foreach ($strings as $string)
 					{
 						//Update the database
-						$keyinfo = $model->getInfoFromStringKey($string->key);
-						$model->updateLanguageFileString($string->lang, $keyinfo['extension'], $keyinfo['constant'], $string->text_in_db);
+						$keyInfo = $model->getInfoFromStringKey($string->key);
+						$model->updateLanguageFileString($string->lang, $keyInfo['extension'], $keyInfo['constant'], $string->text_in_db);
 					}
 				}
 			}

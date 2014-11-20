@@ -21,6 +21,7 @@ class LingoViewSources extends JViewLegacy
 	protected $items;
 	protected $pagination;
 	protected $state;
+	protected $sidebar;
 
 	/**
 	 * Display the view

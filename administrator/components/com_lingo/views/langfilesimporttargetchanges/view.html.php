@@ -20,6 +20,8 @@ class LingoViewLangfilesImportTargetChanges extends JViewLegacy
 
 	protected $items;
 
+	protected $sidebar;
+
 	/**
 	 * Display the view
 	 */
@@ -56,8 +58,8 @@ class LingoViewLangfilesImportTargetChanges extends JViewLegacy
 
 		JToolBarHelper::title(JText::_('COM_LINGO_TITLE_LANGFILESIMPORTTARGETCHANGES'), 'loop.png');
 
-		JToolBarHelper::custom('langfiles.pulltargetstrings', 'arrow-right.png', 'arrow-right.png', 'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PULL', true);
-		JToolBarHelper::custom('langfiles.pushtargetstrings', 'arrow-left.png', 'arrow-left.png', 'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PUSH', true);
+		JToolBarHelper::custom('langfiles.pullTargetStrings', 'arrow-right.png', 'arrow-right.png', 'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PULL', true);
+		JToolBarHelper::custom('langfiles.pushTargetStrings', 'arrow-left.png', 'arrow-left.png', 'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PUSH', true);
 		JToolBarHelper::cancel('langfiles.cancel');
 
 	}
