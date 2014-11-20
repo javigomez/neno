@@ -18,14 +18,36 @@ jimport('joomla.application.component.view');
  */
 class LingoViewTranslations extends JViewLegacy
 {
-
+	/**
+	 * @var array
+	 */
 	protected $items;
+
+	/**
+	 * @var JPagination
+	 */
 	protected $pagination;
+
+	/**
+	 * @var JRegistry
+	 */
 	protected $state;
+
+	/**
+	 * @var string
+	 */
 	protected $sidebar;
 
 	/**
 	 * Display the view
+	 *
+	 * @param   string  $tpl  Template
+	 *
+	 * @return void
+	 *
+	 * @throws Exception This will happen if there are errors during the process to load the data
+	 *
+	 * @since 1.0
 	 */
 	public function display($tpl = null)
 	{
@@ -50,6 +72,8 @@ class LingoViewTranslations extends JViewLegacy
 	/**
 	 * Add the page title and toolbar.
 	 *
+	 * @return void
+	 *
 	 * @since    1.6
 	 */
 	protected function addToolbar()
@@ -61,11 +85,11 @@ class LingoViewTranslations extends JViewLegacy
 
 		JToolBarHelper::title(JText::_('COM_LINGO_TITLE_TRANSLATIONS'), 'translations.png');
 
-		//Check if the form exists before showing the add/edit buttons
+		// Check if the form exists before showing the add/edit buttons
 		$formPath = JPATH_COMPONENT_ADMINISTRATOR . '/views/translation';
+
 		if (file_exists($formPath))
 		{
-
 			if ($canDo->get('core.create'))
 			{
 				JToolBarHelper::addNew('translation.add', 'JTOOLBAR_NEW');
@@ -79,7 +103,6 @@ class LingoViewTranslations extends JViewLegacy
 
 		if ($canDo->get('core.edit.state'))
 		{
-
 			if (isset($this->items[0]->state))
 			{
 				JToolBarHelper::divider();
@@ -90,7 +113,7 @@ class LingoViewTranslations extends JViewLegacy
 			{
 				if (isset($this->items[0]))
 				{
-					//If this component does not use state then show a direct delete button as we can not trash
+					// If this component does not use state then show a direct delete button as we can not trash
 					JToolBarHelper::deleteList('', 'translations.delete', 'JTOOLBAR_DELETE');
 				}
 			}
@@ -100,13 +123,14 @@ class LingoViewTranslations extends JViewLegacy
 				JToolBarHelper::divider();
 				JToolBarHelper::archiveList('translations.archive', 'JTOOLBAR_ARCHIVE');
 			}
+
 			if (isset($this->items[0]->checked_out))
 			{
 				JToolBarHelper::custom('translations.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
 			}
 		}
 
-		//Show trash and delete for components that uses the state field
+		// Show trash and delete for components that uses the state field
 		if (isset($this->items[0]->state))
 		{
 			if ($state->get('filter.state') == -2 && $canDo->get('core.delete'))
@@ -129,13 +153,20 @@ class LingoViewTranslations extends JViewLegacy
 			JToolBarHelper::preferences('com_lingo');
 		}
 
-		//Set sidebar action - New in 3.0
+		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_lingo&view=translations');
 
 		$this->extra_sidebar = '';
 
 	}
 
+	/**
+	 * Get an array of fields to sort by
+	 *
+	 * @return array
+	 *
+	 * @since 1.0
+	 */
 	protected function getSortFields()
 	{
 		return array(
@@ -146,5 +177,4 @@ class LingoViewTranslations extends JViewLegacy
 			'a.lang'            => JText::_('COM_LINGO_TRANSLATIONS_LANG'),
 		);
 	}
-
 }

@@ -19,43 +19,85 @@ jimport('joomla.application.component.view');
 class LingoViewLangfilesImport extends JViewLegacy
 {
 
-	var $source_language = null;
-	var $source_counts = array();
-	var $new_target_strings = array();
-	var $changed_target_strings = array();
-	var $changes_pending = false;
+	/**
+	 * @var JLanguage
+	 */
+	protected $sourceLanguage;
+
+	/**
+	 * @var array
+	 */
+	protected $sourceCounts;
+
+	/**
+	 * @var array
+	 */
+	protected $newTargetStrings;
+
+	/**
+	 * @var array
+	 */
+	protected $changedTargetStrings;
+
+	/**
+	 * @var boolean
+	 */
+	protected $changesPending;
+
+	/**
+	 * Constructor
+	 *
+	 * @param   array  $config  Configuration parameters
+	 */
+	public function __construct($config = array())
+	{
+		parent::__construct($config);
+
+		$this->sourceLanguage       = null;
+		$this->sourceCounts         = array();
+		$this->newTargetStrings     = array();
+		$this->changedTargetStrings = array();
+		$this->changesPending       = false;
+	}
 
 	/**
 	 * Display the view
+	 *
+	 * @param   string  $tpl  Template
+	 *
+	 * @return void
+	 *
+	 * @throws Exception This will happen if there are errors during the process to load the data
+	 *
+	 * @since 1.0
 	 */
 	public function display($tpl = null)
 	{
-
-		$language              = JFactory::getLanguage();
-		$this->source_language = $language->getDefault();
+		$language             = JFactory::getLanguage();
+		$this->sourceLanguage = $language->getDefault();
 
 		/* @var $model LingoModelLangfiles */
 		$model = LingoHelper::getModel('Langfiles');
 
-		$this->source_counts['new_source_lines']     = $model->getNewStringsInLangfiles('source');
-		$this->source_counts['deleted_source_lines'] = $model->getDeletedSourceStringsInLangfiles();
-		$this->source_counts['updated_source_lines'] = $model->getChangedStringsInLangfiles('source');
-		$this->new_target_strings                    = $model->getNewStringsInLangfiles('target');
-		$this->changed_target_strings                = $model->getChangedStringsInLangfiles('target');
+		$this->sourceCounts['new_source_lines']     = $model->getNewStringsInLangfiles('source');
+		$this->sourceCounts['deleted_source_lines'] = $model->getDeletedSourceStringsInLangfiles();
+		$this->sourceCounts['updated_source_lines'] = $model->getChangedStringsInLangfiles('source');
+		$this->newTargetStrings                     = $model->getNewStringsInLangfiles('target');
+		$this->changedTargetStrings                 = $model->getChangedStringsInLangfiles('target');
 
-		//Check for changes
-		if (count($this->source_counts['new_source_lines'][$this->source_language])
-			|| count($this->source_counts['deleted_source_lines'][$this->source_language])
-			|| count($this->source_counts['updated_source_lines'][$this->source_language])
-		)
+		// Check for changes
+		if (count($this->sourceCounts['new_source_lines'][$this->sourceLanguage])
+			|| count($this->sourceCounts['deleted_source_lines'][$this->sourceLanguage])
+			|| count($this->sourceCounts['updated_source_lines'][$this->sourceLanguage]))
 		{
-			$this->changes_pending = true;
+			$this->changesPending = true;
 		}
-		foreach ($this->new_target_strings as $new_target_lines)
+
+		foreach ($this->newTargetStrings as $new_target_lines)
 		{
 			if (count($new_target_lines))
 			{
-				$this->changes_pending = true;
+				$this->changesPending = true;
 				break;
 			}
 		}
@@ -67,12 +109,12 @@ class LingoViewLangfilesImport extends JViewLegacy
 
 	/**
 	 * Add the page title and toolbar.
+	 *
+	 * @return void
 	 */
 	protected function addToolbar()
 	{
 		JFactory::getApplication()->input->set('hidemainmenu', true);
-
-		$user  = JFactory::getUser();
 		$canDo = LingoHelper::getActions();
 
 		JToolBarHelper::title(JText::_('COM_LINGO_LANGFILES_IMPORT_TITLE'), 'download.png');
@@ -85,7 +127,5 @@ class LingoViewLangfilesImport extends JViewLegacy
 		{
 			JToolBarHelper::preferences('com_lingo');
 		}
-
 	}
-
 }

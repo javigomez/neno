@@ -20,14 +20,14 @@ class LingoHelper
 	/**
 	 * Get a printable name from a language code
 	 *
-	 * @param string $code 'da-DK'
+	 * @param   string  $code  'da-DK'
 	 *
 	 * @return string the name or boolean false on error
 	 */
 	public static function getLangnameFromCode($code)
 	{
-
 		$metadata = JLanguage::getMetadata($code);
+
 		if (isset($metadata['name']))
 		{
 			return $metadata['name'];
@@ -36,13 +36,12 @@ class LingoHelper
 		{
 			return false;
 		}
-
 	}
 
 	/**
 	 * Get an instance of the named model
 	 *
-	 * @param string $name the filename of the model
+	 * @param   string  $name  The filename of the model
 	 *
 	 * @return object An instantiated object of the given model
 	 */
@@ -51,11 +50,15 @@ class LingoHelper
 		include_once JPATH_ADMINISTRATOR . '/components/com_lingo/models/' . strtolower($name) . '.php';
 		$model_class = 'LingoModel' . ucwords($name);
 
-		return new $model_class();
+		return new $model_class;
 	}
 
 	/**
 	 * Configure the Link bar.
+	 *
+	 * @param   string  $vName  View name
+	 *
+	 * @return void
 	 */
 	public static function addSubmenu($vName = '')
 	{
@@ -76,6 +79,7 @@ class LingoHelper
 	 * Gets a list of the actions that can be performed.
 	 *
 	 * @return    JObject
+	 *
 	 * @since    1.6
 	 */
 	public static function getActions()
@@ -96,5 +100,4 @@ class LingoHelper
 
 		return $result;
 	}
-
 }

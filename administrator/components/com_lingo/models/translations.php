@@ -54,8 +54,12 @@ class LingoModelTranslations extends JModelList
 
 	/**
 	 * Method to auto-populate the model state.
-	 *
 	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @param   string  $ordering   Ordering field
+	 * @param   string  $direction  Ordering direction [ASC,DESC]
+	 *
+	 * @return void
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
@@ -84,9 +88,10 @@ class LingoModelTranslations extends JModelList
 	 * different modules that might need different sets of data or different
 	 * ordering requirements.
 	 *
-	 * @param    string $id A prefix for the store id.
+	 * @param   string  $id  A prefix for the store id.
 	 *
 	 * @return    string        A store id.
+	 *
 	 * @since    1.6
 	 */
 	protected function getStoreId($id = '')
@@ -102,6 +107,7 @@ class LingoModelTranslations extends JModelList
 	 * Build an SQL query to load the list data.
 	 *
 	 * @return    JDatabaseQuery
+	 *
 	 * @since    1.6
 	 */
 	protected function getListQuery()
@@ -120,6 +126,7 @@ class LingoModelTranslations extends JModelList
 
 		// Filter by search in title
 		$search = $this->getState('filter.search');
+
 		if (!empty($search))
 		{
 			if (stripos($search, 'id:') === 0)
@@ -136,6 +143,7 @@ class LingoModelTranslations extends JModelList
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering');
 		$orderDirection = $this->state->get('list.direction');
+
 		if ($orderCol && $orderDirection)
 		{
 			$query->order($db->escape($orderCol . ' ' . $orderDirection));
@@ -143,5 +151,4 @@ class LingoModelTranslations extends JModelList
 
 		return $query;
 	}
-
 }

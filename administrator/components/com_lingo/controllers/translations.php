@@ -54,6 +54,12 @@ class LingoControllerTranslations extends JControllerAdmin
 	/**
 	 * Proxy for getModel.
 	 *
+	 * @param   string  $name    Model name
+	 * @param   string  $prefix  Model prefix
+	 * @param   array   $config  Configuration parameters
+	 *
+	 * @return null|JModel
+	 *
 	 * @since    1.6
 	 */
 	public function getModel($name = 'translation', $prefix = 'LingoModel', $config = array())
@@ -62,5 +68,4 @@ class LingoControllerTranslations extends JControllerAdmin
 
 		return $model;
 	}
-
 }

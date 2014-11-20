@@ -27,12 +27,13 @@ class LingoModelSource extends JModelAdmin
 	/**
 	 * Returns a reference to the a Table object, always creating it.
 	 *
-	 * @param    type      The table type to instantiate
-	 * @param    string    A prefix for the table class name. Optional.
-	 * @param    array     Configuration array for model. Optional.
+	 * @param   string  $type    The table type to instantiate
+	 * @param   string  $prefix  A prefix for the table class name. Optional.
+	 * @param   array   $config  Configuration array for model. Optional.
 	 *
 	 * @return    JTable    A database object
-	 * @since    1.6
+	 *
+	 * @since    1.0
 	 */
 	public function getTable($type = 'Source', $prefix = 'LingoTable', $config = array())
 	{
@@ -42,11 +43,12 @@ class LingoModelSource extends JModelAdmin
 	/**
 	 * Method to get the record form.
 	 *
-	 * @param    array   $data     An optional array of data for the form to interrogate.
-	 * @param    boolean $loadData True if the form is to load its own data (default case), false if not.
+	 * @param   array    $data      An optional array of data for the form to interrogate.
+	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
 	 *
 	 * @return    JForm    A JForm object on success, false on failure
-	 * @since    1.6
+	 *
+	 * @since    1.0
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
@@ -67,8 +69,9 @@ class LingoModelSource extends JModelAdmin
 	/**
 	 * Method to get the data that should be injected in the form.
 	 *
-	 * @return    mixed    The data for the form.
-	 * @since    1.6
+	 * @return   mixed  The data for the form.
+	 *
+	 * @since    1.0
 	 */
 	protected function loadFormData()
 	{
@@ -87,18 +90,17 @@ class LingoModelSource extends JModelAdmin
 	/**
 	 * Method to get a single record.
 	 *
-	 * @param    integer    The id of the primary key.
+	 * @param   array|integer  $pk  The id of the primary key.
 	 *
 	 * @return    mixed    Object on success, false on failure.
-	 * @since    1.6
+	 *
+	 * @since    1.0
 	 */
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk))
 		{
-
-			//Do any processing on fields here if needed
-
+			// Do any processing on fields here if needed
 		}
 
 		return $item;
@@ -106,6 +108,10 @@ class LingoModelSource extends JModelAdmin
 
 	/**
 	 * Prepare and sanitise the table prior to saving.
+	 *
+	 * @param   JTable  $table  JTable instance
+	 *
+	 * @return void
 	 *
 	 * @since    1.6
 	 */
@@ -115,7 +121,6 @@ class LingoModelSource extends JModelAdmin
 
 		if (empty($table->id))
 		{
-
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '')
 			{
@@ -124,8 +129,6 @@ class LingoModelSource extends JModelAdmin
 				$max             = $db->loadResult();
 				$table->ordering = $max + 1;
 			}
-
 		}
 	}
-
 }

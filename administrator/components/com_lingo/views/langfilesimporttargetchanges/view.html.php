@@ -19,16 +19,29 @@ jimport('joomla.application.component.view');
 class LingoViewLangfilesImportTargetChanges extends JViewLegacy
 {
 
+	/**
+	 * @var array
+	 */
 	protected $items;
 
+	/**
+	 * @var string
+	 */
 	protected $sidebar;
 
 	/**
 	 * Display the view
+	 *
+	 * @param   string  $tpl  Template
+	 *
+	 * @return void
+	 *
+	 * @throws Exception This will happen if there are errors during the process to load the data
+	 *
+	 * @since 1.0
 	 */
 	public function display($tpl = null)
 	{
-
 		$this->items = $this->get('ChangedStrings');
 
 		// Check for errors.
@@ -48,23 +61,43 @@ class LingoViewLangfilesImportTargetChanges extends JViewLegacy
 	/**
 	 * Add the page title and toolbar.
 	 *
-	 * @since    1.6
+	 * @return void
+	 *
+	 * @since    1.0
 	 */
 	protected function addToolbar()
 	{
 		require_once JPATH_COMPONENT . '/helpers/lingo.php';
 
-		$state = $this->get('State');
-		$canDo = LingoHelper::getActions($state->get('filter.category_id'));
-
 		JToolBarHelper::title(JText::_('COM_LINGO_TITLE_LANGFILESIMPORTTARGETCHANGES'), 'loop.png');
 
-		JToolBarHelper::custom('langfiles.pullTargetStrings', 'arrow-right.png', 'arrow-right.png', 'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PULL', true);
-		JToolBarHelper::custom('langfiles.pushTargetStrings', 'arrow-left.png', 'arrow-left.png', 'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PUSH', true);
+		JToolBarHelper::custom(
+			'langfiles.pullTargetStrings',
+			'arrow-right.png',
+			'arrow-right.png',
+			'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PULL',
+			true
+		);
+
+		JToolBarHelper::custom(
+			'langfiles.pushTargetStrings',
+			'arrow-left.png',
+			'arrow-left.png',
+			'COM_LINGO_VIEW_LANGFILESIMPORTTARGETCHANGES_BTN_PUSH',
+			true
+		);
+
 		JToolBarHelper::cancel('langfiles.cancel');
 
 	}
 
+	/**
+	 * Get an array of fields to sort by
+	 *
+	 * @return array
+	 *
+	 * @since 1.0
+	 */
 	protected function getSortFields()
 	{
 		return array(
@@ -75,5 +108,4 @@ class LingoViewLangfilesImportTargetChanges extends JViewLegacy
 			'a.lang'            => JText::_('COM_LINGO_TRANSLATIONS_LANG'),
 		);
 	}
-
 }

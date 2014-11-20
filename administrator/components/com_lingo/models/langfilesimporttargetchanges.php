@@ -23,7 +23,7 @@ class LingoModelLangfilesImportTargetChanges extends JModelList
 	/**
 	 * Constructor.
 	 *
-	 * @param    array    An optional associative array of configuration settings.
+	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
 	 * @see        JController
 	 * @since      1.6
@@ -48,22 +48,22 @@ class LingoModelLangfilesImportTargetChanges extends JModelList
 	/**
 	 * Update either a file or the database when they are out of sync
 	 *
-	 * @param array  $cid       integer array
-	 * @param string $direction either 'pull' or 'push' if 'pull' the data in files is imported to database, if 'push' the data in database is pushed to files
+	 * @param   array   $cid        Integer array
+	 * @param   string  $direction  Either 'pull' or 'push' if 'pull' the data in files is imported to database,
+	 *                              if 'push' the data in database is pushed to files
 	 *
 	 * @return boolean
 	 */
 	public function updateTargetStrings($cid, $direction = 'pull')
 	{
-
 		if (!empty($cid))
 		{
 			$changed_strings = $this->getChangedStrings();
 
-			//Flip the cid array so the keys become the ids
+			// Flip the cid array so the keys become the ids
 			$cid = array_flip($cid);
 
-			//Intersect the two arrays to get the array we need to work with
+			// Intersect the two arrays to get the array we need to work with
 			$strings = array_intersect_key($changed_strings, $cid);
 
 			if (!empty($strings))
@@ -73,26 +73,25 @@ class LingoModelLangfilesImportTargetChanges extends JModelList
 
 				if ($direction == 'pull')
 				{
-					//Prepare the array to be used in the updateStringsInTargetDatabase() method
+					// Prepare the array to be used in the updateStringsInTargetDatabase() method
 					foreach ($strings as $key => $string)
 					{
 						$strings[$key]->string = $string->text_in_file;
 					}
 
-					//Update the database
+					// Update the database
 					$model->updateStringsInTargetDatabase($strings);
 				}
 				else
 				{
 					foreach ($strings as $string)
 					{
-						//Update the database
+						// Update the database
 						$keyInfo = $model->getInfoFromStringKey($string->key);
 						$model->updateLanguageFileString($string->lang, $keyInfo['extension'], $keyInfo['constant'], $string->text_in_db);
 					}
 				}
 			}
-
 		}
 
 		return true;
@@ -124,6 +123,7 @@ class LingoModelLangfilesImportTargetChanges extends JModelList
 
 					// Merge the arrays
 					$relevant_target_strings_in_db = array_intersect_key($target_strings_in_db, $strings);
+
 					if (count($relevant_target_strings_in_db))
 					{
 						foreach ($relevant_target_strings_in_db as $key => $relevant_string)
@@ -148,8 +148,12 @@ class LingoModelLangfilesImportTargetChanges extends JModelList
 
 	/**
 	 * Method to auto-populate the model state.
-	 *
 	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @param   string  $ordering   Ordering field
+	 * @param   string  $direction  Ordering direction [ASC,DESC]
+	 *
+	 * @return void
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
@@ -178,9 +182,10 @@ class LingoModelLangfilesImportTargetChanges extends JModelList
 	 * different modules that might need different sets of data or different
 	 * ordering requirements.
 	 *
-	 * @param    string $id A prefix for the store id.
+	 * @param   string  $id  A prefix for the store id.
 	 *
 	 * @return    string        A store id.
+	 *
 	 * @since    1.6
 	 */
 	protected function getStoreId($id = '')

@@ -22,7 +22,7 @@ class LingoModelSources extends JModelList
 	/**
 	 * Constructor.
 	 *
-	 * @param    array    An optional associative array of configuration settings.
+	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
 	 * @see        JController
 	 * @since      1.6
@@ -48,6 +48,11 @@ class LingoModelSources extends JModelList
 		parent::__construct($config);
 	}
 
+	/**
+	 * Get an array of items
+	 *
+	 * @return array
+	 */
 	public function getItems()
 	{
 		$items = parent::getItems();
@@ -57,8 +62,12 @@ class LingoModelSources extends JModelList
 
 	/**
 	 * Method to auto-populate the model state.
-	 *
 	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @param   string  $ordering   Ordering field
+	 * @param   string  $direction  Ordering direction [ASC,DESC]
+	 *
+	 * @return void
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
@@ -87,9 +96,10 @@ class LingoModelSources extends JModelList
 	 * different modules that might need different sets of data or different
 	 * ordering requirements.
 	 *
-	 * @param    string $id A prefix for the store id.
+	 * @param   string  $id  A prefix for the store id.
 	 *
 	 * @return    string        A store id.
+	 *
 	 * @since    1.6
 	 */
 	protected function getStoreId($id = '')
@@ -105,6 +115,7 @@ class LingoModelSources extends JModelList
 	 * Build an SQL query to load the list data.
 	 *
 	 * @return    JDatabaseQuery
+	 *
 	 * @since    1.6
 	 */
 	protected function getListQuery()
@@ -123,6 +134,7 @@ class LingoModelSources extends JModelList
 
 		// Filter by search in title
 		$search = $this->getState('filter.search');
+
 		if (!empty($search))
 		{
 			if (stripos($search, 'id:') === 0)
@@ -139,6 +151,7 @@ class LingoModelSources extends JModelList
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering');
 		$orderDirection = $this->state->get('list.direction');
+
 		if ($orderCol && $orderDirection)
 		{
 			$query->order($db->escape($orderCol . ' ' . $orderDirection));
@@ -146,5 +159,4 @@ class LingoModelSources extends JModelList
 
 		return $query;
 	}
-
 }
