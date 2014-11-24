@@ -13,10 +13,11 @@ defined('_JEXEC') or die;
 
 /**
  * source Table class
+ *
+ * @since  1.0
  */
 class LingoTableSource extends JTable
 {
-
 	/**
 	 * Constructor
 	 *
@@ -83,7 +84,9 @@ class LingoTableSource extends JTable
 	}
 
 	/**
-	 * @param $jAccessRules
+	 * Convert JAccess array to other structure
+	 *
+	 * @param   array  $jAccessRules  JAccess array
 	 *
 	 * @return array
 	 */

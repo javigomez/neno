@@ -15,10 +15,16 @@ jimport('joomla.application.component.modellist');
 
 /**
  * Methods supporting a list of Lingo records.
+ *
+ * @since  1.0
  */
 class LingoModelTranslatableFields extends JModelList
 {
-
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @return JDatabaseQuery
+	 */
 	protected function getListQuery()
 	{
 		$query = parent::getListQuery();
@@ -48,7 +54,7 @@ class LingoModelTranslatableFields extends JModelList
 	/**
 	 * Method for loading all the fields related to a table marked as translatable
 	 *
-	 * @param   integer $tableId Table Id
+	 * @param   integer  $tableId  Table Id
 	 *
 	 * @return array
 	 *
@@ -60,7 +66,5 @@ class LingoModelTranslatableFields extends JModelList
 		$fields = $this->getItems();
 
 		return $fields;
-
 	}
-
 }

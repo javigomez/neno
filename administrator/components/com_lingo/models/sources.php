@@ -15,10 +15,11 @@ jimport('joomla.application.component.modellist');
 
 /**
  * Methods supporting a list of Lingo records.
+ *
+ * @since  1.0
  */
 class LingoModelSources extends JModelList
 {
-
 	/**
 	 * Constructor.
 	 *
@@ -144,7 +145,6 @@ class LingoModelSources extends JModelList
 			else
 			{
 				$search = $db->Quote('%' . $db->escape($search, true) . '%');
-
 			}
 		}
 

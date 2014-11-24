@@ -15,10 +15,11 @@ jimport('joomla.application.component.view');
 
 /**
  * View class for a list of Lingo.
+ *
+ * @since  1.0
  */
 class LingoViewLangfilesImportTargetChanges extends JViewLegacy
 {
-
 	/**
 	 * @var array
 	 */
@@ -88,7 +89,6 @@ class LingoViewLangfilesImportTargetChanges extends JViewLegacy
 		);
 
 		JToolBarHelper::cancel('langfiles.cancel');
-
 	}
 
 	/**

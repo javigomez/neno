@@ -17,18 +17,20 @@ jimport('joomla.application.component.modellist');
 /**
  * Class LingoModelTranslatableTables
  *
- * @category   Class
- * @package    Joomla
- * @subpackage Lingo
+ * @category    Class
+ * @package     Joomla
+ * @subpackage  Lingo
  *
- * @author     Jensen Technologies S.L <info@notwebdesign.com>
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @author      Jensen Technologies S.L <info@notwebdesign.com>
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @since       1.0
  */
 class LingoModelTranslatableTables extends JModelList
 {
-
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return JDatabaseQuery
 	 */
 	protected function getListQuery()
 	{
@@ -49,12 +51,15 @@ class LingoModelTranslatableTables extends JModelList
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @return array
 	 */
 	public function getItems()
 	{
 		$items = parent::getItems();
 
 		$structure = array();
+
 		foreach ($items as $item)
 		{
 			$structure[$this->unifyTableName($item->table_name)] = $item;
@@ -85,13 +90,12 @@ class LingoModelTranslatableTables extends JModelList
 		}
 
 		return $structure;
-
 	}
 
 	/**
 	 * Unify table name to prevents issue if the user changes the database prefix
 	 *
-	 * @param string $tableName Table name
+	 * @param   string  $tableName  Table name
 	 *
 	 * @return string
 	 *
@@ -105,5 +109,4 @@ class LingoModelTranslatableTables extends JModelList
 		// Replace database prefix with #_
 		return str_replace($dbPrefix, '#__', $tableName);
 	}
-
 }

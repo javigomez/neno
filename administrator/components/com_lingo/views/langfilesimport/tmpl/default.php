@@ -1,12 +1,14 @@
 <?php
 /**
- * @version     1.0.0
- * @package     com_lingo
- * @copyright   Copyright (C) 2014. All rights reserved.
+ * @package     Lingo
+ * @subpackage  Views
+ *
+ * @author      Jensen Technologies S.L. <info@notwebdesign.com>
+ * @copyright   Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
- * @author      Soren Beck Jensen <soren@notwebdesign.com> - http://www.notwebdesign.com
  */
-// no direct access
+
+// No direct access
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
@@ -52,14 +54,17 @@ JHtml::_('behavior.keepalive');
 	<div class="span6">
 
 		<div class="well" id="accordion">
-			<h2 class="module-title nav-header"><?php echo JText::sprintf('COM_LINGO_VIEW_LANGFILESIMPORT_HL_SOURCE_CHANGES_IN_LANGFILES', $this->source_language); ?></h2>
+			<h2 class="module-title nav-header">
+				<?php echo JText::sprintf('COM_LINGO_VIEW_LANGFILESIMPORT_HL_SOURCE_CHANGES_IN_LANGFILES', $this->source_language); ?>
+			</h2>
 			<?php foreach ($this->source_counts as $key => $count): ?>
 				<div class="row-striped">
 					<div class="row-fluid">
 						<?php $change_count = @count($count[$this->source_language]); ?>
 						<strong class="row-title">
-							<span
-								class="badge <?php echo ($change_count > 0) ? 'badge-important' : ''; ?>"><?php echo $change_count; ?></span>
+							<span class="badge <?php echo $change_count > 0 ? 'badge-important' : ''; ?>">
+								<?php echo $change_count; ?>
+							</span>
 							<a data-toggle="collapse" data-parent="#accordion" href="#collapse<?php echo $key; ?>">
 								<?php echo JText::_('COM_LINGO_VIEW_LANGFILESIMPORT_LABEL_CHANGES_' . strtoupper($key)); ?>
 							</a>
@@ -94,7 +99,7 @@ JHtml::_('behavior.keepalive');
 						<?php $change_count = @count($lines); ?>
 						<strong class="row-title">
 							<span
-								class="badge <?php echo ($change_count > 0) ? 'badge-important' : ''; ?>"><?php echo $change_count; ?></span>
+								class="badge <?php echo $change_count > 0 ? 'badge-important' : ''; ?>"><?php echo $change_count; ?></span>
 							<a data-toggle="collapse" data-parent="#accordion" href="#collapse<?php echo $lang; ?>">
 								<?php echo LingoHelper::getLangnameFromCode($lang); ?>
 							</a>

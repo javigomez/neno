@@ -15,16 +15,17 @@ jimport('joomla.application.component.controlleradmin');
 
 /**
  * Sources list controller class.
+ *
+ * @since  1.0
  */
 class LingoControllerTranslatableTables extends JControllerAdmin
 {
-
 	/**
 	 * Method to load a model class
 	 *
-	 * @param string $name   Model name
-	 * @param string $prefix Model prefix
-	 * @param array  $config Other configuration parameters
+	 * @param   string  $name    Model name
+	 * @param   string  $prefix  Model prefix
+	 * @param   array   $config  Other configuration parameters
 	 *
 	 * @return JModel|null
 	 *
@@ -83,6 +84,5 @@ class LingoControllerTranslatableTables extends JControllerAdmin
 				$app->enqueueMessage('There was an error saving the table ' . $tableObject->get('table_name'), 'error');
 			}
 		}
-
 	}
 }

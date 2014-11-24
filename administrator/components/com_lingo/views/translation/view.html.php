@@ -15,10 +15,11 @@ jimport('joomla.application.component.view');
 
 /**
  * View to edit
+ *
+ * @since  1.0
  */
 class LingoViewTranslation extends JViewLegacy
 {
-
 	/**
 	 * @var JRegistry
 	 */

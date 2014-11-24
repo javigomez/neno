@@ -15,6 +15,8 @@ jimport('joomla.form.formfield');
 
 /**
  * Supports an HTML select list of categories
+ *
+ * @since  1.0
  */
 class JFormFieldTimeUpdated extends JFormField
 {
@@ -30,6 +32,7 @@ class JFormFieldTimeUpdated extends JFormField
 	 * Method to get the field input markup.
 	 *
 	 * @return    string    The field input markup.
+	 *
 	 * @since    1.6
 	 */
 	protected function getInput()
@@ -39,6 +42,7 @@ class JFormFieldTimeUpdated extends JFormField
 
 		$old_time_updated = $this->value;
 		$hidden           = (boolean) $this->element['hidden'];
+
 		if ($hidden == null || !$hidden)
 		{
 			if (!strtotime($old_time_updated))
@@ -52,6 +56,7 @@ class JFormFieldTimeUpdated extends JFormField
 				$html[]      = "<div>" . $pretty_date . "</div>";
 			}
 		}
+
 		$time_updated = date("Y-m-d H:i:s");
 		$html[]       = '<input type="hidden" name="' . $this->name . '" value="' . $time_updated . '" />';
 

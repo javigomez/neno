@@ -20,17 +20,19 @@ JHtml::_('formbehavior.chosen', 'select');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_lingo/assets/css/lingo.css');
 
-$user      = JFactory::getUser();
-$userId    = $user->get('id');
-$listOrder = $this->state->get('list.ordering');
-$listDirection  = $this->state->get('list.direction');
-$canOrder  = $user->authorise('core.edit.state', 'com_lingo');
-$saveOrder = $listOrder == 'a.ordering';
+$user          = JFactory::getUser();
+$userId        = $user->get('id');
+$listOrder     = $this->state->get('list.ordering');
+$listDirection = $this->state->get('list.direction');
+$canOrder      = $user->authorise('core.edit.state', 'com_lingo');
+$saveOrder     = $listOrder == 'a.ordering';
+
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_lingo&task=sources.saveOrderAjax&tmpl=component';
 	JHtml::_('sortablelist.sortable', 'sourceList', 'adminForm', strtolower($listDirection), $saveOrderingUrl);
 }
+
 $sortFields = $this->getSortFields();
 ?>
 <script type="text/javascript">
@@ -45,7 +47,7 @@ $sortFields = $this->getSortFields();
 </script>
 
 <?php
-//Joomla Component Creator code to allow adding non select list filters
+// Joomla Component Creator code to allow adding non select list filters
 if (!empty($this->extra_sidebar))
 {
 	$this->sidebar .= $this->extra_sidebar;

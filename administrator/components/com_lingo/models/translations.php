@@ -16,14 +16,15 @@ jimport('joomla.application.component.modellist');
 
 /**
  * Methods supporting a list of Lingo records.
+ *
+ * @since  1.0
  */
 class LingoModelTranslations extends JModelList
 {
-
 	/**
 	 * Constructor.
 	 *
-	 * @param    array    An optional associative array of configuration settings.
+	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
 	 * @see        JController
 	 * @since      1.6
@@ -45,6 +46,11 @@ class LingoModelTranslations extends JModelList
 		parent::__construct($config);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @return array
+	 */
 	public function getItems()
 	{
 		$items = parent::getItems();
@@ -136,7 +142,6 @@ class LingoModelTranslations extends JModelList
 			else
 			{
 				$search = $db->Quote('%' . $db->escape($search, true) . '%');
-
 			}
 		}
 

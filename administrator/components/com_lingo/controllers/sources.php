@@ -15,6 +15,8 @@ jimport('joomla.application.component.controlleradmin');
 
 /**
  * Sources list controller class.
+ *
+ * @since  1.0
  */
 class LingoControllerSources extends JControllerAdmin
 {

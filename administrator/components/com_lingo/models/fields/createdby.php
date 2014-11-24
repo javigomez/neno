@@ -15,6 +15,8 @@ jimport('joomla.form.formfield');
 
 /**
  * Supports an HTML select list of categories
+ *
+ * @since  1.0
  */
 class JFormFieldCreatedBy extends JFormField
 {
@@ -30,6 +32,7 @@ class JFormFieldCreatedBy extends JFormField
 	 * Method to get the field input markup.
 	 *
 	 * @return    string    The field input markup.
+	 *
 	 * @since    1.6
 	 */
 	protected function getInput()
@@ -37,8 +40,9 @@ class JFormFieldCreatedBy extends JFormField
 		// Initialize variables.
 		$html = array();
 
-		//Load user
+		// Load user
 		$user_id = $this->value;
+
 		if ($user_id)
 		{
 			$user = JFactory::getUser($user_id);
@@ -48,6 +52,7 @@ class JFormFieldCreatedBy extends JFormField
 			$user   = JFactory::getUser();
 			$html[] = '<input type="hidden" name="' . $this->name . '" value="' . $user->id . '" />';
 		}
+
 		$html[] = "<div>" . $user->name . " (" . $user->username . ")</div>";
 
 		return implode($html);

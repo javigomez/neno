@@ -13,10 +13,11 @@ defined('_JEXEC') or die;
 
 /**
  * Lingo helper.
+ *
+ * @since  1.0
  */
 class LingoHelper
 {
-
 	/**
 	 * Get a printable name from a language code
 	 *
@@ -72,7 +73,6 @@ class LingoHelper
 			'index.php?option=com_lingo&view=sources',
 			$vName == 'sources'
 		);
-
 	}
 
 	/**

@@ -15,6 +15,8 @@ jimport('joomla.form.formfield');
 
 /**
  * Supports an HTML select list of categories
+ *
+ * @since  1.0
  */
 class JFormFieldTimeCreated extends JFormField
 {
@@ -30,6 +32,7 @@ class JFormFieldTimeCreated extends JFormField
 	 * Method to get the field input markup.
 	 *
 	 * @return    string    The field input markup.
+	 *
 	 * @since    1.6
 	 */
 	protected function getInput()
@@ -38,12 +41,15 @@ class JFormFieldTimeCreated extends JFormField
 		$html = array();
 
 		$time_created = $this->value;
+
 		if (!strtotime($time_created))
 		{
 			$time_created = date("Y-m-d H:i:s");
 			$html[]       = '<input type="hidden" name="' . $this->name . '" value="' . $time_created . '" />';
 		}
+
 		$hidden = (boolean) $this->element['hidden'];
+
 		if ($hidden == null || !$hidden)
 		{
 			$jdate       = new JDate($time_created);

@@ -16,10 +16,11 @@ require_once JPATH_COMPONENT_ADMINISTRATOR . '/models/langfiles.php';
 
 /**
  * Methods supporting a list of Lingo records.
+ *
+ * @since  1.0
  */
 class LingoModelLangfilesImportTargetChanges extends JModelList
 {
-
 	/**
 	 * Constructor.
 	 *
@@ -196,5 +197,4 @@ class LingoModelLangfilesImportTargetChanges extends JModelList
 
 		return parent::getStoreId($id);
 	}
-
 }

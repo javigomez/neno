@@ -15,6 +15,8 @@ jimport('joomla.application.component.modeladmin');
 
 /**
  * Lingo model.
+ *
+ * @since  1.0
  */
 class LingoModelTranslation extends JModelAdmin
 {
@@ -81,7 +83,6 @@ class LingoModelTranslation extends JModelAdmin
 		if (empty($data))
 		{
 			$data = $this->getItem();
-
 		}
 
 		return $data;

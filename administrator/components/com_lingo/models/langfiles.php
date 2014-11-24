@@ -15,23 +15,43 @@ jimport('joomla.application.component.modellist');
 
 /**
  * Methods supporting a list of Lingo records.
+ *
+ * @since  1.0
  */
 class LingoModelLangfiles extends JModelLegacy
 {
+	/**
+	 * @var string
+	 */
+	public $sourceLanguage;
 
-	public $source_language = null;
-	public $target_languages = array();
-	public $messages = array();
-	public $source_language_strings = array();
+	/**
+	 * @var array
+	 */
+	public $targetLanguages;
 
+	/**
+	 * @var array
+	 */
+	public $messages;
+
+	/**
+	 * @var array
+	 */
+	public $sourceLanguageStrings;
+
+	/**
+	 * Constructor
+	 */
 	public function __construct()
 	{
-
 		parent::__construct();
 
-		$language               = JFactory::getLanguage();
-		$this->source_language  = $language->getDefault();
-		$this->target_languages = $this->getTargetLanguages();
+		$language                    = JFactory::getLanguage();
+		$this->sourceLanguage        = $language->getDefault();
+		$this->targetLanguages       = $this->getTargetLanguages();
+		$this->messages              = array();
+		$this->sourceLanguageStrings = array();
 	}
 
 	/**
@@ -41,19 +61,19 @@ class LingoModelLangfiles extends JModelLegacy
 	 */
 	protected function getTargetLanguages()
 	{
-
-		//Load all published languages
+		// Load all published languages
 		$languages = $this->getLanguages();
 
-		//Create a simple array
+		// Create a simple array
 		$arr = array();
+
 		foreach ($languages as $lang)
 		{
 			$arr[$lang->lang_code] = $lang->lang_code;
 		}
 
-		//Remove the source language
-		unset($arr[$this->source_language]);
+		// Remove the source language
+		unset($arr[$this->sourceLanguage]);
 
 		return $arr;
 	}
@@ -61,13 +81,12 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Load all published languages on the site
 	 *
-	 * @param boolean $published weather or not only the published language should be loaded
+	 * @param   boolean  $published  weather or not only the published language should be loaded
 	 *
 	 * @return array objectList
 	 */
 	protected function getLanguages($published = true)
 	{
-
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -87,6 +106,8 @@ class LingoModelLangfiles extends JModelLegacy
 
 	/**
 	 * Import from files into the database
+	 *
+	 * @return void
 	 */
 	public function import()
 	{
@@ -96,14 +117,16 @@ class LingoModelLangfiles extends JModelLegacy
 
 	/**
 	 * Import source language from files
+	 *
+	 * @return void
 	 */
 	protected function importSourceLanguageStrings()
 	{
-
 		LingoDebug::log('Importing Source Language Strings from files');
 
-		//Load all new strings and add them to database
+		// Load all new strings and add them to database
 		$new_strings = $this->getNewStringsInLangfiles('source');
+
 		if (!empty($new_strings))
 		{
 			foreach ($new_strings as $lang => $strings)
@@ -112,18 +135,20 @@ class LingoModelLangfiles extends JModelLegacy
 			}
 		}
 
-		//Deleted source strings
+		// Deleted source strings
 		$deleted_strings = $this->getDeletedSourceStringsInLangfiles();
-		if (!empty($deleted_strings[$this->source_language]))
+
+		if (!empty($deleted_strings[$this->sourceLanguage]))
 		{
-			$this->markSourceStringsDeletedInDatabase($deleted_strings[$this->source_language]);
+			$this->markSourceStringsDeletedInDatabase($deleted_strings[$this->sourceLanguage]);
 		}
 
-		//Changed source strings
+		// Changed source strings
 		$changed_strings = $this->getChangedStringsInLangfiles('source');
-		if (!empty($changed_strings[$this->source_language]))
+
+		if (!empty($changed_strings[$this->sourceLanguage]))
 		{
-			$this->updateStringsInSourceDatabase($changed_strings[$this->source_language]);
+			$this->updateStringsInSourceDatabase($changed_strings[$this->sourceLanguage]);
 		}
 
 		LingoDebug::log('Finished importing Source Language Strings from files');
@@ -132,17 +157,16 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Find new strings in files
 	 *
-	 * @param string $type 'source' or 'target'
+	 * @param   string  $type  'source' or 'target'
 	 *
 	 * @return array with new constants indexed by language
 	 */
 	public function getNewStringsInLangfiles($type)
 	{
-
-		//Create an array of languages we need to load depending on type
+		// Create an array of languages we need to load depending on type
 		if ($type == 'source')
 		{
-			$langs = array( $this->source_language );
+			$langs = array( $this->sourceLanguage );
 		}
 		else
 		{
@@ -150,9 +174,9 @@ class LingoModelLangfiles extends JModelLegacy
 		}
 
 		$new_strings = array();
+
 		foreach ($langs as $lang)
 		{
-
 			// Load constants from files
 			$file_strings = $this->loadLanguageStringsFromFiles($lang);
 
@@ -163,7 +187,6 @@ class LingoModelLangfiles extends JModelLegacy
 				// Filter out strings that are not already in the source database
 				$source_language_strings = $this->loadLanguageStringsFromDatabase('source');
 				$file_strings            = array_intersect_key($file_strings, $source_language_strings);
-
 			}
 
 			// Load constants from database
@@ -173,17 +196,15 @@ class LingoModelLangfiles extends JModelLegacy
 			$new_strings[$lang] = array_diff_key($file_strings, $database_strings);
 
 			LingoDebug::log('Found ' . count($new_strings[$lang]) . ' new strings in [' . $lang . '] language files', 2);
-
 		}
 
 		return $new_strings;
-
 	}
 
 	/**
 	 * Load all constants from a given language
 	 *
-	 * @param string $language eg. 'en-GB'
+	 * @param   string  $language  eg. 'en-GB'
 	 *
 	 * @return array indexed by file
 	 */
@@ -197,16 +218,16 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Find language files for a given language
 	 *
-	 * @param string $lang 'en-GB'
+	 * @param   string  $lang  'en-GB'
 	 *
 	 * @return array indexed first by language
 	 */
 	protected function findLanguageFiles($lang)
 	{
-
 		$files = array();
 
 		$folders = $this->getLanguageFileFolders(null, $lang);
+
 		if (!empty($folders))
 		{
 			foreach ($folders as $folder)
@@ -215,8 +236,9 @@ class LingoModelLangfiles extends JModelLegacy
 			}
 		}
 
-		//Debug
+		// Debug
 		LingoDebug::log('Found ' . count($files) . ' language files in ' . $lang . '', 3);
+
 		if (!empty($files))
 		{
 			foreach ($files as $file)
@@ -231,17 +253,16 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Return a list of folders where language files may reside, ordered by override order
 	 *
-	 * @param string $extension The name of the extension such as 'com_lingo'
-	 * @param string $lang      eg. 'en-GB'
+	 * @param   string  $extension  The name of the extension such as 'com_lingo'
+	 * @param   string  $lang       eg. 'en-GB'
 	 *
 	 * @return array with a list of full path names
 	 */
 	protected function getLanguageFileFolders($extension = null, $lang = null)
 	{
-
 		$folders = array();
 
-		//Always language first
+		// Always language first
 		if (!is_null($lang))
 		{
 			$folders[] = JPATH_SITE . '/language/' . $lang . '/';
@@ -251,13 +272,14 @@ class LingoModelLangfiles extends JModelLegacy
 			$folders[] = JPATH_SITE . '/language/';
 		}
 
-		//If extension is given then try to be more specific about where the folders may be (for performance)
+		// If extension is given then try to be more specific about where the folders may be (for performance)
 		if (!empty($extension))
 		{
-			//Split extension name by _ to determine if it is a component, module or plugin
+			// Split extension name by _ to determine if it is a component, module or plugin
 			$extension_parts = explode('_', $extension);
 
 			$specific_path = '';
+
 			if ($extension_parts[0] == 'com')
 			{
 				$specific_path = JPATH_SITE . '/components/' . $extension . '/language/';
@@ -289,7 +311,7 @@ class LingoModelLangfiles extends JModelLegacy
 			$folders[] = JPATH_SITE . '/plugins/';
 		}
 
-		//Always template overwrite last
+		// Always template overwrite last
 		$folders[] = JPATH_SITE . '/templates/';
 
 		return $folders;
@@ -298,16 +320,15 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Return a list of all the language files in the given path
 	 *
-	 * @param string  $path               full path to the folder that should be looked in
-	 * @param string  $lang
-	 * @param boolean $recursive          weather or not sub folders should be looked in
-	 * @param boolean $ignore_joomla_core weather core Joomla files should be ignored, defaults to true
+	 * @param   string   $path                Full path to the folder that should be looked in
+	 * @param   string   $lang                Language tag
+	 * @param   boolean  $recursive           Weather or not sub folders should be looked in
+	 * @param   boolean  $ignore_joomla_core  Weather core Joomla files should be ignored, defaults to true
 	 *
 	 * @return array
 	 */
 	protected function getLanguageFilesInPath($path, $lang = null, $recursive = true, $ignore_joomla_core = true)
 	{
-
 		jimport('joomla.filesystem.folder');
 
 		if (is_null($lang))
@@ -321,16 +342,16 @@ class LingoModelLangfiles extends JModelLegacy
 
 		LingoDebug::log('Looking for language files in [' . $lang . '] inside: ' . $path, 3);
 
-		//Load list
+		// Load list
 		$files = JFolder::files($path, $filter, $recursive, true);
 
-		//Remove Joomla core files if needed
+		// Remove Joomla core files if needed
 		if ($ignore_joomla_core === true)
 		{
 			$files = $this->removeCoreLanguageFilesFromArray($files, $lang);
 		}
 
-		//Debug
+		// Debug
 		if (!empty($files))
 		{
 			foreach ($files as $file)
@@ -345,17 +366,16 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Takes an array of language files and filters out known language files shipped with Joomla
 	 *
-	 * @param array  $files
-	 * @param string $lang
+	 * @param   array   $files  Files to translate
+	 * @param   string  $lang   Language tag
 	 *
 	 * @return array
 	 */
 	protected function removeCoreLanguageFilesFromArray($files, $lang = null)
 	{
-
 		if (is_null($lang))
 		{
-			$lang = $this->source_language;
+			$lang = $this->sourceLanguage;
 		}
 
 		$core_files = array(
@@ -443,19 +463,20 @@ class LingoModelLangfiles extends JModelLegacy
 		, $lang . '.tpl_protostar.ini'
 		, $lang . '.tpl_protostar.sys.ini'
 
-			//Template overrides that should be ignored
+			// Template overrides that should be ignored
 		, $lang . '.tpl_hathor.ini'
 		, $lang . '.tpl_hathor.sys.ini'
 		, $lang . '.tpl_isis.ini'
 		, $lang . '.tpl_isis.sys.ini'
 		);
 
-		//Filter
+		// Filter
 		foreach ($files as $key => $file)
 		{
 			foreach ($core_files as $core_file)
 			{
 				$strlen = strlen($core_file);
+
 				if (substr($file, strlen($file) - $strlen, $strlen) == $core_file)
 				{
 					unset($files[$key]);
@@ -464,7 +485,7 @@ class LingoModelLangfiles extends JModelLegacy
 			}
 		}
 
-		//Get new keys
+		// Get new keys
 		$files = array_values($files);
 
 		return $files;
@@ -474,13 +495,12 @@ class LingoModelLangfiles extends JModelLegacy
 	 * Takes an array of full file names and loads the language strings into an array with a unique key for each string
 	 * For easy comparison the keys are as follows: [filename:constant]
 	 *
-	 * @param array $language_files list of file names to parse
+	 * @param   array  $language_files  list of file names to parse
 	 *
 	 * @return array
 	 */
 	protected function getLanguageStringsFromFileList($language_files)
 	{
-
 		$strings = array();
 
 		if (!empty($language_files))
@@ -488,16 +508,16 @@ class LingoModelLangfiles extends JModelLegacy
 			foreach ($language_files as $language_file)
 			{
 				$file_strings = $this->getLanguageStringsFromFile($language_file);
+
 				if (!empty($file_strings))
 				{
-
-					//Remove the language code from the file name
+					// Remove the language code from the file name
 					$language_file                = basename($language_file);
 					$language_file_parts          = explode('.', $language_file);
 					$language_file_lancode_length = strlen($language_file_parts[0]) + 1;
 					$language_file                = substr($language_file, $language_file_lancode_length - strlen($language_file));
 
-					//Loop each string in the file
+					// Loop each string in the file
 					foreach ($file_strings as $constant => $string)
 					{
 						$string_key           = $language_file . ':' . strtoupper($constant);
@@ -517,13 +537,12 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Loads a language file and returns an associated array of key value pairs
 	 *
-	 * @param string $path
+	 * @param   string  $path  Language file path
 	 *
 	 * @return array of strings
 	 */
 	protected function getLanguageStringsFromFile($path)
 	{
-
 		if (!is_file($path))
 		{
 			return false;
@@ -539,14 +558,13 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Load language strings from the database
 	 *
-	 * @param string $type 'source' or 'target'
-	 * @param string $lang optional 'en-GB'
+	 * @param   string  $type  'source' or 'target'
+	 * @param   string  $lang  optional 'en-GB'
 	 *
 	 * @return array indexed array of constant/string pairs
 	 */
 	protected function loadLanguageStringsFromDatabase($type, $lang = null)
 	{
-
 		if ($type == 'source')
 		{
 			return $this->getSourceLanguageStringsFromDatabase();
@@ -562,7 +580,6 @@ class LingoModelLangfiles extends JModelLegacy
 				return false;
 			}
 		}
-
 	}
 
 	/**
@@ -572,19 +589,18 @@ class LingoModelLangfiles extends JModelLegacy
 	 */
 	protected function getSourceLanguageStringsFromDatabase()
 	{
-
-		//Return cached results if we have them
-		if (!empty($this->source_language_strings))
+		// Return cached results if we have them
+		if (!empty($this->sourceLanguageStrings))
 		{
-			LingoDebug::log('Loaded ' . count($this->source_language_strings) . ' source language strings from cache', 3);
+			LingoDebug::log('Loaded ' . count($this->sourceLanguageStrings) . ' source language strings from cache', 3);
 
-			return $this->source_language_strings;
+			return $this->sourceLanguageStrings;
 		}
 
-		//Default to source language
-		$lang = $this->source_language;
+		// Default to source language
+		$lang = $this->sourceLanguage;
 
-		//Load from DB
+		// Load from DB
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -595,32 +611,30 @@ class LingoModelLangfiles extends JModelLegacy
 		$query->where('a.lang = "' . $lang . '"');
 		$query->where('a.state = 1');
 
-		//Order by lang and then extension
+		// Order by lang and then extension
 		$query->order('a.lang')->order('a.extension');
 
 		$db->setQuery($query);
-		//echo $db->getQuery();
-		$this->source_language_strings = $db->loadObjectList('arraykey');
+		$this->sourceLanguageStrings = $db->loadObjectList('arraykey');
 
-		LingoDebug::log('Loaded ' . count($this->source_language_strings) . ' source language strings in the database', 3);
+		LingoDebug::log('Loaded ' . count($this->sourceLanguageStrings) . ' source language strings in the database', 3);
 
-		return $this->source_language_strings;
+		return $this->sourceLanguageStrings;
 	}
 
 	/**
 	 * Load all language strings from the database
 	 *
-	 * @param string $lang eg. 'en-GB'
-	 * @param array  $ids  The id of the strings that should be returned
+	 * @param   string  $lang  eg. 'en-GB'
+	 * @param   array   $ids   The id of the strings that should be returned
 	 *
 	 * @return array object list
 	 */
 	public function getTargetLanguageStringsFromDatabase($lang, $ids = null)
 	{
-
 		LingoDebug::log('Loading target language strings from database', 3);
 
-		//Load from DB
+		// Load from DB
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -633,16 +647,16 @@ class LingoModelLangfiles extends JModelLegacy
 		{
 			$query->where('a.lang = "' . $lang . '"');
 		}
+
 		if (!is_null($ids) && is_array($ids) && count($ids) > 0)
 		{
 			$query->where('a.id IN (' . implode(',', $ids) . ')');
 		}
 
-		//Order by lang and then extension
+		// Order by lang and then extension
 		$query->order('s.lang')->order('s.extension');
 
 		$db->setQuery($query);
-		//echo $db->getQuery();
 		$rows = $db->loadObjectList('arraykey');
 
 		return $rows;
@@ -651,9 +665,9 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Takes and array of strings and adds them to the database
 	 *
-	 * @param string $type either 'source' or 'target'
-	 * @param array  $strings
-	 * @param string $lang eg. 'en-GB'
+	 * @param   string  $type     either 'source' or 'target'
+	 * @param   array   $strings  Strings to add
+	 * @param   string  $lang     eg. 'en-GB'
 	 *
 	 * @return boolean
 	 */
@@ -666,60 +680,80 @@ class LingoModelLangfiles extends JModelLegacy
 
 		if (is_null($lang))
 		{
-			$lang = $this->source_language;
+			$lang = $this->sourceLanguage;
 		}
 
-		//To not overload the system insert 100 strings at a time
+		// To not overload the system insert 100 strings at a time
 		$limit_per_insert = 100;
 
 		$chunked_strings = array_chunk($strings, $limit_per_insert, true);
 
 		foreach ($chunked_strings as $chunked_string)
 		{
-
 			$db = JFactory::getDbo();
 
+			// Set table name and column names if we are saving translations
+			$tableName = '#__lingo_langfile_translations';
+			$columns   = array(
+				'source_id',
+				'string',
+				'time_translated',
+				'version',
+				'lang',
+				'translation_method'
+			);
+
+			// Set table name and column names if we are saving source language strings
 			if ($type == 'source')
 			{
-				$query = 'INSERT INTO' . ' #__lingo_langfile_source (string,constant,lang,extension,time_added,version) VALUES ';
-			}
-			else
-			{
-				$query = 'INSERT INTO' . ' #__lingo_langfile_translations (source_id, string, time_translated, version, lang, translation_method) VALUES ';
+				$tableName = '#__lingo_langfile_source';
+				$columns   = array(
+					'string',
+					'constant',
+					'lang',
+					'extension',
+					'time_added',
+					'version'
+				);
 			}
 
-			$sql_inserts = array();
+			$query = $db->getQuery(true);
+
+			$query
+				->insert($tableName)
+				->columns($columns);
+
 			foreach ($chunked_string as $key => $string)
 			{
-
 				$string_info = $this->getInfoFromStringKey($key);
 				$constant    = $string_info['constant'];
 				$extension   = $string_info['extension'];
 
 				if ($type == 'source')
 				{
-					$sql_inserts[] = ("\n (" . $db->quote($string) . ', ' . $db->quote($constant) . ', ' . $db->quote($lang) . ', ' . $db->quote($extension) . ', NOW(), 1)');
+					$query->values($db->quote($string) . ', ' . $db->quote($constant) . ', ' . $db->quote($lang) . ', ' . $db->quote($extension) . ', NOW(), 1');
 				}
 				else
 				{
-					$sql_inserts[] = "\n ("
-						. '(SELECT id FROM #__lingo_langfile_source WHERE constant = ' . $db->quote($constant) . ' AND extension = ' . $db->quote($extension) . ')'
-						. ', ' . $db->quote($string)
-						. ', NOW()'
-						. ', 1'
-						. ', ' . $db->quote($lang)
-						. ', "langfile"'
-						. ')';
+					$selectQuery = $db->getQuery(true);
+					$selectQuery
+						->select('id')
+						->from('#__lingo_langfile_source')
+						->where(
+							array(
+								'constant = ' . $db->quote($constant),
+								'extension = ' . $db->quote($extension)
+							)
+						);
+
+					$query->values('(' . (string) $selectQuery . '),' . $db->quote($string) . ', NOW(), 1, ' . $db->quote($lang) . ', ' . $db->quote('langfile'));
 				}
 
 				LingoDebug::log('Adding new ' . $type . ' string to DB in language [' . $lang . ']: ' . $constant . ' = "' . $string . '"', 3);
-
 			}
 
-			$db->setQuery($query . implode(',', $sql_inserts));
-			//echo str_replace('#__', 'jos_', $db->getQuery());
+			$db->setQuery($query);
 			$db->execute();
-
 		}
 
 		$message = JText::sprintf('COM_LINGO_LANGFILES_MSG_NEW_STRINGS', count($strings), $this->getPrintableTypeName($type));
@@ -732,29 +766,29 @@ class LingoModelLangfiles extends JModelLegacy
 	 * Takes a string (used as key in internal arrays) and splits it into an array of information
 	 * Example key: com_phocagallery.sys.ini:COM_PHOCAGALLERY_XML_DESCRIPTION
 	 *
-	 * @param string $key
+	 * @param   string  $key  Language file key
 	 *
 	 * @return array
 	 */
 	public function getInfoFromStringKey($key)
 	{
-
 		$info = array();
+
 		if (empty($key))
 		{
 			return $info;
 		}
 
-		//Split by : to separate file name and constant
+		// Split by : to separate file name and constant
 		$keyParts         = explode(':', $key);
 		$file_name        = $keyParts[0];
 		$info['constant'] = $keyParts[1];
 
-		//Split the file name by . for additional information
+		// Split the file name by . for additional information
 		$fileParts         = explode('.', $file_name);
 		$info['extension'] = $fileParts[0];
 
-		//Add .sys and other file parts to the name
+		// Add .sys and other file parts to the name
 		foreach ($fileParts as $k => $filePart)
 		{
 			if ($k > 0 && $filePart != 'ini')
@@ -766,15 +800,27 @@ class LingoModelLangfiles extends JModelLegacy
 		return $info;
 	}
 
+	/**
+	 * Get Printable type names
+	 *
+	 * @param   string  $type  Type name
+	 *
+	 * @return string
+	 */
 	protected function getPrintableTypeName($type)
 	{
 		return JText::_('COM_LINGO_LANGFILES_TYPE_' . strtoupper($type));
 	}
 
+	/**
+	 * Get an array of strings deleted in the source file.
+	 *
+	 * @return array
+	 */
 	public function getDeletedSourceStringsInLangfiles()
 	{
 		// Load constants from files
-		$file_strings = $this->loadLanguageStringsFromFiles($this->source_language);
+		$file_strings = $this->loadLanguageStringsFromFiles($this->sourceLanguage);
 
 		// Load constants from database
 		$database_strings = $this->loadLanguageStringsFromDatabase('source');
@@ -782,26 +828,24 @@ class LingoModelLangfiles extends JModelLegacy
 		// Find differences between the two datasets
 		$deleted_strings = array_diff_key($database_strings, $file_strings);
 
-		//For consistency with new and changed strings deliver the result in a lang array
-		$langs                         = array();
-		$langs[$this->source_language] = $deleted_strings;
+		// For consistency with new and changed strings deliver the result in a lang array
+		$langs                        = array();
+		$langs[$this->sourceLanguage] = $deleted_strings;
 
-		LingoDebug::log('Found ' . count($deleted_strings) . ' strings deleted from [' . $this->source_language . '] language files', 2);
+		LingoDebug::log('Found ' . count($deleted_strings) . ' strings deleted from [' . $this->sourceLanguage . '] language files', 2);
 
 		return $langs;
-
 	}
 
 	/**
 	 * Mark both source and target as deleted when we discover a deleted source string
 	 *
-	 * @param array $strings object list with ->id defining the source id that needs deleting
+	 * @param   array  $strings  object list with ->id defining the source id that needs deleting
 	 *
 	 * @return boolean
 	 */
 	protected function markSourceStringsDeletedInDatabase($strings)
 	{
-
 		if (empty($strings))
 		{
 			return false;
@@ -814,6 +858,7 @@ class LingoModelLangfiles extends JModelLegacy
 		$query = 'UPDATE #__lingo_langfile_source SET state = -1, time_deleted = NOW()';
 
 		$ids = array();
+
 		foreach ($strings as $key => $string)
 		{
 			$ids[] = $string->id;
@@ -823,7 +868,6 @@ class LingoModelLangfiles extends JModelLegacy
 		$query .= 'WHERE id IN (' . implode(',', $ids) . ')';
 
 		$db->setQuery($query);
-		//echo $db->getQuery();
 		$db->execute();
 
 		/**
@@ -833,6 +877,7 @@ class LingoModelLangfiles extends JModelLegacy
 		$query = 'UPDATE #__lingo_langfile_translations SET state = -1, time_deleted = NOW()';
 
 		$ids = array();
+
 		foreach ($strings as $key => $string)
 		{
 			$ids[] = $string->id;
@@ -842,10 +887,9 @@ class LingoModelLangfiles extends JModelLegacy
 		$query .= 'WHERE source_id IN (' . implode(',', $ids) . ')';
 
 		$db->setQuery($query);
-		//echo $db->getQuery();
 		$db->execute();
 
-		//Message
+		// Message
 		$message = JText::sprintf('COM_LINGO_LANGFILES_MSG_DELETED_STRINGS', count($strings));
 		LingoDebug::log($message, 2, true);
 
@@ -855,17 +899,16 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Compares two arrays and outputs a new array with only the items where the value is different
 	 *
-	 * @param string $type 'source' or 'target'
+	 * @param   string  $type  'source' or 'target'
 	 *
 	 * @return array
 	 */
 	public function getChangedStringsInLangfiles($type)
 	{
-
-		//Create an array of languages we need to load depending on type
+		// Create an array of languages we need to load depending on type
 		if ($type == 'source')
 		{
-			$langs = array( $this->source_language );
+			$langs = array( $this->sourceLanguage );
 		}
 		else
 		{
@@ -876,19 +919,17 @@ class LingoModelLangfiles extends JModelLegacy
 
 		foreach ($langs as $lang)
 		{
-
 			$changes[$lang] = array();
 
-			//Load constants from files
+			// Load constants from files
 			$file_strings = $this->loadLanguageStringsFromFiles($lang);
 
-			//Load constants from database
+			// Load constants from database
 			$database_strings = $this->loadLanguageStringsFromDatabase($type, $lang);
 
 			foreach ($file_strings as $key => $file_string)
 			{
-
-				//Skip if not in the database (new string)
+				// Skip if not in the database (new string)
 				if (!isset($database_strings[$key]))
 				{
 					LingoDebug::log('Skipping string change comparison on ' . $key . ' as it is not found in the database', 3);
@@ -900,7 +941,6 @@ class LingoModelLangfiles extends JModelLegacy
 					$changes[$lang][$key] = $file_string;
 				}
 			}
-
 		}
 
 		return $changes;
@@ -909,13 +949,12 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Takes and array of strings and updates them in the database
 	 *
-	 * @param array $strings
+	 * @param   array  $strings  Strings to update
 	 *
 	 * @return boolean
 	 */
 	protected function updateStringsInSourceDatabase($strings)
 	{
-
 		if (empty($strings))
 		{
 			return false;
@@ -923,13 +962,12 @@ class LingoModelLangfiles extends JModelLegacy
 
 		foreach ($strings as $key => $string)
 		{
-
 			$db    = JFactory::getDbo();
 			$query = 'UPDATE #__lingo_langfile_source';
 
 			$string_info = $this->getInfoFromStringKey($key);
 			$constant    = $string_info['constant'];
-			$lang        = $this->source_language;
+			$lang        = $this->sourceLanguage;
 			$extension   = $string_info['extension'];
 			$query .= "\n SET string = " . $db->quote($string)
 				. ", time_changed = NOW()"
@@ -939,17 +977,15 @@ class LingoModelLangfiles extends JModelLegacy
 				. "AND extension = " . $db->quote($extension);
 
 			$db->setQuery($query);
-			//echo $db->getQuery();
 			$db->execute();
 
 			LingoDebug::log('Updating database source string: ' . $constant . ' = "' . $string . '"', 3);
-
 		}
 
-		//Destroy the cache of the source language as it now has new values
-		$this->source_language_strings = array();
+		// Destroy the cache of the source language as it now has new values
+		$this->sourceLanguageStrings = array();
 
-		//Set a message in log and for display
+		// Set a message in log and for display
 		$message = JText::sprintf('COM_LINGO_LANGFILES_MSG_UPDATED_STRINGS', count($strings));
 		LingoDebug::log($message, 2, true);
 
@@ -963,14 +999,16 @@ class LingoModelLangfiles extends JModelLegacy
 	 * To do this properly a few steps are used.
 	 * 1. Deal with one target language at a time
 	 * 2. Load language strings from all three sources using the same key to make comparison easy
+	 *
+	 * @return void
 	 */
 	protected function importTargetLanguageStrings()
 	{
-
 		LingoDebug::log('Starting import of target language files', 2);
 
-		//Load all new strings and add them to database
+		// Load all new strings and add them to database
 		$new_strings = $this->getNewStringsInLangfiles('target');
+
 		if (!empty($new_strings))
 		{
 			foreach ($new_strings as $lang => $strings)
@@ -978,36 +1016,37 @@ class LingoModelLangfiles extends JModelLegacy
 				$this->addStringsToDatabase('target', $strings, $lang);
 			}
 		}
-
 	}
 
 	/**
 	 * Export from database to files
+	 *
+	 * @return void
 	 */
 	public function export()
 	{
-
-		//$source_language_strings = $this->loadTranslations();
+		// $source_language_strings = $this->loadTranslations();
 	}
 
 	/**
 	 * Finds language files for a given language extension and replaces the constant with string in each of them
 	 *
-	 * @param string $lang
-	 * @param string $extension
-	 * @param string $constant
-	 * @param string $string
+	 * @param   string  $lang       Language tag
+	 * @param   string  $extension  Extension name
+	 * @param   string  $constant   Language Constant
+	 * @param   string  $string     String used as replaced
+	 *
+	 * @return void
 	 */
 	public function updateLanguageFileString($lang, $extension, $constant, $string)
 	{
-
-		//Replace " in the string with &quot;
+		// Replace " in the string with &quot;
 		$string = str_replace('"', '&quot;', $string);
 
-		//Load language files for this extension
+		// Load language files for this extension
 		$files = $this->getLanguageFileListForExtension($lang, $extension);
 
-		//Search and replace inside each matching file
+		// Search and replace inside each matching file
 		if (!empty($files))
 		{
 			foreach ($files as $file)
@@ -1031,8 +1070,8 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Look for language files for a specific extension in various directories
 	 *
-	 * @param string $lang
-	 * @param string $extension
+	 * @param   string  $lang       Language tag
+	 * @param   string  $extension  Extension name
 	 *
 	 * @return array of files with full path
 	 */
@@ -1040,10 +1079,10 @@ class LingoModelLangfiles extends JModelLegacy
 	{
 		$files = array();
 
-		//Look for a matching file
+		// Look for a matching file
 		$file_name = $lang . '.' . $extension . '.ini';
 
-		//Look for language files in these paths
+		// Look for language files in these paths
 		$folders = $this->getLanguageFileFolders($extension);
 
 		foreach ($folders as $folder)
@@ -1057,13 +1096,12 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Takes and array of strings and updates them in the database
 	 *
-	 * @param array $rows an object list that must contain the id of the row to update and the new string
+	 * @param   array  $rows  an object list that must contain the id of the row to update and the new string
 	 *
 	 * @return boolean
 	 */
 	public function updateStringsInTargetDatabase($rows)
 	{
-
 		if (empty($rows))
 		{
 			return false;
@@ -1071,7 +1109,6 @@ class LingoModelLangfiles extends JModelLegacy
 
 		foreach ($rows as $row)
 		{
-
 			$db    = JFactory::getDbo();
 			$query = 'UPDATE #__lingo_langfile_translations';
 
@@ -1082,14 +1119,12 @@ class LingoModelLangfiles extends JModelLegacy
 				. "\n WHERE id = " . $db->quote($row->id);
 
 			$db->setQuery($query);
-			//echo $db->getQuery();
 			$db->execute();
 
 			LingoDebug::log('Updating database target string: ' . $row->id . ' = "' . $row->string . '"', 3);
-
 		}
 
-		//Set a message in log and for display
+		// Set a message in log and for display
 		$message = JText::sprintf('COM_LINGO_LANGFILES_MSG_UPDATED_STRINGS', count($rows));
 		LingoDebug::log($message, 2, true);
 
@@ -1103,14 +1138,13 @@ class LingoModelLangfiles extends JModelLegacy
 	 */
 	protected function loadSourceExtensions()
 	{
-
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query->select('DISTINCT extension');
 		$query->from('#__lingo_langfile_source');
 
-		$query->where('lang = ' . $db->quote($this->source_language));
+		$query->where('lang = ' . $db->quote($this->sourceLanguage));
 		$query->where('state = 1');
 
 		$db->setQuery($query);
@@ -1122,14 +1156,13 @@ class LingoModelLangfiles extends JModelLegacy
 	/**
 	 * Takes and object list and marks the id of each object as deleted
 	 *
-	 * @param string $type 'source' or 'target'
-	 * @param array  $strings
+	 * @param   string  $type     'source' or 'target'
+	 * @param   array   $strings  Array of strings to delete
 	 *
 	 * @return boolean
 	 */
 	protected function deleteStringsFromDatabase($type, $strings)
 	{
-
 		if (empty($strings))
 		{
 			return false;
@@ -1156,6 +1189,7 @@ class LingoModelLangfiles extends JModelLegacy
 		$query = 'UPDATE ' . $table . ' SET state = -1, time_deleted = NOW()';
 
 		$ids = array();
+
 		foreach ($strings as $key => $string)
 		{
 			$ids[] = $string->id;
@@ -1165,14 +1199,12 @@ class LingoModelLangfiles extends JModelLegacy
 		$query .= 'WHERE id IN (' . implode(',', $ids) . ')';
 
 		$db->setQuery($query);
-		//echo $db->getQuery();
 		$db->execute();
 
-		//Message
+		// Message
 		$message = JText::sprintf('COM_LINGO_LANGFILES_MSG_DELETED_STRINGS', count($strings), $this->getPrintableTypeName($type), $lang);
 		LingoDebug::log($message, 2, true);
 
 		return true;
 	}
-
 }

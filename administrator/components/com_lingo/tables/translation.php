@@ -13,10 +13,11 @@ defined('_JEXEC') or die;
 
 /**
  * translation Table class
+ *
+ * @since  1.0
  */
 class LingoTableTranslation extends JTable
 {
-
 	/**
 	 * Constructor
 	 *
@@ -79,6 +80,10 @@ class LingoTableTranslation extends JTable
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param   array  $jAccessRules  JAccess array
+	 *
+	 * @return array
 	 */
 	private function JAccessRulesToArray($jAccessRules)
 	{

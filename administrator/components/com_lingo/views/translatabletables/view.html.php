@@ -15,6 +15,8 @@ jimport('joomla.application.component.view');
 
 /**
  * View to edit
+ *
+ * @since  1.0
  */
 class LingoViewTranslatableTables extends JViewLegacy
 {
@@ -35,6 +37,10 @@ class LingoViewTranslatableTables extends JViewLegacy
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param   string  $tpl  Template name
+	 *
+	 * @return void
 	 */
 	public function display($tpl = null)
 	{
@@ -48,6 +54,8 @@ class LingoViewTranslatableTables extends JViewLegacy
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return void
 	 */
 	protected function addToolbar()
 	{

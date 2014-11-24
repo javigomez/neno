@@ -10,15 +10,23 @@
 // No direct access
 defined('_JEXEC') or die;
 
+/**
+ * Class LingoController
+ *
+ * @since  1.0
+ */
 class LingoController extends JControllerLegacy
 {
-
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param   boolean  $cachable   If Joomla should cache the response
+	 * @param   array    $urlparams  URL parameters
+	 *
+	 * @return JController
 	 */
 	public function display($cachable = false, $urlparams = array())
 	{
-
 		require_once JPATH_COMPONENT . '/helpers/lingo.php';
 
 		$view = JFactory::getApplication()->input->getCmd('view', 'dashboard');
@@ -28,5 +36,4 @@ class LingoController extends JControllerLegacy
 
 		return $this;
 	}
-
 }

@@ -15,10 +15,11 @@ jimport('joomla.application.component.view');
 
 /**
  * View class for a list of Lingo.
+ *
+ * @since  1.0
  */
 class LingoViewSources extends JViewLegacy
 {
-
 	/**
 	 * @var array
 	 */
@@ -158,7 +159,6 @@ class LingoViewSources extends JViewLegacy
 		JHtmlSidebar::setAction('index.php?option=com_lingo&view=sources');
 
 		$this->extra_sidebar = '';
-
 	}
 
 	/**
@@ -180,5 +180,4 @@ class LingoViewSources extends JViewLegacy
 			'a.version'      => JText::_('COM_LINGO_SOURCES_VERSION'),
 		);
 	}
-
 }

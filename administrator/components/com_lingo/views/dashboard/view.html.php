@@ -15,6 +15,8 @@ jimport('joomla.application.component.view');
 
 /**
  * View to edit
+ *
+ * @since  1.0
  */
 class LingoViewDashboard extends JViewLegacy
 {

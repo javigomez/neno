@@ -15,14 +15,17 @@ jimport('joomla.application.component.controllerform');
 
 /**
  * Source controller class.
+ *
+ * @since  1.0
  */
 class LingoControllerSource extends JControllerForm
 {
-
-	function __construct()
+	/**
+	 * Constructor
+	 */
+	public function __construct()
 	{
 		$this->view_list = 'sources';
 		parent::__construct();
 	}
-
 }

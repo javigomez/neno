@@ -15,6 +15,8 @@ jimport('joomla.application.component.view');
 
 /**
  * View class for a list of Lingo.
+ *
+ * @since  1.0
  */
 class LingoViewTranslations extends JViewLegacy
 {
@@ -157,7 +159,6 @@ class LingoViewTranslations extends JViewLegacy
 		JHtmlSidebar::setAction('index.php?option=com_lingo&view=translations');
 
 		$this->extra_sidebar = '';
-
 	}
 
 	/**
