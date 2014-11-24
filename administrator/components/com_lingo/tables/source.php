@@ -1,242 +1,253 @@
 <?php
-
 /**
- * @version     1.0.0
- * @package     com_lingo
- * @copyright   Copyright (C) 2014. All rights reserved.
+ * @package     Lingo
+ * @subpackage  Tables
+ *
+ * @author      Jensen Technologies S.L. <info@notwebdesign.com>
+ * @copyright   Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
- * @author      Soren Beck Jensen <soren@notwebdesign.com> - http://www.notwebdesign.com
  */
-// No direct access
+
+// No direct access.
 defined('_JEXEC') or die;
 
 /**
  * source Table class
+ *
+ * @since  1.0
  */
 class LingoTableSource extends JTable
 {
+	/**
+	 * Constructor
+	 *
+	 * @param   JDatabaseDriver  $db  A database connector object
+	 */
+	public function __construct($db)
+	{
+		parent::__construct('#__lingo_langfile_source', 'id', $db);
+	}
 
-    /**
-     * Constructor
-     *
-     * @param JDatabase A database connector object
-     */
-    public function __construct(&$db)
-    {
-        parent::__construct('#__lingo_langfile_source', 'id', $db);
-    }
+	/**
+	 * Overloaded bind function to pre-process the params.
+	 *
+	 * @param   mixed  $src     An associative array or object to bind to the JTable instance.
+	 * @param   mixed  $ignore  An optional array or space separated list of properties to ignore while binding.
+	 *
+	 * @return null|string null is operation was satisfactory, otherwise returns an error
+	 *
+	 * @see        JTable:bind
+	 * @since      1.5
+	 */
+	public function bind($src, $ignore = '')
+	{
+		if ($src['id'] == 0)
+		{
+			$src['time_added'] = date("Y-m-d H:i:s");
+		}
 
-    /**
-     * Overloaded bind function to pre-process the params.
-     *
-     * @param    array        Named array
-     *
-     * @return    null|string    null is operation was satisfactory, otherwise returns an error
-     * @see        JTable:bind
-     * @since      1.5
-     */
-    public function bind($array, $ignore = '')
-    {
+		if (isset($src['params']) && is_array($src['params']))
+		{
+			$registry = new JRegistry;
+			$registry->loadArray($src['params']);
+			$src['params'] = (string) $registry;
+		}
 
+		if (isset($src['metadata']) && is_array($src['metadata']))
+		{
+			$registry = new JRegistry;
+			$registry->loadArray($src['metadata']);
+			$src['metadata'] = (string) $registry;
+		}
 
-        if ($array['id'] == 0)
-        {
-            $array['time_added'] = date("Y-m-d H:i:s");
-        }
+		if (!JFactory::getUser()->authorise('core.admin', 'com_lingo.source.' . $src['id']))
+		{
+			$actions         = JFactory::getACL()->getActions('com_lingo', 'source');
+			$default_actions = JFactory::getACL()->getAssetRules('com_lingo.source.' . $src['id'])->getData();
+			$array_jaccess   = array();
 
-        if (isset($array['params']) && is_array($array['params']))
-        {
-            $registry = new JRegistry();
-            $registry->loadArray($array['params']);
-            $array['params'] = (string) $registry;
-        }
+			foreach ($actions as $action)
+			{
+				$array_jaccess[$action->name] = $default_actions[$action->name];
+			}
 
-        if (isset($array['metadata']) && is_array($array['metadata']))
-        {
-            $registry = new JRegistry();
-            $registry->loadArray($array['metadata']);
-            $array['metadata'] = (string) $registry;
-        }
-        if (!JFactory::getUser()->authorise('core.admin', 'com_lingo.source.' . $array['id']))
-        {
-            $actions         = JFactory::getACL()->getActions('com_lingo', 'source');
-            $default_actions = JFactory::getACL()->getAssetRules('com_lingo.source.' . $array['id'])->getData();
-            $array_jaccess   = array();
-            foreach ($actions as $action)
-            {
-                $array_jaccess[$action->name] = $default_actions[$action->name];
-            }
-            $array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-        }
-        //Bind the rules for ACL where supported.
-        if (isset($array['rules']) && is_array($array['rules']))
-        {
-            $this->setRules($array['rules']);
-        }
+			$src['rules'] = $this->JAccessRulesToArray($array_jaccess);
+		}
 
-        return parent::bind($array, $ignore);
-    }
+		// Bind the rules for ACL where supported.
+		if (isset($src['rules']) && is_array($src['rules']))
+		{
+			$this->setRules($src['rules']);
+		}
 
-    /**
-     * {@inheritdoc}
-     */
-    private function JAccessRulestoArray($jaccessrules)
-    {
-        $rules = array();
-        foreach ($jaccessrules as $action => $jaccess)
-        {
-            $actions = array();
-            foreach ($jaccess->getData() as $group => $allow)
-            {
-                $actions[$group] = ((bool) $allow);
-            }
-            $rules[$action] = $actions;
-        }
+		return parent::bind($src, $ignore);
+	}
 
-        return $rules;
-    }
+	/**
+	 * Convert JAccess array to other structure
+	 *
+	 * @param   array  $jAccessRules  JAccess array
+	 *
+	 * @return array
+	 */
+	private function JAccessRulesToArray($jAccessRules)
+	{
+		$rules = array();
 
-    /**
-     * Overloaded check function
-     */
-    public function check()
-    {
+		foreach ($jAccessRules as $action => $jaccess)
+		{
+			$actions = array();
 
-        //If there is an ordering column and this is a new row then get the next ordering value
-        if (property_exists($this, 'ordering') && $this->id == 0)
-        {
-            $this->ordering = self::getNextOrder();
-        }
+			foreach ($jaccess->getData() as $group => $allow)
+			{
+				$actions[$group] = ((bool) $allow);
+			}
 
-        return parent::check();
-    }
+			$rules[$action] = $actions;
+		}
 
-    /**
-     * Method to set the publishing state for a row or list of rows in the database
-     * table.  The method respects checked out rows by other users and will attempt
-     * to checkin rows that it can after adjustments are made.
-     *
-     * @param    mixed    An optional array of primary key values to update.  If not
-     *                    set the instance property value is used.
-     * @param    integer  The publishing state. eg. [0 = unpublished, 1 = published]
-     * @param    integer  The user id of the user performing the operation.
-     *
-     * @return    boolean    True on success.
-     * @since    1.0.4
-     */
-    public function publish($pks = null, $state = 1, $userId = 0)
-    {
-        // Initialise variables.
-        $k = $this->_tbl_key;
+		return $rules;
+	}
 
-        // Sanitize input.
-        JArrayHelper::toInteger($pks);
-        $userId = (int) $userId;
-        $state  = (int) $state;
+	/**
+	 * Overloaded check function
+	 *
+	 * @return boolean
+	 */
+	public function check()
+	{
+		// If there is an ordering column and this is a new row then get the next ordering value
+		if (property_exists($this, 'ordering') && $this->id == 0)
+		{
+			$this->ordering = self::getNextOrder();
+		}
 
-        // If there are no primary keys set check to see if the instance key is set.
-        if (empty($pks))
-        {
-            if ($this->$k)
-            {
-                $pks = array($this->$k);
-            }
-            // Nothing to set publishing state on, return false.
-            else
-            {
-                JFactory::getApplication()->enqueueMessage(JText::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'), 'error');
+		return parent::check();
+	}
 
-                return false;
-            }
-        }
+	/**
+	 * Method to set the publishing state for a row or list of rows in the database
+	 * table.  The method respects checked out rows by other users and will attempt
+	 * to checkin rows that it can after adjustments are made.
+	 *
+	 * @param   mixed    $pks     An optional array of primary key values to update.  If not
+	 *                            set the instance property value is used.
+	 * @param   integer  $state   The publishing state. eg. [0 = unpublished, 1 = published]
+	 * @param   integer  $userId  The user id of the user performing the operation.
+	 *
+	 * @return    boolean    True on success.
+	 *
+	 * @since    1.0.4
+	 */
+	public function publish($pks = null, $state = 1, $userId = 0)
+	{
+		// Initialise variables.
+		$k = $this->_tbl_key;
 
-        // Build the WHERE clause for the primary keys.
-        $where = $k . '=' . implode(' OR ' . $k . '=', $pks);
+		// Sanitize input.
+		JArrayHelper::toInteger($pks);
+		$userId = (int) $userId;
+		$state  = (int) $state;
 
-        // Determine if there is checkin support for the table.
-        if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time'))
-        {
-            $checkin = '';
-        }
-        else
-        {
-            $checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $userId . ')';
-        }
+		// If there are no primary keys set check to see if the instance key is set.
+		if (empty($pks))
+		{
+			if ($this->$k)
+			{
+				$pks = array( $this->$k );
+			}
+			// Nothing to set publishing state on, return false.
+			else
+			{
+				JFactory::getApplication()->enqueueMessage(JText::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'), 'error');
 
-        // Update the publishing state for rows with the given primary keys.
-        $this->_db->setQuery(
-            'UPDATE `' . $this->_tbl . '`' .
-            ' SET `state` = ' . (int) $state .
-            ' WHERE (' . $where . ')' .
-            $checkin
-        );
-        $this->_db->query();
+				return false;
+			}
+		}
 
-        // If checkin is supported and all rows were adjusted, check them in.
-        if ($checkin && (count($pks) == $this->_db->getAffectedRows()))
-        {
-            // Checkin each row.
-            foreach ($pks as $pk)
-            {
-                $this->checkin($pk);
-            }
-        }
+		// Build the WHERE clause for the primary keys.
+		$where = $k . '=' . implode(' OR ' . $k . '=', $pks);
 
-        // If the JTable instance value is in the list of primary keys that were set, set the instance.
-        if (in_array($this->$k, $pks))
-        {
-            $this->state = $state;
-        }
+		// Determine if there is checkin support for the table.
+		if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time'))
+		{
+			$checkin = '';
+		}
+		else
+		{
+			$checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $userId . ')';
+		}
 
-        return true;
-    }
+		// Update the publishing state for rows with the given primary keys.
+		$this->_db->setQuery(
+			'UPDATE `' . $this->_tbl . '`' .
+			' SET `state` = ' . (int) $state .
+			' WHERE (' . $where . ')' .
+			$checkin
+		);
+		$this->_db->query();
 
-    public function delete($pk = null)
-    {
-        $this->load($pk);
-        $result = parent::delete($pk);
-        if ($result)
-        {
+		// If checkin is supported and all rows were adjusted, check them in.
+		if ($checkin && (count($pks) == $this->_db->getAffectedRows()))
+		{
+			// Checkin each row.
+			foreach ($pks as $pk)
+			{
+				$this->checkin($pk);
+			}
+		}
 
+		// If the JTable instance value is in the list of primary keys that were set, set the instance.
+		if (in_array($this->$k, $pks))
+		{
+			$this->state = $state;
+		}
 
-        }
+		return true;
+	}
 
-        return $result;
-    }
+	/**
+	 * Define a namespace asset name for inclusion in the #__assets table
+	 *
+	 * @return string The asset name
+	 *
+	 * @see JTable::_getAssetName
+	 */
+	protected function _getAssetName()
+	{
+		$k = $this->_tbl_key;
 
-    /**
-     * Define a namespaced asset name for inclusion in the #__assets table
-     * @return string The asset name
-     *
-     * @see JTable::_getAssetName
-     */
-    protected function _getAssetName()
-    {
-        $k = $this->_tbl_key;
+		return 'com_lingo.source.' . (int) $this->$k;
+	}
 
-        return 'com_lingo.source.' . (int) $this->$k;
-    }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param   JTable   $table  A JTable object for the asset parent.
+	 * @param   integer  $id     Id to look up
+	 *
+	 * @return  integer
+	 *
+	 * @since   11.1
+	 * @see JTable::_getAssetParentId
+	 */
+	protected function _getAssetParentId(JTable $table = null, $id = null)
+	{
+		// We will retrieve the parent-asset from the Asset-table
+		$assetParent = JTable::getInstance('Asset');
 
-    /**
-     * Returns the parent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
-     *
-     * @see JTable::_getAssetParentId
-     */
-    protected function _getAssetParentId(JTable $table = null, $id = null)
-    {
-        // We will retrieve the parent-asset from the Asset-table
-        $assetParent = JTable::getInstance('Asset');
-        // Default: if no asset-parent can be found we take the global asset
-        $assetParentId = $assetParent->getRootId();
-        // The item has the component as asset-parent
-        $assetParent->loadByName('com_lingo');
-        // Return the found asset-parent-id
-        if ($assetParent->id)
-        {
-            $assetParentId = $assetParent->id;
-        }
+		// Default: if no asset-parent can be found we take the global asset
+		$assetParentId = $assetParent->getRootId();
 
-        return $assetParentId;
-    }
+		// The item has the component as asset-parent
+		$assetParent->loadByName('com_lingo');
 
+		// Return the found asset-parent-id
+		if ($assetParent->id)
+		{
+			$assetParentId = $assetParent->id;
+		}
+
+		return $assetParentId;
+	}
 }

@@ -1,10 +1,11 @@
 <?php
 /**
- * @version     1.0.0
- * @package     com_lingo
- * @copyright   Copyright (C) 2014. All rights reserved.
+ * @package     Lingo
+ * @subpackage  Controllers
+ *
+ * @author      Jensen Technologies S.L. <info@notwebdesign.com>
+ * @copyright   Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
- * @author      Soren Beck Jensen <soren@notwebdesign.com> - http://www.notwebdesign.com
  */
 
 // No direct access
@@ -14,14 +15,17 @@ jimport('joomla.application.component.controllerform');
 
 /**
  * Source controller class.
+ *
+ * @since  1.0
  */
 class LingoControllerSource extends JControllerForm
 {
-
-    function __construct()
-    {
-        $this->view_list = 'sources';
-        parent::__construct();
-    }
-
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		$this->view_list = 'sources';
+		parent::__construct();
+	}
 }

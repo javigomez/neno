@@ -40,6 +40,11 @@ class Creator
 
 	public $created;
 
+	/**
+	 * @param array|bool $parsed
+	 *
+	 * @throws Exception\UnsupportedFeature
+	 */
 	public function __construct($parsed = false)
 	{
 		if ($parsed)

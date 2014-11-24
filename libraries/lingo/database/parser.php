@@ -1,9 +1,11 @@
 <?php
 
 /**
- * @package    Lingo
- * @subpackage Database
- * @copyright  Copyright (C) 2014. All rights reserved.
+ * @package     Lingo
+ * @subpackage  Database
+ *
+ * @copyright   Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 defined('JPATH_LINGO') or die;
 
@@ -13,9 +15,9 @@ use PHPSQL\Parser;
 /**
  * Database driver class extends from Joomla Platform Database Driver class
  *
- * @package    Lingo
- * @subpackage Database
- * @since      1.0
+ * @package     Lingo
+ * @subpackage  Database
+ * @since       1.0
  */
 class LingoDatabaseParser
 {

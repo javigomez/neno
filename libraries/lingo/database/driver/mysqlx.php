@@ -1,48 +1,48 @@
 <?php
 
 /**
- * @package       Lingo
- * @subpackage    Database
+ * @package     Lingo
+ * @subpackage  Database
  *
- * @copyright (c) 2014, Jensen Technologies S.L. All rights reserved
- * @license
+ * @copyright   Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // If the database type is mysqli, let's created a middle class that inherit from the Mysqli drive
 if (JFactory::getConfig()->get('dbtype') === 'mysqli')
 {
-    /**
-     * Class CommonDriver for Mysqli extension
-     */
-    class CommonDriver extends JDatabaseDriverMysqli
-    {
-
-    }
+	/**
+	 * Class CommonDriver for Mysqli extension
+	 *
+	 * @since  1.0
+	 */
+	class CommonDriver extends JDatabaseDriverMysqli
+	{
+	}
 }
 else
 {
-    // @TODO JDatabaseDriverMysql is already deprecated, so we should remove this class when the minimum PHP version don't support this extension
-    /**
-     * Class CommonDriver for Mysql extension
-     */
-    class CommonDriver extends JDatabaseDriverMysql
-    {
-
-    }
-
+	// @TODO JDatabaseDriverMysql is already deprecated, so we should remove this class when the minimum PHP version don't support this extension
+	/**
+	 * Class CommonDriver for Mysql extension
+	 *
+	 * @since  1.0
+	 */
+	class CommonDriver extends JDatabaseDriverMysql
+	{
+	}
 }
 
 /**
  * Database driver class extends from Joomla Platform Database Driver class
  *
- * @package    Lingo
- * @subpackage Database
- * @since      1.0
+ * @package     Lingo
+ * @subpackage  Database
+ * @since       1.0
  */
 class LingoDatabaseDriverMysqlx extends CommonDriver
 {
-
     /**
-     *  Lingo tables
+     * Lingo tables
      * @var array
      */
     private static $lingoTables = array(

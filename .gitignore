@@ -1,6 +1,5 @@
-/*
-/*/
-!libraries/lingo/*
-!*.com_lingo.ini
-!*.plg_system_lingo.ini
-!*.plg_system_lingo.sys.ini
+*
+!/libraries/lingo/*
+!*com_lingo*
+!*plg_system_lingo*
+!build.xml
