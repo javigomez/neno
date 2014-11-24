@@ -3,7 +3,7 @@
          default="build">
 	<!-- By default, we assume all tools to be on the $PATH -->
 	<property name="toolsdir"
-	          value=""/>
+	          value="/home/victor/.composer/vendor/bin"/>
 
 	<!-- Uncomment the following when the tools are in ${basedir}/vendor/bin -->
 	<!-- <property name="toolsdir" value="${basedir}/vendor/bin/"/> -->
