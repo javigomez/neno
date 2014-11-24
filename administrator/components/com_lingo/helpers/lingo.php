@@ -44,14 +44,22 @@ class LingoHelper
 	 *
 	 * @param   string  $name  The filename of the model
 	 *
-	 * @return object An instantiated object of the given model
+	 * @return JModel|null An instantiated object of the given model or null if the class does not exist.
 	 */
 	public static function getModel($name)
 	{
-		include_once JPATH_ADMINISTRATOR . '/components/com_lingo/models/' . strtolower($name) . '.php';
-		$model_class = 'LingoModel' . ucwords($name);
+		$classFilePath = JPATH_ADMINISTRATOR . '/components/com_lingo/models/' . strtolower($name) . '.php';
+		$model_class   = 'LingoModel' . ucwords($name);
 
-		return new $model_class;
+		// Register the class if the file exists.
+		if (file_exists($classFilePath))
+		{
+			JLoader::register($model_class, $classFilePath);
+
+			return new $model_class;
+		}
+
+		return null;
 	}
 
 	/**
