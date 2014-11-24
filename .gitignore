@@ -2,5 +2,4 @@
 !/libraries/lingo/*
 !*com_lingo*
 !*plg_system_lingo*
-!build/*
-!*/
+!build.xml
