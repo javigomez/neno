@@ -17,21 +17,20 @@ defined('JPATH_BASE') or die;
  * @subpackage System
  * @since 1.0
  */
-class PlgSystemLingo extends JPlugin
-{
+class PlgSystemLingo extends JPlugin {
 
     /**
      * Method to register a custom database driver
-     * 
      * @return void 
      */
     public function onAfterInitialise()
     {
-        if (JFactory::getApplication()->isSite()) {
-
+        if (JFactory::getApplication()->isSite())
+        {
             $lingoLoader = JPATH_LIBRARIES . '/lingo/loader.php';
 
-            if (file_exists($lingoLoader)) {
+            if (file_exists($lingoLoader))
+            {
                 require_once $lingoLoader;
 
                 // Register the Class prefix in the autoloader

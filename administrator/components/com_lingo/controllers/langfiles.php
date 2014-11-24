@@ -52,7 +52,6 @@ class LingoControllerLangfiles extends JControllerLegacy
             $this->setRedirect(JRoute::_('index.php?option=com_lingo&view=langfilesimport', false));
         }
 
-
     }
 
     /**

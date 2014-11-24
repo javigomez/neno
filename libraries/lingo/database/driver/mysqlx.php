@@ -67,7 +67,7 @@ class LingoDatabaseDriverMysqlx extends CommonDriver
         $queryType = LingoDatabaseParser::getQueryType($sql);
 
         // Get table name
-        $tableName = LingoDatabaseParser::getFromTableName($sql);
+        $tableName = LingoDatabaseParser::getSourceTableName($sql);
 
         // If the query is a select statement let's get the sql query using its shadow table name
         if (!in_array($tableName, self::$lingoTables))

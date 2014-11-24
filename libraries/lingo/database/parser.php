@@ -258,7 +258,7 @@ class LingoDatabaseParser
      *
      * @return string|false
      */
-    public static function getFromTableName($sql)
+    public static function getSourceTableName($sql)
     {
         $sqlElements = self::parseSql($sql);
         if (!empty($sqlElements['FROM']))
