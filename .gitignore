@@ -506,3 +506,4 @@ cache.properties
 composer.phar
 composer.lock
 .gitignore
+tests/_output/*

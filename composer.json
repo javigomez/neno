@@ -7,5 +7,10 @@
 	},
 	"require-dev": {
 		"codeception/codeception": "*"
+	},
+	"scripts"    : {
+		"post-update-cmd": [
+			"php vendor/bin/codecept bootstrap ../../"
+		]
 	}
 }
