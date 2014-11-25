@@ -175,7 +175,7 @@
 		<exec executable="${toolsdir}phpunit"
 		      failonerror="true">
 			<arg value="--configuration"/>
-			<arg path="${basedir}/build/phpunit.xml"/>
+			<arg path="${basedir}/tests/unit/phpunit.xml"/>
 		</exec>
 	</target>
 
