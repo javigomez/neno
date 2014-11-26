@@ -21,7 +21,7 @@ class LingoHelper
 	/**
 	 * Get a printable name from a language code
 	 *
-	 * @param   string  $code  'da-DK'
+	 * @param   string $code 'da-DK'
 	 *
 	 * @return string the name or boolean false on error
 	 */
@@ -42,7 +42,7 @@ class LingoHelper
 	/**
 	 * Get an instance of the named model
 	 *
-	 * @param   string  $name  The filename of the model
+	 * @param   string $name The filename of the model
 	 *
 	 * @return JModel|null An instantiated object of the given model or null if the class does not exist.
 	 */
@@ -80,6 +80,10 @@ class LingoHelper
 			JText::_('COM_LINGO_TITLE_SOURCES'),
 			'index.php?option=com_lingo&view=sources',
 			$vName == 'sources'
+		);JHtmlSidebar::addEntry(
+			JText::_('COM_LINGO_TITLE_EXTENSIONS'),
+			'index.php?option=com_lingo&view=extensions',
+			$vName == 'extensions'
 		);
 	}
 
@@ -107,5 +111,24 @@ class LingoHelper
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Transform an array of stdClass to
+	 *
+	 * @param   array  $objectList  List of objects
+	 *
+	 * @return array
+	 */
+	public static function convertStdClassArrayToJObjectArray(array $objectList)
+	{
+		$jObjectList = array();
+
+		foreach ($objectList as $object)
+		{
+			$jObjectList[] = new JObject($object);
+		}
+
+		return $jObjectList;
 	}
 }
