@@ -29,9 +29,9 @@ class LingoModelManifestTable extends JModelAdmin
 	/**
 	 * Returns a reference to the a Table object, always creating it.
 	 *
-	 * @param   string $type   The table type to instantiate
-	 * @param   string $prefix A prefix for the table class name. Optional.
-	 * @param   array  $config Configuration array for model. Optional.
+	 * @param   string  $type    The table type to instantiate
+	 * @param   string  $prefix  A prefix for the table class name. Optional.
+	 * @param   array   $config  Configuration array for model. Optional.
 	 *
 	 * @return    JTable    A database object
 	 *
@@ -45,8 +45,8 @@ class LingoModelManifestTable extends JModelAdmin
 	/**
 	 * Method to get the record form.
 	 *
-	 * @param   array   $data     An optional array of data for the form to interrogate.
-	 * @param   boolean $loadData True if the form is to load its own data (default case), false if not.
+	 * @param   array    $data      An optional array of data for the form to interrogate.
+	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
 	 *
 	 * @return    JForm    A JForm object on success, false on failure
 	 *
@@ -91,7 +91,7 @@ class LingoModelManifestTable extends JModelAdmin
 	/**
 	 * Method to get a single record.
 	 *
-	 * @param   integer|array $pk The id of the primary key or an array of search criteria
+	 * @param   integer|array  $pk  The id of the primary key or an array of search criteria
 	 *
 	 * @return mixed    Object on success, false on failure.
 	 *
@@ -114,7 +114,7 @@ class LingoModelManifestTable extends JModelAdmin
 	/**
 	 * Method to retrieve the primary key of a table
 	 *
-	 * @param   string $tableName Table name
+	 * @param   string  $tableName  Table name
 	 *
 	 * @return string|null Null if the table does not have any primary key
 	 *
@@ -134,8 +134,8 @@ class LingoModelManifestTable extends JModelAdmin
 	/**
 	 * Checks if a particular field already exists on a translatable table field list
 	 *
-	 * @param   JObject $translatableTable Translatable table object
-	 * @param   string  $fieldName         Field name
+	 * @param   JObject  $translatableTable  Translatable table object
+	 * @param   string   $fieldName          Field name
 	 *
 	 * @return JObject
 	 *
@@ -183,9 +183,9 @@ class LingoModelManifestTable extends JModelAdmin
 	}
 
 	/**
-	 * Save data
+	 * {@inheritdoc}
 	 *
-	 * @param   array|JObject $data Data to save
+	 * @param   array|JObject  $data  Data to save
 	 *
 	 * @return bool
 	 */
@@ -224,25 +224,16 @@ class LingoModelManifestTable extends JModelAdmin
 			$table = $this->getTable();
 			$table->clearUnusedFields($tableId, $fieldsAdded);
 
-			// Create shadow tables
-			$this->createShadowTables($data['table_name']);
-
 			return $tableId;
 		}
 
 		return false;
 	}
 
-	private function createShadowTables($tableName)
-	{
-		$languages = JFactory::getLanguage()->getKnownLanguages();
-		var_dump($languages);
-	}
-
 	/**
 	 * Get all the table columns
 	 *
-	 * @param JObject $tableData Table name
+	 * @param   JObject  $tableData  Table name
 	 *
 	 * @return array
 	 */
@@ -286,7 +277,7 @@ class LingoModelManifestTable extends JModelAdmin
 	 * Unify the table name to the next format:
 	 * #__com_name_table_name
 	 *
-	 * @param string $tableName Table name
+	 * @param   string  $tableName  Table name
 	 *
 	 * @return string
 	 */

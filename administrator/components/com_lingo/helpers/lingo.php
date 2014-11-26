@@ -65,7 +65,7 @@ class LingoHelper
 	/**
 	 * Configure the Link bar.
 	 *
-	 * @param   string  $vName  View name
+	 * @param   string $vName View name
 	 *
 	 * @return void
 	 */
@@ -80,7 +80,8 @@ class LingoHelper
 			JText::_('COM_LINGO_TITLE_SOURCES'),
 			'index.php?option=com_lingo&view=sources',
 			$vName == 'sources'
-		);JHtmlSidebar::addEntry(
+		);
+		JHtmlSidebar::addEntry(
 			JText::_('COM_LINGO_TITLE_EXTENSIONS'),
 			'index.php?option=com_lingo&view=extensions',
 			$vName == 'extensions'
@@ -116,7 +117,7 @@ class LingoHelper
 	/**
 	 * Transform an array of stdClass to
 	 *
-	 * @param   array  $objectList  List of objects
+	 * @param   array $objectList List of objects
 	 *
 	 * @return array
 	 */
