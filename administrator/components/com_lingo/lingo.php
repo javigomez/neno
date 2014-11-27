@@ -18,7 +18,6 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_lingo'))
 
 // Include dependencies
 jimport('joomla.application.component.controller');
-JLoader::register('LingoDebug', JPATH_COMPONENT_ADMINISTRATOR . '/helpers/debug.php');
 JLoader::register('LingoHelper', JPATH_COMPONENT_ADMINISTRATOR . '/helpers/lingo.php');
 
 $controller = JControllerLegacy::getInstance('Lingo');
