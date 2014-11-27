@@ -17,14 +17,14 @@ jimport('joomla.log.log');
  *
  * @since  1.0
  */
-class LingoDebug extends JLog
+class LingoLog extends JLog
 {
 	/**
 	 * A static method that allows logging of errors and messages
 	 *
-	 * @param   string   $string           The log line that should be saved
-	 * @param   integer  $level            1=error, 2=info, 3=debug
-	 * @param   boolean  $display_message  Weather or not the logged message should be displayed to the user
+	 * @param   string  $string          The log line that should be saved
+	 * @param   integer $level           1=error, 2=info, 3=debug
+	 * @param   boolean $display_message Weather or not the logged message should be displayed to the user
 	 *
 	 * @return bool true on success
 	 */
@@ -55,9 +55,9 @@ class LingoDebug extends JLog
 	}
 
 	/**
-	 * Convert our simple priority 1,2,3 to appropriate jLog error integer
+	 * Convert our simple priority 1,2,3 to appropriate JLog error integer
 	 *
-	 * @param   integer  $priority  1,2 or 3
+	 * @param   integer $priority 1,2 or 3
 	 *
 	 * @return int JLog priority integer
 	 */
