@@ -85,8 +85,8 @@ class LingoViewTranslations extends JViewLegacy
 		$state = $this->get('State');
 		$canDo = LingoHelper::getActions($state->get('filter.category_id'));
 
-		JToolBarHelper::title(JText::_('COM_LINGO_TITLE_TRANSLATIONS'), 'translations.png');
-
+		JToolBarHelper::title(LingoHelper::getAdminTitle(), 'nope');
+        
 		// Check if the form exists before showing the add/edit buttons
 		$formPath = JPATH_COMPONENT_ADMINISTRATOR . '/views/translation';
 

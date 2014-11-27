@@ -31,20 +31,9 @@ class LingoViewDashboard extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->addToolbar();
+  		JToolBarHelper::title(LingoHelper::getAdminTitle(), 'nope');
+
 		parent::display($tpl);
 	}
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 * @return void
-	 *
-	 * @since 1.0
-	 */
-	protected function addToolbar()
-	{
-		JFactory::getApplication()->input->set('hidemainmenu', true);
-		JToolBarHelper::title(JText::_('COM_LINGO_TITLE_DASHBOARD'), 'dashboard.png');
-	}
 }

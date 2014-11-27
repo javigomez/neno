@@ -128,11 +128,17 @@ class LingoModelTranslations extends JModelList
 				'list.select', 'DISTINCT a.*'
 			)
 		);
-		$query->from('`#__lingo_langfile_translations` AS a');
+		$query->from('#__lingo_langfile_source AS a');
 
 		// Filter by search in title
 		$search = $this->getState('filter.search');
-
+        
+        // Join the translation table
+        $query->join('LEFT', '#__lingo_langfile_translations AS t ON t.source_id = a.id');
+        $query->select('t.string AS translation_string');
+        $query->select('t.time_translated');
+        $query->select('t.lang AS target_lang');
+        
 		if (!empty($search))
 		{
 			if (stripos($search, 'id:') === 0)

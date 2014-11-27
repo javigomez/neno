@@ -49,60 +49,11 @@ class LingoModelLangfiles extends JModelLegacy
 
 		$language                    = JFactory::getLanguage();
 		$this->sourceLanguage        = $language->getDefault();
-		$this->targetLanguages       = $this->getTargetLanguages();
+		$this->targetLanguages       = LingoHelper::getTargetLanguages();
 		$this->messages              = array();
 		$this->sourceLanguageStrings = array();
 	}
 
-	/**
-	 * Get an array indexed by language code of the target languages
-	 *
-	 * @return array objectList
-	 */
-	protected function getTargetLanguages()
-	{
-		// Load all published languages
-		$languages = $this->getLanguages();
-
-		// Create a simple array
-		$arr = array();
-
-		foreach ($languages as $lang)
-		{
-			$arr[$lang->lang_code] = $lang->lang_code;
-		}
-
-		// Remove the source language
-		unset($arr[$this->sourceLanguage]);
-
-		return $arr;
-	}
-
-	/**
-	 * Load all published languages on the site
-	 *
-	 * @param   boolean  $published  weather or not only the published language should be loaded
-	 *
-	 * @return array objectList
-	 */
-	protected function getLanguages($published = true)
-	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select('*');
-		$query->from('#__languages');
-
-		if ($published)
-		{
-			$query->where('published = 1');
-		}
-
-		$db->setQuery($query);
-		$rows = $db->loadObjectList('lang_code');
-
-		return $rows;
-	}
 
 	/**
 	 * Import from files into the database
@@ -166,19 +117,23 @@ class LingoModelLangfiles extends JModelLegacy
 		// Create an array of languages we need to load depending on type
 		if ($type == 'source')
 		{
-			$langs = array( $this->sourceLanguage );
+			$lang_object = new stdClass();
+            $lang_object->lang_code = $this->sourceLanguage;
+            $langs = array( $lang_object );			
 		}
 		else
 		{
-			$langs = $this->getTargetLanguages();
+			$langs = LingoHelper::getTargetLanguages();
 		}
 
 		$new_strings = array();
 
 		foreach ($langs as $lang)
 		{
-			// Load constants from files
-			$file_strings = $this->loadLanguageStringsFromFiles($lang);
+            $lang_code = $lang->lang_code;
+
+            // Load constants from files
+			$file_strings = $this->loadLanguageStringsFromFiles($lang_code);
 
 			// If we are finding new target strings then don't import the strings
 			// that does not have a matching source string
@@ -190,12 +145,12 @@ class LingoModelLangfiles extends JModelLegacy
 			}
 
 			// Load constants from database
-			$database_strings = $this->loadLanguageStringsFromDatabase($type, $lang);
+			$database_strings = $this->loadLanguageStringsFromDatabase($type, $lang_code);
 
 			// Filter the list to only have strings that are not already imported
-			$new_strings[$lang] = array_diff_key($file_strings, $database_strings);
+			$new_strings[$lang_code] = array_diff_key($file_strings, $database_strings);
 
-			LingoDebug::log('Found ' . count($new_strings[$lang]) . ' new strings in [' . $lang . '] language files', 2);
+			LingoDebug::log('Found ' . count($new_strings[$lang_code]) . ' new strings in [' . $lang_code . '] language files', 2);
 		}
 
 		return $new_strings;
@@ -908,24 +863,27 @@ class LingoModelLangfiles extends JModelLegacy
 		// Create an array of languages we need to load depending on type
 		if ($type == 'source')
 		{
-			$langs = array( $this->sourceLanguage );
+			$lang_object = new stdClass();
+            $lang_object->lang_code = $this->sourceLanguage;
+            $langs = array( $lang_object );
 		}
 		else
 		{
-			$langs = $this->getTargetLanguages();
+			$langs = LingoHelper::getTargetLanguages();
 		}
 
 		$changes = array();
 
 		foreach ($langs as $lang)
 		{
-			$changes[$lang] = array();
+            $lang_code = $lang->lang_code;
+            $changes[$lang_code] = array();
 
 			// Load constants from files
-			$file_strings = $this->loadLanguageStringsFromFiles($lang);
+			$file_strings = $this->loadLanguageStringsFromFiles($lang_code);
 
 			// Load constants from database
-			$database_strings = $this->loadLanguageStringsFromDatabase($type, $lang);
+			$database_strings = $this->loadLanguageStringsFromDatabase($type, $lang_code);
 
 			foreach ($file_strings as $key => $file_string)
 			{
@@ -938,7 +896,7 @@ class LingoModelLangfiles extends JModelLegacy
 
 				if ($database_strings[$key]->string != $file_string)
 				{
-					$changes[$lang][$key] = $file_string;
+					$changes[$lang_code][$key] = $file_string;
 				}
 			}
 		}

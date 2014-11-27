@@ -31,9 +31,41 @@ class LingoController extends JControllerLegacy
 
 		$view = JFactory::getApplication()->input->getCmd('view', 'dashboard');
 		JFactory::getApplication()->input->set('view', $view);
-
+        
+        // Ensure that a working language is set for some views
+        $viewsThatRequireWorkingLanguage = array();
+        $viewsThatRequireWorkingLanguage[] = 'translations';
+        $viewsThatRequireWorkingLanguage[] = 'translation';
+        if (in_array($view, $viewsThatRequireWorkingLanguage))
+        {
+            if (empty(LingoHelper::getWorkingLanguage())) 
+            {
+                $url = JRoute::_('index.php?option=com_lingo&view=setworkinglang&next='.$view, false);
+                $this->setRedirect($url);
+                $this->redirect();
+            }
+        }
+                
 		parent::display($cachable, $urlparams);
 
 		return $this;
 	}
+    
+    
+    public function setWorkingLang() {
+        
+        require_once JPATH_COMPONENT . '/helpers/lingo.php';
+        
+		$lang = JFactory::getApplication()->input->getString('lang', '');
+		$next = JFactory::getApplication()->input->getString('next', 'dashboard');
+        
+        LingoHelper::setWorkingLanguage($lang);
+        
+        $url = JRoute::_('index.php?option=com_lingo&view='.$next, false);
+        $this->setRedirect($url);
+        $this->redirect();
+        
+    }
+    
+    
 }

@@ -133,16 +133,19 @@ if (!empty($this->extra_sidebar))
 					<?php endif; ?>
 
 					<th class='left'>
-						<?php echo JHtml::_('grid.sort', 'COM_LINGO_TRANSLATIONS_SOURCE_ID', 'a.source_id', $listDirection, $listOrder); ?>
+						<?php echo JHtml::_('grid.sort', 'COM_LINGO_TRANSLATIONS_CONSTANT', 'a.constant', $listDirection, $listOrder); ?>
+					</th>
+					<th class='left'>
+						<?php echo JHtml::_('grid.sort', 'COM_LINGO_TRANSLATIONS_SOURCE_STRING', 'a.string', $listDirection, $listOrder); ?>
+					</th>
+					<th class='left'>
+						<?php echo JHtml::_('grid.sort', 'COM_LINGO_TRANSLATIONS_TARGET_STRING', 't.string', $listDirection, $listOrder); ?>
 					</th>
 					<th class='left'>
 						<?php echo JHtml::_('grid.sort', 'COM_LINGO_TRANSLATIONS_TIME_TRANSLATED', 'a.time_translated', $listDirection, $listOrder); ?>
 					</th>
 					<th class='left'>
-						<?php echo JHtml::_('grid.sort', 'COM_LINGO_TRANSLATIONS_VERSION', 'a.version', $listDirection, $listOrder); ?>
-					</th>
-					<th class='left'>
-						<?php echo JHtml::_('grid.sort', 'COM_LINGO_TRANSLATIONS_LANG', 'a.lang', $listDirection, $listOrder); ?>
+						<?php echo JHtml::_('grid.sort', 'COM_LINGO_TRANSLATIONS_LANG', 'a.target_lang', $listDirection, $listOrder); ?>
 					</th>
 
 
@@ -189,16 +192,15 @@ if (!empty($this->extra_sidebar))
 										$disabledLabel    = JText::_('JORDERINGDISABLED');
 										$disableClassName = 'inactive tip-top';
 									endif; ?>
-									<span class="sortable-handler hasTooltip <?php echo $disableClassName ?>"
-										title="<?php echo $disabledLabel ?>">
-							<i class="icon-menu"></i>
-						</span>
+									<span class="sortable-handler hasTooltip <?php echo $disableClassName ?>" title="<?php echo $disabledLabel ?>">
+                        				<i class="icon-menu"></i>
+            						</span>
 									<input type="text" style="display:none" name="order[]" size="5"
 										value="<?php echo $item->ordering; ?>" class="width-20 text-area-order " />
 								<?php else : ?>
 									<span class="sortable-handler inactive">
-							<i class="icon-menu"></i>
-						</span>
+                                        <i class="icon-menu"></i>
+                                    </span>
 								<?php endif; ?>
 							</td>
 						<?php endif; ?>
@@ -212,20 +214,19 @@ if (!empty($this->extra_sidebar))
 						<?php endif; ?>
 
 						<td>
-
-							<?php echo $item->source_id; ?>
+							<?php echo $item->constant; ?>
 						</td>
 						<td>
-
+							<?php echo $item->string; ?>
+						</td>
+						<td>
+							<?php echo $item->translation_string; ?>
+						</td>
+						<td>
 							<?php echo $item->time_translated; ?>
 						</td>
 						<td>
-
-							<?php echo $item->version; ?>
-						</td>
-						<td>
-
-							<?php echo $item->lang; ?>
+							<?php echo $item->target_lang; ?>
 						</td>
 
 
