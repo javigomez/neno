@@ -56,6 +56,7 @@ class Creator
 	public function create($parsed)
 	{
 		$k = key($parsed);
+
 		switch ($k)
 		{
 			case "UNION":
@@ -85,18 +86,22 @@ class Creator
 	protected function processSelectStatement($parsed)
 	{
 		$sql = $this->processSELECT($parsed['SELECT']) . " " . $this->processFROM($parsed['FROM']);
+
 		if (isset($parsed['WHERE']))
 		{
 			$sql .= " " . $this->processWHERE($parsed['WHERE']);
 		}
+
 		if (isset($parsed['GROUP']))
 		{
 			$sql .= " " . $this->processGROUP($parsed['GROUP']);
 		}
+
 		if (isset($parsed['ORDER']))
 		{
 			$sql .= " " . $this->processORDER($parsed['ORDER']);
 		}
+
 		if (isset($parsed['LIMIT']))
 		{
 			$sql .= " " . $this->processLIMIT($parsed['LIMIT']);
@@ -108,6 +113,7 @@ class Creator
 	protected function processSELECT($parsed)
 	{
 		$sql = "";
+
 		foreach ($parsed as $k => $v)
 		{
 			$len = strlen($sql);
@@ -123,6 +129,7 @@ class Creator
 
 			$sql .= ",";
 		}
+
 		$sql = substr($sql, 0, -1);
 
 		return "SELECT " . $sql;
@@ -134,11 +141,14 @@ class Creator
 		{
 			return "";
 		}
+
 		$sql = $parsed['base_expr'];
+
 		if (isset($parsed['alias']))
 		{
 			$sql .= $this->processAlias($parsed['alias']);
 		}
+
 		if (isset($parsed['direction']))
 		{
 			$sql .= $this->processDirection($parsed['direction']);
@@ -153,11 +163,14 @@ class Creator
 		{
 			return "";
 		}
+
 		$sql = "";
+
 		if ($parsed['as'])
 		{
 			$sql .= " as";
 		}
+
 		$sql .= " " . $parsed['name'];
 
 		return $sql;
@@ -176,6 +189,7 @@ class Creator
 		{
 			return "";
 		}
+
 		$sql = $this->processSubTree($parsed, " ");
 		$sql .= $this->processAlias($parsed['alias']);
 
@@ -188,7 +202,9 @@ class Creator
 		{
 			return "";
 		}
+
 		$sql = "";
+
 		foreach ($parsed['sub_tree'] as $k => $v)
 		{
 			$len = strlen($sql);
@@ -197,6 +213,8 @@ class Creator
 			$sql .= $this->processConstant($v);
 			$sql .= $this->processSubQuery($v);
 			$sql .= $this->processSelectBracketExpression($v);
+			$sql .= $this->processReserved($v);
+			$sql .= $this->processColRef($v);
 
 			if ($len == strlen($sql))
 			{
@@ -226,21 +244,27 @@ class Creator
 		$sql = "";
 		foreach ($parsed['sub_tree'] as $k => $v)
 		{
+			if ($this->isOperator($v))
+			{
+				$sql = substr($sql, 0, strlen($sql) - 1);
+			}
+
 			$len = strlen($sql);
 			$sql .= $this->processFunction($v);
 			$sql .= $this->processConstant($v);
 			$sql .= $this->processColRef($v);
 			$sql .= $this->processReserved($v);
+			$sql .= $this->processOperator($v);
 
 			if ($len == strlen($sql))
 			{
 				throw new \PHPSQL\Exception\UnableToCreateSQL('function subtree', $k, $v, 'expr_type');
 			}
 
-			$sql .= ($this->isReserved($v) ? " " : ",");
+			$sql .= ($this->isReserved($v) || $this->isOperator($v) ? " " : ",");
 		}
 
-		return $parsed['base_expr'] . "(" . substr($sql, 0, -1) . ")";
+		return $parsed['base_expr'] . "(" . substr($sql, 0, -1) . ")" . (isset($parsed['alias']) && $parsed['alias']['as'] ? $parsed['alias']['base_expr'] : '');
 	}
 
 	protected function processConstant($parsed)
@@ -266,6 +290,11 @@ class Creator
 	protected function isReserved($parsed)
 	{
 		return ($parsed['expr_type'] === \PHPSQL\Expression\Type::RESERVED);
+	}
+
+	protected function isOperator($parsed)
+	{
+		return ($parsed['expr_type'] === \PHPSQL\Expression\Type::OPERATOR);
 	}
 
 	protected function processOperator($parsed)
@@ -457,6 +486,7 @@ class Creator
 			$sql .= $this->processFunction($v);
 			$sql .= $this->processWhereExpression($v);
 			$sql .= $this->processWhereBracketExpression($v);
+			$sql .= $this->processReserved($v);
 
 			if (strlen($sql) == $len)
 			{
@@ -497,6 +527,7 @@ class Creator
 			$sql .= $this->processFunction($v);
 			$sql .= $this->processWhereExpression($v);
 			$sql .= $this->processWhereBracketExpression($v);
+			$sql .= $this->processReserved($v);
 
 			if ($len == strlen($sql))
 			{
@@ -570,6 +601,7 @@ class Creator
 			$len = strlen($sql);
 			$sql .= $this->processOrderByAlias($v);
 			$sql .= $this->processColRef($v);
+			$sql .= $this->processWhereExpression($v);
 
 			if ($len == strlen($sql))
 			{

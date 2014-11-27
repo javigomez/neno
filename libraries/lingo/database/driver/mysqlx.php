@@ -81,7 +81,7 @@ class LingoDatabaseDriverMysqlx extends CommonDriver
 		{
 			if ($queryType === LingoDatabaseParser::SELECT_QUERY && $this->isTranslatable($tableName))
 			{
-				//$sql = LingoDatabaseParser::getSqlQueryUsingShadowTable($sql);
+				$sql = LingoDatabaseParser::getSqlQueryUsingShadowTable($sql);
 			}
 		}
 
