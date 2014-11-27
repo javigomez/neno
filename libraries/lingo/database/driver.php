@@ -54,6 +54,7 @@ abstract class LingoDatabaseDriver extends JDatabaseDriver
 			{
 				/* @var $instance LingoDatabaseDriverMysqlx */
 				$instance = new LingoDatabaseDriverMysqlx($options);
+				$instance->refreshTranslatableTables();
 			}
 			catch ( RuntimeException $ex )
 			{
