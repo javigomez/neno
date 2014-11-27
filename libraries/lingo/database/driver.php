@@ -21,7 +21,7 @@ abstract class LingoDatabaseDriver extends JDatabaseDriver
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param   array  $options  Configuration options
+	 * @param   array $options Configuration options
 	 *
 	 * @return JDatabaseDriver
 	 *
@@ -53,7 +53,7 @@ abstract class LingoDatabaseDriver extends JDatabaseDriver
 			try
 			{
 				/* @var $instance LingoDatabaseDriverMysqlx */
-				$instance = LingoDatabaseDriverMysqlx::getInstance($options);
+				$instance = new LingoDatabaseDriverMysqlx($options);
 			}
 			catch ( RuntimeException $ex )
 			{
@@ -75,7 +75,7 @@ abstract class LingoDatabaseDriver extends JDatabaseDriver
 	/**
 	 * Check if the driver is MySQL
 	 *
-	 * @param   string  $driver  driver name
+	 * @param   string $driver driver name
 	 *
 	 * @return boolean True if it's a mysql driver, false otherwise
 	 */

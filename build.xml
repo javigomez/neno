@@ -3,7 +3,7 @@
          default="build">
 	<!-- By default, we assume all tools to be on the $PATH -->
 	<property name="toolsdir"
-	          value=""/>
+	          value="/home/victor/.composer/vendor/bin/"/>
 
 	<!-- Uncomment the following when the tools are in ${basedir}/vendor/bin -->
 	<!-- <property name="toolsdir" value="${basedir}/vendor/bin/"/> -->
@@ -130,7 +130,7 @@
 	<target name="phpcs"
 	        description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
 		<exec executable="${toolsdir}phpcs">
-			<arg value="--standard=PSR2"/>
+			<arg value="--standard=Joomla"/>
 			<arg value="--extensions=php"/>
 			<arg value="--ignore=autoload.php"/>
 			<arg path="${basedir}"/>
@@ -175,7 +175,7 @@
 		<exec executable="${toolsdir}phpunit"
 		      failonerror="true">
 			<arg value="--configuration"/>
-			<arg path="${basedir}/build/phpunit.xml"/>
+			<arg path="${basedir}/tests/unit/phpunit.xml"/>
 		</exec>
 	</target>
 

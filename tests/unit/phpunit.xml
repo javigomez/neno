@@ -1,0 +1,13 @@
+<phpunit
+		bootstrap="../_bootstrap.php"
+		colors="false"
+		stopOnFailure="false"
+		testdox="true"
+		verbose="true"
+		backupStaticAttributes="false"
+		backupGlobals="false">
+	<testsuite name="Lingo">
+		<directory>./suite/lingo</directory>
+	</testsuite>
+
+</phpunit>

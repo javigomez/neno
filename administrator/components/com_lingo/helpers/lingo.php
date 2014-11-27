@@ -21,7 +21,7 @@ class LingoHelper
 	/**
 	 * Get a printable name from a language code
 	 *
-	 * @param   string  $code  'da-DK'
+	 * @param   string $code 'da-DK'
 	 *
 	 * @return string the name or boolean false on error
 	 */
@@ -42,22 +42,30 @@ class LingoHelper
 	/**
 	 * Get an instance of the named model
 	 *
-	 * @param   string  $name  The filename of the model
+	 * @param   string $name The filename of the model
 	 *
-	 * @return object An instantiated object of the given model
+	 * @return JModel|null An instantiated object of the given model or null if the class does not exist.
 	 */
 	public static function getModel($name)
 	{
-		include_once JPATH_ADMINISTRATOR . '/components/com_lingo/models/' . strtolower($name) . '.php';
-		$model_class = 'LingoModel' . ucwords($name);
+		$classFilePath = JPATH_ADMINISTRATOR . '/components/com_lingo/models/' . strtolower($name) . '.php';
+		$model_class   = 'LingoModel' . ucwords($name);
 
-		return new $model_class;
+		// Register the class if the file exists.
+		if (file_exists($classFilePath))
+		{
+			JLoader::register($model_class, $classFilePath);
+
+			return new $model_class;
+		}
+
+		return null;
 	}
 
 	/**
 	 * Configure the Link bar.
 	 *
-	 * @param   string  $vName  View name
+	 * @param   string $vName View name
 	 *
 	 * @return void
 	 */
@@ -72,6 +80,11 @@ class LingoHelper
 			JText::_('COM_LINGO_TITLE_SOURCES'),
 			'index.php?option=com_lingo&view=sources',
 			$vName == 'sources'
+		);
+		JHtmlSidebar::addEntry(
+			JText::_('COM_LINGO_TITLE_EXTENSIONS'),
+			'index.php?option=com_lingo&view=extensions',
+			$vName == 'extensions'
 		);
 	}
 
@@ -100,7 +113,7 @@ class LingoHelper
 
 		return $result;
 	}
-    
+
     
     public static function ensureWorkingLanguageIsSelected() {
         
@@ -285,6 +298,22 @@ class LingoHelper
         
     }
     
-    
-    
+	/**
+	 * Transform an array of stdClass to
+	 *
+	 * @param   array $objectList List of objects
+	 *
+	 * @return array
+	 */
+	public static function convertStdClassArrayToJObjectArray(array $objectList)
+	{
+		$jObjectList = array();
+
+		foreach ($objectList as $object)
+		{
+			$jObjectList[] = new JObject($object);
+		}
+
+		return $jObjectList;
+	}
 }

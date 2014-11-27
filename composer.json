@@ -1,0 +1,16 @@
+{
+	"name"       : "Jensen-Technologies/lingo",
+	"description": "The complete translation solution for Joomla",
+	"license"    : "GPL-2.0+",
+	"require"    : {
+		"php": ">=5.3.10"
+	},
+	"require-dev": {
+		"codeception/codeception": "*"
+	},
+	"scripts"    : {
+		"post-update-cmd": [
+			"php vendor/bin/codecept bootstrap ../../"
+		]
+	}
+}
