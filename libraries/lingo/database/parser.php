@@ -170,7 +170,7 @@ class LingoDatabaseParser
 		if ($currentLanguageTag !== $defaultLanguageTag)
 		{
 			// Clean language tag
-			$languageTag = self::cleanLanguageTag($currentLanguageTag);
+			$languageTag = $currentLanguageTag;
 		}
 
 		return $languageTag;
@@ -191,14 +191,14 @@ class LingoDatabaseParser
 	/**
 	 * Generate shadow table name
 	 *
-	 * @param   string  $tableName    Table name
-	 * @param   string  $languageTag  Clean language tag
+	 * @param   string $tableName   Table name
+	 * @param   string $languageTag Clean language tag
 	 *
 	 * @return string shadow table name.
 	 */
-	private static function generateShadowTableName($tableName, $languageTag)
+	public static function generateShadowTableName($tableName, $languageTag)
 	{
-		return '#__lingo_sh_' . $languageTag . '_' . self::cleanTableName($tableName);
+		return '#__lingo_sh_' . self::cleanLanguageTag($languageTag) . '_' . self::cleanTableName($tableName);
 	}
 
 	/**
@@ -285,5 +285,12 @@ class LingoDatabaseParser
 		}
 
 		return false;
+	}
+
+	public static function buildQuery(array $parserQuery)
+	{
+		$creator = new Creator();
+
+		return $creator->create($parserQuery);
 	}
 }

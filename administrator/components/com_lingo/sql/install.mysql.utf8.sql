@@ -50,3 +50,11 @@ CREATE TABLE IF NOT EXISTS `#__lingo_manifest_fields` (
 		ON DELETE NO ACTION
 		ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `#__lingo_settings` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`setting_key` VARCHAR(150) NOT NULL,
+	`setting_value` VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE INDEX `setting_key_UNIQUE` (`setting_key` ASC))
+	ENGINE = InnoDB;

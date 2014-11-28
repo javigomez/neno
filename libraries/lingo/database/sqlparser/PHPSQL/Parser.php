@@ -38,18 +38,27 @@ defined('JPATH_LINGO') or die;
 
 /**
  * This class implements the parser functionality.
+ *
  * @author greenlion@gmail.com
  * @author arothe@phosco.info
  */
 class Parser extends \PHPSQL\Parser\Utils
 {
 
+	/**
+	 * @var array
+	 */
 	public $parsed;
+
+	/**
+	 * @var Parser\Lexer
+	 */
 	private $lexer;
 
 	public function __construct($sql = false, $calcPositions = false)
 	{
-		$this->lexer = new \PHPSQL\Parser\Lexer();
+		$this->lexer = new \PHPSQL\Parser\Lexer;
+
 		if ($sql)
 		{
 			$this->parse($sql, $calcPositions);
@@ -58,28 +67,28 @@ class Parser extends \PHPSQL\Parser\Utils
 
 	public function parse($sql, $calcPositions = false)
 	{
-		#lex the SQL statement
+		// Lex the SQL statement
 		$inputArray = $this->splitSQLIntoTokens($sql);
 
-		#This is the highest level lexical analysis.  This is the part of the
-		#code which finds UNION and UNION ALL query parts
+		// This is the highest level lexical analysis.  This is the part of the
+		// code which finds UNION and UNION ALL query parts
 		$queries = $this->processUnion($inputArray);
 
-		# If there was no UNION or UNION ALL in the query, then the query is
-		# stored at $queries[0].
+		// If there was no UNION or UNION ALL in the query, then the query is
+		// stored at $queries[0].
 		if (!$this->isUnion($queries))
 		{
 			$queries = $this->processSQL($queries[0]);
 		}
 
-		# calc the positions of some important tokens
+		// Calc the positions of some important tokens
 		if ($calcPositions)
 		{
-			$calculator = new \PHPSQL\Parser\PositionCalculator();
+			$calculator = new \PHPSQL\Parser\PositionCalculator;
 			$queries    = $calculator->setPositionsWithinSQL($sql, $queries);
 		}
 
-		# store the parsed queries
+		// Store the parsed queries
 		$this->parsed = $queries;
 
 		return $this->parsed;
@@ -94,68 +103,78 @@ class Parser extends \PHPSQL\Parser\Utils
 	{
 		$outputArray = array();
 
-		#sometimes the parser needs to skip ahead until a particular
-		#token is found
+		// Sometimes the parser needs to skip ahead until a particular
+		// token is found
 		$skipUntilToken = false;
 
-		#This is the last type of union used (UNION or UNION ALL)
-		#indicates a) presence of at least one union in this query
-		#          b) the type of union if this is the first or last query
+		/*
+		 * This is the last type of union used (UNION or UNION ALL)
+		 * indicates:
+		 *      a) presence of at least one union in this query
+		 *      b) the type of union if this is the first or last query
+		 */
 		$unionType = false;
 
-		#Sometimes a "query" consists of more than one query (like a UNION query)
-		#this array holds all the queries
+		// Sometimes a "query" consists of more than one query (like a UNION query)
+		// this array holds all the queries
 		$queries = array();
 
 		foreach ($inputArray as $key => $token)
 		{
 			$trim = trim($token);
 
-			# overread all tokens till that given token
+			// Overread all tokens till that given token
 			if ($skipUntilToken)
 			{
 				if ($trim === "")
 				{
-					continue; # read the next token
+					// Read the next token
+					continue;
 				}
+
 				if (strtoupper($trim) === $skipUntilToken)
 				{
 					$skipUntilToken = false;
-					continue; # read the next token
+
+					// Read the next token
+					continue;
 				}
 			}
 
 			if (strtoupper($trim) !== "UNION")
 			{
-				$outputArray[] = $token; # here we get empty tokens, if we remove these, we get problems in parse_sql()
+				// Here we get empty tokens, if we remove these, we get problems in parse_sql()
+				$outputArray[] = $token;
 				continue;
 			}
 
 			$unionType = "UNION";
 
-			# we are looking for an ALL token right after UNION
+			// We are looking for an ALL token right after UNION
 			for ($i = $key + 1; $i < count($inputArray); ++$i)
 			{
 				if (trim($inputArray[$i]) === "")
 				{
 					continue;
 				}
+
 				if (strtoupper($inputArray[$i]) !== "ALL")
 				{
 					break;
 				}
-				# the other for-loop should overread till "ALL"
+
+				// The other for-loop should overread till "ALL"
 				$skipUntilToken = "ALL";
 				$unionType      = "UNION ALL";
 			}
 
-			# store the tokens related to the unionType
+			// Store the tokens related to the unionType
 			$queries[$unionType][] = $outputArray;
 			$outputArray           = array();
 		}
 
-		# the query tokens after the last UNION or UNION ALL
-		# or we don't have an UNION/UNION ALL
+		// The query tokens after the last UNION or UNION ALL
+		// or we don't have an UNION/UNION ALL
 		if (!empty($outputArray))
 		{
 			if ($unionType)
@@ -171,7 +190,8 @@ class Parser extends \PHPSQL\Parser\Utils
 		return $this->processMySQLUnion($queries);
 	}
 
-	/** MySQL supports a special form of UNION:
+	/**
+	 * MySQL supports a special form of UNION:
 	 * (select ...)
 	 * union
 	 * (select ...)
@@ -182,10 +202,10 @@ class Parser extends \PHPSQL\Parser\Utils
 	 */
 	private function processMySQLUnion($queries)
 	{
-		$unionTypes = array('UNION', 'UNION ALL');
+		$unionTypes = array( 'UNION', 'UNION ALL' );
+
 		foreach ($unionTypes as $unionType)
 		{
-
 			if (empty($queries[$unionType]))
 			{
 				continue;
@@ -196,12 +216,13 @@ class Parser extends \PHPSQL\Parser\Utils
 				foreach ($tokenList as $z => $token)
 				{
 					$token = trim($token);
+
 					if ($token === "")
 					{
 						continue;
 					}
 
-					# starts with "(select"
+					// Starts with "(select"
 					if (preg_match("/^\\(\\s*select\\s*/i", $token))
 					{
 						$queries[$unionType][$key] = $this->parse($this->removeParenthesisFromStart($token));
@@ -214,13 +235,18 @@ class Parser extends \PHPSQL\Parser\Utils
 			}
 		}
 
-		# it can be parsed or not
+		// It can be parsed or not
 		return $queries;
 	}
 
-	#this function splits up a SQL statement into easy to "parse"
-	#tokens for the SQL processor
-
+	/**
+	 * This function splits up a SQL statement into easy to "parse"
+	 * tokens for the SQL processor
+	 *
+	 * @param $tokens
+	 *
+	 * @return mixed
+	 */
 	private function processSQL(&$tokens)
 	{
 		$prev_category  = "";
@@ -229,12 +255,15 @@ class Parser extends \PHPSQL\Parser\Utils
 		$out            = false;
 
 		$tokenCount = count($tokens);
+
 		for ($tokenNumber = 0; $tokenNumber < $tokenCount; ++$tokenNumber)
 		{
-
 			$token = $tokens[$tokenNumber];
-			$trim  = trim($token); # this removes also \n and \t!
-			# if it starts with an "(", it should follow a SELECT
+
+			// This removes also \n and \t!
+			$trim = trim($token);
+
+			// If it starts with an "(", it should follow a SELECT
 			if ($trim !== "" && $trim[0] === "(" && $token_category === "")
 			{
 				$token_category = 'SELECT';
@@ -248,21 +277,24 @@ class Parser extends \PHPSQL\Parser\Utils
 				if ($trim === "")
 				{
 					if ($token_category !== "")
-					{ # is this correct??
+					{
+						// Is this correct??
 						$out[$token_category][] = $token;
 					}
+
 					continue;
 				}
-				#to skip the token we replace it with whitespace
+
+				// To skip the token we replace it with whitespace
 				$trim      = "";
 				$token     = "";
 				$skip_next = false;
 			}
 
 			$upper = strtoupper($trim);
+
 			switch ($upper)
 			{
-
 				/* Tokens that get their own sections. These keywords have subclauses. */
 				case 'SELECT':
 				case 'ORDER':
@@ -299,7 +331,7 @@ class Parser extends \PHPSQL\Parser\Utils
 					{
 						$skip_next = true;
 					}
-					/* this FROM is different from FROM in other DML (not join related) */
+					/* This FROM is different from FROM in other DML (not join related) */
 					if ($token_category === 'PREPARE' && $upper === 'FROM')
 					{
 						continue 2;
@@ -314,11 +346,13 @@ class Parser extends \PHPSQL\Parser\Utils
 					{
 						continue;
 					}
+
 					$token_category = $upper;
 					break;
 
 				case 'EVENT':
-					# issue 71
+
+					// Issue 71
 					if ($prev_category === 'DROP' || $prev_category === 'ALTER' || $prev_category === 'CREATE')
 					{
 						$token_category = $upper;
@@ -326,7 +360,8 @@ class Parser extends \PHPSQL\Parser\Utils
 					break;
 
 				case 'DATA':
-					# prevent wrong handling of DATA as keyword
+
+					// Prevent wrong handling of DATA as keyword
 					if ($prev_category === 'LOAD')
 					{
 						$token_category = $upper;
@@ -334,17 +369,19 @@ class Parser extends \PHPSQL\Parser\Utils
 					break;
 
 				case 'INTO':
-					# prevent wrong handling of CACHE within LOAD INDEX INTO CACHE...
+
+					// Prevent wrong handling of CACHE within LOAD INDEX INTO CACHE...
 					if ($prev_category === 'LOAD')
 					{
 						$out[$prev_category][] = $upper;
 						continue 2;
 					}
+
 					$token_category = $upper;
 					break;
 
 				case 'USER':
-					# prevent wrong processing as keyword
+					// Prevent wrong processing as keyword
 					if ($prev_category === 'CREATE' || $prev_category === 'RENAME' || $prev_category === 'DROP')
 					{
 						$token_category = $upper;
@@ -352,15 +389,18 @@ class Parser extends \PHPSQL\Parser\Utils
 					break;
 
 				case 'VIEW':
-					# prevent wrong processing as keyword
+
+					// Prevent wrong processing as keyword
 					if ($prev_category === 'CREATE' || $prev_category === 'ALTER' || $prev_category === 'DROP')
 					{
 						$token_category = $upper;
 					}
 					break;
 
-				/* These tokens get their own section, but have no subclauses.
-				  These tokens identify the statement but have no specific subclauses of their own. */
+				/*
+				 *  These tokens get their own section, but have no subclauses.
+				 *  These tokens identify the statement but have no specific subclauses of their own.
+				*/
 				case 'DELETE':
 				case 'ALTER':
 				case 'INSERT':
@@ -388,13 +428,15 @@ class Parser extends \PHPSQL\Parser\Utils
 				case 'EXPLAIN':
 				case 'USE':
 				case 'HELP':
-					$token_category = $upper; /* set the category in case these get subclauses
-                      in a future version of MySQL */
+					$token_category = $upper;
+
+					/* Set the category in case these get subclauses in a future version of MySQL */
 					$out[$upper][0] = $upper;
 					continue 2;
 					break;
 
 				case 'CACHE':
+
 					if ($prev_category === "" || $prev_category === 'RESET' || $prev_category === 'FLUSH' || $prev_category === 'LOAD')
 					{
 						$token_category = $upper;
@@ -415,20 +457,25 @@ class Parser extends \PHPSQL\Parser\Utils
 						$skip_next        = true;
 						$out['OPTIONS'][] = $trim;
 					}
+
 					continue 2;
 					break;
 
-				case 'USING': /* USING in FROM clause is different from USING w/ prepared statement */
+				case 'USING':
+
+					/* USING in FROM clause is different from USING w/ prepared statement */
 					if ($token_category === 'EXECUTE')
 					{
 						$token_category = $upper;
 						continue 2;
 					}
+
 					if ($token_category === 'FROM' && !empty($out['DELETE']))
 					{
 						$token_category = $upper;
 						continue 2;
 					}
+
 					break;
 
 				/* DROP TABLE is different from ALTER TABLE DROP ... */
@@ -452,6 +499,7 @@ class Parser extends \PHPSQL\Parser\Utils
 						$token_category = $upper;
 						continue 2;
 					}
+
 					if ($token_category === 'DUPLICATE')
 					{
 						continue 2;
@@ -523,8 +571,8 @@ class Parser extends \PHPSQL\Parser\Utils
 					break;
 			}
 
-			# remove obsolete category after union (empty category because of
-			# empty token before select)
+			// remove obsolete category after union (empty category because of
+			// empty token before select)
 			if ($token_category !== "" && ($prev_category === $token_category))
 			{
 				$out[$token_category][] = $token;
@@ -564,13 +612,13 @@ class Parser extends \PHPSQL\Parser\Utils
 		}
 		if (!empty($out['GROUP']))
 		{
-			# set empty array if we have partial SQL statement
+			// set empty array if we have partial SQL statement
 			$out['GROUP'] = $this->process_group($out['GROUP'],
 				isset($out['SELECT']) ? $out['SELECT'] : array());
 		}
 		if (!empty($out['ORDER']))
 		{
-			# set empty array if we have partial SQL statement
+			// set empty array if we have partial SQL statement
 			$out['ORDER'] = $this->process_order($out['ORDER'],
 				isset($out['SELECT']) ? $out['SELECT'] : array());
 		}
@@ -687,7 +735,7 @@ class Parser extends \PHPSQL\Parser\Utils
 
 			if ($upper === 'AS')
 			{
-				$alias      = array('as' => true, "name" => "", "base_expr" => $token);
+				$alias      = array( 'as' => true, "name" => "", "base_expr" => $token );
 				$tokens[$i] = "";
 				$capture    = true;
 				continue;
@@ -717,23 +765,23 @@ class Parser extends \PHPSQL\Parser\Utils
 
 		$stripped = $this->process_expr_list($stripped);
 
-		# TODO: the last part can also be a comment, don't use array_pop
-		# we remove the last token, if it is a colref,
-		# it can be an alias without an AS
+		// TODO: the last part can also be a comment, don't use array_pop
+		// we remove the last token, if it is a colref,
+		// it can be an alias without an AS
 		$last = array_pop($stripped);
 		if (!$alias && $this->isColumnReference($last))
 		{
 
-			# TODO: it can be a comment, don't use array_pop
-			# check the token before the colref
+			// TODO: it can be a comment, don't use array_pop
+			// check the token before the colref
 			$prev = array_pop($stripped);
 
 			if ($this->isReserved($prev) || $this->isConstant($prev) || $this->isAggregateFunction($prev) || $this->isFunction($prev) || $this->isExpression($prev) || $this->isSubQuery($prev) || $this->isColumnReference($prev) || $this->isBracketExpression($prev))
 			{
 
-				$alias = array('as'        => false, 'name' => trim($last['base_expr']),
-				               'base_expr' => trim($last['base_expr']));
-				#remove the last token
+				$alias = array( 'as'        => false, 'name' => trim($last['base_expr']),
+				                'base_expr' => trim($last['base_expr']) );
+				//remove the last token
 				array_pop($tokens);
 				$base_expr = join("", $tokens);
 			}
@@ -750,11 +798,11 @@ class Parser extends \PHPSQL\Parser\Utils
 			$alias['base_expr'] = trim($alias['base_expr']);
 		}
 
-		# TODO: this is always done with $stripped, how we do it twice?
+		// TODO: this is always done with $stripped, how we do it twice?
 		$processed = $this->process_expr_list($tokens);
 
-		# if there is only one part, we copy the expr_type
-		# in all other cases we use "expression" as global type
+		// if there is only one part, we copy the expr_type
+		// in all other cases we use "expression" as global type
 		$type = \PHPSQL\Expression\Type::EXPRESSION;
 		if (count($processed) === 1)
 		{
@@ -766,8 +814,8 @@ class Parser extends \PHPSQL\Parser\Utils
 			}
 		}
 
-		return array('expr_type' => $type, 'alias' => $alias, 'base_expr' => trim($base_expr),
-		             'sub_tree'  => $processed);
+		return array( 'expr_type' => $type, 'alias' => $alias, 'base_expr' => trim($base_expr),
+		              'sub_tree'  => $processed );
 	}
 
 	private function isWhitespaceToken($token)
@@ -803,7 +851,7 @@ class Parser extends \PHPSQL\Parser\Utils
 
 			if ($skip_next)
 			{
-				# skip the next non-whitespace token
+				// skip the next non-whitespace token
 				$skip_next = false;
 				continue;
 			}
@@ -880,8 +928,8 @@ class Parser extends \PHPSQL\Parser\Utils
 				elseif ($prev->isColumnReference() || $prev->isFunction() || $prev->isAggregateFunction())
 				{
 
-					# if we have a colref followed by a parenthesis pair,
-					# it isn't a colref, it is a user-function
+					// if we have a colref followed by a parenthesis pair,
+					// it isn't a colref, it is a user-function
 					foreach ($localTokenList as $k => $v)
 					{
 						$tmpToken = new \PHPSQL\Expression\Token($k, $v);
@@ -904,7 +952,7 @@ class Parser extends \PHPSQL\Parser\Utils
 					$curr = $prev;
 				}
 
-				# we have parenthesis, but it seems to be an expression
+				// we have parenthesis, but it seems to be an expression
 				if ($curr->isUnspecified())
 				{
 					$curr->setSubTree($this->process_expr_list($localTokenList));
@@ -924,17 +972,17 @@ class Parser extends \PHPSQL\Parser\Utils
 				{
 
 					case '*':
-						$curr->setSubTree(false); #no subtree
-						# single or first element of expression list -> all-column-alias
+						$curr->setSubTree(false); //no subtree
+						// single or first element of expression list -> all-column-alias
 						if (empty($resultList))
 						{
 							$curr->setTokenType(\PHPSQL\Expression\Type::COLREF);
 							break;
 						}
 
-						# if the last token is colref, const or expression
-						# then * is an operator
-						# but if the previous colref ends with a dot, the * is the all-columns-alias
+						// if the last token is colref, const or expression
+						// then * is an operator
+						// but if the previous colref ends with a dot, the * is the all-columns-alias
 						if (!$prev->isColumnReference() && !$prev->isConstant() && !$prev->isExpression() && !$prev->isBracketExpression())
 						{
 							$curr->setTokenType(\PHPSQL\Expression\Type::COLREF);
@@ -943,8 +991,8 @@ class Parser extends \PHPSQL\Parser\Utils
 
 						if ($prev->isColumnReference() && $prev->endsWith("."))
 						{
-							$prev->addToken('*'); # tablealias dot *
-							continue 2; # skip the current token
+							$prev->addToken('*'); // tablealias dot *
+							continue 2; // skip the current token
 						}
 
 						$curr->setTokenType(\PHPSQL\Expression\Type::OPERATOR);
@@ -1014,11 +1062,11 @@ class Parser extends \PHPSQL\Parser\Utils
 						{
 							case "'":
 							case '"':
-								# it is a string literal
+								// it is a string literal
 								$curr->setTokenType(\PHPSQL\Expression\Type::CONSTANT);
 								break;
 							case '`':
-								# it is an escaped colum name
+								// it is an escaped colum name
 								$curr->setTokenType(\PHPSQL\Expression\Type::COLREF);
 								break;
 
@@ -1028,10 +1076,10 @@ class Parser extends \PHPSQL\Parser\Utils
 
 									if ($prev->isSign())
 									{
-										$prev->addToken($curr->getToken()); # it is a negative numeric constant
+										$prev->addToken($curr->getToken()); // it is a negative numeric constant
 										$prev->setTokenType(\PHPSQL\Expression\Type::CONSTANT);
 										continue 3;
-										# skip current token
+										// skip current token
 									}
 									else
 									{
@@ -1208,7 +1256,7 @@ class Parser extends \PHPSQL\Parser\Utils
 				default:
 					$parseInfo['expression'] .= $token;
 					if ($parseInfo['ref_type'] !== false)
-					{ # all after ON / USING
+					{ // all after ON / USING
 						$parseInfo['ref_expr'] .= $token;
 					}
 					break;
@@ -1217,7 +1265,7 @@ class Parser extends \PHPSQL\Parser\Utils
 			switch ($upper)
 			{
 				case 'AS':
-					$parseInfo['alias'] = array('as' => true, 'name' => "", 'base_expr' => $token);
+					$parseInfo['alias'] = array( 'as' => true, 'name' => "", 'base_expr' => $token );
 					$parseInfo['token_count']++;
 					$n   = 1;
 					$str = "";
@@ -1284,7 +1332,7 @@ class Parser extends \PHPSQL\Parser\Utils
 				default:
 					if ($upper === "")
 					{
-						continue; # ends the switch statement!
+						continue; // ends the switch statement!
 					}
 
 					if ($parseInfo['token_count'] === 0)
@@ -1294,10 +1342,13 @@ class Parser extends \PHPSQL\Parser\Utils
 							$parseInfo['table'] = $token;
 						}
 					}
-					else if ($parseInfo['token_count'] === 1)
+					else
 					{
-						$parseInfo['alias'] = array('as'        => false, 'name' => trim($token),
-						                            'base_expr' => trim($token));
+						if ($parseInfo['token_count'] === 1)
+						{
+							$parseInfo['alias'] = array( 'as'        => false, 'name' => trim($token),
+							                             'base_expr' => trim($token) );
+						}
 					}
 					$parseInfo['token_count']++;
 					break;
@@ -1312,18 +1363,18 @@ class Parser extends \PHPSQL\Parser\Utils
 
 	private function initParseInfoForFrom($parseInfo = false)
 	{
-		# first init
+		// first init
 		if ($parseInfo === false)
 		{
-			$parseInfo = array('join_type' => "", 'saved_join_type' => "JOIN");
+			$parseInfo = array( 'join_type' => "", 'saved_join_type' => "JOIN" );
 		}
 
-		# loop init
-		return array('expression'     => "", 'token_count' => 0, 'table' => "", 'alias' => false,
-		             'join_type'      => "",
-		             'next_join_type' => "", 'saved_join_type' => $parseInfo['saved_join_type'],
-		             'ref_type'       => false, 'ref_expr' => false, 'base_expr' => false, 'sub_tree' => false,
-		             'subquery'       => "");
+		// loop init
+		return array( 'expression'     => "", 'token_count' => 0, 'table' => "", 'alias' => false,
+		              'join_type'      => "",
+		              'next_join_type' => "", 'saved_join_type' => $parseInfo['saved_join_type'],
+		              'ref_type'       => false, 'ref_expr' => false, 'base_expr' => false, 'sub_tree' => false,
+		              'subquery'       => "" );
 	}
 
 	private function processFromExpression(&$parseInfo)
@@ -1331,11 +1382,11 @@ class Parser extends \PHPSQL\Parser\Utils
 
 		$res = array();
 
-		# exchange the join types (join_type is save now, saved_join_type holds the next one)
-		$parseInfo['join_type']       = $parseInfo['saved_join_type']; # initialized with JOIN
+		// exchange the join types (join_type is save now, saved_join_type holds the next one)
+		$parseInfo['join_type']       = $parseInfo['saved_join_type']; // initialized with JOIN
 		$parseInfo['saved_join_type'] = ($parseInfo['next_join_type'] ? $parseInfo['next_join_type'] : 'JOIN');
 
-		# we have a reg_expr, so we have to parse it
+		// we have a reg_expr, so we have to parse it
 		if ($parseInfo['ref_expr'] !== false)
 		{
 			$unparsed = $this->splitSQLIntoTokens($this->removeParenthesisFromStart($parseInfo['ref_expr']));
@@ -1351,7 +1402,7 @@ class Parser extends \PHPSQL\Parser\Utils
 			$parseInfo['ref_expr'] = $this->process_expr_list($unparsed);
 		}
 
-		# there is an expression, we have to parse it
+		// there is an expression, we have to parse it
 		if (substr(trim($parseInfo['table']), 0, 1) == '(')
 		{
 			$parseInfo['expression'] = $this->removeParenthesisFromStart($parseInfo['table']);
@@ -1431,7 +1482,7 @@ class Parser extends \PHPSQL\Parser\Utils
 
 	private function initParseInfoForOrder()
 	{
-		return array('expr' => "", 'dir' => "ASC", 'type' => \PHPSQL\Expression\Type::EXPRESSION);
+		return array( 'expr' => "", 'dir' => "ASC", 'type' => \PHPSQL\Expression\Type::EXPRESSION );
 	}
 
 	private function processOrderExpression(&$parseInfo, $select)
@@ -1451,7 +1502,7 @@ class Parser extends \PHPSQL\Parser\Utils
 		}
 		else
 		{
-			#search to see if the expression matches an alias
+			//search to see if the expression matches an alias
 			foreach ($select as $clause)
 			{
 				if (!$clause['alias'])
@@ -1474,8 +1525,8 @@ class Parser extends \PHPSQL\Parser\Utils
 			return $expr;
 		}
 
-		return array('expr_type' => $parseInfo['type'], 'base_expr' => $parseInfo['expr'],
-		             'direction' => $parseInfo['dir']);
+		return array( 'expr_type' => $parseInfo['type'], 'base_expr' => $parseInfo['expr'],
+		              'direction' => $parseInfo['dir'] );
 	}
 
 	/**
@@ -1572,7 +1623,7 @@ class Parser extends \PHPSQL\Parser\Utils
 			}
 		}
 
-		return array('offset' => trim($offset), 'rowcount' => trim($rowcount));
+		return array( 'offset' => trim($offset), 'rowcount' => trim($rowcount) );
 	}
 
 	/**
@@ -1639,8 +1690,8 @@ class Parser extends \PHPSQL\Parser\Utils
 	{
 		$assignment = $this->process_expr_list($this->splitSQLIntoTokens($base_expr));
 
-		return array('expr_type' => \PHPSQL\Expression\Type::EXPRESSION, 'base_expr' => trim($base_expr),
-		             'sub_tree'  => $assignment);
+		return array( 'expr_type' => \PHPSQL\Expression\Type::EXPRESSION, 'base_expr' => trim($base_expr),
+		              'sub_tree'  => $assignment );
 	}
 
 	/**
@@ -1663,7 +1714,9 @@ class Parser extends \PHPSQL\Parser\Utils
 		foreach ($into as $token)
 		{
 			if ($this->isWhitespaceToken($token))
+			{
 				continue;
+			}
 			if ($table === "")
 			{
 				$table = $token;
@@ -1684,13 +1737,13 @@ class Parser extends \PHPSQL\Parser\Utils
 			$cols    = array();
 			foreach ($columns as $k => $v)
 			{
-				$cols[] = array('expr_type' => \PHPSQL\Expression\Type::COLREF, 'base_expr' => trim($v));
+				$cols[] = array( 'expr_type' => \PHPSQL\Expression\Type::COLREF, 'base_expr' => trim($v) );
 			}
 		}
 
 		unset($tokenList['INTO']);
-		$tokenList[$token_category][0] = array('table'     => $table, 'columns' => $cols,
-		                                       'base_expr' => $table);
+		$tokenList[$token_category][0] = array( 'table'     => $table, 'columns' => $cols,
+		                                        'base_expr' => $table );
 
 		return $tokenList;
 	}
@@ -1727,7 +1780,7 @@ class Parser extends \PHPSQL\Parser\Utils
 			}
 		}
 
-		$tokens['DELETE'] = array('TABLES' => $tables);
+		$tokens['DELETE'] = array( 'TABLES' => $tables );
 
 		return $tokens;
 	}
@@ -1759,9 +1812,9 @@ class Parser extends \PHPSQL\Parser\Utils
 			}
 			else
 			{
-				$values[$k] = array('expr_type' => \PHPSQL\Expression\Type::RECORD,
-				                    'base_expr' => $v,
-				                    'data'      => $this->process_record($v));
+				$values[$k] = array( 'expr_type' => \PHPSQL\Expression\Type::RECORD,
+				                     'base_expr' => $v,
+				                     'data'      => $this->process_record($v) );
 			}
 		}
 
@@ -1856,7 +1909,7 @@ class Parser extends \PHPSQL\Parser\Utils
 					break;
 
 				case ',':
-					$resultList[] = array('expr_type' => $expr_type, 'base_expr' => $base_expr);
+					$resultList[] = array( 'expr_type' => $expr_type, 'base_expr' => $base_expr );
 					$base_expr    = "";
 					break;
 
@@ -1867,15 +1920,15 @@ class Parser extends \PHPSQL\Parser\Utils
 
 		if ($base_expr !== "")
 		{
-			$resultList[] = array('expr_type' => $expr_type, 'base_expr' => $base_expr);
+			$resultList[] = array( 'expr_type' => $expr_type, 'base_expr' => $base_expr );
 		}
 
-		return array('option' => $option, 'warning' => $warning, 'object_list' => $resultList);
+		return array( 'option' => $option, 'warning' => $warning, 'object_list' => $resultList );
 	}
 
 	private function isUnion($queries)
 	{
-		$unionTypes = array('UNION', 'UNION ALL');
+		$unionTypes = array( 'UNION', 'UNION ALL' );
 		foreach ($unionTypes as $unionType)
 		{
 			if (!empty($queries[$unionType]))

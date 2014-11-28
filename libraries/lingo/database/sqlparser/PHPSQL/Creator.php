@@ -75,6 +75,10 @@ class Creator
 			case "UPDATE":
 				$this->created = $this->processUpdateStatement($parsed);
 				break;
+			case 'CREATE':
+				$parsed[$k]    = array_merge(array( $parsed[$k][0], ' IF NOT EXISTS ' ), array_slice($parsed[$k], 1));
+				$this->created = implode('', $parsed[$k]);
+				break;
 			default:
 				throw new \PHPSQL\Exception\UnsupportedFeature($k);
 				break;
