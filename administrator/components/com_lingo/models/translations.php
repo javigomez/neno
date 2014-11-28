@@ -139,6 +139,12 @@ class LingoModelTranslations extends JModelList
         $query->select('t.time_translated');
         $query->select('t.lang AS target_lang');
         
+        $workingLanguage = LingoHelper::getWorkingLanguage();
+        if (!empty($workingLanguage))
+        {
+            $query->where("t.lang LIKE '".$workingLanguage."'");
+        }
+        
 		if (!empty($search))
 		{
 			if (stripos($search, 'id:') === 0)
