@@ -114,12 +114,6 @@ class LingoHelper
 		return $result;
 	}
 
-    
-    public static function ensureWorkingLanguageIsSelected() {
-        
-    }
-    
-    
     /**
      * Create the HTML for the fairly advanced title that allows changing the language you are working in
      */
@@ -192,9 +186,7 @@ class LingoHelper
                     ;
             $title .= ' </style>';
             
-            
         }
-        
         
         return $title;
     }
