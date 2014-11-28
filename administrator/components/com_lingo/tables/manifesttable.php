@@ -12,7 +12,7 @@
 defined('_JEXEC') or die;
 
 /**
- * source Table class
+ * Manifest Table Table class
  *
  * @since  1.0
  */
@@ -31,8 +31,8 @@ class LingoTableManifestTable extends JTable
 	/**
 	 * Clear all the field that has not been marked as translatable but they were marked before
 	 *
-	 * @param   integer  $tableId      Table Id
-	 * @param   array    $fieldsAdded  Added An array of Id
+	 * @param   integer $tableId     Table Id
+	 * @param   array   $fieldsAdded Added An array of Id
 	 *
 	 * @return void
 	 *
@@ -78,11 +78,39 @@ class LingoTableManifestTable extends JTable
 		{
 			$db->execute();
 
+			if ($this->load($pk))
+			{
+				/* @var $db LingoDatabaseDriverMysqlx */
+				$db = $this->getDbo();
+				$db->deleteShadowTables($this->table_name);
+			}
+
 			return parent::delete($pk);
 		}
 		catch ( RuntimeException $ex )
 		{
 			return false;
 		}
+	}
+
+	/**
+	 * @param bool $updateNulls
+	 *
+	 * @return bool
+	 */
+	public function store($updateNulls = false)
+	{
+		$isNew = empty($this->{$this->getKeyName()});
+
+		$result = parent::store($updateNulls);
+
+		if ($result /*&& $isNew*/)
+		{
+			/* @var $db LingoDatabaseDriverMysqlx */
+			$db = $this->getDbo();
+			$db->createShadowTables($this->table_name);
+		}
+
+		return $result;
 	}
 }

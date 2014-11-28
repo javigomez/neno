@@ -89,6 +89,11 @@ class LingoDatabaseDriverMysqlx extends CommonDriver
 		return parent::replacePrefix($sql, $prefix);
 	}
 
+	private function getShadowTableNameBasedOnTableNameAndLanguage($tableName, $languageTag)
+	{
+		return LingoDatabaseParser::generateShadowTableName($tableName, $languageTag);
+	}
+
 	/**
 	 * Check if a table is translatable
 	 *
@@ -224,12 +229,37 @@ class LingoDatabaseDriverMysqlx extends CommonDriver
 		switch ($queryType)
 		{
 			case LingoDatabaseParser::INSERT_QUERY:
+				$sqlParts = LingoDatabaseParser::parseSql((string) $sql);
+				var_dump($sqlParts);
+				exit;
 				break;
 			case LingoDatabaseParser::DELETE_QUERY:
-				var_dump($sql);
-				exit;
-
+				$sqlParts = LingoDatabaseParser::parseSql((string) $sql);
+				self::deleteShadowTables($sqlParts['WHERE']);
 				break;
+		}
+	}
+
+	/**
+	 * Delete all the shadow tables related to a table
+	 *
+	 * @param string $tableName
+	 *
+	 * @return void
+	 */
+	public function deleteShadowTables($tableName)
+	{
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$knownLanguages  = JFactory::getLanguage()->getKnownLanguages();
+
+		foreach ($knownLanguages as $knownLanguage)
+		{
+			if ($defaultLanguage !== $knownLanguage['tag'])
+			{
+				$shadowTableName = LingoDatabaseParser::generateShadowTableName($tableName, $knownLanguage['tag']);
+				$query           = 'DROP TABLE IF EXISTS ' . $shadowTableName;
+				$this->executeQuery($query);
+			}
 		}
 	}
 
@@ -240,8 +270,6 @@ class LingoDatabaseDriverMysqlx extends CommonDriver
 	 */
 	public function execute()
 	{
-		$executeResult = parent::execute();
-
 		// Get query type
 		$queryType = LingoDatabaseParser::getQueryType($this->sql);
 
@@ -249,11 +277,37 @@ class LingoDatabaseDriverMysqlx extends CommonDriver
 		$tableName = LingoDatabaseParser::getSourceTableName($this->sql);
 
 		// If the query is a select statement let's get the sql query using its shadow table name
-		if (in_array($tableName, self::$lingoTables) && $queryType !== LingoDatabaseParser::SELECT_QUERY && JFactory::getApplication()->isAdmin())
+		if ($tableName === '#__lingo_manifest_tables' && $queryType !== LingoDatabaseParser::SELECT_QUERY && JFactory::getApplication()->isAdmin())
 		{
 			$this->processLingoTableQuery($queryType, $this->sql);
 		}
 
-		return $executeResult;
+		return parent::execute();
+	}
+
+	/**
+	 * Create all the shadow tables needed for
+	 *
+	 * @param   string $tableName
+	 *
+	 * @return void
+	 */
+	public function createShadowTables($tableName)
+	{
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$knownLanguages  = JFactory::getLanguage()->getKnownLanguages();
+
+		$createStatement = $this->getTableCreate($tableName)[$tableName];
+
+		foreach ($knownLanguages as $knownLanguage)
+		{
+			if ($knownLanguage['tag'] !== $defaultLanguage)
+			{
+				$createStatementParsed              = LingoDatabaseParser::parseSql($createStatement);
+				$createStatementParsed['CREATE'][3] = $this->quoteName(LingoDatabaseParser::generateShadowTableName($tableName, $knownLanguage['tag']));
+				$shadowTableCreateStatement         = LingoDatabaseParser::buildQuery($createStatementParsed);
+				$this->executeQuery($shadowTableCreateStatement);
+			}
+		}
 	}
 }
