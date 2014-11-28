@@ -14,7 +14,11 @@ defined('_JEXEC') or die;
 
 <h1>Lingo Dashboard</h1>
 
-<a href="<?php echo JRoute::_('index.php?option=com_lingo&view=langfilesimport'); ?>" class="btn btn-info">
+<a href="<?php echo JRoute::_('index.php?option=com_lingo&view=langfilesimport'); ?>" class="btn">
 	<span class="icon-download "></span>
 	Import language files
+</a>
+<a href="<?php echo JRoute::_('index.php?option=com_lingo&view=translations'); ?>" class="btn">
+	<span class="icon-list-2 "></span>
+	Manage translation items
 </a>

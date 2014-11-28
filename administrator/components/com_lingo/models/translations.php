@@ -138,6 +138,7 @@ class LingoModelTranslations extends JModelList
         $query->select('t.string AS translation_string');
         $query->select('t.time_translated');
         $query->select('t.lang AS target_lang');
+        $query->select('t.id');
         
         $workingLanguage = LingoHelper::getWorkingLanguage();
         if (!empty($workingLanguage))

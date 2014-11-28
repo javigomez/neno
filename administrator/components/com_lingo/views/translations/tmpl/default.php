@@ -220,7 +220,9 @@ if (!empty($this->extra_sidebar))
 							<?php echo $item->string; ?>
 						</td>
 						<td>
-							<?php echo $item->translation_string; ?>
+                            <a href="index.php?option=com_lingo&view=translation&id=<?php echo $item->id; ?>">
+                                <?php echo $item->translation_string; ?>
+                            </a>
 						</td>
 						<td>
 							<?php echo $item->time_translated; ?>

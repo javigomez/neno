@@ -20,20 +20,8 @@ jimport('joomla.application.component.view');
  */
 class LingoViewTranslation extends JViewLegacy
 {
-	/**
-	 * @var JRegistry
-	 */
-	protected $state;
 
-	/**
-	 * @var JObject
-	 */
-	protected $item;
-
-	/**
-	 * @var JForm
-	 */
-	protected $form;
+    protected $item;
 
 	/**
 	 * Display the view
@@ -43,25 +31,17 @@ class LingoViewTranslation extends JViewLegacy
 	 * @return void
 	 *
 	 * @throws Exception This will happen if there are errors during the process to load the data
-	 *
-	 * @since 1.0
 	 */
 	public function display($tpl = null)
 	{
-		$this->state = $this->get('State');
-		$this->item  = $this->get('Item');
-		$this->form  = $this->get('Form');
-
-		// Check for errors.
-		if (count($errors = $this->get('Errors')))
-		{
-			throw new Exception(implode("\n", $errors));
-		}
-
+        
+        $this->item = $this->get('Item');
 		$this->addToolbar();
-		parent::display($tpl);
+        
+        parent::display($tpl);
 	}
 
+    
 	/**
 	 * Add the page title and toolbar.
 	 *
@@ -73,47 +53,14 @@ class LingoViewTranslation extends JViewLegacy
 	{
 		JFactory::getApplication()->input->set('hidemainmenu', true);
 
-		$user  = JFactory::getUser();
-		$isNew = ($this->item->id == 0);
+		JToolBarHelper::title(LingoHelper::getAdminTitle(), 'nope');
 
-		if (isset($this->item->checked_out))
-		{
-			$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-		}
-		else
-		{
-			$checkedOut = false;
-		}
+        JToolBarHelper::apply('source.apply', 'JTOOLBAR_APPLY');
+        JToolBarHelper::save('source.save', 'JTOOLBAR_SAVE');
 
-		$canDo = LingoHelper::getActions();
-
-		JToolBarHelper::title(JText::_('COM_LINGO_TITLE_TRANSLATION'), 'translation.png');
-
-		// If not checked out, can save the item.
-		if (!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create'))))
-		{
-			JToolBarHelper::apply('translation.apply', 'JTOOLBAR_APPLY');
-			JToolBarHelper::save('translation.save', 'JTOOLBAR_SAVE');
-		}
-
-		if (!$checkedOut && ($canDo->get('core.create')))
-		{
-			JToolBarHelper::custom('translation.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
-		}
-
-		// If an existing item, can save to a copy.
-		if (!$isNew && $canDo->get('core.create'))
-		{
-			JToolBarHelper::custom('translation.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
-		}
-
-		if (empty($this->item->id))
-		{
-			JToolBarHelper::cancel('translation.cancel', 'JTOOLBAR_CANCEL');
-		}
-		else
-		{
-			JToolBarHelper::cancel('translation.cancel', 'JTOOLBAR_CLOSE');
-		}
+    	JToolBarHelper::cancel('translation.cancel', 'JTOOLBAR_CLOSE');
 	}
+    
+    
+    
 }
