@@ -442,6 +442,13 @@
 /tmp/*
 /configuration.php
 /index.php
+/joomla.xml
+/*.txt
+/media/jui*
+/libraries/legacy*
+/libraries/fof*
+/libraries/phpass*
+/libraries/compat*
 /libraries/idna_convert/*
 /libraries/framework/*
 *acymailing*
@@ -484,7 +491,13 @@ plugins/captcha/index.html
 administrator/language/nl-NL/nl-NL.xml
 administrator/language/nl-NL/install.xml
 administrator/language/nl-NL/index.html
+administrator/language/es-ES/install.xml
+administrator/language/es-ES/index.html
+administrator/language/es-ES/es-ES.xml
 administrator/language/en-GB/install.xml
+administrator/language/da-DK/da-DK.xml
+administrator/language/da-DK/index.html
+administrator/language/da-DK/install.xml
 .idea/*
 vendor
 build
