@@ -16,11 +16,13 @@ JHtml::_('behavior.keepalive');
 <div class="row-flud">
     
     <div class="span3">Left</div>
+    
     <div class="span4">
         <form>
             <textarea class="span12" rows="8" cols="200" disabled="disabled"><?php echo htmlentities($this->item->source_string); ?></textarea>
         </form>
     </div>
+    
     <div class="span1">copy</div>
 
     <div class="span4">
