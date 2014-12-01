@@ -473,7 +473,7 @@
 /images/headers/*
 *.localise.php
 *.ini
-!*.com_lingo.ini
+!*.com_neno.ini
 libraries/classmap.php
 libraries/import.legacy.php
 layouts/index.html

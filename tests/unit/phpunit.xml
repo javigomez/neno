@@ -6,8 +6,8 @@
 		verbose="true"
 		backupStaticAttributes="false"
 		backupGlobals="false">
-	<testsuite name="Lingo">
-		<directory>./suite/lingo</directory>
+	<testsuite name="Neno">
+		<directory>./suite/neno</directory>
 	</testsuite>
 
 </phpunit>
