@@ -21,12 +21,12 @@ jimport('joomla.application.component.view');
 class NenoViewTranslation extends JViewLegacy
 {
 
-    protected $item;
+	protected $item;
 
 	/**
 	 * Display the view
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
 	 * @return void
 	 *
@@ -34,14 +34,13 @@ class NenoViewTranslation extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-        
-        $this->item = $this->get('Item');
+
+		$this->item = $this->get('Item');
 		$this->addToolbar();
-        
-        parent::display($tpl);
+
+		parent::display($tpl);
 	}
 
-    
 	/**
 	 * Add the page title and toolbar.
 	 *
@@ -53,14 +52,12 @@ class NenoViewTranslation extends JViewLegacy
 	{
 		JFactory::getApplication()->input->set('hidemainmenu', true);
 
-		JToolBarHelper::title(LingoHelper::getAdminTitle(), 'nope');
+		JToolBarHelper::title(NenoHelper::getAdminTitle(), 'nope');
 
-        JToolBarHelper::apply('source.apply', 'JTOOLBAR_APPLY');
-        JToolBarHelper::save('source.save', 'JTOOLBAR_SAVE');
+		JToolBarHelper::apply('source.apply', 'JTOOLBAR_APPLY');
+		JToolBarHelper::save('source.save', 'JTOOLBAR_SAVE');
 
-    	JToolBarHelper::cancel('translation.cancel', 'JTOOLBAR_CLOSE');
+		JToolBarHelper::cancel('translation.cancel', 'JTOOLBAR_CLOSE');
 	}
-    
-    
-    
+
 }

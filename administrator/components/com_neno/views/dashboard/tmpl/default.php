@@ -18,7 +18,7 @@ defined('_JEXEC') or die;
 	<span class="icon-download "></span>
 	Import language files
 </a>
-<a href="<?php echo JRoute::_('index.php?option=com_lingo&view=translations'); ?>" class="btn">
+<a href="<?php echo JRoute::_('index.php?option=com_neno&view=translations'); ?>" class="btn">
 	<span class="icon-list-2 "></span>
 	Manage translation items
 </a>

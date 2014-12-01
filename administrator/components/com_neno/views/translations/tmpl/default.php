@@ -20,12 +20,12 @@ JHtml::_('formbehavior.chosen', 'select');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_neno/assets/css/neno.css');
 
-$user      = JFactory::getUser();
-$userId    = $user->get('id');
-$listOrder = $this->state->get('list.ordering');
-$listDirection  = $this->state->get('list.direction');
-$canOrder  = $user->authorise('core.edit.state', 'com_neno');
-$saveOrder = $listOrder == 'a.ordering';
+$user          = JFactory::getUser();
+$userId        = $user->get('id');
+$listOrder     = $this->state->get('list.ordering');
+$listDirection = $this->state->get('list.direction');
+$canOrder      = $user->authorise('core.edit.state', 'com_neno');
+$saveOrder     = $listOrder == 'a.ordering';
 
 if ($saveOrder)
 {
@@ -220,9 +220,9 @@ if (!empty($this->extra_sidebar))
 							<?php echo $item->string; ?>
 						</td>
 						<td>
-                            <a href="index.php?option=com_lingo&view=translation&id=<?php echo $item->id; ?>">
-                                <?php echo $item->translation_string; ?>
-                            </a>
+							<a href="index.php?option=com_neno&view=translation&id=<?php echo $item->id; ?>">
+								<?php echo $item->translation_string; ?>
+							</a>
 						</td>
 						<td>
 							<?php echo $item->time_translated; ?>

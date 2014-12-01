@@ -29,9 +29,9 @@ class NenoModelTranslation extends JModelAdmin
 	/**
 	 * Returns a reference to the a Table object, always creating it.
 	 *
-	 * @param   string  $type    The table type to instantiate
-	 * @param   string  $prefix  A prefix for the table class name. Optional.
-	 * @param   array   $config  Configuration array for model. Optional.
+	 * @param   string $type   The table type to instantiate
+	 * @param   string $prefix A prefix for the table class name. Optional.
+	 * @param   array  $config Configuration array for model. Optional.
 	 *
 	 * @return    JTable    A database object
 	 *
@@ -45,8 +45,8 @@ class NenoModelTranslation extends JModelAdmin
 	/**
 	 * Method to get the record form.
 	 *
-	 * @param   array    $data      An optional array of data for the form to interrogate.
-	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
+	 * @param   array   $data     An optional array of data for the form to interrogate.
+	 * @param   boolean $loadData True if the form is to load its own data (default case), false if not.
 	 *
 	 * @return    JForm    A JForm object on success, false on failure
 	 *
@@ -91,7 +91,7 @@ class NenoModelTranslation extends JModelAdmin
 	/**
 	 * Method to get a single record.
 	 *
-	 * @param   integer|array  $id  The id of the primary key.
+	 * @param   integer|array $id The id of the primary key.
 	 *
 	 * @return    mixed    Object on success, false on failure.
 	 *
@@ -99,36 +99,35 @@ class NenoModelTranslation extends JModelAdmin
 	 */
 	public function getItem($id = null)
 	{
-        
-        // Ensure that there is an ID
-        if (is_null($id)) 
-        {
-            $id = JFactory::getApplication()->input->getInt('id');
-            if (is_null($id))
-            {
-                throw new Exception('Error loading translation, no ID was supplied!');
-            }            
-        }
-                
-        $db		= JFactory::getDbo();
-        $query	= $db->getQuery(true);
 
-        $query->select('t.*');
-        $query->from('#__lingo_langfile_translations AS t');
-        
-        $query->join('left', '#__lingo_langfile_source AS s ON s.id = t.source_id');
-        $query->select('s.string AS source_string');
-        
-        $query->where('t.id = '.(int) $id);
+		// Ensure that there is an ID
+		if (is_null($id))
+		{
+			$id = JFactory::getApplication()->input->getInt('id');
+			if (is_null($id))
+			{
+				throw new Exception('Error loading translation, no ID was supplied!');
+			}
+		}
 
-        //echo nl2br(str_replace('#__','jos_',$query));
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
-        $db->setQuery( $query );
-        $item = $db->loadObject();
-        
+		$query->select('t.*');
+		$query->from('#__neno_langfile_translations AS t');
+
+		$query->join('left', '#__neno_langfile_source AS s ON s.id = t.source_id');
+		$query->select('s.string AS source_string');
+
+		$query->where('t.id = ' . (int) $id);
+
+		//echo nl2br(str_replace('#__','jos_',$query));
+
+		$db->setQuery($query);
+		$item = $db->loadObject();
+
 		return $item;
-        
+
 	}
 
-	
 }

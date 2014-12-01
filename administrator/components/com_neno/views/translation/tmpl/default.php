@@ -1,6 +1,6 @@
 <?php
 /**
- * @package     Lingo
+ * @package     Neno
  * @subpackage  Views
  *
  * @author      Jensen Technologies S.L. <info@notwebdesign.com>
@@ -25,7 +25,7 @@ JHtml::_('behavior.keepalive');
 
     <div class="span4">
 
-        <form action="<?php echo JRoute::_('index.php?option=com_lingo&id=' . (int) $this->item->id); ?>" method="post" enctype="multipart/form-data" name="adminForm">
+        <form action="<?php echo JRoute::_('index.php?option=com_neno&id=' . (int) $this->item->id); ?>" method="post" enctype="multipart/form-data" name="adminForm">
 
             <textarea class="span12" rows="8" cols="200"><?php echo htmlentities($this->item->string); ?></textarea>
 

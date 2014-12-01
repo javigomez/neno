@@ -132,20 +132,20 @@ class NenoModelTranslations extends JModelList
 
 		// Filter by search in title
 		$search = $this->getState('filter.search');
-        
-        // Join the translation table
-        $query->join('LEFT', '#__lingo_langfile_translations AS t ON t.source_id = a.id');
-        $query->select('t.string AS translation_string');
-        $query->select('t.time_translated');
-        $query->select('t.lang AS target_lang');
-        $query->select('t.id');
-        
-        $workingLanguage = LingoHelper::getWorkingLanguage();
-        if (!empty($workingLanguage))
-        {
-            $query->where("t.lang LIKE '".$workingLanguage."'");
-        }
-        
+
+		// Join the translation table
+		$query->join('LEFT', '#__neno_langfile_translations AS t ON t.source_id = a.id');
+		$query->select('t.string AS translation_string');
+		$query->select('t.time_translated');
+		$query->select('t.lang AS target_lang');
+		$query->select('t.id');
+
+		$workingLanguage = NenoHelper::getWorkingLanguage();
+		if (!empty($workingLanguage))
+		{
+			$query->where("t.lang LIKE '" . $workingLanguage . "'");
+		}
+
 		if (!empty($search))
 		{
 			if (stripos($search, 'id:') === 0)
