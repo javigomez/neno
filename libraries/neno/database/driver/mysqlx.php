@@ -235,8 +235,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 			if ($defaultLanguage !== $knownLanguage['tag'])
 			{
 				$shadowTableName = NenoDatabaseParser::generateShadowTableName($tableName, $knownLanguage['tag']);
-				$query           = 'DROP TABLE IF EXISTS ' . $shadowTableName;
-				$this->executeQuery($query);
+				$this->dropTable($shadowTableName);
 			}
 		}
 	}
@@ -283,5 +282,24 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		$columns = array_map(array( $this, 'quoteName' ), array_keys($this->getTableColumns($sourceTableName)));
 		$query   = 'REPLACE INTO ' . $shadowTableName . ' (' . implode(',', $columns) . ' ) SELECT * FROM ' . $sourceTableName;
 		$this->executeQuery($query);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool|mixed
+	 */
+	public function execute()
+	{
+		try
+		{
+			return parent::execute();
+		}
+		catch ( RuntimeException $ex )
+		{
+			NenoLog::log($ex, NenoLog::PRIORITY_ERROR);
+
+			return false;
+		}
 	}
 }

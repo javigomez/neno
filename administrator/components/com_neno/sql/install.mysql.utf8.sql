@@ -73,3 +73,13 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_elements_metadata` (
 	`string` TEXT NOT NULL,
 	PRIMARY KEY (`id`))
 	ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `#__neno_log_entries` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`priority` INT NOT NULL,
+	`message` VARCHAR(512) NOT NULL,
+	`date` DATETIME NOT NULL,
+	`category` VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `idx_category_date_priority` (`category` ASC, `date` ASC, `priority` ASC))
+	ENGINE = InnoDB

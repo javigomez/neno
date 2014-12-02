@@ -17,6 +17,19 @@ defined('JPATH_NENO') or die;
 class NenoLogApi extends JLogLogger
 {
 	/**
+	 *
+	 * @var JHttp
+	 */
+	protected $httpClient;
+
+	public function __construct(array &$options)
+	{
+		parent::__construct($options);
+
+		$this->httpClient = new JHttp;
+	}
+
+	/**
 	 * Method to add an entry to the log.
 	 *
 	 * @param   JLogEntry $entry The log entry object to add to the log.
@@ -27,6 +40,5 @@ class NenoLogApi extends JLogLogger
 	 */
 	public function addEntry(JLogEntry $entry)
 	{
-		// TODO: Implement addEntry() method.
 	}
 }

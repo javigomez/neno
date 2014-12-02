@@ -18,21 +18,28 @@ jimport('joomla.log.log');
  */
 class NenoLog extends JLog
 {
-
 	/**
-	 *
+	 * Error priority level
 	 */
 	const PRIORITY_ERROR = 1;
 
 	/**
-	 *
+	 * Info priority level
 	 */
 	const PRIORITY_INFO = 2;
 
 	/**
-	 *
+	 * Debug priority level
 	 */
 	const PRIORITY_DEBUG = 3;
+
+	/**
+	 * @var array
+	 */
+	protected $customLoggers = array(
+		'database',
+		'api'
+	);
 
 	/**
 	 * A static method that allows logging of errors and messages
@@ -55,7 +62,7 @@ class NenoLog extends JLog
 		$priority = self::getJLogPriorityFromDebugLevel($level);
 
 		// Setup the logging method
-		self::setLogMethod();
+		self::setLogMethod($level);
 
 		// Add the log entry
 		self::add($string, $priority, 'com_neno');
@@ -96,19 +103,75 @@ class NenoLog extends JLog
 	}
 
 	/**
-	 *Set Log method
+	 * Set Log method
+	 *
+	 * @param   integer $level Level of the log entry
 	 *
 	 * @return void
 	 */
-	public static function setLogMethod()
+	public static function setLogMethod($level = self::PRIORITY_INFO)
 	{
-		$options['text_entry_format'] = "{DATETIME}\t{PRIORITY}\t\t{MESSAGE}";
-		$options['text_file']         = 'neno_log.php';
+		switch ($level)
+		{
+			case self::PRIORITY_ERROR:
+				$options['logger'] = 'api';
+				break;
+			default:
+				$options['text_entry_format'] = "{DATETIME}\t{PRIORITY}\t\t{MESSAGE}";
+				$options['text_file']         = 'neno_log.php';
+				break;
+		}
 
 		self::addLogger(
 			$options,
 			self::ALL,
 			array( 'com_neno' )
 		);
+	}
+
+	/**
+	 * Method to add an entry to the appropriate loggers.
+	 *
+	 * @param   JLogEntry $entry The JLogEntry object to send to the loggers.
+	 *
+	 * @return  void
+	 *
+	 * @since   1.0
+	 * @throws  RuntimeException
+	 */
+	protected function addLogEntry(JLogEntry $entry)
+	{
+		// Find all the appropriate loggers based on priority and category for the entry.
+		$loggers = $this->findLoggers($entry->priority, $entry->category);
+
+		foreach ((array) $loggers as $signature)
+		{
+			// Attempt to instantiate the logger object if it doesn't already exist.
+			if (empty($this->loggers[$signature]))
+			{
+				// Prefix for Joomla loggers
+				$prefix = 'JLogLogger';
+
+				// If this logger is a custom one, the prefix would be NenoLog instead of JLogLogger
+				if (in_array($this->configurations[$signature]['logger'], $this->customLoggers))
+				{
+					$prefix = 'NenoLog';
+				}
+
+				$class = $prefix . ucfirst($this->configurations[$signature]['logger']);
+
+				if (class_exists($class))
+				{
+					$this->loggers[$signature] = new $class($this->configurations[$signature]);
+				}
+				else
+				{
+					throw new RuntimeException('Unable to create a ' . $prefix . ' instance: ' . $class);
+				}
+			}
+
+			// Add the entry to the logger.
+			$this->loggers[$signature]->addEntry(clone $entry);
+		}
 	}
 }
