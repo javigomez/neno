@@ -6,7 +6,8 @@
 		"php": ">=5.3.10"
 	},
 	"require-dev": {
-		"codeception/codeception": "*"
+		"codeception/codeception": "*",
+        "raveren/kint": "v0.9"
 	},
 	"scripts"    : {
 		"post-update-cmd": [
