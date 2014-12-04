@@ -17,7 +17,7 @@ jimport('joomla.application.component.modellist');
 /**
  * NenoModelTranslations class
  *
- * @since  1.0
+ * @since 1.0
  */
 class NenoModelTranslations extends JModelList
 {

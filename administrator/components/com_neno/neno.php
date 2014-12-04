@@ -18,7 +18,6 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_neno'))
 
 // Include dependencies
 jimport('joomla.application.component.controller');
-JLoader::register('NenoHelper', JPATH_COMPONENT_ADMINISTRATOR . '/helpers/neno.php');
 
 $controller = JControllerLegacy::getInstance('Neno');
 $controller->execute(JFactory::getApplication()->input->get('task'));

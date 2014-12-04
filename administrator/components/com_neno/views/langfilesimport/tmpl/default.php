@@ -101,7 +101,7 @@ JHtml::_('behavior.keepalive');
 							<span
 								class="badge <?php echo $change_count > 0 ? 'badge-important' : ''; ?>"><?php echo $change_count; ?></span>
 							<a data-toggle="collapse" data-parent="#accordion" href="#collapse<?php echo $lang; ?>">
-								<?php echo NenoHelper::getLangnameFromCode($lang); ?>
+								<?php echo NenoHelper::getLangNameFromCode($lang); ?>
 							</a>
 						</strong>
 					</div>

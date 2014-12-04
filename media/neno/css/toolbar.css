@@ -1,0 +1,33 @@
+
+#workingLangSelect a {
+    color: #d9d9d9;
+    text-decoration: none;
+}
+
+#workingLangSelect a:hover {
+    color: #fff
+}
+
+#workingLangSelect .caret {
+    border-top: 4px solid #d9d9d9;
+}
+
+#workingLangSelect {
+    display: inline-block;
+    margin: 0px;
+    font-size: 14px;
+}
+
+#workingLangSelect li {
+    list-style-type: none;
+    padding: 0;
+}
+
+#workingLangSelect .dropdown-menu a {
+    text-shadow: none;
+    color: #000;
+}
+
+#workingLangSelect .dropdown-menu a:hover {
+    color: #fff;
+}

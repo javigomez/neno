@@ -61,7 +61,7 @@ class NenoDatabaseParser
 	 */
 	public static function getSqlQueryUsingShadowTable($sql)
 	{
-		$sqlElements = self::parseSql($sql);
+		$sqlElements = self::parseQuery($sql);
 
 		if (!empty($sqlElements['FROM']))
 		{
@@ -96,7 +96,7 @@ class NenoDatabaseParser
 	 *
 	 * @return array
 	 */
-	public static function parseSql($sql)
+	public static function parseQuery($sql)
 	{
 		$parser = new Parser((string) $sql);
 
@@ -130,7 +130,7 @@ class NenoDatabaseParser
 
 		if ($fromTable !== null)
 		{
-			return array( $index, $fromTable );
+			return array($index, $fromTable);
 		}
 
 		return false;
@@ -162,7 +162,7 @@ class NenoDatabaseParser
 	{
 		$currentLanguage    = JFactory::getLanguage();
 		$currentLanguageTag = $currentLanguage->getTag();
-		$defaultLanguageTag = $currentLanguage->getDefault();
+		$defaultLanguageTag = NenoSettings::get('source_language', '');
 
 		$languageTag = '';
 
@@ -185,7 +185,7 @@ class NenoDatabaseParser
 	 */
 	private static function cleanLanguageTag($languageTag)
 	{
-		return strtolower(str_replace(array( '-' ), array( '' ), $languageTag));
+		return strtolower(str_replace(array('-'), array(''), $languageTag));
 	}
 
 	/**
@@ -210,7 +210,7 @@ class NenoDatabaseParser
 	 */
 	private static function cleanTableName($tableName)
 	{
-		return str_replace(array( '#__', JFactory::getConfig()->get('dbprefix') ), '', $tableName);
+		return str_replace(array('#__', JFactory::getConfig()->get('dbprefix')), '', $tableName);
 	}
 
 	/**
@@ -271,7 +271,7 @@ class NenoDatabaseParser
 	 */
 	public static function getSourceTableName($sql)
 	{
-		$sqlElements = self::parseSql($sql);
+		$sqlElements = self::parseQuery($sql);
 
 		if (!empty($sqlElements['FROM']))
 		{

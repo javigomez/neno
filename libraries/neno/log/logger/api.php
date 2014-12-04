@@ -14,7 +14,7 @@ defined('JPATH_NENO') or die;
  *
  * @since  1.0
  */
-class NenoLogApi extends JLogLogger
+class NenoLogLoggerApi extends JLogLogger
 {
 	/**
 	 *
@@ -40,5 +40,6 @@ class NenoLogApi extends JLogLogger
 	 */
 	public function addEntry(JLogEntry $entry)
 	{
+		Kint::dump("HOLA");
 	}
 }

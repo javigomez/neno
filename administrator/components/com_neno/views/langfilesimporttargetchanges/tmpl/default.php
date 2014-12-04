@@ -18,7 +18,7 @@ JHtml::_('formbehavior.chosen', 'select');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_neno/assets/css/neno.css');
+$document->addStyleSheet('components/com_neno/assets/css/toolbar.css');
 
 $user   = JFactory::getUser();
 $userId = $user->get('id');

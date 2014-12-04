@@ -5,7 +5,7 @@
  * @copyright  Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
-defined('JPATH_BASE') or die;
+defined('JPATH_NENO') or die;
 
 /**
  * Class to handle Neno settings
@@ -14,7 +14,6 @@ defined('JPATH_BASE') or die;
  */
 class NenoSettings
 {
-
 	/**
 	 * @var array
 	 */
@@ -23,8 +22,8 @@ class NenoSettings
 	/**
 	 * Get the value of a particular property
 	 *
-	 * @param   mixed       $settingName  Setting name
-	 * @param   mixed|null  $default      Default value in case the setting doesn't exist
+	 * @param   mixed      $settingName Setting name
+	 * @param   mixed|null $default     Default value in case the setting doesn't exist
 	 *
 	 * @return mixed
 	 */
@@ -37,15 +36,15 @@ class NenoSettings
 		}
 
 		// If the setting doesn't exists, let's return the default value.
-		return empty(self::$settings[$settingName]) ? $default : self::$settings[$settingName];
+		return empty(self::$settings[$settingName]) ? $default : self::$settings[$settingName]['value'];
 	}
 
 	/**
 	 * Set the value of a particular property. It will be created if it does not exist before
 	 *
-	 * @param   mixed    $settingName   Setting name
-	 * @param   mixed    $settingValue  Setting value
-	 * @param   boolean  $readOnly      If it should be marked as read only
+	 * @param   mixed   $settingName  Setting name
+	 * @param   mixed   $settingValue Setting value
+	 * @param   boolean $readOnly     If it should be marked as read only
 	 *
 	 * @return void
 	 */
@@ -105,15 +104,17 @@ class NenoSettings
 	 */
 	private static function saveSettingsToDb()
 	{
-		$db     = JFactory::getDbo();
-		$values = array();
+		$db = JFactory::getDbo();
+
+		/* @var $query NenoDatabaseQueryMysqli */
+		$query = $db->getQuery(true);
+		$query->replace('#__neno_settings');
 
 		foreach (self::$settings as $settingName => $settingData)
 		{
-			$values[] = '(' . $db->quote($settingName) . ',' . $db->quote($settingData['value']) . ',' . $db->quote($settingData['read_only']) . ')';
+			$query->values('(' . $db->quote($settingName) . ',' . $db->quote($settingData['value']) . ',' . $db->quote($settingData['read_only']) . ')');
 		}
 
-		$query = 'REPLACE INTO () VALUES ' . implode(', ', $values);
 		$db->setQuery($query);
 		$db->execute();
 	}

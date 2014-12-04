@@ -9,7 +9,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // No direct access
-defined('_JEXEC') or die;
+defined('JPATH_NENO') or die;
 
 /**
  * Neno helper.
@@ -25,7 +25,7 @@ class NenoHelper
 	 *
 	 * @return string the name or boolean false on error
 	 */
-	public static function getLangnameFromCode($code)
+	public static function getLangNameFromCode($code)
 	{
 		$metadata = JLanguage::getMetadata($code);
 
@@ -116,104 +116,45 @@ class NenoHelper
 
 	/**
 	 * Create the HTML for the fairly advanced title that allows changing the language you are working in
+	 *
+	 * @return string
 	 */
 	public static function getAdminTitle()
 	{
-		$title = '<a href="index.php?option=com_neno&view=dashboard">'
-			. '<img src="' . JUri::base(true) . '/components/com_neno/assets/images/admin_top_neno_logo.png" width="80" height="30" alt="Neno logo" />'
-			. '</a>';
-
 		// If there is a language constant then start with that
-		$view = JFactory::getApplication()->input->getCmd('view', '');
+		$displayData = array(
+			'view'            => JFactory::getApplication()->input->getCmd('view', ''),
+			'workingLanguage' => self::getWorkingLanguage(),
+			'targetLanguages' => self::getTargetLanguages()
+		);
 
-		if (!empty($view))
-		{
-			$default_lang_constant = 'COM_NENO_TITLE_' . strtoupper($view);
-
-			if (JText::_($default_lang_constant) != $default_lang_constant)
-			{
-				// If the JText text is different from the constant then it actually exists and should be used
-				$title .= ': ' . JText::_($default_lang_constant);
-			}
-		}
-
-		// Working language
-		$workingLanguage = self::getWorkingLanguage();
-
-		if (!empty($workingLanguage))
-		{
-			// Load all target languages from the list but remove the existing one
-			$targetLanguages            = self::getTargetLanguages();
-			$workingLanguageTitleNative = $targetLanguages[$workingLanguage]->title_native;
-			$workingLanguageFlag        = '<img src="../media/mod_languages/images/' . $targetLanguages[$workingLanguage]->image . '.gif" />';
-			unset($targetLanguages[$workingLanguage]);
-
-			// If we have more than one target languages left then allow changing, if not only show the name
-			if (count($targetLanguages) > 0)
-			{
-				$next = JFactory::getApplication()->input->getCmd('view', 'dashboard');
-
-				$title .= ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ul id="workingLangSelect">';
-				$title .= ' <li class="dropdown">Translating: <a class="dropdown-toggle" data-toggle="dropdown" href="#">'
-					. $workingLanguageFlag
-					. ' ' . $workingLanguageTitleNative . ''
-					. '<span class="caret"></span></a>';
-				$title .= ' <ul class="dropdown-menu">';
-
-				foreach ($targetLanguages as $targetLanguage)
-				{
-					$title .= ' <li><a class="" href="index.php?option=com_neno&task=setworkinglang&lang=' . $targetLanguage->lang_code . '&next=' . $next . '">'
-						. '<img src="../media/mod_languages/images/' . $targetLanguage->image . '.gif" />'
-						. ' ' . $targetLanguage->title_native . '</a></li>';
-				}
-
-				$title .= ' </ul>';
-				$title .= ' </ul>';
-			}
-			else
-			{
-				$title .= ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ul id="workingLangSelect">';
-				$title .= ' <li class="dropdown">Translating: [' . $workingLanguageTitleNative . ']';
-				$title .= ' </ul>';
-			}
-
-			// @todo move to custom css file
-			$title .= ' <style>';
-			$title .= '#workingLangSelect a {color:#d9d9d9;text-decoration:none;}'
-				. '#workingLangSelect a:hover {color:#fff}'
-				. '#workingLangSelect .caret {border-top: 4px solid #d9d9d9;}'
-				. '#workingLangSelect {display:inline-block;margin: 0px;font-size: 14px;}'
-				. '#workingLangSelect li {list-style-type: none;padding:0;}'
-				. '#workingLangSelect .dropdown-menu a {text-shadow:none; color:#000;}'
-				. '#workingLangSelect .dropdown-menu a:hover {color:#fff;}';
-			$title .= ' </style>';
-
-		}
-
-		return $title;
+		return JLayoutHelper::render('toolbar', $displayData, JPATH_NENO_LAYOUTS);
 	}
 
 	/**
 	 * Get an array indexed by language code of the target languages
+	 *
+	 * @param   boolean $published Weather or not only the published language should be loaded
 	 *
 	 * @return array objectList
 	 */
 	public static function getTargetLanguages($published = true)
 	{
 		// Load all published languages
-		$languages = self::getLanguages($published);
+		$languages       = self::getLanguages($published);
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
 
 		// Create a simple array
 		$arr = array();
 
 		foreach ($languages as $lang)
 		{
-			$arr[$lang->lang_code] = $lang;
+			// Do not include the default language
+			if ($lang->lang_code !== $defaultLanguage)
+			{
+				$arr[$lang->lang_code] = $lang;
+			}
 		}
-
-		// Remove the source language
-		$language = JFactory::getLanguage();
-		unset($arr[$language->getDefault()]);
 
 		return $arr;
 	}
@@ -221,7 +162,7 @@ class NenoHelper
 	/**
 	 * Load all published languages on the site
 	 *
-	 * @param   boolean $published weather or not only the published language should be loaded
+	 * @param   boolean $published Weather or not only the published language should be loaded
 	 *
 	 * @return array objectList
 	 */
@@ -254,17 +195,23 @@ class NenoHelper
 	 */
 	public static function setWorkingLanguage($lang)
 	{
-
 		$userId = JFactory::getUser()->id;
 
 		$db = JFactory::getDbo();
-		$db->setQuery(
-			"REPLACE INTO #__user_profiles" .
-			" SET profile_value = '" . $lang . "' "
-			. ", profile_key = 'neno_working_language'"
-			. ", user_id = " . (int) $userId
-		);
-		//echo $db->getQuery();
+
+		/* @var $query NenoDatabaseQueryMysqli */
+		$query = $db->getQuery(true);
+
+		$query
+			->replace('#__user_profiles')
+			->set(
+				array(
+					'profile_value = ' . $db->quote($lang),
+					'profile_key = ' . $db->quote('neno_working_language'),
+					'user_id = ' . intval($userId)
+				)
+			);
+		$db->setQuery($query);
 
 		$db->execute();
 
@@ -280,16 +227,23 @@ class NenoHelper
 	 */
 	public static function getWorkingLanguage()
 	{
-
 		$userId = JFactory::getUser()->id;
 
 		$db = JFactory::getDbo();
-		$db->setQuery(
-			'SELECT profile_value FROM #__user_profiles' .
-			' WHERE user_id = ' . (int) $userId .
-			' AND profile_key = "neno_working_language"'
-		);
 
+		$query = $db->getQuery(true);
+
+		$query
+			->select('profile_value')
+			->from('#__user_profiles')
+			->where(
+				array(
+					'user_id = ' . intval($userId),
+					'profile_key = ' . $db->quote('neno_working_language')
+				)
+			);
+
+		$db->setQuery($query);
 		$lang = $db->loadResult();
 
 		return $lang;

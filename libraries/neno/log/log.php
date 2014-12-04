@@ -125,7 +125,7 @@ class NenoLog extends JLog
 		self::addLogger(
 			$options,
 			self::ALL,
-			array( 'com_neno' )
+			array('com_neno')
 		);
 	}
 
@@ -155,7 +155,7 @@ class NenoLog extends JLog
 				// If this logger is a custom one, the prefix would be NenoLog instead of JLogLogger
 				if (in_array($this->configurations[$signature]['logger'], $this->customLoggers))
 				{
-					$prefix = 'NenoLog';
+					$prefix = 'NenoLogLogger';
 				}
 
 				$class = $prefix . ucfirst($this->configurations[$signature]['logger']);
@@ -173,5 +173,22 @@ class NenoLog extends JLog
 			// Add the entry to the logger.
 			$this->loggers[$signature]->addEntry(clone $entry);
 		}
+	}
+
+	public static function add($entry, $priority = self::INFO, $category = '', $date = null)
+	{
+		// Automatically instantiate the singleton object if not already done.
+		if (empty(self::$instance) || !(self::$instance instanceof NenoLog))
+		{
+			self::$instance = new NenoLog;
+		}
+
+		// If the entry object isn't a JLogEntry object let's make one.
+		if (!($entry instanceof JLogEntry))
+		{
+			$entry = new JLogEntry((string) $entry, $priority, $category, $date);
+		}
+
+		self::$instance->addLogEntry($entry);
 	}
 }

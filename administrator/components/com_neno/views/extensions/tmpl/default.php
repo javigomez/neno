@@ -18,7 +18,7 @@ JHtml::_('formbehavior.chosen', 'select');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_neno/assets/css/neno.css');
+$document->addStyleSheet('components/com_neno/assets/css/toolbar.css');
 
 // Joomla Component Creator code to allow adding non select list filters
 if (!empty($this->extra_sidebar))

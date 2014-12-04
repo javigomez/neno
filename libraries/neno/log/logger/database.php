@@ -14,7 +14,7 @@ defined('JPATH_NENO') or die;
  *
  * @since  1.0
  */
-class NenoLogDatabase extends JLogLoggerDatabase
+class NenoLogLoggerDatabase extends JLogLoggerDatabase
 {
 	/**
 	 * {@inheritdoc}
