@@ -1,3 +1,7 @@
+SET @OLD_UNIQUE_CHECKS = @@UNIQUE_CHECKS, UNIQUE_CHECKS = 0;
+SET @OLD_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS = 0;
+SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE = 'TRADITIONAL,ALLOW_INVALID_DATES';
+
 -- -----------------------------------------------------
 -- Table `#__neno_langfile_source`
 -- -----------------------------------------------------
@@ -14,58 +18,24 @@ CREATE TABLE IF NOT EXISTS `#__neno_langfile_source` (
   `version`      TINYINT(4)   NOT NULL,
   PRIMARY KEY (`id`)
 )
-  ENGINE = InnoDB;
-
--- -----------------------------------------------------
--- Table `#__neno_translators`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `#__neno_translators` (
-  `id`              INT         NOT NULL AUTO_INCREMENT,
-  `translator_name` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`)
-)
-  ENGINE = InnoDB;
+  ENGINE =InnoDB;
 
 -- -----------------------------------------------------
 -- Table `#__neno_content_elements_metadata`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__neno_content_elements_metadata` (
-  `id`                INT                              NOT NULL AUTO_INCREMENT,
-  `content_type`      ENUM('lang_string', 'db_string') NOT NULL,
-  `content_id`        INT                              NOT NULL,
-  `lang`              VARCHAR(5)                       NOT NULL,
-  `state`             TINYINT(1)                       NOT NULL,
-  `translator1_id`    TINYINT(1)                       NOT NULL,
-  `translator1_state` TINYINT(1)                       NOT NULL,
-  `translator2_id`    TINYINT(1)                       NOT NULL,
-  `translator2_state` TINYINT(1)                       NOT NULL,
-  `translator3_id`    TINYINT(1)                       NOT NULL,
-  `translator3_state` VARCHAR(45)                      NOT NULL,
-  `string`            TEXT                             NOT NULL,
-  `time_added`        DATETIME                         NOT NULL,
-  `time_requested`    DATETIME                         NOT NULL,
-  `time_completed`    DATETIME                         NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_#__neno_content_elements_metadata_#__neno_translators1_idx` (`translator1_id` ASC),
-  INDEX `fk_#__neno_content_elements_metadata_#__neno_translators2_idx` (`translator2_id` ASC),
-  INDEX `fk_#__neno_content_elements_metadata_#__neno_translators3_idx` (`translator3_id` ASC),
-  CONSTRAINT `fk_#__neno_content_elements_metadata_#__neno_translators1`
-  FOREIGN KEY (`translator1_id`)
-  REFERENCES `#__neno_translators` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_#__neno_content_elements_metadata_#__neno_translators2`
-  FOREIGN KEY (`translator2_id`)
-  REFERENCES `#__neno_translators` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_#__neno_content_elements_metadata_#__neno_translators3`
-  FOREIGN KEY (`translator3_id`)
-  REFERENCES `#__neno_translators` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+  `id`             INT                              NOT NULL AUTO_INCREMENT,
+  `content_type`   ENUM('lang_string', 'db_string') NOT NULL,
+  `content_id`     INT                              NOT NULL,
+  `lang`           VARCHAR(5)                       NOT NULL,
+  `state`          TINYINT(1)                       NOT NULL,
+  `string`         TEXT                             NOT NULL,
+  `time_added`     DATETIME                         NOT NULL,
+  `time_requested` DATETIME                         NOT NULL,
+  `time_completed` DATETIME                         NOT NULL,
+  PRIMARY KEY (`id`)
 )
-  ENGINE = InnoDB;
+  ENGINE =InnoDB;
 
 -- -----------------------------------------------------
 -- Table `#__neno_content_elements_groups`
@@ -77,50 +47,25 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_elements_groups` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `group_name_UNIQUE` (`group_name` ASC)
 )
-  ENGINE = InnoDB;
+  ENGINE =InnoDB;
 
 -- -----------------------------------------------------
 -- Table `#__neno_content_elements_preset`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__neno_content_elements_preset` (
-  `id`                INT         NOT NULL AUTO_INCREMENT,
-  `group_id`          INT         NOT NULL,
-  `table_id`          INT         NOT NULL,
-  `lang`              VARCHAR(5)  NOT NULL,
-  `translator1_id`    TINYINT(1)  NOT NULL,
-  `translator1_state` TINYINT(1)  NOT NULL,
-  `translator2_id`    TINYINT(1)  NOT NULL,
-  `translator2_state` TINYINT(1)  NOT NULL,
-  `translator3_id`    TINYINT(1)  NOT NULL,
-  `translator3_state` VARCHAR(45) NOT NULL,
+  `id`       INT        NOT NULL AUTO_INCREMENT,
+  `group_id` INT        NOT NULL,
+  `table_id` INT        NOT NULL,
+  `lang`     VARCHAR(5) NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_#__neno_content_elements_preset_#__neno_translators1_idx` (`translator1_id` ASC),
-  INDEX `fk_#__neno_content_elements_preset_#__neno_translators2_idx` (`translator2_id` ASC),
-  INDEX `fk_#__neno_content_elements_preset_#__neno_translators3_idx` (`translator3_id` ASC),
-  INDEX `fk_#__neno_content_elements_preset_#__neno_content_elements_idx` (`group_id` ASC),
-  UNIQUE INDEX `group_id_x_table_id` (`group_id` ASC, `table_id` ASC, `lang` ASC),
-  CONSTRAINT `fk_#__neno_content_elements_preset_#__neno_translators1`
-  FOREIGN KEY (`translator1_id`)
-  REFERENCES `#__neno_translators` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_#__neno_content_elements_preset_#__neno_translators2`
-  FOREIGN KEY (`translator2_id`)
-  REFERENCES `#__neno_translators` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_#__neno_content_elements_preset_#__neno_translators3`
-  FOREIGN KEY (`translator3_id`)
-  REFERENCES `#__neno_translators` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_#__neno_content_elements_preset_#__neno_content_elements_g1`
-  FOREIGN KEY (`group_id`)
+  INDEX `content_elements_preset_group_idx` (`group_id` ASC),
+  UNIQUE INDEX `group_id_x_table_idx` (`group_id` ASC, `table_id` ASC, `lang` ASC),
+  CONSTRAINT `fk_cep_group_idx` FOREIGN KEY (`group_id`)
   REFERENCES `#__neno_content_elements_groups` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 )
-  ENGINE = InnoDB;
+  ENGINE =InnoDB;
 
 -- -----------------------------------------------------
 -- Table `#__neno_content_elements_tables`
@@ -132,20 +77,14 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_elements_tables` (
   `primary_key` VARCHAR(5)   NOT NULL,
   `translate`   TINYINT(1)   NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
-  INDEX `fk_#__neno_content_elements_tables_#__neno_content_elements_idx` (`group_id` ASC),
-  UNIQUE INDEX `index3` (`group_id` ASC, `table_name` ASC),
-  CONSTRAINT `fk_#__neno_content_elements_tables_#__neno_content_elements_p1`
-  FOREIGN KEY (`id`)
-  REFERENCES `#__neno_content_elements_preset` (`table_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_#__neno_content_elements_tables_#__neno_content_elements_g1`
-  FOREIGN KEY (`group_id`)
+  INDEX `content_elements_tables_group_idx` (`group_id` ASC),
+  UNIQUE INDEX `group_id_x_table_name` (`group_id` ASC, `table_name` ASC),
+  CONSTRAINT `fk_cet_group_idx` FOREIGN KEY (`group_id`)
   REFERENCES `#__neno_content_elements_groups` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 )
-  ENGINE = InnoDB;
+  ENGINE =InnoDB;
 
 -- -----------------------------------------------------
 -- Table `#__neno_content_elements_fields`
@@ -156,20 +95,14 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_elements_fields` (
   `field`     VARCHAR(100) NOT NULL,
   `translate` TINYINT(1)   NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
-  INDEX `fk_#__neno_manifest_fields_#__neno_manifest_tables1_idx` (`table_id` ASC),
+  INDEX `content_elements_fields_table_idx` (`table_id` ASC),
   UNIQUE INDEX `table_id_x_field` (`table_id` ASC, `field` ASC),
-  CONSTRAINT `fk_#__neno_manifest_fields_#__neno_manifest_tables1`
-  FOREIGN KEY (`table_id`)
+  CONSTRAINT `fk_cef_table_idx` FOREIGN KEY (`table_id`)
   REFERENCES `#__neno_content_elements_tables` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_#__neno_manifest_fields_#__neno_content_elements_metadata1`
-  FOREIGN KEY (`id`)
-  REFERENCES `#__neno_content_elements_metadata` (`content_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 )
-  ENGINE = InnoDB;
+  ENGINE =InnoDB;
 
 -- -----------------------------------------------------
 -- Table `#__neno_settings`
@@ -182,7 +115,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_settings` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `setting_key_UNIQUE` (`setting_key` ASC)
 )
-  ENGINE = InnoDB;
+  ENGINE =InnoDB;
 
 -- -----------------------------------------------------
 -- Table `#__neno_langfile_translations`
@@ -198,16 +131,66 @@ CREATE TABLE IF NOT EXISTS `#__neno_langfile_translations` (
   `translation_method` ENUM('langfile', 'machine', 'manual', 'pro') NOT NULL,
   `state`              TINYINT(1)                                   NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_#__lingo_langfile_translations_#__lingo_langfile_source_idx` (`source_id` ASC),
-  CONSTRAINT `fk_#__lingo_langfile_translations_#__lingo_langfile_source`
-  FOREIGN KEY (`source_id`)
+  INDEX `langfile_translations_source_idx` (`source_id` ASC),
+  CONSTRAINT `fk_lt_source_idx` FOREIGN KEY (`source_id`)
   REFERENCES `#__neno_langfile_source` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_#__neno_langfile_translations_#__neno_content_elements_met1`
-  FOREIGN KEY (`id`)
-  REFERENCES `#__neno_content_elements_metadata` (`content_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 )
-  ENGINE = InnoDB;
+  ENGINE =InnoDB;
+
+-- -----------------------------------------------------
+-- Table `#__neno_translators`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `#__neno_translators` (
+  `id`              INT         NOT NULL AUTO_INCREMENT,
+  `translator_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`)
+)
+  ENGINE =InnoDB;
+
+-- -----------------------------------------------------
+-- Table `content_elements_preset_x_translators`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `#__neno_content_elements_preset_x_translators` (
+  `translator_id`             INT        NOT NULL,
+  `content_element_preset_id` INT        NOT NULL,
+  `state`                     TINYINT(1) NOT NULL,
+  PRIMARY KEY (`translator_id`, `content_element_preset_id`),
+  INDEX `fk_cep_x_translators_content_elements_preset_idx` (`content_element_preset_id` ASC),
+  INDEX `fk_cep_x_translators_translator_idx` (`translator_id` ASC),
+  CONSTRAINT `fk_cep_x_translators_translator_idx` FOREIGN KEY (`translator_id`)
+  REFERENCES `#__neno_translators` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_cep_x_translators_content_element_preset_idx` FOREIGN KEY (`content_element_preset_id`)
+  REFERENCES `#__neno_content_elements_preset` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+)
+  ENGINE =InnoDB;
+
+-- -----------------------------------------------------
+-- Table `content_elements_metadata_x_translators`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `#__neno_content_elements_metadata_x_translators` (
+  `translator_id`               INT        NOT NULL,
+  `content_element_metadata_id` INT        NOT NULL,
+  `state`                       TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`translator_id`, `content_element_metadata_id`),
+  INDEX `cem_x_translators_translator_idx` (`translator_id` ASC),
+  INDEX `cem_x_translators_content_element_metadata_idx` (`content_element_metadata_id` ASC),
+  CONSTRAINT `fk_cem_x_translators_content_element_metadata_idx` FOREIGN KEY (`content_element_metadata_id`)
+  REFERENCES `#__neno_content_elements_metadata` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_cem_x_translators_translator_idx` FOREIGN KEY (`translator_id`)
+  REFERENCES `#__neno_translators` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+)
+  ENGINE =InnoDB;
+
+SET SQL_MODE = @OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS = @OLD_UNIQUE_CHECKS;
