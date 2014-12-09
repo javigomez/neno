@@ -1,9 +1,10 @@
 <?php
 /**
- * @package    Neno
+ * @package     Neno
+ * @subpackage  Settings
  *
- * @copyright  Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 defined('JPATH_NENO') or die;
 
@@ -22,8 +23,8 @@ class NenoSettings
 	/**
 	 * Get the value of a particular property
 	 *
-	 * @param   mixed      $settingName Setting name
-	 * @param   mixed|null $default     Default value in case the setting doesn't exist
+	 * @param   mixed       $settingName  Setting name
+	 * @param   mixed|null  $default      Default value in case the setting doesn't exist
 	 *
 	 * @return mixed
 	 */
@@ -42,9 +43,9 @@ class NenoSettings
 	/**
 	 * Set the value of a particular property. It will be created if it does not exist before
 	 *
-	 * @param   mixed   $settingName  Setting name
-	 * @param   mixed   $settingValue Setting value
-	 * @param   boolean $readOnly     If it should be marked as read only
+	 * @param   mixed    $settingName   Setting name
+	 * @param   mixed    $settingValue  Setting value
+	 * @param   boolean  $readOnly      If it should be marked as read only
 	 *
 	 * @return void
 	 */
