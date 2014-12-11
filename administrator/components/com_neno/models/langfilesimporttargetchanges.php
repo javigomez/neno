@@ -82,6 +82,8 @@ class NenoModelLangfilesImportTargetChanges extends JModelList
 
 					// Update the database
 					$model->updateStringsInTargetDatabase($strings);
+                    
+                    
 				}
 				else
 				{

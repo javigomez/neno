@@ -1080,6 +1080,10 @@ class NenoModelLangfiles extends JModelLegacy
 			$db->execute();
 
 			NenoLog::log('Updating database target string: ' . $row->id . ' = "' . $row->string . '"', 3);
+
+            //Reset execution time
+            set_time_limit(ini_get('max_execution_time'));            
+            
 		}
 
 		// Set a message in log and for display

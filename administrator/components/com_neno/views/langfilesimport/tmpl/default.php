@@ -30,7 +30,7 @@ JHtml::_('behavior.keepalive');
 	<?php echo JHtml::_('form.token'); ?>
 </form>
 
-<?php if ($this->changes_pending): ?>
+<?php if ($this->changesPending): ?>
 	<!-- show waring as strings are not synced -->
 	<div class="alert alert-warning"><span
 			class="icon-warning-2"></span> <?php echo JText::_('COM_NENO_LANGFILES_IMPORT_ALERT_CHANGES_PENDING'); ?>
@@ -41,7 +41,7 @@ JHtml::_('behavior.keepalive');
 			class="icon-ok"></span> <?php echo JText::_('COM_NENO_LANGFILES_IMPORT_ALERT_NO_CHANGES_PENDING'); ?></div>
 <?php endif; ?>
 
-<?php $change_count = count($this->changed_target_strings, COUNT_RECURSIVE) - count($this->changed_target_strings); ?>
+<?php $change_count = count($this->changedTargetStrings, COUNT_RECURSIVE) - count($this->changedTargetStrings); ?>
 <?php if ($change_count): ?>
 	<!-- show waring as target strings have changed -->
 	<div class="alert alert-warning"><span
@@ -55,12 +55,12 @@ JHtml::_('behavior.keepalive');
 
 		<div class="well" id="accordion">
 			<h2 class="module-title nav-header">
-				<?php echo JText::sprintf('COM_NENO_VIEW_LANGFILESIMPORT_HL_SOURCE_CHANGES_IN_LANGFILES', $this->source_language); ?>
+				<?php echo JText::sprintf('COM_NENO_VIEW_LANGFILESIMPORT_HL_SOURCE_CHANGES_IN_LANGFILES', $this->sourceLanguage); ?>
 			</h2>
-			<?php foreach ($this->source_counts as $key => $count): ?>
+			<?php foreach ($this->sourceCounts as $key => $count): ?>
 				<div class="row-striped">
 					<div class="row-fluid">
-						<?php $change_count = @count($count[$this->source_language]); ?>
+						<?php $change_count = @count($count[$this->sourceLanguage]); ?>
 						<strong class="row-title">
 							<span class="badge <?php echo $change_count > 0 ? 'badge-important' : ''; ?>">
 								<?php echo $change_count; ?>
@@ -72,9 +72,9 @@ JHtml::_('behavior.keepalive');
 					</div>
 					<div id="collapse<?php echo $key; ?>" class="panel-collapse collapse">
 						<div class="well well-small">
-							<?php if (!empty($count[$this->source_language])): ?>
+							<?php if (!empty($count[$this->sourceLanguage])): ?>
 								<ul>
-									<?php foreach ($count[$this->source_language] as $file => $content): ?>
+									<?php foreach ($count[$this->sourceLanguage] as $file => $content): ?>
 										<li><?php echo $file; ?></li>
 									<?php endforeach; ?>
 								</ul>
@@ -93,7 +93,7 @@ JHtml::_('behavior.keepalive');
 
 		<div class="well" id="accordion">
 			<h2 class="module-title nav-header"><?php echo JText::_('COM_NENO_VIEW_LANGFILESIMPORT_HL_TARGET_CHANGES_IN_LANGFILES'); ?></h2>
-			<?php foreach ($this->new_target_strings as $lang => $lines): ?>
+			<?php foreach ($this->newTargetStrings as $lang => $lines): ?>
 				<div class="row-striped">
 					<div class="row-fluid">
 						<?php $change_count = @count($lines); ?>
