@@ -150,7 +150,7 @@ class NenoModelLangfiles extends JModelLegacy
 			// Filter the list to only have strings that are not already imported
 			$new_strings[$lang_code] = array_diff_key($file_strings, $database_strings);
 
-			NenoLog::log('Found ' . count($new_strings[$lang]) . ' new strings in [' . $lang . '] language files', 2);
+			NenoLog::log('Found ' . count($new_strings[$lang_code]) . ' new strings in [' . $lang_code . '] language files', 2);
 		}
 
 		return $new_strings;
