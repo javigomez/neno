@@ -17,6 +17,7 @@ jimport('joomla.application.component.modeladmin');
  * NenoModelManifestTable class
  *
  * @since  1.0
+ * @todo remove references to Manifest
  */
 class NenoModelManifestTable extends JModelAdmin
 {

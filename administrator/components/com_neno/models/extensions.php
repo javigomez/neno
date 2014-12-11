@@ -206,7 +206,7 @@ class NenoModelExtensions extends JModelList
 		$db = JFactory::getDbo();
 
 		$query = $this->getListQuery();
-		$query->innerJoin('#__neno_manifest_tables AS mt ON mt.extension = e.name');
+		$query->innerJoin('#__neno_content_elements_tables AS mt ON mt.extension = e.name');
 		$db->setQuery($query);
 
 		$extensions = $db->loadObjectList('', 'JObject');

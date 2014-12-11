@@ -17,6 +17,7 @@ jimport('joomla.application.component.modellist');
  * NenoModelManifestTables class
  *
  * @since  1.0
+ * @todo Remove references to Manifest
  */
 class NenoModelManifestTables extends JModelList
 {
@@ -100,7 +101,7 @@ class NenoModelManifestTables extends JModelList
 					'enabled'
 				)
 			)
-			->from('#__neno_manifest_tables');
+			->from('#__neno_content_elements_tables');
 
 		$extensionName = $this->getState('extension.name');
 
@@ -152,7 +153,7 @@ class NenoModelManifestTables extends JModelList
 
 		$query
 			->select('id')
-			->from('#__neno_manifest_tables');
+			->from('#__neno_content_elements_tables');
 
 		// If the array is not empty, let's add the clause
 		if (!empty($tableAdded))

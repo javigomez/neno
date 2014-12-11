@@ -15,6 +15,7 @@ defined('_JEXEC') or die;
  * Manifest Table Table class
  *
  * @since  1.0
+ * @todo Remove references to Manifest
  */
 class NenoTableManifestTable extends JTable
 {
@@ -25,7 +26,7 @@ class NenoTableManifestTable extends JTable
 	 */
 	public function __construct($db)
 	{
-		parent::__construct('#__neno_manifest_tables', 'id', $db);
+		parent::__construct('#__neno_content_elements_tables', 'id', $db);
 	}
 
 	/**
@@ -44,7 +45,7 @@ class NenoTableManifestTable extends JTable
 
 		$query = $db->getQuery(true);
 		$query
-			->delete('#__neno_manifest_fields')
+			->delete('#__neno_content_elements_fields')
 			->where(
 				array(
 					'table_id = ' . intval($tableId),
@@ -69,7 +70,7 @@ class NenoTableManifestTable extends JTable
 		$query = $db->getQuery(true);
 
 		$query
-			->delete('#__neno_manifest_fields')
+			->delete('#__neno_content_elements_fields')
 			->where('table_id  = ' . $pk);
 
 		$db->setQuery($query);

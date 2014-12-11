@@ -52,8 +52,8 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	private static $nenoTables = array(
 		'#__neno_langfile_translations'
 	, '#__neno_langfile_source'
-	, '#__neno_manifest_tables'
-	, '#__neno_manifest_fields'
+	, '#__neno_content_elements_tables'
+	, '#__neno_content_elements_fields'
 	);
 
 	/**
@@ -191,7 +191,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		$query = $this->getQuery(true);
 		$query
 			->select('table_name')
-			->from('#__neno_manifest_tables');
+			->from('#__neno_content_elements_tables');
 
 		$manifestTablesObjectList = $this->executeQuery($query, true, true);
 

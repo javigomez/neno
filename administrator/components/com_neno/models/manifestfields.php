@@ -17,6 +17,7 @@ jimport('joomla.application.component.modellist');
  * NenoModelManifestFields class
  *
  * @since  1.0
+ * @todo remove references to Manifest
  */
 class NenoModelManifestFields extends JModelList
 {
@@ -133,7 +134,7 @@ class NenoModelManifestFields extends JModelList
 					'enabled'
 				)
 			)
-			->from('#__neno_manifest_fields');
+			->from('#__neno_content_elements_fields');
 
 		// Get Table Id from the state
 		$tableId = $this->getState('manifestTable.id');
