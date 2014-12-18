@@ -132,6 +132,37 @@ class NenoHelper
 	}
 
 	/**
+	 * Get the working language for the current user
+	 * The value is stored in #__user_profiles
+	 *
+	 * @return string 'eb-GB' or 'de-DE'
+	 */
+	public static function getWorkingLanguage()
+	{
+		$userId = JFactory::getUser()->id;
+
+		$db = JFactory::getDbo();
+
+		$query = $db->getQuery(true);
+
+		$query
+			->select('profile_value')
+			->from('#__user_profiles')
+			->where(
+				array(
+					'user_id = ' . intval($userId),
+					'profile_key = ' . $db->quote('neno_working_language')
+				)
+			);
+
+		$db->setQuery($query);
+		$lang = $db->loadResult();
+
+		return $lang;
+
+	}
+
+	/**
 	 * Get an array indexed by language code of the target languages
 	 *
 	 * @param   boolean $published Weather or not only the published language should be loaded
@@ -220,37 +251,6 @@ class NenoHelper
 	}
 
 	/**
-	 * Get the working language for the current user
-	 * The value is stored in #__user_profiles
-	 *
-	 * @return string 'eb-GB' or 'de-DE'
-	 */
-	public static function getWorkingLanguage()
-	{
-		$userId = JFactory::getUser()->id;
-
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true);
-
-		$query
-			->select('profile_value')
-			->from('#__user_profiles')
-			->where(
-				array(
-					'user_id = ' . intval($userId),
-					'profile_key = ' . $db->quote('neno_working_language')
-				)
-			);
-
-		$db->setQuery($query);
-		$lang = $db->loadResult();
-
-		return $lang;
-
-	}
-
-	/**
 	 * Transform an array of stdClass to
 	 *
 	 * @param   array $objectList List of objects
@@ -272,8 +272,8 @@ class NenoHelper
 	/**
 	 * Check if a string starts with a particular string
 	 *
-	 * @param   string  $string  String to be checked
-	 * @param   string  $prefix  Prefix of the string
+	 * @param   string $string String to be checked
+	 * @param   string $prefix Prefix of the string
 	 *
 	 * @return bool
 	 */
@@ -285,13 +285,67 @@ class NenoHelper
 	/**
 	 * Check if a string ends with a particular string
 	 *
-	 * @param   string  $string  String to be checked
-	 * @param   string  $suffix  Suffix of the string
+	 * @param   string $string String to be checked
+	 * @param   string $suffix Suffix of the string
 	 *
 	 * @return bool
 	 */
 	public static function endsWith($string, $suffix)
 	{
 		return $suffix === "" || strpos($string, $suffix, strlen($string) - strlen($suffix)) !== false;
+	}
+
+	/**
+	 * Get the standard pattern
+	 *
+	 * @param string $componentName
+	 *
+	 * @return string
+	 */
+	public static function getTableNamePatternBasedOnComponentName($componentName)
+	{
+		$prefix = JFactory::getDbo()->getPrefix();
+
+		return $prefix . str_replace(array('com_'), '', strtolower($componentName));
+	}
+
+	/**
+	 * @param string $tableName
+	 *
+	 * @return mixed
+	 */
+	public static function unifyTableName($tableName)
+	{
+		$prefix = JFactory::getDbo()->getPrefix();
+
+		return str_replace($prefix, '#__', $tableName);
+	}
+
+	/**
+	 * @param      $objectList
+	 * @param null $propertyName
+	 *
+	 * @return array
+	 */
+	public static function convertOnePropertyObjectListToArray($objectList, $propertyName = null)
+	{
+		$arrayResult = array();
+
+		if (!empty($objectList))
+		{
+			// If a property wasn't passed as argument, we will get the first one.
+			if ($propertyName === null)
+			{
+				$properties    = array_keys((array) $objectList[0]);
+				$propertyName = $properties[0];
+			}
+
+			foreach ($objectList as $object)
+			{
+				$arrayResult[] = $object->{$propertyName};
+			}
+		}
+
+		return $arrayResult;
 	}
 }

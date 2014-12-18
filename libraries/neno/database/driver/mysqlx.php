@@ -61,23 +61,51 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	 */
 	public function replacePrefix($sql, $prefix = '#__')
 	{
-		// Get query type
-		$queryType = NenoDatabaseParser::getQueryType($sql);
-
-		// Get table name
-		$tableName = NenoDatabaseParser::getSourceTableName($sql);
-
-		// If the query is a select statement let's get the sql query using its shadow table name
-		if (!NenoHelper::startsWith($tableName, '#__neno'))
+		// Check if the query should be parsed.
+		if ($this->hasToBeParsed($sql))
 		{
-			if ($queryType === NenoDatabaseParser::SELECT_QUERY && $this->isTranslatable($tableName))
+			// Get query type
+			$queryType = NenoDatabaseParser::getQueryType($sql);
+
+			// Get table name
+			$tableName = NenoDatabaseParser::getSourceTableName($sql);
+
+			// If the query is a select statement let's get the sql query using its shadow table name
+			if (!NenoHelper::startsWith($tableName, '#__neno'))
 			{
-				$sql = NenoDatabaseParser::getSqlQueryUsingShadowTable($sql);
+				if ($queryType === NenoDatabaseParser::SELECT_QUERY && $this->isTranslatable($tableName))
+				{
+					$sql = NenoDatabaseParser::getSqlQueryUsingShadowTable($sql);
+				}
 			}
 		}
 
 		// Call to the parent replacePrefix
 		return parent::replacePrefix($sql, $prefix);
+	}
+
+	/**
+	 * @param string $sql
+	 *
+	 * @return bool
+	 */
+	private function hasToBeParsed($sql)
+	{
+		$ignoredQueryRegex = array(
+			'/show (.+)/i',
+			'/#__neno_(.+)/'
+		);
+
+		foreach ($ignoredQueryRegex as $queryRegex)
+		{
+			if (preg_match($queryRegex, $sql))
+			{
+				return false;
+			}
+		}
+
+		return true;
+
 	}
 
 	/**
@@ -130,6 +158,41 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	}
 
 	/**
+	 * @param bool $new
+	 *
+	 * @return JDatabaseQuery|string
+	 */
+	public function getQuery($new = false)
+	{
+		if ($new)
+		{
+			// Derive the class name from the driver.
+			$class = 'NenoDatabaseQuery' . ucfirst($this->name);
+
+			// Make sure we have a query class for this driver.
+			if (!class_exists($class))
+			{
+				// If it doesn't exist we are at an impasse so throw an exception.
+				// Derive the class name from the driver.
+				$class = 'JDatabaseQuery' . ucfirst($this->name);
+
+				// Make sure we have a query class for this driver.
+				if (!class_exists($class))
+				{
+					// If it doesn't exist we are at an impasse so throw an exception.
+					throw new RuntimeException('Database Query Class not found.');
+				}
+			}
+
+			return new $class($this);
+		}
+		else
+		{
+			return $this->sql;
+		}
+	}
+
+	/**
 	 * Execute a sql preventing to lose the query previously assigned.
 	 *
 	 * @param mixed   $sql                   JDatabaseQuery object or SQL query
@@ -167,6 +230,45 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		{
 			return $returnObject;
 		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool|mixed
+	 */
+	public function execute()
+	{
+		try
+		{
+			$result = parent::execute();
+			$this->processQueryExecution();
+
+			return $result;
+		}
+		catch (RuntimeException $ex)
+		{
+			NenoLog::log($ex, NenoLog::PRIORITY_ERROR);
+
+			return false;
+		}
+	}
+
+	/**
+	 *
+	 */
+	private function processQueryExecution()
+	{
+		$sqlParsed = NenoDatabaseParser::parseQuery($this->sql);
+
+		// Process insertions
+		if (!empty($sqlParsed['INSERT']) || !empty($sqlParsed['REPLACE']))
+		{
+//			Kint::dump($sqlParsed);
+//			exit;
+		}
+
+		// Process updating
 	}
 
 	/**
@@ -245,8 +347,8 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	/**
 	 * Copy all the content to the shadow table
 	 *
-	 * @param   string  $sourceTableName  Name of the source table
-	 * @param   string  $shadowTableName  Name of the shadow table
+	 * @param   string $sourceTableName Name of the source table
+	 * @param   string $shadowTableName Name of the shadow table
 	 *
 	 * @return void
 	 */
@@ -258,76 +360,34 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * @param string $tableName
 	 *
-	 * @return bool|mixed
+	 * @return string|null
 	 */
-	public function execute()
+	public function getPrimaryKey($tableName)
 	{
-		try
-		{
-			$result = parent::execute();
-			$this->processQueryExecution();
+		$query   = 'SHOW INDEX FROM ' . $tableName . ' WHERE Key_name = \'PRIMARY\'';
+		$results = $this->executeQuery($query, true, true);
 
-			return $result;
-		}
-		catch (RuntimeException $ex)
+		if (!empty($results))
 		{
-			NenoLog::log($ex, NenoLog::PRIORITY_ERROR);
-
-			return false;
+			return $results[0]->Column_name;
 		}
+
+		return null;
 	}
 
 	/**
+	 * @param string $componentName
 	 *
+	 * @return array
 	 */
-	private function processQueryExecution()
+	public function getComponentTables($componentName)
 	{
-		$sqlParsed = NenoDatabaseParser::parseQuery($this->sql);
+		$tablePattern = NenoHelper::getTableNamePatternBasedOnComponentName($componentName);
+		$query        = 'SHOW TABLES LIKE ' . $this->quote($tablePattern . '%');
+		$tablesList   = $this->executeQuery($query, true, true);
 
-		// Process insertions
-		if (!empty($sqlParsed['INSERT']) || !empty($sqlParsed['REPLACE']))
-		{
-//			Kint::dump($sqlParsed);
-//			exit;
-		}
-
-		// Process updating
-	}
-
-	/**
-	 * @param bool $new
-	 *
-	 * @return JDatabaseQuery|string
-	 */
-	public function getQuery($new = false)
-	{
-		if ($new)
-		{
-			// Derive the class name from the driver.
-			$class = 'NenoDatabaseQuery' . ucfirst($this->name);
-
-			// Make sure we have a query class for this driver.
-			if (!class_exists($class))
-			{
-				// If it doesn't exist we are at an impasse so throw an exception.
-				// Derive the class name from the driver.
-				$class = 'JDatabaseQuery' . ucfirst($this->name);
-
-				// Make sure we have a query class for this driver.
-				if (!class_exists($class))
-				{
-					// If it doesn't exist we are at an impasse so throw an exception.
-					throw new RuntimeException('Database Query Class not found.');
-				}
-			}
-
-			return new $class($this);
-		}
-		else
-		{
-			return $this->sql;
-		}
+		return NenoHelper::convertOnePropertyObjectListToArray($tablesList);
 	}
 }

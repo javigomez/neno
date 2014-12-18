@@ -42,9 +42,4 @@ class PlgSystemNeno extends JPlugin
 			JFactory::$database = NenoFactory::getDbo();
 		}
 	}
-
-	public function onAfterRender()
-	{
-		NenoHtmlParser::addNonPremiumLink(JResponse::getBody());
-	}
 }
