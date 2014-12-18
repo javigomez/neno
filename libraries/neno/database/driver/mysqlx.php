@@ -45,18 +45,6 @@ else
 class NenoDatabaseDriverMysqlx extends CommonDriver
 {
 	/**
-	 * Neno tables
-	 *
-	 * @var array
-	 */
-	private static $nenoTables = array(
-		'#__neno_langfile_translations'
-	, '#__neno_langfile_source'
-	, '#__neno_content_elements_tables'
-	, '#__neno_content_elements_fields'
-	);
-
-	/**
 	 * Tables configured to be translatable
 	 *
 	 * @var array
@@ -80,7 +68,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		$tableName = NenoDatabaseParser::getSourceTableName($sql);
 
 		// If the query is a select statement let's get the sql query using its shadow table name
-		if (!in_array($tableName, self::$nenoTables))
+		if (!NenoHelper::startsWith($tableName, '#__neno'))
 		{
 			if ($queryType === NenoDatabaseParser::SELECT_QUERY && $this->isTranslatable($tableName))
 			{
@@ -148,7 +136,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	 * @param boolean $preservePreviousQuery True if the previous query will be saved before, false otherwise
 	 * @param boolean $returnObjectList      True if the method should return a list of object as query result, false otherwise
 	 *
-	 * @return void
+	 * @return void|array
 	 */
 	public function executeQuery($sql, $preservePreviousQuery = true, $returnObjectList = false)
 	{
@@ -257,15 +245,15 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	/**
 	 * Copy all the content to the shadow table
 	 *
-	 * @param   string $sourceTableName Name of the source table
-	 * @param   string $shadowTableName Name of the shadow table
+	 * @param   string  $sourceTableName  Name of the source table
+	 * @param   string  $shadowTableName  Name of the shadow table
 	 *
 	 * @return void
 	 */
 	public function copyContentElementsFromSourceTableToShadowTables($sourceTableName, $shadowTableName)
 	{
 		$columns = array_map(array($this, 'quoteName'), array_keys($this->getTableColumns($sourceTableName)));
-		$query = 'REPLACE INTO ' . $shadowTableName . ' (' . implode(',', $columns) . ' ) SELECT * FROM ' . $sourceTableName;
+		$query   = 'REPLACE INTO ' . $shadowTableName . ' (' . implode(',', $columns) . ' ) SELECT * FROM ' . $sourceTableName;
 		$this->executeQuery($query);
 	}
 

@@ -268,4 +268,30 @@ class NenoHelper
 
 		return $jObjectList;
 	}
+
+	/**
+	 * Check if a string starts with a particular string
+	 *
+	 * @param   string  $string  String to be checked
+	 * @param   string  $prefix  Prefix of the string
+	 *
+	 * @return bool
+	 */
+	public static function startsWith($string, $prefix)
+	{
+		return $prefix === "" || strrpos($string, $prefix, -strlen($string)) !== false;
+	}
+
+	/**
+	 * Check if a string ends with a particular string
+	 *
+	 * @param   string  $string  String to be checked
+	 * @param   string  $suffix  Suffix of the string
+	 *
+	 * @return bool
+	 */
+	public static function endsWith($string, $suffix)
+	{
+		return $suffix === "" || strpos($string, $suffix, strlen($string) - strlen($suffix)) !== false;
+	}
 }

@@ -48,5 +48,8 @@ class NenoLoader
 
 		// Registering SQL parser Namespace
 		JLoader::registerNamespace('PHPSQL', JPATH_NENO . '/database/sqlparser');
+
+		// Registering PHP HTML Parser Namespace
+		JLoader::registerNamespace('PhpSimple', JPATH_NENO . '/html/domparser');
 	}
 }
