@@ -100,11 +100,26 @@ class NenoContentElementField extends NenoContentElement
 		return $this;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return ReflectionClass
+	 */
 	public function getClassReflectionObject()
 	{
 		// Create a reflection class to use it to dynamic properties loading
 		$classReflection = new ReflectionClass(__CLASS__);
 
 		return $classReflection;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return string
+	 */
+	public function getDbTable()
+	{
+		return '#__neno_content_elements_fields';
 	}
 }
