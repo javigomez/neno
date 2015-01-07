@@ -122,4 +122,17 @@ class NenoContentElementField extends NenoContentElement
 	{
 		return '#__neno_content_elements_fields';
 	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return JObject
+	 */
+	public function toObject()
+	{
+		$object = parent::toObject();
+		$object->set('table_id', $object->table->getId());
+
+		return $object;
+	}
 }

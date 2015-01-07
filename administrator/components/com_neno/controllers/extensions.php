@@ -21,66 +21,124 @@ jimport('joomla.application.component.controlleradmin');
 class NenoControllerExtensions extends JControllerAdmin
 {
 	/**
+	 * @var array
+	 */
+	private static $extensionTypeAllowed = array(
+		'component',
+		'module',
+		'plugin',
+		'template'
+	);
+
+	/**
+	 * Escape a string
+	 *
+	 * @param   mixed $value Value
+	 *
+	 * @return string
+	 */
+	private static function escapeString($value)
+	{
+		return JFactory::getDbo()->quote($value);
+	}
+
+	/**
 	 * Method to import tables that need to be translated
 	 *
 	 * @return void
 	 */
-	public function import()
+	public function discoverExtensions()
 	{
-		// Get form data
-		$form = $this->input->post->get('jform', array(), 'ARRAY');
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
-		/* @var $manifestTablesModel NenoModelManifestTables */
-		$manifestTablesModel = $this->getModel('ManifestTables');
+		$query
+			->select(
+				array(
+					'e.extension_id',
+					'e.name',
+					'e.type',
+					'e.folder',
+					'e.enabled'
+				)
+			)
+			->from('`#__extensions` AS e')
+			->where(
+				array(
+					'e.type IN (' . implode(',', array_map(array('NenoControllerExtensions', 'escapeString'), self::$extensionTypeAllowed)) . ')',
+					'e.name NOT LIKE \'com_neno\'',
+					'NOT EXISTS (SELECT 1 FROM `#__neno_content_elements_groups` AS ceg WHERE e.extension_id = ceg.extension_id)'
+				)
+			)
+			->order('name');
 
-		$tablesAdded = array();
+		$db->setQuery($query);
+		$extensions = $db->loadObjectList();
 
-		/* @var $manifestTableModel NenoModelManifestTable */
-		$manifestTableModel = $this->getModel('ManifestTable');
-
-		/* @var $extensionModel NenoModelExtension */
-		$extensionModel = $this->getModel('Extension');
-
-		foreach ($form as $extensionId => $tables)
+		for ($i = 0; $i < count($extensions); $i++)
 		{
-			/* @var $extension JObject */
-			$extension = $extensionModel->getItem($extensionId);
+			$groupData = array(
+				'groupName'   => $extensions[$i]->name,
+				'extensionId' => $extensions[$i]->extension_id
+			);
 
-			foreach ($tables as $tableName)
+			$group  = new NenoContentElementGroup($groupData);
+			$tables = $this->getComponentTables($group);
+
+			if (!empty($tables))
 			{
-				/* @var $table JObject */
-				$table = $manifestTableModel->getItem(array( 'table_name' => $tableName ));
-
-				// The table doesn't exist yet on the database
-				if (empty($table->get('id')))
-				{
-					$table->set('extension', $extension->get('name'));
-					$table->set('table_name', $tableName);
-					$table->set('primary_key', $manifestTableModel->getPrimaryKey($tableName));
-				}
-
-				$fields = $manifestTableModel->getDatabaseTableColumns($table);
-
-				// Loop through all the fields and add them to the table
-				foreach ($fields as $field)
-				{
-					$table = $manifestTableModel->addManifestField($table, $field->get('field'));
-				}
-
-				// Save the table
-				$tableId = $manifestTableModel->save($table);
-
-				// If the Id is not empty(null or 0), let's add to the list
-				if (!empty($tableId))
-				{
-					$tablesAdded[] = $tableId;
-				}
+				$group->setTables($tables);
+				$group->persist();
 			}
 		}
+	}
 
-		// Delete the tables that are not used anymore
-		$manifestTablesModel->deleteUnusedTables($tablesAdded);
+	/**
+	 * Get all the tables of the component that matches with the Joomla naming convention.
+	 *
+	 * @param   NenoContentElementGroup $componentName Component name
+	 *
+	 * @return array
+	 */
+	public function getComponentTables(NenoContentElementGroup $componentData)
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db     = JFactory::getDbo();
+		$tables = $db->getComponentTables($componentData->getGroupName());
 
-		$this->setRedirect(JRoute::_('index.php?option=com_neno&view=extensions', false));
+		$result = array();
+
+		for ($i = 0; $i < count($tables); $i++)
+		{
+			// Get Table name
+			$tableName = NenoHelper::unifyTableName($tables[$i]);
+
+			// Create an array with the table information
+			$tableData = array(
+				'tableName'  => $tableName,
+				'primaryKey' => $db->getPrimaryKey($tableName)
+			);
+
+			// Create ContentElement object
+			$table = new NenoContentElementTable($tableData);
+
+			// Get all the columns a table contains
+			$fields = $db->getTableColumns($table->getTableName(), false);
+
+			foreach ($fields as $fieldInfo)
+			{
+				$fieldData = array(
+					'fieldName' => $fieldInfo->Field,
+				);
+
+				$field = new NenoContentElementField($fieldData);
+
+				$table->addField($field);
+			}
+
+			$result[] = $table;
+		}
+
+		return $result;
 	}
 }

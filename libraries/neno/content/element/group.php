@@ -43,7 +43,6 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->tables = array();
 	}
 
-
 	/**
 	 * Get group name
 	 *
@@ -141,6 +140,7 @@ class NenoContentElementGroup extends NenoContentElement
 			/* @var $table NenoContentElementTable */
 			foreach ($this->tables as $table)
 			{
+				$table->setGroup($this);
 				$table->persist();
 			}
 		}

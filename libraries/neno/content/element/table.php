@@ -217,12 +217,27 @@ class NenoContentElementTable extends NenoContentElement
 	 */
 	public function persist()
 	{
-		parent::persist();
-
-		/* @var $field NenoContentElementField */
-		foreach ($this->fields as $field)
+		if (parent::persist())
 		{
-			$field->persist();
+			/* @var $field NenoContentElementField */
+			foreach ($this->fields as $field)
+			{
+				$field->setTable($this);
+				$field->persist();
+			}
 		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return JObject
+	 */
+	public function toObject()
+	{
+		$object = parent::toObject();
+		$object->set('group_id', $object->group->getId());
+
+		return $object;
 	}
 }
