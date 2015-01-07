@@ -91,6 +91,10 @@ class NenoControllerExtensions extends JControllerAdmin
 				$group->persist();
 			}
 		}
+
+		$this
+			->setRedirect('index.php?option=com_neno&view=extensions')
+			->redirect();
 	}
 
 	/**
