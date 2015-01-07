@@ -310,7 +310,9 @@ class NenoHelper
 	}
 
 	/**
-	 * @param string $tableName
+	 * Converts a table name to the Joomla table naming convention: #__table_name
+	 *
+	 * @param string $tableName Table name
 	 *
 	 * @return mixed
 	 */
@@ -322,8 +324,10 @@ class NenoHelper
 	}
 
 	/**
-	 * @param      $objectList
-	 * @param null $propertyName
+	 * Convert an array of objects to an simple array. If property is not specified, the property selected will be the first one.
+	 *
+	 * @param array       $objectList Object list
+	 * @param string|null $propertyName Property name
 	 *
 	 * @return array
 	 */
@@ -336,7 +340,7 @@ class NenoHelper
 			// If a property wasn't passed as argument, we will get the first one.
 			if ($propertyName === null)
 			{
-				$properties    = array_keys((array) $objectList[0]);
+				$properties   = array_keys((array) $objectList[0]);
 				$propertyName = $properties[0];
 			}
 
@@ -347,5 +351,25 @@ class NenoHelper
 		}
 
 		return $arrayResult;
+	}
+
+	/**
+	 * Convert a camelcase property name to a underscore case database column name
+	 *
+	 * @param string $propertyName Property name
+	 *
+	 * @return string
+	 */
+	public static function convertPropertyNameToDatabaseColumnName($propertyName)
+	{
+		preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $propertyName, $matches);
+		$ret = $matches[0];
+
+		foreach ($ret as &$match)
+		{
+			$match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+		}
+
+		return implode('_', $ret);
 	}
 }
