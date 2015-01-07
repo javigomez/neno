@@ -31,6 +31,11 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	protected $tables;
 
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param mixed $data
+	 */
 	public function __construct($data)
 	{
 		parent::__construct($data);
@@ -88,6 +93,8 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * {@inheritdoc}
+	 *
 	 * @return ReflectionClass
 	 */
 	public function getClassReflectionObject()
@@ -99,6 +106,8 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Get all the tables related to this group
+	 *
 	 * @return array
 	 */
 	public function getTables()
@@ -107,6 +116,8 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Set all the tables related to this group
+	 *
 	 * @param array $tables
 	 *
 	 * @return $this
@@ -116,5 +127,32 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->tables = $tables;
 
 		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return boolean
+	 */
+	public function persist()
+	{
+		if (parent::persist())
+		{
+			/* @var $table NenoContentElementTable */
+			foreach ($this->tables as $table)
+			{
+				$table->persist();
+			}
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return string
+	 */
+	public function getDbTable()
+	{
+		return '#__neno_content_elements_groups';
 	}
 }
