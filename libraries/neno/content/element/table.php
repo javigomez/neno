@@ -40,6 +40,11 @@ class NenoContentElementTable extends NenoContentElement
 	 */
 	protected $fields;
 
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param mixed $data
+	 */
 	public function __construct($data)
 	{
 		parent::__construct($data);
@@ -145,6 +150,8 @@ class NenoContentElementTable extends NenoContentElement
 	}
 
 	/**
+	 * {@inheritdoc}
+	 *
 	 * @return ReflectionClass
 	 */
 	public function getClassReflectionObject()
@@ -156,6 +163,8 @@ class NenoContentElementTable extends NenoContentElement
 	}
 
 	/**
+	 * Get the fields related to this table
+	 *
 	 * @return array
 	 */
 	public function getFields()
@@ -164,6 +173,8 @@ class NenoContentElementTable extends NenoContentElement
 	}
 
 	/**
+	 * Set the fields related to this table
+	 *
 	 * @param array $fields
 	 *
 	 * @return $this
@@ -175,8 +186,43 @@ class NenoContentElementTable extends NenoContentElement
 		return $this;
 	}
 
+	/**
+	 * Add a field to the field list.
+	 *
+	 * @param NenoContentElementField $field
+	 *
+	 * @return NenoContentElementTable
+	 */
 	public function addField(NenoContentElementField $field)
 	{
 		$this->fields[] = $field;
+
+		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return string
+	 */
+	public function getDbTable()
+	{
+		return '#__neno_content_elements_tables';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return boolean
+	 */
+	public function persist()
+	{
+		parent::persist();
+
+		/* @var $field NenoContentElementField */
+		foreach ($this->fields as $field)
+		{
+			$field->persist();
+		}
 	}
 }
