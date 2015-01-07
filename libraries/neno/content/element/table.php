@@ -52,6 +52,41 @@ class NenoContentElementTable extends NenoContentElement
 		$this->fields = array();
 	}
 
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return string
+	 */
+	public static function getDbTable()
+	{
+		return '#__neno_content_elements_tables';
+	}
+
+	/**
+	 * Get a Table object
+	 *
+	 * @param integer $tableId Table Id
+	 *
+	 * @return NenoContentElementTable
+	 */
+	public static function getTable($tableId)
+	{
+		$table = new NenoContentElementTable(static::getElementDataFromDb($tableId));
+
+		$fieldsInfo = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $table->getId());
+
+		$fields = array();
+
+		foreach ($fieldsInfo as $fieldInfo)
+		{
+			$field    = NenoContentElementField::getField($fieldInfo->id);
+			$fields[] = $field;
+		}
+
+		$table->setFields($fields);
+
+		return $table;
+	}
 
 	/**
 	 * Get the group that contains this table
@@ -203,16 +238,6 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @return string
-	 */
-	public function getDbTable()
-	{
-		return '#__neno_content_elements_tables';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
 	 * @return boolean
 	 */
 	public function persist()
@@ -240,4 +265,5 @@ class NenoContentElementTable extends NenoContentElement
 
 		return $object;
 	}
+
 }

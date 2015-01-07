@@ -31,6 +31,30 @@ class NenoContentElementField extends NenoContentElement
 	protected $translate;
 
 	/**
+	 * {@inheritdoc}
+	 *
+	 * @return string
+	 */
+	public static function getDbTable()
+	{
+		return '#__neno_content_elements_fields';
+	}
+
+	/**
+	 * Get a field using its field Id
+	 *
+	 * @param integer $fieldId Field Id
+	 *
+	 * @return NenoContentElementField
+	 */
+	public static function getField($fieldId)
+	{
+		$field = new NenoContentElementField(static::getElementDataFromDb($fieldId));
+
+		return $field;
+	}
+
+	/**
 	 * Get the table that contains this field
 	 *
 	 * @return NenoContentElementTable
@@ -111,16 +135,6 @@ class NenoContentElementField extends NenoContentElement
 		$classReflection = new ReflectionClass(__CLASS__);
 
 		return $classReflection;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return string
-	 */
-	public function getDbTable()
-	{
-		return '#__neno_content_elements_fields';
 	}
 
 	/**

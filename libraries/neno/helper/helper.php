@@ -326,7 +326,7 @@ class NenoHelper
 	/**
 	 * Convert an array of objects to an simple array. If property is not specified, the property selected will be the first one.
 	 *
-	 * @param array       $objectList Object list
+	 * @param array       $objectList   Object list
 	 * @param string|null $propertyName Property name
 	 *
 	 * @return array
@@ -371,5 +371,30 @@ class NenoHelper
 		}
 
 		return implode('_', $ret);
+	}
+
+	/**
+	 * Convert a underscore case column name to a camelcase property name
+	 *
+	 * @param string $columnName
+	 *
+	 * @return string
+	 */
+	public static function convertDatabaseColumnNametoPropertyName($columnName)
+	{
+		$nameParts = explode('_', $columnName);
+		$firstWord = array_shift($nameParts);
+
+		// If there are word left, let's capitalize them.
+		if (!empty($nameParts))
+		{
+			$nameParts = array_merge(array($firstWord), array_map('ucfirst', $nameParts));
+		}
+		else
+		{
+			$nameParts = array($firstWord);
+		}
+
+		return implode('', $nameParts);
 	}
 }

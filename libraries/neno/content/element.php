@@ -55,6 +55,71 @@ abstract class NenoContentElement
 	public abstract function getClassReflectionObject();
 
 	/**
+	 * Loads all the elements using its parent id and the parent Id value
+	 *
+	 * @param string $elementsTableNames Table Name
+	 * @param string $parentColumnName Parent column name
+	 * @param string $parentId Parent Id
+	 *
+	 * @return array
+	 */
+	public static function getElementsByParentId($elementsTableName, $parentColumnName, $parentId)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('*')
+			->from($elementsTableName)
+			->where($parentColumnName . ' = ' . intval($parentId));
+
+		$db->setQuery($query);
+
+		return $db->loadObjectList();
+	}
+
+	/**
+	 *
+	 *
+	 * @param integer $id
+	 *
+	 * @return stdClass
+	 */
+	protected static function getElementDataFromDb($id)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('*')
+			->from(static::getDbTable())
+			->where('id = ' . intval($id));
+
+		$db->setQuery($query);
+
+		$data = $db->loadAssoc();
+
+		$objectData = new stdClass;
+
+		foreach ($data as $key => $value)
+		{
+			$objectData->{NenoHelper::convertDatabaseColumnNametoPropertyName($key)} = $value;
+		}
+
+		return $objectData;
+	}
+
+	/**
+	 * Get the name of the database to persist the object
+	 *
+	 * @return string
+	 */
+	public static function getDbTable()
+	{
+		return '#__neno_content_elements';
+	}
+
+	/**
 	 * Method to persist object in the database
 	 *
 	 * @return boolean
@@ -110,13 +175,6 @@ abstract class NenoContentElement
 	{
 		return empty($this->id);
 	}
-
-	/**
-	 * Get the name of the database to persist the object
-	 *
-	 * @return string
-	 */
-	public abstract function getDbTable();
 
 	/**
 	 * Id getter

@@ -44,6 +44,42 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Get a group object
+	 *
+	 * @param integer $groupId Group Id
+	 *
+	 * @return NenoContentElementGroup
+	 */
+	public static function getGroup($groupId)
+	{
+		$group = new NenoContentElementGroup(static::getElementDataFromDb($groupId));
+
+		$tablesInfo = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $group->id);
+
+		$tables = array();
+
+		foreach ($tablesInfo as $tableInfo)
+		{
+			$table    = NenoContentElementTable::getTable($tableInfo->id);
+			$tables[] = $table;
+		}
+
+		$group->setTables($tables);
+
+		return $group;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return string
+	 */
+	public static function getDbTable()
+	{
+		return '#__neno_content_elements_groups';
+	}
+
+	/**
 	 * Get group name
 	 *
 	 * @return string
@@ -144,15 +180,5 @@ class NenoContentElementGroup extends NenoContentElement
 				$table->persist();
 			}
 		}
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return string
-	 */
-	public function getDbTable()
-	{
-		return '#__neno_content_elements_groups';
 	}
 }
