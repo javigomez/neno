@@ -15,16 +15,25 @@ defined('JPATH_NENO') or die;
  */
 class NenoContentElementField extends NenoContentElement
 {
+
+	/**
+	 * @var array
+	 */
+	public static $translatableFields = array(
+		'varchar'
+	, 'tinytext'
+	, 'text'
+	, 'mediumtext'
+	, 'longtext'
+	);
 	/**
 	 * @var NenoContentElementTable
 	 */
 	protected $table;
-
 	/**
 	 * @var string
 	 */
 	protected $fieldName;
-
 	/**
 	 * @var boolean
 	 */
@@ -156,5 +165,17 @@ class NenoContentElementField extends NenoContentElement
 		$object->set('table_id', $object->table->getId());
 
 		return $object;
+	}
+
+	/**
+	 * Check if a Database type is translatable
+	 *
+	 * @param string $fieldType
+	 *
+	 * @return bool
+	 */
+	public static function isTranslatableType($fieldType)
+	{
+		return in_array($fieldType, static::$translatableFields);
 	}
 }

@@ -127,12 +127,13 @@ class NenoControllerExtensions extends JControllerAdmin
 			$table = new NenoContentElementTable($tableData);
 
 			// Get all the columns a table contains
-			$fields = $db->getTableColumns($table->getTableName(), false);
+			$fields = $db->getTableColumns($table->getTableName());
 
-			foreach ($fields as $fieldInfo)
+			foreach ($fields as $fieldName => $fieldType)
 			{
 				$fieldData = array(
-					'fieldName' => $fieldInfo->Field,
+					'fieldName' => $fieldName,
+					'translate' => NenoContentElementField::isTranslatableType($fieldType)
 				);
 
 				$field = new NenoContentElementField($fieldData);
