@@ -22,3 +22,13 @@ defined('_JEXEC') or die;
 	<span class="icon-list-2 "></span>
 	Manage translation items
 </a>
+<a href="<?php echo JRoute::_('index.php?option=com_neno&task=extensions.discoverExtensions'); ?>" class="btn">
+	<span class="icon-list-2 "></span>
+	Import extensions
+</a>
+
+<form action="index.php?option=com_neno&task=extensions.readContentElementFile" method="post" enctype="multipart/form-data">
+	<input type="file" name="content_element">
+
+	<button type="submit" class="btn">Upload</button>
+</form>
