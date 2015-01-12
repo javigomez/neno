@@ -320,7 +320,7 @@ class NenoHelper
 	{
 		$prefix = JFactory::getDbo()->getPrefix();
 
-		return str_replace($prefix, '#__', $tableName);
+		return '#__' . str_replace($prefix, '', $tableName);
 	}
 
 	/**
@@ -380,7 +380,7 @@ class NenoHelper
 	 *
 	 * @return string
 	 */
-	public static function convertDatabaseColumnNametoPropertyName($columnName)
+	public static function convertDatabaseColumnNameToPropertyName($columnName)
 	{
 		$nameParts = explode('_', $columnName);
 		$firstWord = array_shift($nameParts);
@@ -396,5 +396,61 @@ class NenoHelper
 		}
 
 		return implode('', $nameParts);
+	}
+
+	/**
+	 * @param string $string
+	 * @param array  $array
+	 * @param bool   $prepend
+	 */
+	public static function concatenateStringToStringArray($string, &$array, $prepend = true)
+	{
+		for ($i = 0; $i < count($array); $i++)
+		{
+			if ($prepend)
+			{
+				$array[$i] = $string . $array[$i];
+			}
+			else
+			{
+				$array[$i] = $array[$i] . $string;
+			}
+		}
+	}
+
+	/**
+	 * Method to clean a folder
+	 *
+	 * @param string $path
+	 *
+	 * @return bool True on success
+	 *
+	 * @throws Exception
+	 */
+	public static function cleanFolder($path)
+	{
+		$folders = JFolder::folders($path);
+
+		foreach ($folders as $folder)
+		{
+			try
+			{
+				JFolder::delete($path . '/' . $folder);
+			}
+			catch (UnexpectedValueException $e)
+			{
+				throw new Exception('An error occur deleting a folder: %s', $e->getMessage());
+			}
+		}
+
+		$files = JFolder::files($path);
+
+		foreach ($files as $file)
+		{
+			if ($file !== 'index.html')
+			{
+				JFile::delete($path . '/' . $file);
+			}
+		}
 	}
 }

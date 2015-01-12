@@ -57,13 +57,13 @@ abstract class NenoContentElement
 	/**
 	 * Loads all the elements using its parent id and the parent Id value
 	 *
-	 * @param string $elementsTableNames Table Name
-	 * @param string $parentColumnName Parent column name
-	 * @param string $parentId Parent Id
+	 * @param string $elementsTableName Table Name
+	 * @param string $parentColumnName  Parent column name
+	 * @param string $parentId          Parent Id
 	 *
 	 * @return array
 	 */
-	public static function getElementsByParentId($elementsTableName, $parentColumnName, $parentId)
+	public static function getElementsByParentId($elementsTableName, $parentColumnName, $parentId, $transformProperties = false)
 	{
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -75,7 +75,26 @@ abstract class NenoContentElement
 
 		$db->setQuery($query);
 
-		return $db->loadObjectList();
+		$elements = $db->loadObjectList();
+
+		if ($transformProperties)
+		{
+			for ($i = 0; $i < count($elements); $i++)
+			{
+				$data = new stdClass;
+
+				$elementArray = get_object_vars($elements[$i]);
+
+				foreach ($elementArray as $property => $value)
+				{
+					$data->{NenoHelper::convertDatabaseColumnNameToPropertyName($property)} = $value;
+				}
+
+				$elements[$i] = $data;
+			}
+		}
+
+		return $elements;
 	}
 
 	/**
@@ -103,7 +122,7 @@ abstract class NenoContentElement
 
 		foreach ($data as $key => $value)
 		{
-			$objectData->{NenoHelper::convertDatabaseColumnNametoPropertyName($key)} = $value;
+			$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
 		}
 
 		return $objectData;

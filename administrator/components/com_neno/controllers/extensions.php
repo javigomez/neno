@@ -145,4 +145,46 @@ class NenoControllerExtensions extends JControllerAdmin
 
 		return $result;
 	}
+
+	/**
+	 * Read content files
+	 *
+	 * @return void
+	 *
+	 * @throws Exception
+	 */
+	public function readContentElementFile()
+	{
+		jimport('joomla.filesystem.file');
+
+		$input       = JFactory::getApplication()->input;
+		$fileData    = $input->files->get('content_element');
+		$destFile    = JFactory::getConfig()->get('tmp_path') . '/' . $fileData['name'];
+		$extractPath = JFactory::getConfig()->get('tmp_path') . '/' . JFile::stripExt($fileData['name']);
+
+		// If the file has been moved successfully, let's work with it.
+		if (JFile::move($fileData['tmp_name'], $destFile) === true)
+		{
+			// If the file is a zip file, let's extract it
+			if ($fileData['type'] == 'application/zip')
+			{
+				$adapter = JArchive::getAdapter('zip');
+				$adapter->extract($destFile, $extractPath);
+				$contentElementFiles = JFolder::files($extractPath);
+			}
+			else
+			{
+				$contentElementFiles = array($destFile);
+			}
+
+			// Add to each content file the path of the extraction location.
+			NenoHelper::concatenateStringToStringArray($extractPath . '/', $contentElementFiles);
+
+			// Create a group for this extension.
+			NenoContentElementGroup::parseContentElementFiles(JFile::stripExt($fileData['name']), $contentElementFiles);
+
+			// Clean temporal folder
+			NenoHelper::cleanFolder(JFactory::getConfig()->get('tmp_path'));
+		}
+	}
 }

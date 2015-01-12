@@ -54,13 +54,13 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		$group = new NenoContentElementGroup(static::getElementDataFromDb($groupId));
 
-		$tablesInfo = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $group->id);
+		$tablesInfo = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $group->id, true);
 
 		$tables = array();
 
 		foreach ($tablesInfo as $tableInfo)
 		{
-			$table    = NenoContentElementTable::getTable($tableInfo->id);
+			$table    = NenoContentElementTable::getTable($tableInfo);
 			$tables[] = $table;
 		}
 
@@ -77,6 +77,98 @@ class NenoContentElementGroup extends NenoContentElement
 	public static function getDbTable()
 	{
 		return '#__neno_content_elements_groups';
+	}
+
+	/**
+	 * @param string $groupName           Group name
+	 * @param string $contentElementFiles Content element file path
+	 * @param string $prefixPath
+	 *
+	 * @return bool True on success
+	 * @throws Exception
+	 */
+	public static function parseContentElementFiles($groupName, $contentElementFiles, $prefixPath = '')
+	{
+		// Create an array of group data
+		$groupData = array(
+			'groupName' => $groupName
+		);
+
+		$group = new NenoContentElementGroup($groupData);
+
+		foreach ($contentElementFiles as $contentElementFile)
+		{
+			$xmlDoc = new DOMDocument;
+
+			if ($xmlDoc->load($contentElementFile) === false)
+			{
+				throw new Exception(JText::_('Error reading content element file'));
+			}
+
+			$tables = $xmlDoc->getElementsByTagName('table');
+
+			/* @var $tableData DOMElement */
+			foreach ($tables as $tableData)
+			{
+				$table = new NenoContentElementTable(
+					array(
+						'tableName' => $tableData->getAttribute('name')
+					)
+				);
+
+				$fields = $tableData->getElementsByTagName('field');
+
+				/* @var $fieldData DOMElement */
+				foreach ($fields as $fieldData)
+				{
+					$fieldData = array(
+						'fieldName' => $fieldData->getAttribute('name'),
+						'translate' => intval($fieldData->getAttribute('translate'))
+					);
+					$field     = new NenoContentElementField($fieldData);
+
+					$table->addField($field);
+				}
+
+				$group->addTable($table);
+			}
+		}
+
+		$group->persist();
+
+		return true;
+	}
+
+	/**
+	 * Add a table to the list
+	 *
+	 * @param NenoContentElementTable $table
+	 *
+	 * @return $this
+	 */
+	public function addTable(NenoContentElementTable $table)
+	{
+		$this->tables[] = $table;
+
+		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return boolean
+	 */
+	public function persist()
+	{
+		if (parent::persist())
+		{
+			/* @var $table NenoContentElementTable */
+			foreach ($this->tables as $table)
+			{
+				$table->setGroup($this);
+				$table->persist();
+			}
+		}
 	}
 
 	/**
@@ -162,23 +254,5 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->tables = $tables;
 
 		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return boolean
-	 */
-	public function persist()
-	{
-		if (parent::persist())
-		{
-			/* @var $table NenoContentElementTable */
-			foreach ($this->tables as $table)
-			{
-				$table->setGroup($this);
-				$table->persist();
-			}
-		}
 	}
 }

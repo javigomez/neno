@@ -49,6 +49,10 @@ class NenoContentElementTable extends NenoContentElement
 	{
 		parent::__construct($data);
 
+		// Make sure the name of the table is properly formatted.
+		$this->tableName = NenoHelper::unifyTableName($this->tableName);
+
+		// Init the field list
 		$this->fields = array();
 	}
 
@@ -65,21 +69,21 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * Get a Table object
 	 *
-	 * @param integer $tableId Table Id
+	 * @param integer $tableInfo Table Id
 	 *
 	 * @return NenoContentElementTable
 	 */
-	public static function getTable($tableId)
+	public static function getTable($tableInfo)
 	{
-		$table = new NenoContentElementTable(static::getElementDataFromDb($tableId));
+		$table = new NenoContentElementTable($tableInfo);
 
-		$fieldsInfo = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $table->getId());
+		$fieldsInfo = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $table->getId(), true);
 
 		$fields = array();
 
 		foreach ($fieldsInfo as $fieldInfo)
 		{
-			$field    = NenoContentElementField::getField($fieldInfo->id);
+			$field    = new NenoContentElementField($fieldInfo);
 			$fields[] = $field;
 		}
 
@@ -265,5 +269,4 @@ class NenoContentElementTable extends NenoContentElement
 
 		return $object;
 	}
-
 }
