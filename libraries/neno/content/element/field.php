@@ -125,6 +125,14 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function isTranslatable()
+	{
+		return $this->translate;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @return ReflectionClass
