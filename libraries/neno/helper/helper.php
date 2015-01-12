@@ -320,7 +320,7 @@ class NenoHelper
 	{
 		$prefix = JFactory::getDbo()->getPrefix();
 
-		return '#__' . str_replace($prefix, '', $tableName);
+		return '#__' . str_replace(array($prefix, '#__'), '', $tableName);
 	}
 
 	/**
