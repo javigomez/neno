@@ -117,31 +117,35 @@ class NenoControllerExtensions extends JControllerAdmin
 			// Get Table name
 			$tableName = NenoHelper::unifyTableName($tables[$i]);
 
-			// Create an array with the table information
-			$tableData = array(
-				'tableName'  => $tableName,
-				'primaryKey' => $db->getPrimaryKey($tableName)
-			);
-
-			// Create ContentElement object
-			$table = new NenoContentElementTable($tableData);
-
-			// Get all the columns a table contains
-			$fields = $db->getTableColumns($table->getTableName());
-
-			foreach ($fields as $fieldName => $fieldType)
+			if (!NenoHelper::isAlreadyDiscovered($tableName))
 			{
-				$fieldData = array(
-					'fieldName' => $fieldName,
-					'translate' => NenoContentElementField::isTranslatableType($fieldType)
+				// Create an array with the table information
+				$tableData = array(
+					'tableName'  => $tableName,
+					'primaryKey' => $db->getPrimaryKey($tableName),
+					'translate'  => 0
 				);
 
-				$field = new NenoContentElementField($fieldData);
+				// Create ContentElement object
+				$table = new NenoContentElementTable($tableData);
 
-				$table->addField($field);
+				// Get all the columns a table contains
+				$fields = $db->getTableColumns($table->getTableName());
+
+				foreach ($fields as $fieldName => $fieldType)
+				{
+					$fieldData = array(
+						'fieldName' => $fieldName,
+						'translate' => NenoContentElementField::isTranslatableType($fieldType)
+					);
+
+					$field = new NenoContentElementField($fieldData);
+
+					$table->addField($field);
+				}
+
+				$result[] = $table;
 			}
-
-			$result[] = $table;
 		}
 
 		return $result;
@@ -187,5 +191,9 @@ class NenoControllerExtensions extends JControllerAdmin
 			// Clean temporal folder
 			NenoHelper::cleanFolder(JFactory::getConfig()->get('tmp_path'));
 		}
+
+		$this
+			->setRedirect('index.php?option=com_neno&view=extensions')
+			->redirect();
 	}
 }

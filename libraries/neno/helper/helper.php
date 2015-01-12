@@ -310,20 +310,6 @@ class NenoHelper
 	}
 
 	/**
-	 * Converts a table name to the Joomla table naming convention: #__table_name
-	 *
-	 * @param string $tableName Table name
-	 *
-	 * @return mixed
-	 */
-	public static function unifyTableName($tableName)
-	{
-		$prefix = JFactory::getDbo()->getPrefix();
-
-		return '#__' . str_replace(array($prefix, '#__'), '', $tableName);
-	}
-
-	/**
 	 * Convert an array of objects to an simple array. If property is not specified, the property selected will be the first one.
 	 *
 	 * @param array       $objectList   Object list
@@ -452,5 +438,42 @@ class NenoHelper
 				JFile::delete($path . '/' . $file);
 			}
 		}
+	}
+
+	/**
+	 * Check if a table has been already discovered.
+	 *
+	 * @param string $tableName
+	 *
+	 * @return bool
+	 */
+	public static function isAlreadyDiscovered($tableName)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('1')
+			->from('#__neno_content_elements_tables')
+			->where('table_name LIKE ' . $db->quote(static::unifyTableName($tableName)));
+
+		$db->setQuery($query);
+		$result = $db->loadResult();
+
+		return $result == 1;
+	}
+
+	/**
+	 * Converts a table name to the Joomla table naming convention: #__table_name
+	 *
+	 * @param string $tableName Table name
+	 *
+	 * @return mixed
+	 */
+	public static function unifyTableName($tableName)
+	{
+		$prefix = JFactory::getDbo()->getPrefix();
+
+		return '#__' . str_replace(array($prefix, '#__'), '', $tableName);
 	}
 }

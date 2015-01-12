@@ -110,31 +110,44 @@ class NenoContentElementGroup extends NenoContentElement
 			/* @var $tableData DOMElement */
 			foreach ($tables as $tableData)
 			{
-				$table = new NenoContentElementTable(
-					array(
-						'tableName' => $tableData->getAttribute('name')
-					)
-				);
+				$tableName = $tableData->getAttribute('name');
 
-				$fields = $tableData->getElementsByTagName('field');
-
-				/* @var $fieldData DOMElement */
-				foreach ($fields as $fieldData)
+				if (!NenoHelper::isAlreadyDiscovered($tableName))
 				{
-					$fieldData = array(
-						'fieldName' => $fieldData->getAttribute('name'),
-						'translate' => intval($fieldData->getAttribute('translate'))
+					$table = new NenoContentElementTable(
+						array(
+							'tableName' => $tableName,
+							'translate' => 0
+						)
 					);
-					$field     = new NenoContentElementField($fieldData);
 
-					$table->addField($field);
+					$fields = $tableData->getElementsByTagName('field');
+
+					/* @var $fieldData DOMElement */
+					foreach ($fields as $fieldData)
+					{
+						$fieldData = array(
+							'fieldName' => $fieldData->getAttribute('name'),
+							'translate' => intval($fieldData->getAttribute('translate'))
+						);
+						$field     = new NenoContentElementField($fieldData);
+
+						$table->addField($field);
+					}
+
+					$group->addTable($table);
 				}
-
-				$group->addTable($table);
 			}
 		}
 
-		$group->persist();
+		$tables = $group->getTables();
+
+		// Checking if the group has tables
+		if (!empty($tables))
+		{
+			$group->persist();
+		}
+
 
 		return true;
 	}
@@ -149,6 +162,30 @@ class NenoContentElementGroup extends NenoContentElement
 	public function addTable(NenoContentElementTable $table)
 	{
 		$this->tables[] = $table;
+
+		return $this;
+	}
+
+	/**
+	 * Get all the tables related to this group
+	 *
+	 * @return array
+	 */
+	public function getTables()
+	{
+		return $this->tables;
+	}
+
+	/**
+	 * Set all the tables related to this group
+	 *
+	 * @param array $tables
+	 *
+	 * @return $this
+	 */
+	public function setTables(array $tables)
+	{
+		$this->tables = $tables;
 
 		return $this;
 	}
@@ -230,29 +267,5 @@ class NenoContentElementGroup extends NenoContentElement
 		$classReflection = new ReflectionClass(__CLASS__);
 
 		return $classReflection;
-	}
-
-	/**
-	 * Get all the tables related to this group
-	 *
-	 * @return array
-	 */
-	public function getTables()
-	{
-		return $this->tables;
-	}
-
-	/**
-	 * Set all the tables related to this group
-	 *
-	 * @param array $tables
-	 *
-	 * @return $this
-	 */
-	public function setTables(array $tables)
-	{
-		$this->tables = $tables;
-
-		return $this;
 	}
 }
