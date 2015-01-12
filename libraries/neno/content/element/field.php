@@ -15,7 +15,6 @@ defined('JPATH_NENO') or die;
  */
 class NenoContentElementField extends NenoContentElement
 {
-
 	/**
 	 * @var array
 	 */
@@ -26,14 +25,17 @@ class NenoContentElementField extends NenoContentElement
 	, 'mediumtext'
 	, 'longtext'
 	);
+
 	/**
 	 * @var NenoContentElementTable
 	 */
 	protected $table;
+
 	/**
 	 * @var string
 	 */
 	protected $fieldName;
+
 	/**
 	 * @var boolean
 	 */
