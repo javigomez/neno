@@ -361,6 +361,8 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	}
 
 	/**
+	 * Get primary key of a table
+	 *
 	 * @param string $tableName
 	 *
 	 * @return string|null
@@ -379,6 +381,8 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	}
 
 	/**
+	 * Get all the tables that belong to a particular component.
+	 *
 	 * @param string $componentName
 	 *
 	 * @return array
