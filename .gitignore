@@ -11,6 +11,7 @@
 /administrator/components/com_content/*
 /administrator/components/com_cpanel/*
 /administrator/components/com_finder/*
+/administrator/components/com_hikashop/*
 /administrator/components/com_installer/*
 /administrator/components/com_languages/*
 /administrator/components/com_login/*
@@ -230,6 +231,7 @@
 /components/com_contact/*
 /components/com_content/*
 /components/com_finder/*
+/components/com_hikashop/*
 /components/com_mailto/*
 /components/com_media/*
 /components/com_newsfeeds/*
@@ -334,6 +336,7 @@
 /media/com_finder/*
 /media/contacts/*
 /media/editors/*
+/media/com_hikashop/*
 /media/mailto/*
 /media/media/*
 /media/mod_languages/*
