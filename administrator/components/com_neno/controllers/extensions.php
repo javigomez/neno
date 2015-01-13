@@ -196,4 +196,30 @@ class NenoControllerExtensions extends JControllerAdmin
 			->setRedirect('index.php?option=com_neno&view=extensions')
 			->redirect();
 	}
+
+	/**
+	 *
+	 */
+	public function enableDisableContentElementTable()
+	{
+		$input = JFactory::getApplication()->input;
+
+		$tableId         = $input->getInt('tableId');
+		$translateStatus = $input->getBool('translateStatus');
+
+		$table  = NenoContentElementTable::getTableById($tableId);
+		$result = 0;
+
+		// If the table exists, let's work with it.
+		if ($table !== false)
+		{
+			$table->markAsTranslatable($translateStatus);
+			$table->persist();
+
+			$result = 1;
+		}
+
+		echo $result;
+		JFactory::getApplication()->close();
+	}
 }

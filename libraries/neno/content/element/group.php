@@ -112,6 +112,7 @@ class NenoContentElementGroup extends NenoContentElement
 			{
 				$tableName = $tableData->getAttribute('name');
 
+				// If the table hasn't been added yet, let's add it
 				if (!NenoHelper::isAlreadyDiscovered($tableName))
 				{
 					$table = new NenoContentElementTable(

@@ -57,6 +57,46 @@ class NenoContentElementTable extends NenoContentElement
 	}
 
 	/**
+	 * Load a table using its ID
+	 *
+	 * @param integer $tableId
+	 *
+	 * @return bool|NenoContentElementTable
+	 */
+	public static function getTableById($tableId)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('*')
+			->from(static::getDbTable())
+			->where('id = ' . intval($tableId));
+
+		$db->setQuery($query);
+		$tableData = $db->loadAssoc();
+
+		if ($tableData)
+		{
+			$tableInfo = array();
+
+			foreach ($tableData as $property => $value)
+			{
+				$tableInfo[NenoHelper::convertDatabaseColumnNameToPropertyName($property)] = $value;
+			}
+
+			$table = static::getTable($tableInfo);
+
+			$group = NenoContentElementGroup::getGroup($tableInfo['groupId']);
+			$table->setGroup($group);
+
+			return $table;
+		}
+
+		return false;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @return string
@@ -69,7 +109,7 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * Get a Table object
 	 *
-	 * @param integer $tableInfo Table Id
+	 * @param array $tableInfo Table info
 	 *
 	 * @return NenoContentElementTable
 	 */
