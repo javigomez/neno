@@ -289,7 +289,7 @@ class NenoDatabaseParser
 
 	public static function buildQuery(array $parserQuery)
 	{
-		$creator = new Creator();
+		$creator = new Creator;
 
 		return $creator->create($parserQuery);
 	}
