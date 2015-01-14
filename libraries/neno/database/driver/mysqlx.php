@@ -71,12 +71,9 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 			$tableName = NenoDatabaseParser::getSourceTableName($sql);
 
 			// If the query is a select statement let's get the sql query using its shadow table name
-			if (!NenoHelper::startsWith($tableName, '#__neno'))
+			if ($queryType === NenoDatabaseParser::SELECT_QUERY && $this->isTranslatable($tableName))
 			{
-				if ($queryType === NenoDatabaseParser::SELECT_QUERY && $this->isTranslatable($tableName))
-				{
-					$sql = NenoDatabaseParser::getSqlQueryUsingShadowTable($sql);
-				}
+				$sql = NenoDatabaseParser::getSqlQueryUsingShadowTable($sql);
 			}
 		}
 
@@ -326,16 +323,16 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	public function createShadowTables($tableName)
 	{
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
-		$knownLanguages  = JFactory::getLanguage()->getKnownLanguages();
+		$knownLanguages  = NenoHelper::getLanguages();
 
-		$createStatement = $this->getTableCreate($tableName)[$tableName];
+		$createStatement       = $this->getTableCreate($tableName)[$tableName];
+		$createStatementParsed = NenoDatabaseParser::parseQuery($createStatement);
 
 		foreach ($knownLanguages as $knownLanguage)
 		{
-			if ($knownLanguage['tag'] !== $defaultLanguage)
+			if ($knownLanguage->lang_code !== $defaultLanguage)
 			{
-				$createStatementParsed              = NenoDatabaseParser::parseQuery($createStatement);
-				$shadowTableName                    = NenoDatabaseParser::generateShadowTableName($tableName, $knownLanguage['tag']);
+				$shadowTableName                    = NenoDatabaseParser::generateShadowTableName($tableName, $knownLanguage->lang_code);
 				$createStatementParsed['CREATE'][3] = $this->quoteName($shadowTableName);
 				$shadowTableCreateStatement         = NenoDatabaseParser::buildQuery($createStatementParsed);
 
@@ -344,6 +341,30 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 			}
 		}
 	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param mixed $tables
+	 *
+	 * @return array
+	 */
+	public function getTableCreate($tables)
+	{
+		$result = parent::getTableCreate($tables);
+
+		// Get all the keys for the create table array
+		$tableNames = array_keys($result);
+
+		// Go through all the create statements and make them IF NOT EXISTS create statements
+		foreach ($tableNames as $tableName)
+		{
+			$result[$tableName] = str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $result[$tableName]);
+		}
+
+		return $result;
+	}
+
 
 	/**
 	 * Copy all the content to the shadow table
