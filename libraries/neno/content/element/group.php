@@ -70,16 +70,6 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * {@inheritdoc}
-	 *
-	 * @return string
-	 */
-	public static function getDbTable()
-	{
-		return '#__neno_content_elements_groups';
-	}
-
-	/**
 	 * @param string $groupName           Group name
 	 * @param string $contentElementFiles Content element file path
 	 * @param string $prefixPath
@@ -261,18 +251,5 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->extensionId = $extensionId;
 
 		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return ReflectionClass
-	 */
-	public function getClassReflectionObject()
-	{
-		// Create a reflection class to use it to dynamic properties loading
-		$classReflection = new ReflectionClass(__CLASS__);
-
-		return $classReflection;
 	}
 }

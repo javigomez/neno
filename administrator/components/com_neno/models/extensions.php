@@ -89,7 +89,7 @@ class NenoModelExtensions extends JModelList
 
 		$query
 			->select('g.id')
-			->from('`#__neno_content_elements_groups` AS g');
+			->from('`#__neno_content_element_groups` AS g');
 
 		return $query;
 	}

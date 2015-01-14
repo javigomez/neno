@@ -42,16 +42,6 @@ class NenoContentElementField extends NenoContentElement
 	protected $translate;
 
 	/**
-	 * {@inheritdoc}
-	 *
-	 * @return string
-	 */
-	public static function getDbTable()
-	{
-		return '#__neno_content_elements_fields';
-	}
-
-	/**
 	 * Get a field using its field Id
 	 *
 	 * @param integer $fieldId Field Id
@@ -141,19 +131,6 @@ class NenoContentElementField extends NenoContentElement
 	public function isTranslatable()
 	{
 		return $this->translate;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return ReflectionClass
-	 */
-	public function getClassReflectionObject()
-	{
-		// Create a reflection class to use it to dynamic properties loading
-		$classReflection = new ReflectionClass(__CLASS__);
-
-		return $classReflection;
 	}
 
 	/**

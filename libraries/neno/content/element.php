@@ -52,7 +52,13 @@ abstract class NenoContentElement
 	 *
 	 * @return ReflectionClass
 	 */
-	public abstract function getClassReflectionObject();
+	public function getClassReflectionObject()
+	{
+		$className       = get_called_class();
+		$classReflection = new ReflectionClass($className);
+
+		return $classReflection;
+	}
 
 	/**
 	 * Loads all the elements using its parent id and the parent Id value
@@ -135,7 +141,11 @@ abstract class NenoContentElement
 	 */
 	public static function getDbTable()
 	{
-		return '#__neno_content_elements';
+		$className           = get_called_class();
+		$classNameComponents = NenoHelper::splitCamelCaseString($className);
+		$classNameComponents[count($classNameComponents) - 1] .= 's';
+
+		return '#__' . implode('_', $classNameComponents);
 	}
 
 	/**
@@ -150,12 +160,12 @@ abstract class NenoContentElement
 
 		if ($this->isNew())
 		{
-			$result   = $db->insertObject($this->getDbTable(), $data, 'id');
+			$result   = $db->insertObject(static::getDbTable(), $data, 'id');
 			$this->id = $db->insertid();
 		}
 		else
 		{
-			$result = $db->updateObject($this->getDbTable(), $data, 'id');
+			$result = $db->updateObject(static::getDbTable(), $data, 'id');
 		}
 
 		return $result;

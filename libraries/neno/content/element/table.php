@@ -97,16 +97,6 @@ class NenoContentElementTable extends NenoContentElement
 	}
 
 	/**
-	 * {@inheritdoc}
-	 *
-	 * @return string
-	 */
-	public static function getDbTable()
-	{
-		return '#__neno_content_elements_tables';
-	}
-
-	/**
 	 * Get a Table object
 	 *
 	 * @param array $tableInfo Table info
@@ -226,19 +216,6 @@ class NenoContentElementTable extends NenoContentElement
 		$this->translate = $translate;
 
 		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return ReflectionClass
-	 */
-	public function getClassReflectionObject()
-	{
-		// Create a reflection class to use it to dynamic properties loading
-		$classReflection = new ReflectionClass(__CLASS__);
-
-		return $classReflection;
 	}
 
 	/**
