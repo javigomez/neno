@@ -134,6 +134,12 @@ class NenoContentElementGroup extends NenoContentElement
 						$field     = new NenoContentElementField($fieldData);
 
 						$table->addField($field);
+
+						// If the field has this attribute, it means this is the primary key field of the table
+						if ($fieldData->hasAttribute('referenceid'))
+						{
+							$table->setPrimaryKey($field->getFieldName());
+						}
 					}
 
 					$group->addTable($table);
