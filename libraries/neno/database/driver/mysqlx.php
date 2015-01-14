@@ -301,11 +301,11 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	public function deleteShadowTables($tableName)
 	{
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
-		$knownLanguages  = JFactory::getLanguage()->getKnownLanguages();
+		$knownLanguages  = NenoHelper::getLanguages();
 
 		foreach ($knownLanguages as $knownLanguage)
 		{
-			if ($defaultLanguage !== $knownLanguage['tag'])
+			if ($knownLanguage->lang_code !== $defaultLanguage)
 			{
 				$shadowTableName = NenoDatabaseParser::generateShadowTableName($tableName, $knownLanguage['tag']);
 				$this->dropTable($shadowTableName);
@@ -325,16 +325,14 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
 		$knownLanguages  = NenoHelper::getLanguages();
 
-		$createStatement       = $this->getTableCreate($tableName)[$tableName];
-		$createStatementParsed = NenoDatabaseParser::parseQuery($createStatement);
+		$createStatement = $this->getTableCreate($tableName)[$tableName];
 
 		foreach ($knownLanguages as $knownLanguage)
 		{
 			if ($knownLanguage->lang_code !== $defaultLanguage)
 			{
-				$shadowTableName                    = NenoDatabaseParser::generateShadowTableName($tableName, $knownLanguage->lang_code);
-				$createStatementParsed['CREATE'][3] = $this->quoteName($shadowTableName);
-				$shadowTableCreateStatement         = NenoDatabaseParser::buildQuery($createStatementParsed);
+				$shadowTableName            = NenoDatabaseParser::generateShadowTableName($tableName, $knownLanguage->lang_code);
+				$shadowTableCreateStatement = str_replace($tableName, $shadowTableName, $createStatement);
 
 				$this->executeQuery($shadowTableCreateStatement);
 				$this->copyContentElementsFromSourceTableToShadowTables($tableName, $shadowTableName);
@@ -359,7 +357,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		// Go through all the create statements and make them IF NOT EXISTS create statements
 		foreach ($tableNames as $tableName)
 		{
-			$result[$tableName] = str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $result[$tableName]);
+			$result[$tableName] = str_replace(array('CREATE TABLE', $this->getPrefix()), array('CREATE TABLE IF NOT EXISTS', '#__'), $result[$tableName]);
 		}
 
 		return $result;

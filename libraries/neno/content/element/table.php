@@ -288,6 +288,21 @@ class NenoContentElementTable extends NenoContentElement
 	{
 		if (parent::persist())
 		{
+			/* @var $db NenoDatabaseDriverMysqlx */
+			$db = JFactory::getDbo();
+
+			// If the table has been marked as translated
+			if ($this->translate)
+			{
+				// Creates shadow tables and copy the content on it
+				$db->createShadowTables($this->tableName);
+			}
+			// If it's not, let's delete the table
+			else
+			{
+				$db->deleteShadowTables($this->tableName);
+			}
+
 			/* @var $field NenoContentElementField */
 			foreach ($this->fields as $field)
 			{
