@@ -24,7 +24,7 @@ class NenoModelLangfilesImportTargetChanges extends JModelList
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param   array $config An optional associative array of configuration settings.
 	 *
 	 * @see        JController
 	 * @since      1.6
@@ -49,8 +49,8 @@ class NenoModelLangfilesImportTargetChanges extends JModelList
 	/**
 	 * Update either a file or the database when they are out of sync
 	 *
-	 * @param   array   $cid        Integer array
-	 * @param   string  $direction  Either 'pull' or 'push' if 'pull' the data in files is imported to database,
+	 * @param   array  $cid         Integer array
+	 * @param   string $direction   Either 'pull' or 'push' if 'pull' the data in files is imported to database,
 	 *                              if 'push' the data in database is pushed to files
 	 *
 	 * @return boolean
@@ -82,8 +82,8 @@ class NenoModelLangfilesImportTargetChanges extends JModelList
 
 					// Update the database
 					$model->updateStringsInTargetDatabase($strings);
-                    
-                    
+
+
 				}
 				else
 				{
@@ -111,33 +111,33 @@ class NenoModelLangfilesImportTargetChanges extends JModelList
 
 		// Load the strings that are changed
 		/* @var $model NenoModelLangfiles */
-		$model           = NenoHelper::getModel('Langfiles');
-		$changed_strings = $model->getChangedStringsInLangfiles('target');
+		$model          = NenoHelper::getModel('Langfiles');
+		$changedStrings = $model->getChangedStringsInLangFiles(NenoContentElementLangfile::TARGET_LANGUAGE_TYPE);
 
 		// Loop each string and load additional information as object list
-		if (count($changed_strings))
+		if (count($changedStrings))
 		{
-			foreach ($changed_strings as $lang => $strings)
+			foreach ($changedStrings as $lang => $strings)
 			{
 				if (count($strings))
 				{
 					// Load all target strings in the database for this language
-					$target_strings_in_db = $model->getTargetLanguageStringsFromDatabase($lang);
+					$targetStringsInDb = $model->getTargetLanguageStringsFromDatabase($lang);
 
 					// Merge the arrays
-					$relevant_target_strings_in_db = array_intersect_key($target_strings_in_db, $strings);
+					$relevantTargetStringsInDb = array_intersect_key($targetStringsInDb, $strings);
 
-					if (count($relevant_target_strings_in_db))
+					if (count($relevantTargetStringsInDb))
 					{
-						foreach ($relevant_target_strings_in_db as $key => $relevant_string)
+						foreach ($relevantTargetStringsInDb as $key => $relevantString)
 						{
 							$item                     = new stdClass;
 							$item->key                = $key;
 							$item->text_in_file       = $strings[$key];
-							$item->text_in_db         = $relevant_string->string;
-							$item->id                 = $relevant_string->id;
-							$item->version            = $relevant_string->version;
-							$item->translation_method = $relevant_string->translation_method;
+							$item->text_in_db         = $relevantString->string;
+							$item->id                 = $relevantString->id;
+							$item->version            = $relevantString->version;
+							$item->translation_method = $relevantString->translation_method;
 							$item->lang               = $lang;
 							$items[$item->id]         = $item;
 						}
@@ -153,8 +153,8 @@ class NenoModelLangfilesImportTargetChanges extends JModelList
 	 * Method to auto-populate the model state.
 	 * Note. Calling getState in this method will result in recursion.
 	 *
-	 * @param   string  $ordering   Ordering field
-	 * @param   string  $direction  Ordering direction [ASC,DESC]
+	 * @param   string $ordering  Ordering field
+	 * @param   string $direction Ordering direction [ASC,DESC]
 	 *
 	 * @return void
 	 */
@@ -185,7 +185,7 @@ class NenoModelLangfilesImportTargetChanges extends JModelList
 	 * different modules that might need different sets of data or different
 	 * ordering requirements.
 	 *
-	 * @param   string  $id  A prefix for the store id.
+	 * @param   string $id A prefix for the store id.
 	 *
 	 * @return    string        A store id.
 	 *

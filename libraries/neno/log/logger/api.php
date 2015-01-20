@@ -22,6 +22,11 @@ class NenoLogLoggerApi extends JLogLogger
 	 */
 	protected $httpClient;
 
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param array $options
+	 */
 	public function __construct(array &$options)
 	{
 		parent::__construct($options);
@@ -40,6 +45,6 @@ class NenoLogLoggerApi extends JLogLogger
 	 */
 	public function addEntry(JLogEntry $entry)
 	{
-		Kint::dump("HOLA");
+		Kint::dump($entry);
 	}
 }

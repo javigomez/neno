@@ -206,6 +206,25 @@ abstract class NenoContentElement
 	}
 
 	/**
+	 * Remove the object from the database
+	 *
+	 * @return bool
+	 */
+	public function remove()
+	{
+		// Only perform this task if the ID is not null or 0.
+		if (!empty($this->id))
+		{
+			/* @var $db NenoDatabaseDriverMysqlx */
+			$db = JFactory::getDbo();
+
+			return $db->deleteObject(static::getDbTable(), $this->id);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Id getter
 	 *
 	 * @return integer

@@ -48,7 +48,7 @@ class NenoViewLangfilesImport extends JViewLegacy
 	/**
 	 * Constructor
 	 *
-	 * @param   array  $config  Configuration parameters
+	 * @param   array $config Configuration parameters
 	 */
 	public function __construct($config = array())
 	{
@@ -64,7 +64,7 @@ class NenoViewLangfilesImport extends JViewLegacy
 	/**
 	 * Display the view
 	 *
-	 * @param   string  $tpl  Template
+	 * @param   string $tpl Template
 	 *
 	 * @return void
 	 *
@@ -80,26 +80,26 @@ class NenoViewLangfilesImport extends JViewLegacy
 		/* @var $model NenoModelLangfiles */
 		$model = NenoHelper::getModel('Langfiles');
 
-		$this->sourceCounts['new_source_lines']     = $model->getNewStringsInLangfiles('source');
+		$this->sourceCounts['new_source_lines']     = $model->getNewStringsInLanguageFiles(NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE);
 		$this->sourceCounts['deleted_source_lines'] = $model->getDeletedSourceStringsInLangfiles();
-		$this->sourceCounts['updated_source_lines'] = $model->getChangedStringsInLangfiles('source');
-		$this->newTargetStrings                     = $model->getNewStringsInLangfiles('target');
-		$this->changedTargetStrings                 = $model->getChangedStringsInLangfiles('target');
+		$this->sourceCounts['updated_source_lines'] = $model->getChangedStringsInLangFiles(NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE);
+		$this->newTargetStrings                     = $model->getNewStringsInLanguageFiles(NenoContentElementLangfile::TARGET_LANGUAGE_TYPE);
+		$this->changedTargetStrings                 = $model->getChangedStringsInLangFiles(NenoContentElementLangfile::TARGET_LANGUAGE_TYPE);
 
 		// Check for changes
 		if (count($this->sourceCounts['new_source_lines'][$this->sourceLanguage])
 			|| count($this->sourceCounts['deleted_source_lines'][$this->sourceLanguage])
-			|| count($this->sourceCounts['updated_source_lines'][$this->sourceLanguage]))
+			|| count($this->sourceCounts['updated_source_lines'][$this->sourceLanguage])
+		)
 		{
 			$this->changesPending = true;
 		}
 
-		foreach ($this->newTargetStrings as $new_target_lines)
+		for ($i = 0; $i < count($this->newTargetStrings) && !$this->changesPending; $i++)
 		{
-			if (count($new_target_lines))
+			if (count($this->newTargetStrings[$i]))
 			{
 				$this->changesPending = true;
-				break;
 			}
 		}
 

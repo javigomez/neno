@@ -414,4 +414,25 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 
 		return NenoHelper::convertOnePropertyObjectListToArray($tablesList);
 	}
+
+	/**
+	 *
+	 *
+	 * @param string  $table
+	 * @param integer $id
+	 *
+	 * @return bool
+	 */
+	public function deleteObject($table, $id)
+	{
+		$query = $this->getQuery(true);
+		$query
+			->delete((string) $table)
+			->where('id = ' . (int) $id);
+
+		$this->setQuery($query);
+
+		return $this->execute() !== false;
+
+	}
 }

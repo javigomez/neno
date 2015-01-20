@@ -1,17 +1,18 @@
 {
-	"name"       : "Jensen-Technologies/neno",
-	"description": "The complete translation solution for Joomla",
-	"license"    : "GPL-2.0+",
-	"require"    : {
-		"php": ">=5.3.10"
-	},
-	"require-dev": {
-		"codeception/codeception": "*",
-        "raveren/kint": "v0.9"
-	},
-	"scripts"    : {
-		"post-update-cmd": [
-			"php vendor/bin/codecept bootstrap ../../"
-		]
-	}
+  "name": "Jensen-Technologies/neno",
+  "description": "The complete translation solution for Joomla",
+  "license": "GPL-2.0+",
+  "require": {
+    "php": ">=5.3.10"
+  },
+  "require-dev": {
+    "codeception/codeception": "*",
+    "raveren/kint": "v0.9",
+    "phing/phing": "2.*"
+  },
+  "scripts": {
+    "post-update-cmd": [
+      "php vendor/bin/codecept bootstrap ../../"
+    ]
+  }
 }

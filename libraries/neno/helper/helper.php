@@ -202,15 +202,16 @@ class NenoHelper
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query->select('*');
-		$query->from('#__languages');
+		$query
+			->select('*')
+			->from('#__languages')
+			->order('ordering');
 
 		if ($published)
 		{
 			$query->where('published = 1');
 		}
 
-		$query->order('ordering');
 		$db->setQuery($query);
 		$rows = $db->loadObjectList('lang_code');
 
@@ -298,7 +299,7 @@ class NenoHelper
 	/**
 	 * Get the standard pattern
 	 *
-	 * @param string $componentName
+	 * @param   string $componentName Component name
 	 *
 	 * @return string
 	 */
@@ -312,8 +313,8 @@ class NenoHelper
 	/**
 	 * Convert an array of objects to an simple array. If property is not specified, the property selected will be the first one.
 	 *
-	 * @param array       $objectList   Object list
-	 * @param string|null $propertyName Property name
+	 * @param   array       $objectList   Object list
+	 * @param   string|null $propertyName Property name
 	 *
 	 * @return array
 	 */
@@ -342,7 +343,7 @@ class NenoHelper
 	/**
 	 * Convert a camelcase property name to a underscore case database column name
 	 *
-	 * @param string $propertyName Property name
+	 * @param   string $propertyName Property name
 	 *
 	 * @return string
 	 */
@@ -354,7 +355,7 @@ class NenoHelper
 	/**
 	 * Split a camel case string
 	 *
-	 * @param string $string Camel case string
+	 * @param   string $string Camel case string
 	 *
 	 * @return array
 	 */
@@ -371,10 +372,22 @@ class NenoHelper
 		return $ret;
 	}
 
+	public static function convertDatabaseArrayToClassArray(array $databaseArray)
+	{
+		$objectData = array();
+
+		foreach ($databaseArray as $fieldName => $fieldValue)
+		{
+			$objectData[static::convertDatabaseColumnNameToPropertyName($fieldName)] = $fieldValue;
+		}
+
+		return $objectData;
+	}
+
 	/**
 	 * Convert a underscore case column name to a camelcase property name
 	 *
-	 * @param string $columnName
+	 * @param   string $columnName
 	 *
 	 * @return string
 	 */
@@ -397,29 +410,9 @@ class NenoHelper
 	}
 
 	/**
-	 * @param string $string
-	 * @param array  $array
-	 * @param bool   $prepend
-	 */
-	public static function concatenateStringToStringArray($string, &$array, $prepend = true)
-	{
-		for ($i = 0; $i < count($array); $i++)
-		{
-			if ($prepend)
-			{
-				$array[$i] = $string . $array[$i];
-			}
-			else
-			{
-				$array[$i] = $array[$i] . $string;
-			}
-		}
-	}
-
-	/**
 	 * Method to clean a folder
 	 *
-	 * @param string $path
+	 * @param   string $path
 	 *
 	 * @return bool True on success
 	 *
@@ -453,9 +446,144 @@ class NenoHelper
 	}
 
 	/**
+	 * Discover all the extensions that haven't been discovered yet
+	 *
+	 * @return void
+	 */
+	public static function discoverExtensions()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(
+				array(
+					'e.extension_id',
+					'e.name',
+					'e.type',
+					'e.folder',
+					'e.enabled'
+				)
+			)
+			->from('`#__extensions` AS e')
+			->where(
+				array(
+					'e.type IN (' . implode(',', array_map(array('NenoHelper', 'escapeString'), static::whichExtensionsShouldBeTranslated()) . ')',
+						'e.name NOT LIKE \'com_neno\'',
+						'NOT EXISTS (SELECT 1 FROM `#__neno_content_elements_groups` AS ceg WHERE e.extension_id = ceg.extension_id)'
+					)
+				)
+			)
+			->order('name');
+
+		$db->setQuery($query);
+		$extensions = $db->loadObjectList();
+
+		for ($i = 0; $i < count($extensions); $i++)
+		{
+			$groupData = array(
+				'groupName'   => $extensions[$i]->name,
+				'extensionId' => $extensions[$i]->extension_id
+			);
+
+			$group  = new NenoContentElementGroup($groupData);
+			$tables = static::getComponentTables($group);
+
+			if (!empty($tables))
+			{
+				$group->setTables($tables);
+				$group->persist();
+			}
+		}
+	}
+
+	/**
+	 * Return an array of extensions types allowed to be translate
+	 *
+	 * @return array
+	 */
+	protected static function whichExtensionsShouldBeTranslated()
+	{
+		return array(
+			'component',
+			'module',
+			'plugin',
+			'template'
+		);
+	}
+
+	/**
+	 * Get all the tables of the component that matches with the Joomla naming convention.
+	 *
+	 * @param   NenoContentElementGroup $componentData Component name
+	 *
+	 * @return array
+	 */
+	public static function getComponentTables(NenoContentElementGroup $componentData)
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db     = JFactory::getDbo();
+		$tables = $db->getComponentTables($componentData->getGroupName());
+
+		$result = array();
+
+		for ($i = 0; $i < count($tables); $i++)
+		{
+			// Get Table name
+			$tableName = static::unifyTableName($tables[$i]);
+
+			if (!static::isAlreadyDiscovered($tableName))
+			{
+				// Create an array with the table information
+				$tableData = array(
+					'tableName'  => $tableName,
+					'primaryKey' => $db->getPrimaryKey($tableName),
+					'translate'  => 0
+				);
+
+				// Create ContentElement object
+				$table = new NenoContentElementTable($tableData);
+
+				// Get all the columns a table contains
+				$fields = $db->getTableColumns($table->getTableName());
+
+				foreach ($fields as $fieldName => $fieldType)
+				{
+					$fieldData = array(
+						'fieldName' => $fieldName,
+						'translate' => NenoContentElementField::isTranslatableType($fieldType)
+					);
+
+					$field = new NenoContentElementField($fieldData);
+
+					$table->addField($field);
+				}
+
+				$result[] = $table;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Converts a table name to the Joomla table naming convention: #__table_name
+	 *
+	 * @param   string $tableName Table name
+	 *
+	 * @return mixed
+	 */
+	public static function unifyTableName($tableName)
+	{
+		$prefix = JFactory::getDbo()->getPrefix();
+
+		return '#__' . str_replace(array($prefix, '#__'), '', $tableName);
+	}
+
+	/**
 	 * Check if a table has been already discovered.
 	 *
-	 * @param string $tableName
+	 * @param   string $tableName
 	 *
 	 * @return bool
 	 */
@@ -476,16 +604,208 @@ class NenoHelper
 	}
 
 	/**
-	 * Converts a table name to the Joomla table naming convention: #__table_name
+	 * Read content element file(s) and create the content element hierarchy needed.
 	 *
-	 * @param string $tableName Table name
+	 * @param   string $extensionName
+	 * @param   array  $contentElementFiles
 	 *
-	 * @return mixed
+	 * @throws Exception
 	 */
-	public static function unifyTableName($tableName)
+	public static function parseContentElementFile($extensionName, $contentElementFiles)
 	{
-		$prefix = JFactory::getDbo()->getPrefix();
+		// Create a group for this extension.
+		NenoContentElementGroup::parseContentElementFiles($extensionName, $contentElementFiles);
+	}
 
-		return '#__' . str_replace(array($prefix, '#__'), '', $tableName);
+	/**
+	 * Concatenate a string to an array of strings
+	 *
+	 * @param   string $string  String to concatenate
+	 * @param   array  &$array  Array of strings
+	 * @param   bool   $prepend True if the string will be at beginning, false if it will be at the end.
+	 *
+	 * @return void
+	 */
+	public static function concatenateStringToStringArray($string, &$array, $prepend = true)
+	{
+		for ($i = 0; $i < count($array); $i++)
+		{
+			if ($prepend)
+			{
+				$array[$i] = $string . $array[$i];
+			}
+			else
+			{
+				$array[$i] = $array[$i] . $string;
+			}
+		}
+	}
+
+
+	/**
+	 * Takes an array of language files and filters out known language files shipped with Joomla
+	 *
+	 * @param   array  $files    Files to translate
+	 * @param   string $language Language tag
+	 *
+	 * @return array
+	 */
+	public static function removeCoreLanguageFilesFromArray($files, $language)
+	{
+		$coreFiles = array(
+
+			// Core components language files
+			$language . '.com_ajax.ini'
+		, $language . '.com_config.ini'
+		, $language . '.com_contact.ini'
+		, $language . '.com_content.ini'
+		, $language . '.com_finder.ini'
+		, $language . '.com_neno.ini'
+		, $language . '.com_mailto.ini'
+		, $language . '.com_media.ini'
+		, $language . '.com_messages.ini'
+		, $language . '.com_newsfeeds.ini'
+		, $language . '.com_search.ini'
+		, $language . '.com_tags.ini'
+		, $language . '.com_users.ini'
+		, $language . '.com_weblinks.ini'
+		, $language . '.com_wrapper.ini'
+		, $language . '.files_joomla.sys.ini'
+		, $language . '.finder_cli.ini'
+
+			// Main language file
+		, $language . '.ini'
+
+			// Libraries language files
+		, $language . '.lib_fof.sys.ini'
+		, $language . '.lib_idna_convert.sys.ini'
+		, $language . '.lib_joomla.ini'
+		, $language . '.lib_joomla.sys.ini'
+		, $language . '.lib_phpass.sys.ini'
+		, $language . '.lib_phpmailer.sys.ini'
+		, $language . '.lib_phputf8.sys.ini'
+		, $language . '.lib_simplepie.sys.ini'
+
+			// Modules language files
+		, $language . '.mod_articles_archive.ini'
+		, $language . '.mod_articles_archive.sys.ini'
+		, $language . '.mod_articles_categories.ini'
+		, $language . '.mod_articles_categories.sys.ini'
+		, $language . '.mod_articles_category.ini'
+		, $language . '.mod_articles_category.sys.ini'
+		, $language . '.mod_articles_latest.ini'
+		, $language . '.mod_articles_latest.sys.ini'
+		, $language . '.mod_articles_news.ini'
+		, $language . '.mod_articles_news.sys.ini'
+		, $language . '.mod_articles_popular.ini'
+		, $language . '.mod_articles_popular.sys.ini'
+		, $language . '.mod_banners.ini'
+		, $language . '.mod_banners.sys.ini'
+		, $language . '.mod_breadcrumbs.ini'
+		, $language . '.mod_breadcrumbs.sys.ini'
+		, $language . '.mod_custom.ini'
+		, $language . '.mod_custom.sys.ini'
+		, $language . '.mod_feed.ini'
+		, $language . '.mod_feed.sys.ini'
+		, $language . '.mod_finder.ini'
+		, $language . '.mod_finder.sys.ini'
+		, $language . '.mod_footer.ini'
+		, $language . '.mod_footer.sys.ini'
+		, $language . '.mod_languages.ini'
+		, $language . '.mod_languages.sys.ini'
+		, $language . '.mod_login.ini'
+		, $language . '.mod_login.sys.ini'
+		, $language . '.mod_menu.ini'
+		, $language . '.mod_menu.sys.ini'
+		, $language . '.mod_random_image.ini'
+		, $language . '.mod_random_image.sys.ini'
+		, $language . '.mod_related_items.ini'
+		, $language . '.mod_related_items.sys.ini'
+		, $language . '.mod_search.ini'
+		, $language . '.mod_search.sys.ini'
+		, $language . '.mod_stats.ini'
+		, $language . '.mod_stats.sys.ini'
+		, $language . '.mod_syndicate.ini'
+		, $language . '.mod_syndicate.sys.ini'
+		, $language . '.mod_tags_popular.ini'
+		, $language . '.mod_tags_popular.sys.ini'
+		, $language . '.mod_tags_similar.ini'
+		, $language . '.mod_tags_similar.sys.ini'
+		, $language . '.mod_users_latest.ini'
+		, $language . '.mod_users_latest.sys.ini'
+		, $language . '.mod_weblinks.ini'
+		, $language . '.mod_weblinks.sys.ini'
+		, $language . '.mod_whosonline.ini'
+		, $language . '.mod_whosonline.sys.ini'
+		, $language . '.mod_wrapper.ini'
+		, $language . '.mod_wrapper.sys.ini'
+
+			// Template language files
+		, $language . '.tpl_beezsss3.ini'
+		, $language . '.tpl_beez3.sys.ini'
+		, $language . '.tpl_beez3.ini'
+		, $language . '.tpl_protostar.ini'
+		, $language . '.tpl_protostar.sys.ini'
+
+			// Template overrides that should be ignored
+		, $language . '.tpl_hathor.ini'
+		, $language . '.tpl_hathor.sys.ini'
+		, $language . '.tpl_isis.ini'
+		, $language . '.tpl_isis.sys.ini'
+		);
+
+		$validFiles = array();
+
+		// Filter
+		foreach ($files as $key => $file)
+		{
+			$found = false;
+
+			// Loop through all the core files
+			for ($i = 0; $i < count($coreFiles) && !$found; $i++)
+			{
+				$strlen = strlen($coreFiles[$i]);
+
+				if (substr($file, strlen($file) - $strlen, $strlen) == $coreFiles[$i])
+				{
+					$found = true;
+				}
+			}
+
+			// If the file wasn't found, let's add it as a valid translatable file
+			if (!$found)
+			{
+				$validFiles[] = $file;
+			}
+		}
+
+		return $validFiles;
+	}
+
+	/**
+	 * Get the name of the file using its path
+	 *
+	 * @param string $filePath File path including the file name
+	 *
+	 * @return string
+	 */
+	public static function getFileName($filePath)
+	{
+		jimport('joomla.filesystem.file');
+		$pathParts = explode('/', $filePath);
+
+		return JFile::stripExt($pathParts[count($pathParts) - 1]);
+	}
+
+	/**
+	 * Escape a string
+	 *
+	 * @param   mixed $value Value
+	 *
+	 * @return string
+	 */
+	private static function escapeString($value)
+	{
+		return JFactory::getDbo()->quote($value);
 	}
 }

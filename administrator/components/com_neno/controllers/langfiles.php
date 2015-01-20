@@ -49,16 +49,16 @@ class NenoControllerLangfiles extends JControllerLegacy
 
 		// Check to see if there are any changes to target language files as we will have to redirect to a page where
 		// the user can chose what to do with them
-		$changed_strings = $model->getChangedStringsInLangfiles('target');
+		$changed_strings = $model->getChangedStringsInLangFiles('target');
 
-		if (count($changed_strings))
+		/*if (count($changed_strings))
 		{
 			$this->setRedirect(JRoute::_('index.php?option=com_neno&view=langfilesimporttargetchanges', false));
 		}
 		else
 		{
 			$this->setRedirect(JRoute::_('index.php?option=com_neno&view=langfilesimport', false));
-		}
+		}*/
 	}
 
 	/**
