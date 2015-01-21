@@ -40,6 +40,35 @@ class NenoHelper
 	}
 
 	/**
+	 * Configure the Link bar.
+	 *
+	 * @param   string $vName View name
+	 *
+	 * @return void
+	 */
+	public static function addSubmenu($vName = '')
+	{
+		jimport('joomla.filesystem.folder');
+		$viewsPath = JPATH_ADMINISTRATOR . '/components/com_neno/views';
+		$views     = JFolder::folders($viewsPath);
+
+		foreach ($views as $view)
+		{
+			$model = static::getModel($view);
+
+			// If the view has a JModelList class
+			if (is_subclass_of($model, 'JModelList'))
+			{
+				JHtmlSidebar::addEntry(
+					JText::_('COM_NENO_TITLE_' . strtoupper($view)),
+					'index.php?option=com_neno&view=' . strtolower($view),
+					$vName == strtolower($view)
+				);
+			}
+		}
+	}
+
+	/**
 	 * Get an instance of the named model
 	 *
 	 * @param   string $name The filename of the model
@@ -60,32 +89,6 @@ class NenoHelper
 		}
 
 		return null;
-	}
-
-	/**
-	 * Configure the Link bar.
-	 *
-	 * @param   string $vName View name
-	 *
-	 * @return void
-	 */
-	public static function addSubmenu($vName = '')
-	{
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_TITLE_TRANSLATIONS'),
-			'index.php?option=com_neno&view=translations',
-			$vName == 'translations'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_TITLE_SOURCES'),
-			'index.php?option=com_neno&view=sources',
-			$vName == 'sources'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_TITLE_EXTENSIONS'),
-			'index.php?option=com_neno&view=extensions',
-			$vName == 'extensions'
-		);
 	}
 
 	/**
