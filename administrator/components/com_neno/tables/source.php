@@ -21,18 +21,18 @@ class NenoTableSource extends JTable
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabaseDriver  $db  A database connector object
+	 * @param   JDatabaseDriver $db A database connector object
 	 */
 	public function __construct($db)
 	{
-		parent::__construct('#__neno_langfile_source', 'id', $db);
+		parent::__construct(NenoContentElementLangfileSource::getDbTable(), 'id', $db);
 	}
 
 	/**
 	 * Overloaded bind function to pre-process the params.
 	 *
-	 * @param   mixed  $src     An associative array or object to bind to the JTable instance.
-	 * @param   mixed  $ignore  An optional array or space separated list of properties to ignore while binding.
+	 * @param   mixed $src    An associative array or object to bind to the JTable instance.
+	 * @param   mixed $ignore An optional array or space separated list of properties to ignore while binding.
 	 *
 	 * @return null|string null is operation was satisfactory, otherwise returns an error
 	 *
@@ -86,7 +86,7 @@ class NenoTableSource extends JTable
 	/**
 	 * Convert JAccess array to other structure
 	 *
-	 * @param   array  $jAccessRules  JAccess array
+	 * @param   array $jAccessRules JAccess array
 	 *
 	 * @return array
 	 */
@@ -130,10 +130,10 @@ class NenoTableSource extends JTable
 	 * table.  The method respects checked out rows by other users and will attempt
 	 * to checkin rows that it can after adjustments are made.
 	 *
-	 * @param   mixed    $pks     An optional array of primary key values to update.  If not
+	 * @param   mixed   $pks      An optional array of primary key values to update.  If not
 	 *                            set the instance property value is used.
-	 * @param   integer  $state   The publishing state. eg. [0 = unpublished, 1 = published]
-	 * @param   integer  $userId  The user id of the user performing the operation.
+	 * @param   integer $state    The publishing state. eg. [0 = unpublished, 1 = published]
+	 * @param   integer $userId   The user id of the user performing the operation.
 	 *
 	 * @return    boolean    True on success.
 	 *
@@ -154,7 +154,7 @@ class NenoTableSource extends JTable
 		{
 			if ($this->$k)
 			{
-				$pks = array( $this->$k );
+				$pks = array($this->$k);
 			}
 			// Nothing to set publishing state on, return false.
 			else
@@ -223,13 +223,13 @@ class NenoTableSource extends JTable
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @param   JTable   $table  A JTable object for the asset parent.
-	 * @param   integer  $id     Id to look up
+	 * @param   JTable  $table A JTable object for the asset parent.
+	 * @param   integer $id    Id to look up
 	 *
 	 * @return  integer
 	 *
 	 * @since   11.1
-	 * @see JTable::_getAssetParentId
+	 * @see     JTable::_getAssetParentId
 	 */
 	protected function _getAssetParentId(JTable $table = null, $id = null)
 	{
