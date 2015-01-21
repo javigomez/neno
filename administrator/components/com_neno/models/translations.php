@@ -55,6 +55,11 @@ class NenoModelTranslations extends JModelList
 	{
 		$items = parent::getItems();
 
+		foreach ($items as $key => $item)
+		{
+			$items[$key] = new NenoContentElementLangfileTranslation(NenoHelper::convertDatabaseArrayToClassArray((array) $item));
+		}
+
 		return $items;
 	}
 
@@ -123,27 +128,22 @@ class NenoModelTranslations extends JModelList
 		$query = $db->getQuery(true);
 
 		// Select the required fields from the table.
-		$query->select(
-			$this->getState(
-				'list.select', 'DISTINCT a.*'
+		$query
+			->select(
+				$this->getState(
+					'list.select', 'DISTINCT a.*'
+				)
 			)
-		);
-		$query->from('#__neno_langfile_source AS a');
+			->from($db->quoteName(NenoContentElementLangfileTranslation::getDbTable()) . ' AS a');
 
 		// Filter by search in title
 		$search = $this->getState('filter.search');
 
-		// Join the translation table
-		$query->join('LEFT', '#__neno_langfile_translations AS t ON t.source_id = a.id');
-		$query->select('t.string AS translation_string');
-		$query->select('t.time_translated');
-		$query->select('t.lang AS target_lang');
-		$query->select('t.id');
-
 		$workingLanguage = NenoHelper::getWorkingLanguage();
+
 		if (!empty($workingLanguage))
 		{
-			$query->where("t.lang LIKE '" . $workingLanguage . "'");
+			$query->where("a.language LIKE '" . $workingLanguage . "'");
 		}
 
 		if (!empty($search))

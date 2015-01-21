@@ -24,14 +24,6 @@ $user          = JFactory::getUser();
 $userId        = $user->get('id');
 $listOrder     = $this->state->get('list.ordering');
 $listDirection = $this->state->get('list.direction');
-$canOrder      = $user->authorise('core.edit.state', 'com_neno');
-$saveOrder     = $listOrder == 'a.ordering';
-
-if ($saveOrder)
-{
-	$saveOrderingUrl = 'index.php?option=com_neno&task=translations.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'translationList', 'adminForm', strtolower($listDirection), $saveOrderingUrl);
-}
 
 $sortFields = $this->getSortFields();
 ?>
@@ -55,7 +47,7 @@ if (!empty($this->extra_sidebar))
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_neno&view=translations'); ?>" method="post" name="adminForm"
-	id="adminForm">
+      id="adminForm">
 	<?php if (!empty($this->sidebar)): ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
@@ -68,41 +60,39 @@ if (!empty($this->extra_sidebar))
 			<div id="filter-bar" class="btn-toolbar">
 				<div class="filter-search btn-group pull-left">
 					<label for="filter_search"
-						class="element-invisible"><?php echo JText::_('JSEARCH_FILTER'); ?></label>
+					       class="element-invisible"><?php echo JText::_('JSEARCH_FILTER'); ?></label>
 					<input type="text" name="filter_search" id="filter_search"
-						placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>"
-						value="<?php echo $this->escape($this->state->get('filter.search')); ?>"
-						title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
+					       placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>"
+					       value="<?php echo $this->escape($this->state->get('filter.search')); ?>"
+					       title="<?php echo JText::_('JSEARCH_FILTER'); ?>"/>
 				</div>
 				<div class="btn-group pull-left">
 					<button class="btn hasTooltip" type="submit"
-						title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i>
+					        title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i>
 					</button>
 					<button class="btn hasTooltip" type="button" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"
-						onclick="document.id('filter_search').value='';this.form.submit();"><i
+					        onclick="document.id('filter_search').value='';this.form.submit();"><i
 							class="icon-remove"></i></button>
 				</div>
 				<div class="btn-group pull-right hidden-phone">
 					<label for="limit"
-						class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
+					       class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
 					<?php echo $this->pagination->getLimitBox(); ?>
 				</div>
 				<div class="btn-group pull-right hidden-phone">
 					<label for="directionTable"
-						class="element-invisible"><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></label>
+					       class="element-invisible"><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></label>
 					<select name="directionTable" id="directionTable" class="input-medium"
-						onchange="Joomla.orderTable()">
+					        onchange="Joomla.orderTable()">
 						<option value=""><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></option>
 						<option
-							value="asc" <?php if ($listDirection == 'asc')
-						{
-							echo 'selected="selected"';
-						} ?>><?php echo JText::_('JGLOBAL_ORDER_ASCENDING'); ?></option>
+							value="asc" <?php echo $listDirection == 'asc' ? 'selected="selected"' : ''; ?>>
+							<?php echo JText::_('JGLOBAL_ORDER_ASCENDING'); ?>
+						</option>
 						<option
-							value="desc" <?php if ($listDirection == 'desc')
-						{
-							echo 'selected="selected"';
-						} ?>><?php echo JText::_('JGLOBAL_ORDER_DESCENDING'); ?></option>
+							value="desc" <?php echo $listDirection == 'desc' ? 'selected="selected"' : ''; ?>>
+							<?php echo JText::_('JGLOBAL_ORDER_DESCENDING'); ?>
+						</option>
 					</select>
 				</div>
 				<div class="btn-group pull-right">
@@ -117,21 +107,13 @@ if (!empty($this->extra_sidebar))
 			<table class="table table-striped" id="translationList">
 				<thead>
 				<tr>
-					<?php if (isset($this->items[0]->ordering)): ?>
-						<th width="1%" class="nowrap center hidden-phone">
-							<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirection, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
-						</th>
-					<?php endif; ?>
 					<th width="1%" class="hidden-phone">
 						<input type="checkbox" name="checkall-toggle" value=""
-							title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
+						       title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)"/>
 					</th>
-					<?php if (isset($this->items[0]->state)): ?>
-						<th width="1%" class="nowrap center">
-							<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirection, $listOrder); ?>
-						</th>
-					<?php endif; ?>
-
+					<th width="1%" class="nowrap center">
+						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirection, $listOrder); ?>
+					</th>
 					<th class='left'>
 						<?php echo JHtml::_('grid.sort', 'COM_NENO_TRANSLATIONS_CONSTANT', 'a.constant', $listDirection, $listOrder); ?>
 					</th>
@@ -147,105 +129,56 @@ if (!empty($this->extra_sidebar))
 					<th class='left'>
 						<?php echo JHtml::_('grid.sort', 'COM_NENO_TRANSLATIONS_LANG', 'a.target_lang', $listDirection, $listOrder); ?>
 					</th>
-
-
-					<?php if (isset($this->items[0]->id)): ?>
-						<th width="1%" class="nowrap center hidden-phone">
-							<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirection, $listOrder); ?>
-						</th>
-					<?php endif; ?>
+					<th width="1%" class="nowrap center hidden-phone">
+						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirection, $listOrder); ?>
+					</th>
 				</tr>
-				</thead>
-				<tfoot>
-				<?php
-				if (isset($this->items[0]))
-				{
-					$colspan = count(get_object_vars($this->items[0]));
-				}
-				else
-				{
-					$colspan = 10;
-				}
-				?>
-				<tr>
-					<td colspan="<?php echo $colspan ?>">
-						<?php echo $this->pagination->getListFooter(); ?>
-					</td>
-				</tr>
-				</tfoot>
-				<tbody>
-				<?php foreach ($this->items as $i => $item) :
-					$ordering   = ($listOrder == 'a.ordering');
-					$canCreate  = $user->authorise('core.create', 'com_neno');
-					$canEdit    = $user->authorise('core.edit', 'com_neno');
-					$canCheckin = $user->authorise('core.manage', 'com_neno');
-					$canChange  = $user->authorise('core.edit.state', 'com_neno');
-					?>
+				<?php /* @var $item NenoContentElementLangfileTranslation */ ?>
+				<?php foreach ($this->items as $i => $item) : ?>
+					<?php $canCreate = $user->authorise('core.create', 'com_neno'); ?>
+					<?php $canEdit = $user->authorise('core.edit', 'com_neno'); ?>
+					<?php $canCheckin = $user->authorise('core.manage', 'com_neno'); ?>
+					<?php $canChange = $user->authorise('core.edit.state', 'com_neno'); ?>
 					<tr class="row<?php echo $i % 2; ?>">
-
-						<?php if (isset($this->items[0]->ordering)): ?>
-							<td class="order nowrap center hidden-phone">
-								<?php if ($canChange) :
-									$disableClassName = '';
-									$disabledLabel    = '';
-									if (!$saveOrder) :
-										$disabledLabel    = JText::_('JORDERINGDISABLED');
-										$disableClassName = 'inactive tip-top';
-									endif; ?>
-									<span class="sortable-handler hasTooltip <?php echo $disableClassName ?>" title="<?php echo $disabledLabel ?>">
-                        				<i class="icon-menu"></i>
-            						</span>
-									<input type="text" style="display:none" name="order[]" size="5"
-										value="<?php echo $item->ordering; ?>" class="width-20 text-area-order " />
-								<?php else : ?>
-									<span class="sortable-handler inactive">
-                                        <i class="icon-menu"></i>
-                                    </span>
-								<?php endif; ?>
-							</td>
-						<?php endif; ?>
 						<td class="hidden-phone">
-							<?php echo JHtml::_('grid.id', $i, $item->id); ?>
+							<?php echo JHtml::_('grid.id', $i, $item->getId()); ?>
 						</td>
-						<?php if (isset($this->items[0]->state)): ?>
-							<td class="center">
-								<?php echo JHtml::_('jgrid.published', $item->state, $i, 'translations.', $canChange, 'cb'); ?>
-							</td>
-						<?php endif; ?>
-
-						<td>
-							<?php echo $item->constant; ?>
+						<td class="center">
+							<?php echo JHtml::_('jgrid.published', $item->getState(), $i, 'translations.', $canChange, 'cb'); ?>
 						</td>
 						<td>
-							<?php echo $item->string; ?>
+							<?php echo $item->getSource()->getConstant(); ?>
 						</td>
 						<td>
-							<a href="index.php?option=com_neno&view=translation&id=<?php echo $item->id; ?>">
-								<?php echo $item->translation_string; ?>
+							<?php echo $item->getSource()->getString(); ?>
+						</td>
+						<td>
+							<a href="index.php?option=com_neno&view=translation&id=<?php echo $item->getId(); ?>">
+								<?php echo $item->getString(); ?>
 							</a>
 						</td>
 						<td>
-							<?php echo $item->time_translated; ?>
+							<?php echo $item->getTimeTranslated(); ?>
 						</td>
 						<td>
-							<?php echo $item->target_lang; ?>
+							<?php echo $item->getLanguage(); ?>
 						</td>
-
-
-						<?php if (isset($this->items[0]->id)): ?>
-							<td class="center hidden-phone">
-								<?php echo (int) $item->id; ?>
-							</td>
-						<?php endif; ?>
+						<td class="center hidden-phone">
+							<?php echo (int) $item->getId(); ?>
+						</td>
 					</tr>
 				<?php endforeach; ?>
-				</tbody>
+				<tr>
+					<td colspan="10">
+						<?php echo $this->pagination->getListFooter(); ?>
+					</td>
+				</tr>
 			</table>
 
-			<input type="hidden" name="task" value="" />
-			<input type="hidden" name="boxchecked" value="0" />
-			<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-			<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirection; ?>" />
+			<input type="hidden" name="task" value=""/>
+			<input type="hidden" name="boxchecked" value="0"/>
+			<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>"/>
+			<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirection; ?>"/>
 			<?php echo JHtml::_('form.token'); ?>
 		</div>
 </form>        
