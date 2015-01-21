@@ -23,7 +23,7 @@ class NenoModelSources extends JModelList
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param   array $config An optional associative array of configuration settings.
 	 *
 	 * @see        JController
 	 * @since      1.6
@@ -58,6 +58,11 @@ class NenoModelSources extends JModelList
 	{
 		$items = parent::getItems();
 
+		foreach ($items as $key => $item)
+		{
+			$items[$key] = new NenoContentElementLangfileSource(NenoHelper::convertDatabaseArrayToClassArray((array) $item));
+		}
+
 		return $items;
 	}
 
@@ -65,8 +70,8 @@ class NenoModelSources extends JModelList
 	 * Method to auto-populate the model state.
 	 * Note. Calling getState in this method will result in recursion.
 	 *
-	 * @param   string  $ordering   Ordering field
-	 * @param   string  $direction  Ordering direction [ASC,DESC]
+	 * @param   string $ordering  Ordering field
+	 * @param   string $direction Ordering direction [ASC,DESC]
 	 *
 	 * @return void
 	 */
@@ -97,7 +102,7 @@ class NenoModelSources extends JModelList
 	 * different modules that might need different sets of data or different
 	 * ordering requirements.
 	 *
-	 * @param   string  $id  A prefix for the store id.
+	 * @param   string $id A prefix for the store id.
 	 *
 	 * @return    string        A store id.
 	 *
@@ -131,7 +136,7 @@ class NenoModelSources extends JModelList
 				'list.select', 'DISTINCT a.*'
 			)
 		);
-		$query->from('`#__neno_langfile_source` AS a');
+		$query->from($db->quoteName(NenoContentElementLangfileSource::getDbTable()) . ' AS a');
 
 		// Filter by search in title
 		$search = $this->getState('filter.search');
@@ -149,7 +154,7 @@ class NenoModelSources extends JModelList
 		}
 
 		// Add the list ordering clause.
-		$orderCol  = $this->state->get('list.ordering');
+		$orderCol       = $this->state->get('list.ordering');
 		$orderDirection = $this->state->get('list.direction');
 
 		if ($orderCol && $orderDirection)
