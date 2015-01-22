@@ -32,6 +32,11 @@ class NenoContentElementGroup extends NenoContentElement
 	protected $tables;
 
 	/**
+	 * @var array
+	 */
+	protected $languageStrings;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param mixed $data
@@ -40,7 +45,8 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		parent::__construct($data);
 
-		$this->tables = array();
+		$this->tables          = array();
+		$this->languageStrings = array();
 	}
 
 	/**
@@ -202,7 +208,31 @@ class NenoContentElementGroup extends NenoContentElement
 				$table->setGroup($this);
 				$table->persist();
 			}
+
+			/* @var $languageString NenoContentElementLangfileSource */
+			foreach ($this->languageStrings as $languageString)
+			{
+				$languageString->setGroup($this);
+				$languageString->persist();
+			}
 		}
+	}
+
+	public function getLanguageStrings()
+	{
+		return $this->languageStrings;
+	}
+
+	public function setLanguageStrings(array $languageStrings)
+	{
+		$this->languageStrings = $languageStrings;
+
+		return $this;
+	}
+
+	public function addLanguageString(NenoContentElementLangfileSource $languageString)
+	{
+		$this->languageStrings[] = $languageString;
 	}
 
 	/**

@@ -36,6 +36,11 @@ class NenoContentElementLangfileSource extends NenoContentElementLangfile
 	protected $timeChanged;
 
 	/**
+	 * @var NenoContentElementGroup
+	 */
+	protected $group;
+
+	/**
 	 * @param string $language
 	 *
 	 * @return array
@@ -86,6 +91,22 @@ class NenoContentElementLangfileSource extends NenoContentElementLangfile
 		}
 
 		return $sourceLanguageStrings;
+	}
+
+	/**
+	 * @return NenoContentElementGroup
+	 */
+	public function getGroup()
+	{
+		return $this->group;
+	}
+
+	/**
+	 * @param NenoContentElementGroup $group
+	 */
+	public function setGroup(NenoContentElementGroup $group)
+	{
+		$this->group = $group;
 	}
 
 	/**
@@ -235,6 +256,19 @@ class NenoContentElementLangfileSource extends NenoContentElementLangfile
 		$this->constant = $constant;
 
 		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return JObject
+	 */
+	public function toObject()
+	{
+		$data = parent::toObject();
+		$data->set('group_id', $this->group->getId());
+
+		return $data;
 	}
 
 	/**
@@ -1079,4 +1113,6 @@ class NenoContentElementLangfileSource extends NenoContentElementLangfile
 
 		return true;
 	}
+
+
 }

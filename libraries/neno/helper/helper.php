@@ -274,19 +274,6 @@ class NenoHelper
 	}
 
 	/**
-	 * Check if a string starts with a particular string
-	 *
-	 * @param   string $string String to be checked
-	 * @param   string $prefix Prefix of the string
-	 *
-	 * @return bool
-	 */
-	public static function startsWith($string, $prefix)
-	{
-		return $prefix === "" || strrpos($string, $prefix, -strlen($string)) !== false;
-	}
-
-	/**
 	 * Check if a string ends with a particular string
 	 *
 	 * @param   string $string String to be checked
@@ -458,6 +445,8 @@ class NenoHelper
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
+		$extensions = array_map(array('NenoHelper', 'escapeString'), static::whichExtensionsShouldBeTranslated());
+
 		$query
 			->select(
 				array(
@@ -471,10 +460,9 @@ class NenoHelper
 			->from('`#__extensions` AS e')
 			->where(
 				array(
-					'e.type IN (' . implode(',', array_map(array('NenoHelper', 'escapeString'), static::whichExtensionsShouldBeTranslated()) . ')',
-						'e.name NOT LIKE \'com_neno\'',
-						'NOT EXISTS (SELECT 1 FROM `#__neno_content_elements_groups` AS ceg WHERE e.extension_id = ceg.extension_id)'
-					)
+					'e.type IN (' . implode(',', $extensions) . ')',
+					'e.name NOT LIKE \'com_neno\'',
+					'NOT EXISTS (SELECT 1 FROM ' . $db->quoteName(NenoContentElementGroup::getDbTable()) . ' AS ceg WHERE e.extension_id = ceg.extension_id)'
 				)
 			)
 			->order('name');
@@ -489,14 +477,21 @@ class NenoHelper
 				'extensionId' => $extensions[$i]->extension_id
 			);
 
-			$group  = new NenoContentElementGroup($groupData);
-			$tables = static::getComponentTables($group);
+			$group           = new NenoContentElementGroup($groupData);
+			$tables          = static::getComponentTables($group);
+			$languageStrings = static::getLanguageStrings($group);
 
 			if (!empty($tables))
 			{
 				$group->setTables($tables);
-				$group->persist();
 			}
+
+			if (!empty($languageStrings))
+			{
+				$group->setLanguageStrings($languageStrings);
+			}
+
+			$group->persist();
 		}
 	}
 
@@ -597,13 +592,126 @@ class NenoHelper
 
 		$query
 			->select('1')
-			->from('#__neno_content_elements_tables')
+			->from(NenoContentElementTable::getDbTable())
 			->where('table_name LIKE ' . $db->quote(static::unifyTableName($tableName)));
 
 		$db->setQuery($query);
 		$result = $db->loadResult();
 
 		return $result == 1;
+	}
+
+	/**
+	 * @param NenoContentElementGroup $group
+	 *
+	 * @return array
+	 */
+	public static function getLanguageStrings(NenoContentElementGroup $group)
+	{
+		$extensionName   = static::getExtensionNameByExtensionId($group->getExtensionId());
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+
+		$languageFile    = NenoLanguageFile::openLanguageFile($defaultLanguage, $extensionName);
+		$languageStrings = $languageFile->getStrings();
+
+		$sourceLanguageStrings = array();
+
+		foreach ($languageStrings as $languageStringKey => $languageStringText)
+		{
+			$sourceLanguageStringData = static::getLanguageStringFromLanguageKey($languageStringKey);
+			$sourceLanguageString     = new NenoContentElementLangfileSource($sourceLanguageStringData);
+
+			$sourceLanguageStrings[] = $sourceLanguageString;
+		}
+
+		return $sourceLanguageStrings;
+	}
+
+	/**
+	 * @param integer $extensionId
+	 *
+	 * @return string
+	 */
+	public static function getExtensionNameByExtensionId($extensionId)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('*')
+			->from('#__extensions')
+			->where('extension_id = ' . (int) $extensionId);
+
+		$db->setQuery($query);
+		$extensionData = $db->loadAssoc();
+
+		$extensionName = $extensionData['element'];
+
+		switch ($extensionData['type'])
+		{
+			case 'component':
+				if (!static::startsWith($extensionName, 'com_'))
+				{
+					$extensionName = 'com_' . $extensionName;
+				}
+				break;
+			case 'plugin':
+				if (!static::startsWith($extensionName, 'plg_'))
+				{
+					$extensionName = 'plg_' . $extensionData['folder'] . '_' . $extensionName;
+				}
+				break;
+			case 'module':
+				if (!static::startsWith($extensionName, 'mod_'))
+				{
+					$extensionName = 'mod_' . $extensionName;
+				}
+				break;
+		}
+
+		return $extensionName;
+
+	}
+
+	/**
+	 * Check if a string starts with a particular string
+	 *
+	 * @param   string $string String to be checked
+	 * @param   string $prefix Prefix of the string
+	 *
+	 * @return bool
+	 */
+	public static function startsWith($string, $prefix)
+	{
+		return $prefix === "" || strrpos($string, $prefix, -strlen($string)) !== false;
+	}
+
+	public static function getLanguageStringFromLanguageKey($languageKey)
+	{
+		$info = array();
+
+		if (empty($languageKey))
+		{
+			return $info;
+		}
+
+		// Split by : to separate file name and constant
+		list($fileName, $info['constant']) = explode(':', $languageKey);
+
+		// Split the file name by . for additional information
+		$fileParts         = explode('.', $fileName);
+		$info['extension'] = $fileParts[0];
+
+		// Add .sys and other file parts to the name
+		foreach ($fileParts as $k => $filePart)
+		{
+			if ($k > 0 && $filePart != 'ini')
+			{
+				$info['extension'] .= '.' . $filePart;
+			}
+		}
+
+		return $info;
 	}
 
 	/**
@@ -643,7 +751,6 @@ class NenoHelper
 			}
 		}
 	}
-
 
 	/**
 	 * Takes an array of language files and filters out known language files shipped with Joomla

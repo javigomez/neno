@@ -307,7 +307,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		{
 			if ($knownLanguage->lang_code !== $defaultLanguage)
 			{
-				$shadowTableName = NenoDatabaseParser::generateShadowTableName($tableName, $knownLanguage['tag']);
+				$shadowTableName = NenoDatabaseParser::generateShadowTableName($tableName, $knownLanguage->lang_code);
 				$this->dropTable($shadowTableName);
 			}
 		}
