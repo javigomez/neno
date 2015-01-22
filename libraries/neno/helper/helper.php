@@ -54,7 +54,7 @@ class NenoHelper
 
 		foreach ($views as $view)
 		{
-			$model = static::getModel($view);
+			$model = self::getModel($view);
 
 			// If the view has a JModelList class
 			if (is_subclass_of($model, 'JModelList'))
@@ -339,7 +339,7 @@ class NenoHelper
 	 */
 	public static function convertPropertyNameToDatabaseColumnName($propertyName)
 	{
-		return implode('_', static::splitCamelCaseString($propertyName));
+		return implode('_', self::splitCamelCaseString($propertyName));
 	}
 
 	/**
@@ -368,7 +368,7 @@ class NenoHelper
 
 		foreach ($databaseArray as $fieldName => $fieldValue)
 		{
-			$objectData[static::convertDatabaseColumnNameToPropertyName($fieldName)] = $fieldValue;
+			$objectData[self::convertDatabaseColumnNameToPropertyName($fieldName)] = $fieldValue;
 		}
 
 		return $objectData;
@@ -445,7 +445,7 @@ class NenoHelper
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$extensions = array_map(array('NenoHelper', 'escapeString'), static::whichExtensionsShouldBeTranslated());
+		$extensions = array_map(array('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
 
 		$query
 			->select(
@@ -478,8 +478,8 @@ class NenoHelper
 			);
 
 			$group           = new NenoContentElementGroup($groupData);
-			$tables          = static::getComponentTables($group);
-			$languageStrings = static::getLanguageStrings($group);
+			$tables          = self::getComponentTables($group);
+			$languageStrings = self::getLanguageStrings($group);
 
 			if (!empty($tables))
 			{
@@ -528,9 +528,9 @@ class NenoHelper
 		for ($i = 0; $i < count($tables); $i++)
 		{
 			// Get Table name
-			$tableName = static::unifyTableName($tables[$i]);
+			$tableName = self::unifyTableName($tables[$i]);
 
-			if (!static::isAlreadyDiscovered($tableName))
+			if (!self::isAlreadyDiscovered($tableName))
 			{
 				// Create an array with the table information
 				$tableData = array(
@@ -593,7 +593,7 @@ class NenoHelper
 		$query
 			->select('1')
 			->from(NenoContentElementTable::getDbTable())
-			->where('table_name LIKE ' . $db->quote(static::unifyTableName($tableName)));
+			->where('table_name LIKE ' . $db->quote(self::unifyTableName($tableName)));
 
 		$db->setQuery($query);
 		$result = $db->loadResult();
@@ -608,20 +608,24 @@ class NenoHelper
 	 */
 	public static function getLanguageStrings(NenoContentElementGroup $group)
 	{
-		$extensionName   = static::getExtensionNameByExtensionId($group->getExtensionId());
+		$extensionName   = self::getExtensionNameByExtensionId($group->getExtensionId());
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
 
-		$languageFile    = NenoLanguageFile::openLanguageFile($defaultLanguage, $extensionName);
-		$languageStrings = $languageFile->getStrings();
-
+		$languageFile          = NenoLanguageFile::openLanguageFile($defaultLanguage, $extensionName);
 		$sourceLanguageStrings = array();
 
-		foreach ($languageStrings as $languageStringKey => $languageStringText)
+		// Only save the language strings if it's not a Joomla core components
+		if (!self::isJoomlaCoreLanguageFile($languageFile->getFileName()))
 		{
-			$sourceLanguageStringData = static::getLanguageStringFromLanguageKey($languageStringKey);
-			$sourceLanguageString     = new NenoContentElementLangfileSource($sourceLanguageStringData);
+			$languageStrings = $languageFile->getStrings();
 
-			$sourceLanguageStrings[] = $sourceLanguageString;
+			foreach ($languageStrings as $languageStringKey => $languageStringText)
+			{
+				$sourceLanguageStringData = self::getLanguageStringFromLanguageKey($languageStringKey);
+				$sourceLanguageString     = new NenoContentElementLangfileSource($sourceLanguageStringData);
+
+				$sourceLanguageStrings[] = $sourceLanguageString;
+			}
 		}
 
 		return $sourceLanguageStrings;
@@ -650,19 +654,19 @@ class NenoHelper
 		switch ($extensionData['type'])
 		{
 			case 'component':
-				if (!static::startsWith($extensionName, 'com_'))
+				if (!self::startsWith($extensionName, 'com_'))
 				{
 					$extensionName = 'com_' . $extensionName;
 				}
 				break;
 			case 'plugin':
-				if (!static::startsWith($extensionName, 'plg_'))
+				if (!self::startsWith($extensionName, 'plg_'))
 				{
 					$extensionName = 'plg_' . $extensionData['folder'] . '_' . $extensionName;
 				}
 				break;
 			case 'module':
-				if (!static::startsWith($extensionName, 'mod_'))
+				if (!self::startsWith($extensionName, 'mod_'))
 				{
 					$extensionName = 'mod_' . $extensionName;
 				}
@@ -686,70 +690,20 @@ class NenoHelper
 		return $prefix === "" || strrpos($string, $prefix, -strlen($string)) !== false;
 	}
 
-	public static function getLanguageStringFromLanguageKey($languageKey)
-	{
-		$info = array();
-
-		if (empty($languageKey))
-		{
-			return $info;
-		}
-
-		// Split by : to separate file name and constant
-		list($fileName, $info['constant']) = explode(':', $languageKey);
-
-		// Split the file name by . for additional information
-		$fileParts         = explode('.', $fileName);
-		$info['extension'] = $fileParts[0];
-
-		// Add .sys and other file parts to the name
-		foreach ($fileParts as $k => $filePart)
-		{
-			if ($k > 0 && $filePart != 'ini')
-			{
-				$info['extension'] .= '.' . $filePart;
-			}
-		}
-
-		return $info;
-	}
-
 	/**
-	 * Read content element file(s) and create the content element hierarchy needed.
+	 * Checks if a file is a Joomla Core language file
 	 *
-	 * @param   string $extensionName
-	 * @param   array  $contentElementFiles
+	 * @param string $languageFileName
 	 *
-	 * @throws Exception
+	 * @return bool
 	 */
-	public static function parseContentElementFile($extensionName, $contentElementFiles)
+	public static function isJoomlaCoreLanguageFile($languageFileName)
 	{
-		// Create a group for this extension.
-		NenoContentElementGroup::parseContentElementFiles($extensionName, $contentElementFiles);
-	}
+		$fileParts = explode('.', $languageFileName);
 
-	/**
-	 * Concatenate a string to an array of strings
-	 *
-	 * @param   string $string  String to concatenate
-	 * @param   array  &$array  Array of strings
-	 * @param   bool   $prepend True if the string will be at beginning, false if it will be at the end.
-	 *
-	 * @return void
-	 */
-	public static function concatenateStringToStringArray($string, &$array, $prepend = true)
-	{
-		for ($i = 0; $i < count($array); $i++)
-		{
-			if ($prepend)
-			{
-				$array[$i] = $string . $array[$i];
-			}
-			else
-			{
-				$array[$i] = $array[$i] . $string;
-			}
-		}
+		$result = self::removeCoreLanguageFilesFromArray(array($languageFileName), $fileParts[0]);
+
+		return empty($result);
 	}
 
 	/**
@@ -890,6 +844,72 @@ class NenoHelper
 		}
 
 		return $validFiles;
+	}
+
+	public static function getLanguageStringFromLanguageKey($languageKey)
+	{
+		$info = array();
+
+		if (empty($languageKey))
+		{
+			return $info;
+		}
+
+		// Split by : to separate file name and constant
+		list($fileName, $info['constant']) = explode(':', $languageKey);
+
+		// Split the file name by . for additional information
+		$fileParts         = explode('.', $fileName);
+		$info['extension'] = $fileParts[0];
+
+		// Add .sys and other file parts to the name
+		foreach ($fileParts as $k => $filePart)
+		{
+			if ($k > 0 && $filePart != 'ini')
+			{
+				$info['extension'] .= '.' . $filePart;
+			}
+		}
+
+		return $info;
+	}
+
+	/**
+	 * Read content element file(s) and create the content element hierarchy needed.
+	 *
+	 * @param   string $extensionName
+	 * @param   array  $contentElementFiles
+	 *
+	 * @throws Exception
+	 */
+	public static function parseContentElementFile($extensionName, $contentElementFiles)
+	{
+		// Create a group for this extension.
+		NenoContentElementGroup::parseContentElementFiles($extensionName, $contentElementFiles);
+	}
+
+	/**
+	 * Concatenate a string to an array of strings
+	 *
+	 * @param   string $string  String to concatenate
+	 * @param   array  &$array  Array of strings
+	 * @param   bool   $prepend True if the string will be at beginning, false if it will be at the end.
+	 *
+	 * @return void
+	 */
+	public static function concatenateStringToStringArray($string, &$array, $prepend = true)
+	{
+		for ($i = 0; $i < count($array); $i++)
+		{
+			if ($prepend)
+			{
+				$array[$i] = $string . $array[$i];
+			}
+			else
+			{
+				$array[$i] = $array[$i] . $string;
+			}
+		}
 	}
 
 	/**

@@ -90,12 +90,23 @@ class NenoLanguageFile
 	 */
 	public function getFilePath()
 	{
-		$filePath = JPATH_ROOT . "/language/$this->language/$this->language.[EXTENSION]ini";
-
-		$filePath = str_replace('[EXTENSION]', (is_null($this->extension) ? '' : $this->extension . '.'), $filePath);
-
+		$filePath = JPATH_ROOT . "/language/$this->language/" . $this->getFileName();
 
 		return $filePath;
+	}
+
+	/**
+	 * Return the file name of a particular language file
+	 *
+	 * @return string
+	 */
+	public function getFileName()
+	{
+		$fileName = $this->language . ".[EXTENSION]ini";
+		$fileName = str_replace('[EXTENSION]', (is_null($this->extension) ? '' : $this->extension . '.'), $fileName);
+
+		return $fileName;
+
 	}
 
 	/**.
