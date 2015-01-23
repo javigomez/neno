@@ -17,13 +17,34 @@ defined('JPATH_NENO') or die;
 abstract class NenoContentElementLangfile extends NenoContentElement
 {
 	/**
-	 *
+	 * Source language string type
 	 */
 	const SOURCE_LANGUAGE_TYPE = 'source';
+
 	/**
-	 *
+	 * Target language string type
 	 */
 	const TARGET_LANGUAGE_TYPE = 'target';
+
+	/**
+	 * This state is for a string that has not been translated yet or the user does not want to translated it
+	 */
+	const NOT_TRANSLATED_STATE = 1;
+
+	/**
+	 * This state is for a string that has been sent to be translated but the translation has not arrived yet.
+	 */
+	const QUEUED_FOR_BEING_TRANSLATED_STATE = 2;
+
+	/**
+	 * This state is for a string that has been translated
+	 */
+	const TRANSLATED = 3;
+
+	/**
+	 * This state is for a string that its source string has changed.
+	 */
+	const SOURCE_CHANGED = 4;
 
 	/**
 	 * @var String
