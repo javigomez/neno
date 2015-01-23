@@ -481,17 +481,23 @@ class NenoHelper
 			$tables          = self::getComponentTables($group);
 			$languageStrings = self::getLanguageStrings($group);
 
+			// If there are tables, let's assign to the group
 			if (!empty($tables))
 			{
 				$group->setTables($tables);
 			}
 
+			// If there are language strings, let's assign to the group
 			if (!empty($languageStrings))
 			{
 				$group->setLanguageStrings($languageStrings);
 			}
 
-			$group->persist();
+			// If there are tables or language strings assigned, save the group
+			if (!empty($tables) || !empty($languageStrings))
+			{
+				$group->persist();
+			}
 		}
 	}
 
