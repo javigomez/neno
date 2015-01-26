@@ -628,7 +628,7 @@ class NenoHelper
 			foreach ($languageStrings as $languageStringKey => $languageStringText)
 			{
 				$sourceLanguageStringData = self::getLanguageStringFromLanguageKey($languageStringKey);
-				$sourceLanguageString     = new NenoContentElementLangfileSource($sourceLanguageStringData);
+				$sourceLanguageString     = new NenoContentElementLangfile($sourceLanguageStringData);
 
 				$sourceLanguageStrings[] = $sourceLanguageString;
 			}

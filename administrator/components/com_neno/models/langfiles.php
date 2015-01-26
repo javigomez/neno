@@ -195,7 +195,7 @@ class NenoModelLangfiles extends JModelLegacy
 	 */
 	protected function loadLanguageStringsFromDatabase($type, $language = null)
 	{
-		return NenoContentElementLangfile::getLanguageStrings($type, array('language' => $language));
+		return self::getLanguageStrings($type, array('language' => $language));
 	}
 
 	/**
@@ -237,9 +237,7 @@ class NenoModelLangfiles extends JModelLegacy
 					'constant'  => $stringInfo['constant']
 				);
 
-				$sourceLanguageString = NenoContentElementLangfile::getLanguageString(
-					NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE, $options
-				);
+				$sourceLanguageString = NenoContentElementLangfile::getLanguageString($options);
 				$languageString       = new NenoContentElementLangfileTranslation($stringInfo);
 				$languageString->setSource($sourceLanguageString);
 			}

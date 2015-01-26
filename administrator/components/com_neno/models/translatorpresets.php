@@ -23,7 +23,7 @@ class NenoModelTranslatorPresets extends JModelList
 	/**
 	 * Constructor.
 	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
+	 * @param   array $config An optional associative array of configuration settings.
 	 *
 	 * @see        JController
 	 * @since      1.6
@@ -62,11 +62,32 @@ class NenoModelTranslatorPresets extends JModelList
 	}
 
 	/**
+	 * Get a list of all tr
+	 *
+	 * @return array
+	 */
+	public function getTranslators()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('*')
+			->from('#__neno_translators')
+			->order('translator_name');
+
+		$db->setQuery($query);
+		$translators = $db->loadObjectList();
+
+		return $translators;
+	}
+
+	/**
 	 * Method to auto-populate the model state.
 	 * Note. Calling getState in this method will result in recursion.
 	 *
-	 * @param   string  $ordering   Ordering field
-	 * @param   string  $direction  Ordering direction [ASC,DESC]
+	 * @param   string $ordering  Ordering field
+	 * @param   string $direction Ordering direction [ASC,DESC]
 	 *
 	 * @return void
 	 */
@@ -97,7 +118,7 @@ class NenoModelTranslatorPresets extends JModelList
 	 * different modules that might need different sets of data or different
 	 * ordering requirements.
 	 *
-	 * @param   string  $id  A prefix for the store id.
+	 * @param   string $id A prefix for the store id.
 	 *
 	 * @return    string        A store id.
 	 *
@@ -149,7 +170,7 @@ class NenoModelTranslatorPresets extends JModelList
 		}
 
 		// Add the list ordering clause.
-		$orderCol  = $this->state->get('list.ordering');
+		$orderCol       = $this->state->get('list.ordering');
 		$orderDirection = $this->state->get('list.direction');
 
 		if ($orderCol && $orderDirection)
