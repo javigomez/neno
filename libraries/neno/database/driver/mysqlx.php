@@ -52,6 +52,79 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	private $manifestTables;
 
 	/**
+	 * Set Autoincrement index in a shadow table
+	 *
+	 * @param   string $tableName   Original table name
+	 * @param   string $shadowTable Shadow table name
+	 *
+	 * @return boolean True on success, false otherwise
+	 */
+	public function setAutoincrementIndex($tableName, $shadowTable)
+	{
+		try
+		{
+			// Create a new query object
+			$query = $this->getQuery(true);
+
+			$query
+				->select($this->quoteName('AUTO_INCREMENT'))
+				->from('INFORMATION_SCHEMA.TABLES')
+				->where(
+					array(
+						'TABLE_SCHEMA = ' . $this->quote($this->getDatabase()),
+						'TABLE_NAME = ' . $this->quote($this->replacePrefix($tableName))
+					)
+				);
+
+			$data = $this->executeQuery($query, true, true);
+
+			$sql = 'ALTER TABLE ' . $shadowTable . ' AUTO_INCREMENT= ' . (int) $data[0]->AUTO_INCREMENT;
+			$this->executeQuery($sql);
+
+			return true;
+		}
+		catch (RuntimeException $ex)
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * @param bool $new
+	 *
+	 * @return JDatabaseQuery|string
+	 */
+	public function getQuery($new = false)
+	{
+		if ($new)
+		{
+			// Derive the class name from the driver.
+			$class = 'NenoDatabaseQuery' . ucfirst($this->name);
+
+			// Make sure we have a query class for this driver.
+			if (!class_exists($class))
+			{
+				// If it doesn't exist we are at an impasse so throw an exception.
+				// Derive the class name from the driver.
+				$class = 'JDatabaseQuery' . ucfirst($this->name);
+
+				// Make sure we have a query class for this driver.
+				if (!class_exists($class))
+				{
+					// If it doesn't exist we are at an impasse so throw an exception.
+					throw new RuntimeException('Database Query Class not found.');
+				}
+			}
+
+			return new $class($this);
+		}
+		else
+		{
+			return $this->sql;
+		}
+	}
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param string $sql
@@ -118,78 +191,6 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	}
 
 	/**
-	 * Set Autoincrement index in a shadow table
-	 *
-	 * @param   string $tableName   Original table name
-	 * @param   string $shadowTable Shadow table name
-	 *
-	 * @return boolean True on success, false otherwise
-	 */
-	public function setAutoincrementIndex($tableName, $shadowTable)
-	{
-		try
-		{
-			// Create a new query object
-			$query = $this->getQuery(true);
-
-			$query
-				->select($this->quoteName('AUTO_INCREMENT'))
-				->from('INFORMATION_SCHEMA.TABLES')
-				->where(
-					array(
-						'TABLE_SCHEMA = ' . $this->quote($this->getDatabase()),
-						'TABLE_NAME = ' . $this->quote($tableName)
-					)
-				);
-
-
-			$sql = 'ALTER TABLE ' . $shadowTable . ' AUTO_INCREMENT=(' . (string) $query . ')';
-			$this->executeQuery($sql);
-
-			return true;
-		}
-		catch (RuntimeException $ex)
-		{
-			return false;
-		}
-	}
-
-	/**
-	 * @param bool $new
-	 *
-	 * @return JDatabaseQuery|string
-	 */
-	public function getQuery($new = false)
-	{
-		if ($new)
-		{
-			// Derive the class name from the driver.
-			$class = 'NenoDatabaseQuery' . ucfirst($this->name);
-
-			// Make sure we have a query class for this driver.
-			if (!class_exists($class))
-			{
-				// If it doesn't exist we are at an impasse so throw an exception.
-				// Derive the class name from the driver.
-				$class = 'JDatabaseQuery' . ucfirst($this->name);
-
-				// Make sure we have a query class for this driver.
-				if (!class_exists($class))
-				{
-					// If it doesn't exist we are at an impasse so throw an exception.
-					throw new RuntimeException('Database Query Class not found.');
-				}
-			}
-
-			return new $class($this);
-		}
-		else
-		{
-			return $this->sql;
-		}
-	}
-
-	/**
 	 * Execute a sql preventing to lose the query previously assigned.
 	 *
 	 * @param mixed   $sql                   JDatabaseQuery object or SQL query
@@ -239,33 +240,19 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		try
 		{
 			$result = parent::execute();
+
 			//$this->processQueryExecution();
 
 			return $result;
 		}
 		catch (RuntimeException $ex)
 		{
-			NenoLog::log($ex, NenoLog::PRIORITY_ERROR);
+			echo $ex->getMessage() . "\n";
+
+			//NenoLog::log($ex, NenoLog::PRIORITY_ERROR);
 
 			return false;
 		}
-	}
-
-	/**
-	 *
-	 */
-	private function processQueryExecution()
-	{
-		$sqlParsed = NenoDatabaseParser::parseQuery($this->sql);
-
-		// Process insertions
-		if (!empty($sqlParsed['INSERT']) || !empty($sqlParsed['REPLACE']))
-		{
-//			Kint::dump($sqlParsed);
-//			exit;
-		}
-
-		// Process updating
 	}
 
 	/**
@@ -338,6 +325,8 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 				$this->copyContentElementsFromSourceTableToShadowTables($tableName, $shadowTableName);
 			}
 		}
+
+
 	}
 
 	/**
@@ -362,7 +351,6 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 
 		return $result;
 	}
-
 
 	/**
 	 * Copy all the content to the shadow table
@@ -434,5 +422,22 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 
 		return $this->execute() !== false;
 
+	}
+
+	/**
+	 *
+	 */
+	private function processQueryExecution()
+	{
+		$sqlParsed = NenoDatabaseParser::parseQuery($this->sql);
+
+		// Process insertions
+		if (!empty($sqlParsed['INSERT']) || !empty($sqlParsed['REPLACE']))
+		{
+//			Kint::dump($sqlParsed);
+//			exit;
+		}
+
+		// Process updating
 	}
 }
