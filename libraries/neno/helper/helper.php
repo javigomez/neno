@@ -94,9 +94,7 @@ class NenoHelper
 	/**
 	 * Gets a list of the actions that can be performed.
 	 *
-	 * @return    JObject
-	 *
-	 * @since    1.6
+	 * @return JObject
 	 */
 	public static function getActions()
 	{
@@ -224,7 +222,7 @@ class NenoHelper
 	/**
 	 * Set the working language on the currently logged in user
 	 *
-	 * @param string $lang 'eb-GB' or 'de-DE'
+	 * @param   string $lang 'eb-GB' or 'de-DE'
 	 *
 	 * @return boolean
 	 */
@@ -362,6 +360,13 @@ class NenoHelper
 		return $ret;
 	}
 
+	/**
+	 * Convert an array fetched from the database to an array that the indexes match with a Class property names
+	 *
+	 * @param   array $databaseArray Database assoc array: [property_name] = value
+	 *
+	 * @return array
+	 */
 	public static function convertDatabaseArrayToClassArray(array $databaseArray)
 	{
 		$objectData = array();
@@ -377,7 +382,7 @@ class NenoHelper
 	/**
 	 * Convert a underscore case column name to a camelcase property name
 	 *
-	 * @param   string $columnName
+	 * @param  string $columnName Database column name
 	 *
 	 * @return string
 	 */
@@ -402,7 +407,7 @@ class NenoHelper
 	/**
 	 * Method to clean a folder
 	 *
-	 * @param   string $path
+	 * @param   string $path Folder path
 	 *
 	 * @return bool True on success
 	 *
@@ -608,7 +613,9 @@ class NenoHelper
 	}
 
 	/**
-	 * @param NenoContentElementGroup $group
+	 * Get all the language strings related to a extension (group).
+	 *
+	 * @param   NenoContentElementGroup $group Group object
 	 *
 	 * @return array
 	 */
@@ -638,7 +645,9 @@ class NenoHelper
 	}
 
 	/**
-	 * @param integer $extensionId
+	 * Get the name of an extension based on its ID
+	 *
+	 * @param   integer $extensionId Extension ID
 	 *
 	 * @return string
 	 */
@@ -699,7 +708,7 @@ class NenoHelper
 	/**
 	 * Checks if a file is a Joomla Core language file
 	 *
-	 * @param string $languageFileName
+	 * @param   string $languageFileName
 	 *
 	 * @return bool
 	 */
@@ -852,6 +861,13 @@ class NenoHelper
 		return $validFiles;
 	}
 
+	/**
+	 * Get a language string based on its language key
+	 *
+	 * @param   string $languageKey Language key
+	 *
+	 * @return array
+	 */
 	public static function getLanguageStringFromLanguageKey($languageKey)
 	{
 		$info = array();
@@ -921,7 +937,7 @@ class NenoHelper
 	/**
 	 * Get the name of the file using its path
 	 *
-	 * @param string $filePath File path including the file name
+	 * @param   string $filePath File path including the file name
 	 *
 	 * @return string
 	 */
