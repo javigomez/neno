@@ -43,6 +43,9 @@ abstract class TestCaseDatabaseMysqli extends TestCaseDatabase
 	 */
 	public static function setUpBeforeClass()
 	{
+		// Set up parent stuff
+		parent::setUpBeforeClass();
+
 		// First let's look to see if we have a DSN defined or in the environment variables.
 		if (defined('JTEST_DATABASE_MYSQLI_DSN') || getenv('JTEST_DATABASE_MYSQLI_DSN'))
 		{
@@ -83,11 +86,6 @@ abstract class TestCaseDatabaseMysqli extends TestCaseDatabase
 					break;
 			}
 		}
-
-		$nenoLoader = JPATH_LIBRARIES . '/neno/loader.php';
-		JLoader::register('NenoLoader', $nenoLoader);
-
-		NenoLoader::init();
 
 		try
 		{
