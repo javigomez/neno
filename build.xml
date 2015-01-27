@@ -1,189 +1,159 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="name-of-project"
-         default="build">
-	<!-- By default, we assume all tools to be on the $PATH -->
-	<property name="toolsdir"
-	          value="/home/victor/.composer/vendor/bin/"/>
 
-	<!-- Uncomment the following when the tools are in ${basedir}/vendor/bin -->
-	<!-- <property name="toolsdir" value="${basedir}/vendor/bin/"/> -->
+<project name="joomla" default="build" basedir=".">
+	<property name="source" value="." />
+	<property name="joomlasource" value="administrator,cli,components,includes,installation,language/en-GB,libraries/cms,modules,plugins,templates" />
 
-	<target name="build"
-	        depends="prepare,lint,phploc-ci,pdepend,phpmd-ci,phpcs-ci,phpcpd-ci,phpunit,phpdox"
-	        description=""/>
+	<target name="clean" description="Clean up and create artifact directories">
+		<delete dir="${basedir}/build/api" />
+		<delete dir="${basedir}/build/coverage" />
+		<delete dir="${basedir}/build/logs" />
+		<delete dir="${basedir}/build/pdepend" />
 
-	<target name="build-parallel"
-	        depends="prepare,lint,tools-parallel,phpunit,phpdox"
-	        description=""/>
+		<mkdir dir="${basedir}/build/api" />
+		<mkdir dir="${basedir}/build/coverage" />
+		<mkdir dir="${basedir}/build/logs" />
+		<mkdir dir="${basedir}/build/pdepend" />
+	</target>
 
-	<target name="tools-parallel"
-	        description="Run tools in parallel">
+	<target name="phpunit" description="Run unit tests using PHPUnit and generates junit.xml and clover.xml">
+		<exec executable="phpunit">
+			<arg value="-d" />
+			<arg value="zend.enable_gc=0" />
+		</exec>
+	</target>
+
+	<target name="parallelTasks" description="Run the pdepend, phpmd and phpcs tasks in parallel using a maximum of 2 threads.">
 		<parallel threadCount="2">
 			<sequential>
-				<antcall target="pdepend"/>
-				<antcall target="phpmd-ci"/>
+				<antcall target="pdepend" />
+				<antcall target="phpmd" />
 			</sequential>
-			<antcall target="phpcpd-ci"/>
-			<antcall target="phpcs-ci"/>
-			<antcall target="phploc-ci"/>
+			<antcall target="phpcs" />
 		</parallel>
 	</target>
 
-	<target name="clean"
-	        unless="clean.done"
-	        description="Cleanup build artifacts">
-		<delete dir="${basedir}/build/api"/>
-		<delete dir="${basedir}/build/coverage"/>
-		<delete dir="${basedir}/build/logs"/>
-		<delete dir="${basedir}/build/pdepend"/>
-		<delete dir="${basedir}/build/phpdox"/>
-		<property name="clean.done"
-		          value="true"/>
+	<target name="phpcs" description="Generate checkstyle.xml using PHP_CodeSniffer">
+		<exec executable="phpcs">
+			<arg value="--report=checkstyle" />
+			<arg value="--extensions=php" />
+			<arg value="-p" />
+			<arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
+			<arg value="--standard=${basedir}/build/phpcs/Joomla" />
+			<arg path="${source}" />
+		</exec>
 	</target>
 
-	<target name="prepare"
-	        unless="prepare.done"
-	        depends="clean"
-	        description="Prepare for build">
-		<mkdir dir="${basedir}/build/api"/>
-		<mkdir dir="${basedir}/build/coverage"/>
-		<mkdir dir="${basedir}/build/logs"/>
-		<mkdir dir="${basedir}/build/pdepend"/>
-		<mkdir dir="${basedir}/build/phpdox"/>
-		<property name="prepare.done"
-		          value="true"/>
+	<target name="pdepend" description="Generate jdepend.xml and software metrics charts using PHP_Depend">
+		<exec executable="pdepend">
+			<arg value="--jdepend-xml=${basedir}/build/logs/jdepend.xml" />
+			<arg value="--jdepend-chart=${basedir}/build/pdepend/dependencies.svg" />
+			<arg value="--overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg" />
+			<arg value="--ignore=build,tests" />
+			<arg path="${source}" />
+		</exec>
 	</target>
 
-	<target name="lint"
-	        description="Perform syntax check of sourcecode files">
-		<apply executable="php"
-		       failonerror="true">
-			<arg value="-l"/>
+	<target name="installdep" description="Install build dependencies using composer">
+		<exec executable="composer">
+			<arg value="update" />
+			<arg value="--no-dev" />
+		</exec>
+	</target>
 
-			<fileset dir="${basedir}">
-				<include name="**/*.php"/>
-				<modified/>
+	<target name="phpmd" description="Generate pmd.xml using PHPMD">
+		<exec executable="phpmd">
+			<arg path="${joomlasource}" />
+			<arg value="xml" />
+			<arg value="${basedir}/build/phpmd.xml" />
+			<arg value="--reportfile" />
+			<arg value="${basedir}/build/logs/pmd.xml" />
+		</exec>
+	</target>
+
+	<target name="phpdoc" description="Generate API documentation using phpDocumentor">
+		<exec executable="phpdoc">
+			<arg value="-i" />
+			<arg path="${basedir}/libraries/vendor/joomla/*/Tests/,${basedir}/libraries/vendor/joomla/*/_Tests/" />
+			<arg value="-d" />
+			<arg path="${basedir}/libraries/cms/,${basedir}/libraries/joomla/,${basedir}/libraries/legacy/,${basedir}/libraries/vendor/joomla/" />
+			<arg value="-f" />
+			<arg path="${basedir}/libraries/loader.php,${basedir}/libraries/platform.php" />
+			<arg value="-t" />
+			<arg path="${basedir}/build/api/" />
+			<arg value="--template" />
+			<arg value="joomla" />
+			<arg value="--title" />
+			<arg value="Joomla! CMS 3.3 API" />
+		</exec>
+	</target>
+
+	<target name="lint" description="Perform syntax check of sourcecode files">
+		<apply executable="php" failonerror="true">
+			<arg value="-l" />
+
+			<fileset dir="${basedir}/administrator">
+				<include name="**/*.php" />
+				<modified />
 			</fileset>
 
-			<fileset dir="${basedir}/tests">
-				<include name="**/*.php"/>
-				<modified/>
+			<fileset dir="${basedir}/cli">
+				<include name="**/*.php" />
+				<modified />
+			</fileset>
+
+			<fileset dir="${basedir}/components">
+				<include name="**/*.php" />
+				<modified />
+			</fileset>
+
+			<fileset dir="${basedir}/installation">
+				<include name="**/*.php" />
+				<modified />
+			</fileset>
+
+			<fileset dir="${basedir}/includes">
+				<include name="**/*.php" />
+				<modified />
+			</fileset>
+
+			<fileset dir="${basedir}/language/en-GB">
+				<include name="**/*.php" />
+				<modified />
+			</fileset>
+
+			<fileset dir="${basedir}/libraries">
+				<include name="**/*.php" />
+				<modified />
+			</fileset>
+
+			<fileset dir="${basedir}/modules">
+				<include name="**/*.php" />
+				<modified />
+			</fileset>
+
+			<fileset dir="${basedir}/templates">
+				<include name="**/*.php" />
+				<modified />
 			</fileset>
 		</apply>
 	</target>
 
-	<target name="phploc"
-	        description="Measure project size using PHPLOC and print human readable output. Intended for usage on the command line.">
-		<exec executable="${toolsdir}phploc">
-			<arg value="--count-tests"/>
-			<arg path="${basedir}"/>
-			<arg path="${basedir}/tests"/>
-		</exec>
+	<target name="make-updatecomponent" description="Create an installable package from the com_joomlaupdate component" >
+		<delete dir="${basedir}/build/com_joomlaupdate-pkg" includeemptydirs="true" failonerror="false" />
+		<mkdir dir="${basedir}/build/com_joomlaupdate-pkg" />
+		<echo message="Create com_joomlaupdate package" />
+		<mkdir dir="${basedir}/build/com_joomlaupdate-pkg/staging" />
+		<mkdir dir="${basedir}/build/com_joomlaupdate-pkg/staging/admin" />
+		<copy todir="${basedir}/build/com_joomlaupdate-pkg/staging/admin">
+			<fileset dir="${basedir}/administrator/components/com_joomlaupdate" />
+		</copy>
+		<move file="${basedir}/build/com_joomlaupdate-pkg/staging/admin/joomlaupdate.xml" todir="${basedir}/build/com_joomlaupdate-pkg/staging" />
+
+		<echo message="Archiving package" />
+		<mkdir dir="${basedir}/build/com_joomlaupdate-pkg/packages" />
+		<zip destfile="${basedir}/build/com_joomlaupdate-pkg/packages/com_joomlaupdate.zip" basedir="${basedir}/build/com_joomlaupdate-pkg/staging" />
 	</target>
 
-	<target name="phploc-ci"
-	        depends="prepare"
-	        description="Measure project size using PHPLOC and log result in CSV and XML format. Intended for usage within a continuous integration environment.">
-		<exec executable="${toolsdir}phploc">
-			<arg value="--count-tests"/>
-			<arg value="--log-csv"/>
-			<arg path="${basedir}/build/logs/phploc.csv"/>
-			<arg value="--log-xml"/>
-			<arg path="${basedir}/build/logs/phploc.xml"/>
-			<arg path="${basedir}"/>
-			<arg path="${basedir}/tests"/>
-		</exec>
-	</target>
-
-	<target name="pdepend"
-	        depends="prepare"
-	        description="Calculate software metrics using PHP_Depend and log result in XML format. Intended for usage within a continuous integration environment.">
-		<exec executable="${toolsdir}pdepend">
-			<arg value="--jdepend-xml=${basedir}/build/logs/jdepend.xml"/>
-			<arg value="--jdepend-chart=${basedir}/build/pdepend/dependencies.svg"/>
-			<arg value="--overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg"/>
-			<arg path="${basedir}"/>
-		</exec>
-	</target>
-
-	<target name="phpmd"
-	        description="Perform project mess detection using PHPMD and print human readable output. Intended for usage on the command line before committing.">
-		<exec executable="${toolsdir}phpmd">
-			<arg path="${basedir}"/>
-			<arg value="text"/>
-			<arg path="${basedir}/build/phpmd.xml"/>
-		</exec>
-	</target>
-
-	<target name="phpmd-ci"
-	        depends="prepare"
-	        description="Perform project mess detection using PHPMD and log result in XML format. Intended for usage within a continuous integration environment.">
-		<exec executable="${toolsdir}phpmd">
-			<arg path="${basedir}"/>
-			<arg value="xml"/>
-			<arg path="${basedir}/build/phpmd.xml"/>
-			<arg value="--reportfile"/>
-			<arg path="${basedir}/build/logs/pmd.xml"/>
-		</exec>
-	</target>
-
-	<target name="phpcs"
-	        description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
-		<exec executable="${toolsdir}phpcs">
-			<arg value="--standard=Joomla"/>
-			<arg value="--extensions=php"/>
-			<arg value="--ignore=autoload.php"/>
-			<arg path="${basedir}"/>
-			<arg path="${basedir}/tests"/>
-		</exec>
-	</target>
-
-	<target name="phpcs-ci"
-	        depends="prepare"
-	        description="Find coding standard violations using PHP_CodeSniffer and log result in XML format. Intended for usage within a continuous integration environment.">
-		<exec executable="${toolsdir}phpcs"
-		      output="/dev/null">
-			<arg value="--report=checkstyle"/>
-			<arg value="--report-file=${basedir}/build/logs/checkstyle.xml"/>
-			<arg value="--standard=PSR2"/>
-			<arg value="--extensions=php"/>
-			<arg value="--ignore=autoload.php"/>
-			<arg path="${basedir}"/>
-		</exec>
-	</target>
-
-	<target name="phpcpd"
-	        description="Find duplicate code using PHPCPD and print human readable output. Intended for usage on the command line before committing.">
-		<exec executable="${toolsdir}phpcpd">
-			<arg path="${basedir}"/>
-		</exec>
-	</target>
-
-	<target name="phpcpd-ci"
-	        depends="prepare"
-	        description="Find duplicate code using PHPCPD and log result in XML format. Intended for usage within a continuous integration environment.">
-		<exec executable="${toolsdir}phpcpd">
-			<arg value="--log-pmd"/>
-			<arg path="${basedir}/build/logs/pmd-cpd.xml"/>
-			<arg path="${basedir}"/>
-		</exec>
-	</target>
-
-	<target name="phpunit"
-	        depends="prepare"
-	        description="Run unit tests with PHPUnit">
-		<exec executable="${toolsdir}phpunit"
-		      failonerror="true">
-			<arg value="--configuration"/>
-			<arg path="${basedir}/tests/unit/phpunit.xml"/>
-		</exec>
-	</target>
-
-	<target name="phpdox"
-	        depends="phploc-ci,phpcs-ci,phpmd-ci"
-	        description="Generate project documentation using phpDox">
-		<exec executable="${toolsdir}phpdox"
-		      dir="${basedir}/build"/>
-	</target>
+	<target name="build" depends="clean,phpunit,parallelTasks" />
 </project>
-

@@ -6,13 +6,7 @@
     "php": ">=5.3.10"
   },
   "require-dev": {
-    "codeception/codeception": "*",
     "raveren/kint": "v0.9",
-    "phing/phing": "2.*"
-  },
-  "scripts": {
-    "post-update-cmd": [
-      "php vendor/bin/codecept bootstrap ../../"
-    ]
+    "phpunit/phpunit-selenium": ">=1.2"
   }
 }
