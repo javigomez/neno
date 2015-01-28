@@ -82,13 +82,13 @@ class NenoModelLangfiles extends JModelLegacy
 		NenoLog::log('Importing Source Language Strings from files');
 
 		// Load all new strings and add them to database
-		$newStrings = $this->getNewStringsInLanguageFiles(NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE);
+		$newStrings = $this->getNewStringsInLanguageFiles(NenoContentElementLangstring::SOURCE_LANGUAGE_TYPE);
 
 		if (!empty($newStrings))
 		{
 			foreach ($newStrings as $lang => $strings)
 			{
-				$this->addStringsToDatabase(NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE, $strings, $lang);
+				$this->addStringsToDatabase(NenoContentElementLangstring::SOURCE_LANGUAGE_TYPE, $strings, $lang);
 			}
 		}
 
@@ -101,7 +101,7 @@ class NenoModelLangfiles extends JModelLegacy
 		}
 
 		// Changed source strings
-		$changedStrings = $this->getChangedStringsInLangFiles(NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE);
+		$changedStrings = $this->getChangedStringsInLangFiles(NenoContentElementLangstring::SOURCE_LANGUAGE_TYPE);
 
 		if (!empty($changedStrings[$this->sourceLanguage]))
 		{
@@ -121,7 +121,7 @@ class NenoModelLangfiles extends JModelLegacy
 	public function getNewStringsInLanguageFiles($type)
 	{
 		// Create an array of languages we need to load depending on type
-		if ($type == NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE)
+		if ($type == NenoContentElementLangstring::SOURCE_LANGUAGE_TYPE)
 		{
 			$langObject            = new stdClass;
 			$langObject->lang_code = $this->sourceLanguage;
@@ -148,10 +148,10 @@ class NenoModelLangfiles extends JModelLegacy
 
 			// If we are finding new target strings then don't import the strings
 			// that does not have a matching source string
-			if ($type == NenoContentElementLangfile::TARGET_LANGUAGE_TYPE)
+			if ($type == NenoContentElementLangstring::TARGET_LANGUAGE_TYPE)
 			{
 				// Filter out strings that are not already in the source database
-				$sourceLanguageStrings = $this->loadLanguageStringsFromDatabase(NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE, $this->sourceLanguage);
+				$sourceLanguageStrings = $this->loadLanguageStringsFromDatabase(NenoContentElementLangstring::SOURCE_LANGUAGE_TYPE, $this->sourceLanguage);
 				$languageStrings       = array_intersect_key($languageStrings, $sourceLanguageStrings);
 			}
 
@@ -225,7 +225,7 @@ class NenoModelLangfiles extends JModelLegacy
 			$stringInfo['language'] = $lang;
 			$stringInfo['string']   = $string;
 
-			if ($type === NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE)
+			if ($type === NenoContentElementLangstring::SOURCE_LANGUAGE_TYPE)
 			{
 				$languageString = new NenoContentElementLangfileSource($stringInfo);
 			}
@@ -237,7 +237,7 @@ class NenoModelLangfiles extends JModelLegacy
 					'constant'  => $stringInfo['constant']
 				);
 
-				$sourceLanguageString = NenoContentElementLangfile::getLanguageString($options);
+				$sourceLanguageString = NenoContentElementLangstring::getLanguageString($options);
 				$languageString       = new NenoContentElementLangfileTranslation($stringInfo);
 				$languageString->setSource($sourceLanguageString);
 			}
@@ -317,7 +317,7 @@ class NenoModelLangfiles extends JModelLegacy
 		$languageStrings = $this->getLanguageStringsFromLanguageFiles($this->languageFiles[$this->sourceLanguage]);
 
 		// Load constants from database
-		$databaseStrings = $this->loadLanguageStringsFromDatabase(NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE, $this->sourceLanguage);
+		$databaseStrings = $this->loadLanguageStringsFromDatabase(NenoContentElementLangstring::SOURCE_LANGUAGE_TYPE, $this->sourceLanguage);
 
 		// Find differences between the two datasets
 		$deletedStrings = array_diff_key($databaseStrings, $languageStrings);
@@ -341,12 +341,12 @@ class NenoModelLangfiles extends JModelLegacy
 			return false;
 		}
 
-		/* @var $string NenoContentElementLangfile */
+		/* @var $string NenoContentElementLangstring */
 		foreach ($sourceStrings as $key => $sourceString)
 		{
 			// Getting all the translations from this strings
-			$targetStrings = NenoContentElementLangfile::getLanguageStrings(
-				NenoContentElementLangfile::TARGET_LANGUAGE_TYPE,
+			$targetStrings = NenoContentElementLangstring::getLanguageStrings(
+				NenoContentElementLangstring::TARGET_LANGUAGE_TYPE,
 				array('source_id' => $sourceString->getId())
 			);
 
@@ -381,7 +381,7 @@ class NenoModelLangfiles extends JModelLegacy
 	public function getChangedStringsInLangFiles($type)
 	{
 		// Create an array of languages we need to load depending on type
-		if ($type == NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE)
+		if ($type == NenoContentElementLangstring::SOURCE_LANGUAGE_TYPE)
 		{
 			$langObject            = new stdClass;
 			$langObject->lang_code = $this->sourceLanguage;
@@ -487,13 +487,13 @@ class NenoModelLangfiles extends JModelLegacy
 		NenoLog::log('Starting import of target language files', 2);
 
 		// Load all new strings and add them to database
-		$newStrings = $this->getNewStringsInLanguageFiles(NenoContentElementLangfile::TARGET_LANGUAGE_TYPE);
+		$newStrings = $this->getNewStringsInLanguageFiles(NenoContentElementLangstring::TARGET_LANGUAGE_TYPE);
 
 		if (!empty($newStrings))
 		{
 			foreach ($newStrings as $lang => $strings)
 			{
-				$this->addStringsToDatabase(NenoContentElementLangfile::TARGET_LANGUAGE_TYPE, $strings, $lang);
+				$this->addStringsToDatabase(NenoContentElementLangstring::TARGET_LANGUAGE_TYPE, $strings, $lang);
 			}
 		}
 	}

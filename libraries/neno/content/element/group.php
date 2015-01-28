@@ -81,13 +81,7 @@ class NenoContentElementGroup extends NenoContentElement
 			$languageString    = new NenoContentElementLangstring($languageStringInfo);
 			$languageStrings[] = $languageString;
 		}
-
-		if (!empty($languageStrings))
-		{
-			Kint::dump($languageStrings);
-			exit;
-		}
-
+		
 		$group->setLanguageStrings($languageStrings);
 
 		return $group;

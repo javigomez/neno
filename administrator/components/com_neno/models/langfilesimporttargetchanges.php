@@ -112,7 +112,7 @@ class NenoModelLangfilesImportTargetChanges extends JModelList
 		// Load the strings that are changed
 		/* @var $model NenoModelLangfiles */
 		$model          = NenoHelper::getModel('Langfiles');
-		$changedStrings = $model->getChangedStringsInLangFiles(NenoContentElementLangfile::TARGET_LANGUAGE_TYPE);
+		$changedStrings = $model->getChangedStringsInLangFiles(NenoContentElementLangstring::TARGET_LANGUAGE_TYPE);
 
 		// Loop each string and load additional information as object list
 		if (count($changedStrings))

@@ -80,11 +80,11 @@ class NenoViewLangfilesImport extends JViewLegacy
 		/* @var $model NenoModelLangfiles */
 		$model = NenoHelper::getModel('Langfiles');
 
-		$this->sourceCounts['new_source_lines']     = $model->getNewStringsInLanguageFiles(NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE);
+		$this->sourceCounts['new_source_lines']     = $model->getNewStringsInLanguageFiles(NenoContentElementLangstring::SOURCE_LANGUAGE_TYPE);
 		$this->sourceCounts['deleted_source_lines'] = $model->getDeletedSourceStringsInLangfiles();
-		$this->sourceCounts['updated_source_lines'] = $model->getChangedStringsInLangFiles(NenoContentElementLangfile::SOURCE_LANGUAGE_TYPE);
-		$this->newTargetStrings                     = $model->getNewStringsInLanguageFiles(NenoContentElementLangfile::TARGET_LANGUAGE_TYPE);
-		$this->changedTargetStrings                 = $model->getChangedStringsInLangFiles(NenoContentElementLangfile::TARGET_LANGUAGE_TYPE);
+		$this->sourceCounts['updated_source_lines'] = $model->getChangedStringsInLangFiles(NenoContentElementLangstring::SOURCE_LANGUAGE_TYPE);
+		$this->newTargetStrings                     = $model->getNewStringsInLanguageFiles(NenoContentElementLangstring::TARGET_LANGUAGE_TYPE);
+		$this->changedTargetStrings                 = $model->getChangedStringsInLangFiles(NenoContentElementLangstring::TARGET_LANGUAGE_TYPE);
 
 		// Check for changes
 		if (count($this->sourceCounts['new_source_lines'][$this->sourceLanguage])
