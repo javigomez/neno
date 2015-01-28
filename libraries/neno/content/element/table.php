@@ -54,6 +54,21 @@ class NenoContentElementTable extends NenoContentElement
 
 		// Init the field list
 		$this->fields = array();
+
+		if (!$this->isNew())
+		{
+			$fieldsInfo = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $this->getId(), true);
+
+			$fields = array();
+
+			foreach ($fieldsInfo as $fieldInfo)
+			{
+				$field    = new NenoContentElementField($fieldInfo);
+				$fields[] = $field;
+			}
+
+			$this->setFields($fields);
+		}
 	}
 
 	/**
@@ -85,7 +100,7 @@ class NenoContentElementTable extends NenoContentElement
 				$tableInfo[NenoHelper::convertDatabaseColumnNameToPropertyName($property)] = $value;
 			}
 
-			$table = static::getTable($tableInfo);
+			$table = new NenoContentElementTable($tableInfo);
 
 			$group = NenoContentElementGroup::getGroup($tableInfo['groupId']);
 			$table->setGroup($group);
@@ -94,32 +109,6 @@ class NenoContentElementTable extends NenoContentElement
 		}
 
 		return false;
-	}
-
-	/**
-	 * Get a Table object
-	 *
-	 * @param array $tableInfo Table info
-	 *
-	 * @return NenoContentElementTable
-	 */
-	public static function getTable($tableInfo)
-	{
-		$table = new NenoContentElementTable($tableInfo);
-
-		$fieldsInfo = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $table->getId(), true);
-
-		$fields = array();
-
-		foreach ($fieldsInfo as $fieldInfo)
-		{
-			$field    = new NenoContentElementField($fieldInfo);
-			$fields[] = $field;
-		}
-
-		$table->setFields($fields);
-
-		return $table;
 	}
 
 	/**

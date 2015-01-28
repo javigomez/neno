@@ -42,6 +42,26 @@ class NenoContentElementField extends NenoContentElement
 	protected $translate;
 
 	/**
+	 * @var
+	 */
+	protected $translations;
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param mixed $data
+	 */
+	public function __construct($data)
+	{
+		parent::__construct($data);
+
+		if (!$this->isNew())
+		{
+			$this->translations = NenoContentElementTranslation::getTranslations($this);
+		}
+	}
+
+	/**
 	 * Get a field using its field Id
 	 *
 	 * @param integer $fieldId Field Id
@@ -53,6 +73,54 @@ class NenoContentElementField extends NenoContentElement
 		$field = new NenoContentElementField(static::getElementDataFromDb($fieldId));
 
 		return $field;
+	}
+
+	/**
+	 * Check if a Database type is translatable
+	 *
+	 * @param string $fieldType
+	 *
+	 * @return bool
+	 */
+	public static function isTranslatableType($fieldType)
+	{
+		return in_array($fieldType, static::$translatableFields);
+	}
+
+	/**
+	 * check if the field is translatable
+	 *
+	 * @return boolean
+	 */
+	public function isTranslate()
+	{
+		return $this->translate;
+	}
+
+	/**
+	 * Mark this field as translatable
+	 *
+	 * @param boolean $translate
+	 */
+	public function setTranslate($translate)
+	{
+		$this->translate = $translate;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getTranslations()
+	{
+		return $this->translations;
+	}
+
+	/**
+	 * @param mixed $translations
+	 */
+	public function setTranslations($translations)
+	{
+		$this->translations = $translations;
 	}
 
 	/**
@@ -144,17 +212,5 @@ class NenoContentElementField extends NenoContentElement
 		$object->set('table_id', $object->table->getId());
 
 		return $object;
-	}
-
-	/**
-	 * Check if a Database type is translatable
-	 *
-	 * @param string $fieldType
-	 *
-	 * @return bool
-	 */
-	public static function isTranslatableType($fieldType)
-	{
-		return in_array($fieldType, static::$translatableFields);
 	}
 }

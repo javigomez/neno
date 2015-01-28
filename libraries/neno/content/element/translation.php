@@ -13,7 +13,7 @@ defined('JPATH_NENO') or die;
  *
  * @since  1.0
  */
-class NenoContentElementMetadata extends NenoContentElement
+class NenoContentElementTranslation extends NenoContentElement
 {
 	/**
 	 * Language string (typically from language file)
@@ -24,6 +24,21 @@ class NenoContentElementMetadata extends NenoContentElement
 	 * String from the database
 	 */
 	const DB_STRING = 2;
+
+	/**
+	 * Machine translation method
+	 */
+	const MACHINE_TRANSLATION_METHOD = 'machine';
+
+	/**
+	 * Manual translation method
+	 */
+	const MANUAL_TRANSLATION_METHOD = 'manual';
+
+	/**
+	 * Professional translation method
+	 */
+	const PROFESSIONAL_TRANSLATION_METHOD = 'pro';
 
 	/**
 	 * @var integer
@@ -64,6 +79,47 @@ class NenoContentElementMetadata extends NenoContentElement
 	 * @var DateTime
 	 */
 	protected $timeCompleted;
+
+	/**
+	 * @var string
+	 */
+	protected $translationMethod;
+
+	/**
+	 * @var integer
+	 */
+	protected $version;
+
+	/**
+	 * Get all the translation associated to a
+	 *
+	 * @param NenoContentElement $element
+	 *
+	 * @return array
+	 */
+	public static function getTranslations(NenoContentElement $element)
+	{
+		$type = self::DB_STRING;
+
+		// If the parent element is a language string, let's set to lang_string
+		if (is_a($element, 'NenoContentElementLangstring'))
+		{
+			$type = self::LANG_STRING;
+		}
+
+		$translationsData = self::getElementsByParentId(
+			self::getDbTable(), 'content_id', $element->getId(), true,
+			array('content_type = \'' . $type . '\'')
+		);
+		$translations     = array();
+
+		foreach ($translationsData as $translationData)
+		{
+			$translations[] = new NenoContentElementTranslation($translationData);
+		}
+
+		return $translations;
+	}
 
 	/**
 	 * @return int
@@ -163,6 +219,38 @@ class NenoContentElementMetadata extends NenoContentElement
 		$this->string = $string;
 
 		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTranslationMethod()
+	{
+		return $this->translationMethod;
+	}
+
+	/**
+	 * @param string $translationMethod
+	 */
+	public function setTranslationMethod($translationMethod)
+	{
+		$this->translationMethod = $translationMethod;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getVersion()
+	{
+		return $this->version;
+	}
+
+	/**
+	 * @param int $version
+	 */
+	public function setVersion($version)
+	{
+		$this->version = $version;
 	}
 
 	/**

@@ -63,13 +63,16 @@ abstract class NenoContentElement
 	/**
 	 * Loads all the elements using its parent id and the parent Id value
 	 *
-	 * @param string $elementsTableName Table Name
-	 * @param string $parentColumnName  Parent column name
-	 * @param string $parentId          Parent Id
+	 * @param string  $elementsTableName    Table Name
+	 * @param string  $parentColumnName     Parent column name
+	 * @param string  $parentId             Parent Id
+	 * @param boolean $transformProperties  If
+	 * @param array   $extraWhereStatements Extra where statements
 	 *
 	 * @return array
 	 */
-	public static function getElementsByParentId($elementsTableName, $parentColumnName, $parentId, $transformProperties = false)
+	public static function getElementsByParentId($elementsTableName, $parentColumnName, $parentId,
+	                                             $transformProperties = false, $extraWhereStatements = array())
 	{
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -78,6 +81,14 @@ abstract class NenoContentElement
 			->select('*')
 			->from($elementsTableName)
 			->where($parentColumnName . ' = ' . intval($parentId));
+
+		if (!empty($extraWhereStatements))
+		{
+			foreach ($extraWhereStatements as $extraWhereStatement)
+			{
+				$query->where($extraWhereStatement);
+			}
+		}
 
 		$db->setQuery($query);
 

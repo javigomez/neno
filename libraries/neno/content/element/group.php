@@ -60,17 +60,35 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		$group = new NenoContentElementGroup(static::getElementDataFromDb($groupId));
 
+		/*** Loading tables related to this group ***/
 		$tablesInfo = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $group->id, true);
-
-		$tables = array();
+		$tables     = array();
 
 		foreach ($tablesInfo as $tableInfo)
 		{
-			$table    = NenoContentElementTable::getTable($tableInfo);
+			$table    = new NenoContentElementTable($tableInfo);
 			$tables[] = $table;
 		}
 
 		$group->setTables($tables);
+
+		/*** Loading languages files related to this group ***/
+		$languageStringsInfo = self::getElementsByParentId(NenoContentElementLangstring::getDbTable(), 'group_id', $group->id, true);
+		$languageStrings     = array();
+
+		foreach ($languageStringsInfo as $languageStringInfo)
+		{
+			$languageString    = new NenoContentElementLangstring($languageStringInfo);
+			$languageStrings[] = $languageString;
+		}
+
+		if (!empty($languageStrings))
+		{
+			Kint::dump($languageStrings);
+			exit;
+		}
+
+		$group->setLanguageStrings($languageStrings);
 
 		return $group;
 	}

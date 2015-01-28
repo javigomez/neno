@@ -635,7 +635,7 @@ class NenoHelper
 			foreach ($languageStrings as $languageStringKey => $languageStringText)
 			{
 				$sourceLanguageStringData = self::getLanguageStringFromLanguageKey($languageStringKey);
-				$sourceLanguageString     = new NenoContentElementLangfile($sourceLanguageStringData);
+				$sourceLanguageString     = new NenoContentElementLangstring($sourceLanguageStringData);
 
 				$sourceLanguageStrings[] = $sourceLanguageString;
 			}
@@ -731,134 +731,51 @@ class NenoHelper
 	 */
 	public static function removeCoreLanguageFilesFromArray($files, $language)
 	{
-		$coreFiles = array(
-
-			// Core components language files
-			$language . '.com_ajax.ini'
-		, $language . '.com_config.ini'
-		, $language . '.com_contact.ini'
-		, $language . '.com_content.ini'
-		, $language . '.com_finder.ini'
-		, $language . '.com_neno.ini'
-		, $language . '.com_mailto.ini'
-		, $language . '.com_media.ini'
-		, $language . '.com_messages.ini'
-		, $language . '.com_newsfeeds.ini'
-		, $language . '.com_search.ini'
-		, $language . '.com_tags.ini'
-		, $language . '.com_users.ini'
-		, $language . '.com_weblinks.ini'
-		, $language . '.com_wrapper.ini'
-		, $language . '.files_joomla.sys.ini'
-		, $language . '.finder_cli.ini'
-
-			// Main language file
-		, $language . '.ini'
-
-			// Libraries language files
-		, $language . '.lib_fof.sys.ini'
-		, $language . '.lib_idna_convert.sys.ini'
-		, $language . '.lib_joomla.ini'
-		, $language . '.lib_joomla.sys.ini'
-		, $language . '.lib_phpass.sys.ini'
-		, $language . '.lib_phpmailer.sys.ini'
-		, $language . '.lib_phputf8.sys.ini'
-		, $language . '.lib_simplepie.sys.ini'
-
-			// Modules language files
-		, $language . '.mod_articles_archive.ini'
-		, $language . '.mod_articles_archive.sys.ini'
-		, $language . '.mod_articles_categories.ini'
-		, $language . '.mod_articles_categories.sys.ini'
-		, $language . '.mod_articles_category.ini'
-		, $language . '.mod_articles_category.sys.ini'
-		, $language . '.mod_articles_latest.ini'
-		, $language . '.mod_articles_latest.sys.ini'
-		, $language . '.mod_articles_news.ini'
-		, $language . '.mod_articles_news.sys.ini'
-		, $language . '.mod_articles_popular.ini'
-		, $language . '.mod_articles_popular.sys.ini'
-		, $language . '.mod_banners.ini'
-		, $language . '.mod_banners.sys.ini'
-		, $language . '.mod_breadcrumbs.ini'
-		, $language . '.mod_breadcrumbs.sys.ini'
-		, $language . '.mod_custom.ini'
-		, $language . '.mod_custom.sys.ini'
-		, $language . '.mod_feed.ini'
-		, $language . '.mod_feed.sys.ini'
-		, $language . '.mod_finder.ini'
-		, $language . '.mod_finder.sys.ini'
-		, $language . '.mod_footer.ini'
-		, $language . '.mod_footer.sys.ini'
-		, $language . '.mod_languages.ini'
-		, $language . '.mod_languages.sys.ini'
-		, $language . '.mod_login.ini'
-		, $language . '.mod_login.sys.ini'
-		, $language . '.mod_menu.ini'
-		, $language . '.mod_menu.sys.ini'
-		, $language . '.mod_random_image.ini'
-		, $language . '.mod_random_image.sys.ini'
-		, $language . '.mod_related_items.ini'
-		, $language . '.mod_related_items.sys.ini'
-		, $language . '.mod_search.ini'
-		, $language . '.mod_search.sys.ini'
-		, $language . '.mod_stats.ini'
-		, $language . '.mod_stats.sys.ini'
-		, $language . '.mod_syndicate.ini'
-		, $language . '.mod_syndicate.sys.ini'
-		, $language . '.mod_tags_popular.ini'
-		, $language . '.mod_tags_popular.sys.ini'
-		, $language . '.mod_tags_similar.ini'
-		, $language . '.mod_tags_similar.sys.ini'
-		, $language . '.mod_users_latest.ini'
-		, $language . '.mod_users_latest.sys.ini'
-		, $language . '.mod_weblinks.ini'
-		, $language . '.mod_weblinks.sys.ini'
-		, $language . '.mod_whosonline.ini'
-		, $language . '.mod_whosonline.sys.ini'
-		, $language . '.mod_wrapper.ini'
-		, $language . '.mod_wrapper.sys.ini'
-
-			// Template language files
-		, $language . '.tpl_beezsss3.ini'
-		, $language . '.tpl_beez3.sys.ini'
-		, $language . '.tpl_beez3.ini'
-		, $language . '.tpl_protostar.ini'
-		, $language . '.tpl_protostar.sys.ini'
-
-			// Template overrides that should be ignored
-		, $language . '.tpl_hathor.ini'
-		, $language . '.tpl_hathor.sys.ini'
-		, $language . '.tpl_isis.ini'
-		, $language . '.tpl_isis.sys.ini'
-		);
+		// Get all the language files from Joomla core extensions based on a particular language
+		$coreFiles = self::getJoomlaCoreLanguageFiles($language);
 
 		$validFiles = array();
 
 		// Filter
-		foreach ($files as $key => $file)
+		foreach ($files as $file)
 		{
-			$found = false;
-
-			// Loop through all the core files
-			for ($i = 0; $i < count($coreFiles) && !$found; $i++)
-			{
-				$strlen = strlen($coreFiles[$i]);
-
-				if (substr($file, strlen($file) - $strlen, $strlen) == $coreFiles[$i])
-				{
-					$found = true;
-				}
-			}
-
 			// If the file wasn't found, let's add it as a valid translatable file
-			if (!$found)
+			if (!in_array($file, $coreFiles))
 			{
 				$validFiles[] = $file;
 			}
 		}
 
 		return $validFiles;
+	}
+
+	/**
+	 * Get the language files for all the Joomla Core extensions
+	 *
+	 * @param   string $language JISO language string
+	 *
+	 * @return array
+	 */
+	private static function getJoomlaCoreLanguageFiles($language)
+	{
+		$db         = JFactory::getDbo();
+		$query      = $db->getQuery(true);
+		$extensions = array_map(array('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
+
+		$query
+			->select('CONCAT(' . $db->quote($language . '.') . ',IF(type = \'plugin\' OR type = \'template\', IF(type = \'plugin\', CONCAT(\'plg_\',folder,\'_\'), IF(type = \'template\', \'tpl_\',\'\')),\'\'),element,\'.ini\') as extension_name')
+			->from('#__extensions')
+			->where(
+				array(
+					'extension_id >= 10000',
+					'type IN (' . implode(',', $extensions) . ')'
+				)
+			);
+
+		$db->setQuery($query);
+		$joomlaCoreLanguageFiles = array_merge($db->loadRowList(), array($language . '.ini'));
+
+		return $joomlaCoreLanguageFiles;
 	}
 
 	/**
