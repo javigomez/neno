@@ -73,12 +73,13 @@ class NenoContentElementLangstring extends NenoContentElement
 
 	/**
 	 * @param mixed $data
+	 * @param bool  $fetchTranslations
 	 */
-	public function __construct($data)
+	public function __construct($data, $fetchTranslations = true)
 	{
 		parent::__construct($data);
 
-		if (!$this->isNew())
+		if (!$this->isNew() && $fetchTranslations)
 		{
 			$this->translations = NenoContentElementTranslation::getTranslations($this);
 		}

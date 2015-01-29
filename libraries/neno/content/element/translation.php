@@ -18,12 +18,12 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * Language string (typically from language file)
 	 */
-	const LANG_STRING = 1;
+	const LANG_STRING = 'lang_string';
 
 	/**
 	 * String from the database
 	 */
-	const DB_STRING = 2;
+	const DB_STRING = 'db_string';
 
 	/**
 	 * Machine translation method
@@ -125,7 +125,7 @@ class NenoContentElementTranslation extends NenoContentElement
 		if ($this->contentType == self::LANG_STRING)
 		{
 			$contentElementData = NenoContentElementLangstring::getElementDataFromDb($content_id);
-			$this->element      = new NenoContentElementLangstring($contentElementData);
+			$this->element      = new NenoContentElementLangstring($contentElementData, false);
 		}
 		else
 		{

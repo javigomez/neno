@@ -81,7 +81,7 @@ class NenoContentElementGroup extends NenoContentElement
 			$languageString    = new NenoContentElementLangstring($languageStringInfo);
 			$languageStrings[] = $languageString;
 		}
-		
+
 		$group->setLanguageStrings($languageStrings);
 
 		return $group;
