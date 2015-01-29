@@ -42,9 +42,29 @@ class NenoContentElementField extends NenoContentElement
 	protected $translate;
 
 	/**
-	 * @var
+	 * @var array
 	 */
 	protected $translations;
+
+	/**
+	 * @var integer
+	 */
+	private $stringsNotTranslated;
+
+	/**
+	 * @var integer
+	 */
+	private $stringsQueuedToBeTranslated;
+
+	/**
+	 * @var integer
+	 */
+	private $stringsTranslated;
+
+	/**
+	 * @var integer
+	 */
+	private $stringsSourceHasChanged;
 
 	/**
 	 * {@inheritdoc}
@@ -55,10 +75,83 @@ class NenoContentElementField extends NenoContentElement
 	{
 		parent::__construct($data);
 
-		if (!$this->isNew() && $fetchTranslations)
+		if (!$this->isNew())
 		{
-			$this->translations = NenoContentElementTranslation::getTranslations($this);
+			if ($fetchTranslations)
+			{
+				$this->translations = NenoContentElementTranslation::getTranslations($this);
+			}
+
+			$this->calculateStatistics();
 		}
+	}
+
+	/**
+	 * Calculate language string statistics
+	 *
+	 * @return void
+	 */
+	protected function calculateStatistics()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('COUNT(*)')
+			->from(NenoContentElementTranslation::getDbTable())
+			->where(
+				array(
+					'state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE,
+					'content_type = ' . $db->quote(NenoContentElementTranslation::DB_STRING),
+					'content_id = ' . $this->getId(),
+					'language LIKE ' . $db->quote(NenoHelper::getWorkingLanguage())
+				)
+			);
+
+		$db->setQuery($query);
+		$this->stringsNotTranslated = (int) $db->loadResult();
+
+		$query
+			->clear('where')
+			->where(
+				array(
+					'state = ' . NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE,
+					'content_type = ' . $db->quote(NenoContentElementTranslation::DB_STRING),
+					'content_id = ' . $this->getId(),
+					'language LIKE ' . $db->quote(NenoHelper::getWorkingLanguage())
+				)
+			);
+
+		$db->setQuery($query);
+		$this->stringsQueuedToBeTranslated = (int) $db->loadResult();
+
+		$query
+			->clear('where')
+			->where(
+				array(
+					'state = ' . NenoContentElementTranslation::SOURCE_CHANGED_STATE,
+					'content_type = ' . $db->quote(NenoContentElementTranslation::DB_STRING),
+					'content_id = ' . $this->getId(),
+					'language LIKE ' . $db->quote(NenoHelper::getWorkingLanguage())
+				)
+			);
+
+		$db->setQuery($query);
+		$this->stringsSourceHasChanged = (int) $db->loadResult();
+
+		$query
+			->clear('where')
+			->where(
+				array(
+					'state = ' . NenoContentElementTranslation::TRANSLATED_STATE,
+					'content_type = ' . $db->quote(NenoContentElementTranslation::DB_STRING),
+					'content_id = ' . $this->getId(),
+					'language LIKE ' . $db->quote(NenoHelper::getWorkingLanguage())
+				)
+			);
+
+		$db->setQuery($query);
+		$this->stringsTranslated = (int) $db->loadResult();
 	}
 
 	/**

@@ -246,6 +246,8 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	{
 		try
 		{
+			NenoLog::log((string) $this->getQuery());
+
 			$result = parent::execute();
 
 			//$this->processQueryExecution();
