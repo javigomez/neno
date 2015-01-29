@@ -432,6 +432,22 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	}
 
 	/**
+	 * @return array
+	 */
+	public function loadArray()
+	{
+		$list  = parent::loadRowList();
+		$array = array();
+
+		foreach ($list as $listElement)
+		{
+			$array[] = $listElement[0];
+		}
+
+		return $array;
+	}
+
+	/**
 	 *
 	 */
 	private function processQueryExecution()

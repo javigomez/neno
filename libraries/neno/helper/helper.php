@@ -760,6 +760,7 @@ class NenoHelper
 	 */
 	private static function getJoomlaCoreLanguageFiles($language)
 	{
+		/* @var $db NenoDatabaseDriverMysqlx */
 		$db         = JFactory::getDbo();
 		$query      = $db->getQuery(true);
 		$extensions = array_map(array('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
@@ -769,13 +770,13 @@ class NenoHelper
 			->from('#__extensions')
 			->where(
 				array(
-					'extension_id >= 10000',
+					'extension_id < 10000',
 					'type IN (' . implode(',', $extensions) . ')'
 				)
 			);
 
 		$db->setQuery($query);
-		$joomlaCoreLanguageFiles = array_merge($db->loadRowList(), array($language . '.ini'));
+		$joomlaCoreLanguageFiles = array_merge($db->loadArray(), array($language . '.ini'));
 
 		return $joomlaCoreLanguageFiles;
 	}
