@@ -163,7 +163,14 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	{
 		$ignoredQueryRegex = array(
 			'/show (.+)/i',
-			'/#__neno_(.+)/'
+			'/#__neno_(.+)/',
+			'/#__extensions/',
+			'/#__associations/',
+			'/#__session/',
+			'/#__schemas/',
+			'/#__languages/',
+			'/#__update(.*)/',
+			'/#__assets/'
 		);
 
 		foreach ($ignoredQueryRegex as $queryRegex)

@@ -17,26 +17,6 @@ defined('JPATH_NENO') or die;
 class NenoContentElementLangstring extends NenoContentElement
 {
 	/**
-	 * This state is for a string that has been translated
-	 */
-	const TRANSLATED_STATE = 1;
-
-	/**
-	 * This state is for a string that has been sent to be translated but the translation has not arrived yet.
-	 */
-	const QUEUED_FOR_BEING_TRANSLATED_STATE = 2;
-
-	/**
-	 * This state is for a string that its source string has changed.
-	 */
-	const SOURCE_CHANGED_STATE = 3;
-
-	/**
-	 * This state is for a string that has not been translated yet or the user does not want to translated it
-	 */
-	const NOT_TRANSLATED_STATE = 4;
-
-	/**
 	 * @var String
 	 */
 	protected $string;
@@ -91,6 +71,9 @@ class NenoContentElementLangstring extends NenoContentElement
 	 */
 	protected $translations;
 
+	/**
+	 * @param mixed $data
+	 */
 	public function __construct($data)
 	{
 		parent::__construct($data);
@@ -374,22 +357,6 @@ class NenoContentElementLangstring extends NenoContentElement
 		return $data;
 	}
 
-	/**
-	 * @return String
-	 */
-	public function getString()
-	{
-		return $this->string;
-	}
-
-	/**
-	 * @param String $string
-	 */
-	public function setString($string)
-	{
-		$this->string = $string;
-	}
-
 	public function increaseVersion()
 	{
 		$this->version = $this->version + 1;
@@ -460,4 +427,73 @@ class NenoContentElementLangstring extends NenoContentElement
 	{
 		$this->version = $version;
 	}
+
+	public function persist()
+	{
+		$persistResult = parent::persist();
+
+		if ($persistResult)
+		{
+			// If it doesn't have translations
+			if (empty($this->translations))
+			{
+				$this->translations = NenoContentElementTranslation::getTranslations($this);
+			}
+
+			if (empty($this->translations))
+			{
+				$commonData = array(
+					'contentType' => NenoContentElementTranslation::LANG_STRING,
+					'contentId'   => $this->getId(),
+					'state'       => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
+					'string'      => $this->getString(),
+					'timeAdded'   => new DateTime
+				);
+
+				$languages          = NenoHelper::getLanguages();
+				$defaultLanguage    = JFactory::getLanguage()->getDefault();
+				$this->translations = array();
+
+				foreach ($languages as $language)
+				{
+					if ($defaultLanguage !== $language->lang_code)
+					{
+						$commonData['language'] = $language->lang_code;
+						$translation            = new NenoContentElementTranslation($commonData);
+						$translation->persist();
+						$this->translations[] = $translation;
+					}
+				}
+			}
+			else
+			{
+				for ($i = 0; $i < count($this->translations); $i++)
+				{
+					$this->translations[$i]->setState(NenoContentElementTranslation::SOURCE_CHANGED_STATE);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @return String
+	 */
+	public function getString()
+	{
+		return $this->string;
+	}
+
+	/**
+	 * @param String $string
+	 */
+	public function setString($string)
+	{
+		$this->string = $string;
+	}
+
+	protected function loadTranslations()
+	{
+		$this->translations = NenoContentElementTranslation::getTranslations($this);
+	}
+
 }

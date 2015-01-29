@@ -41,6 +41,26 @@ class NenoContentElementTranslation extends NenoContentElement
 	const PROFESSIONAL_TRANSLATION_METHOD = 'pro';
 
 	/**
+	 * This state is for a string that has been translated
+	 */
+	const TRANSLATED_STATE = 1;
+
+	/**
+	 * This state is for a string that has been sent to be translated but the translation has not arrived yet.
+	 */
+	const QUEUED_FOR_BEING_TRANSLATED_STATE = 2;
+
+	/**
+	 * This state is for a string that its source string has changed.
+	 */
+	const SOURCE_CHANGED_STATE = 3;
+
+	/**
+	 * This state is for a string that has not been translated yet or the user does not want to translated it
+	 */
+	const NOT_TRANSLATED_STATE = 4;
+
+	/**
 	 * @var integer
 	 */
 	protected $contentType;
@@ -91,6 +111,31 @@ class NenoContentElementTranslation extends NenoContentElement
 	protected $version;
 
 	/**
+	 * @param mixed $data
+	 */
+	public function __construct($data)
+	{
+		parent::__construct($data);
+
+		$data = new JObject($data);
+
+		$content_id = $data->get('content_id') === null ? $data->get('contentId') : $data->get('content_id');
+
+		// If it's a language string, let's create a NenoContentElementLangstring
+		if ($this->contentType == self::LANG_STRING)
+		{
+			$contentElementData = NenoContentElementLangstring::getElementDataFromDb($content_id);
+			$this->element      = new NenoContentElementLangstring($contentElementData);
+		}
+		else
+		{
+			$contentElementData = NenoContentElementField::getElementDataFromDb($content_id);
+			$this->element      = new NenoContentElementField($contentElementData);
+		}
+
+	}
+
+	/**
 	 * Get all the translation associated to a
 	 *
 	 * @param NenoContentElement $element
@@ -132,7 +177,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * @param int $contentType
 	 *
-	 * @return NenoContentElementMetadata
+	 * @return NenoContentElement
 	 */
 	public function setContentType($contentType)
 	{
@@ -152,7 +197,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * @param NenoContentElement $element
 	 *
-	 * @return NenoContentElementMetadata
+	 * @return NenoContentElement
 	 */
 	public function setElement(NenoContentElement $element)
 	{
@@ -311,5 +356,18 @@ class NenoContentElementTranslation extends NenoContentElement
 		$this->timeCompleted = $timeCompleted;
 
 		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return JObject
+	 */
+	public function toObject()
+	{
+		$data = parent::toObject();
+		$data->set('content_id', $this->element->getId());
+
+		return $data;
 	}
 }
