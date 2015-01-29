@@ -23,13 +23,19 @@ if (!class_exists('PHPUnit_Extensions_Database_TestCase'))
 abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 {
 	/**
-	 * @var    JDatabaseDriver  The active database driver being used for the tests.
+	 * @var    NenoDatabaseDriverMysqlx  The active database driver being used for the tests.
 	 * @since  12.1
 	 */
 	protected static $driver;
 
 	/**
-	 * @var    JDatabaseDriver  The saved database driver to be restored after these tests.
+	 * @var    array  The JDatabaseDriver options for the connection.
+	 * @since  12.1
+	 */
+	private static $options = array('driver' => 'mysqli');
+
+	/**
+	 * @var    JDatabaseDriverMysqli  The saved database driver to be restored after these tests.
 	 * @since  12.1
 	 */
 	private static $stash;
@@ -63,9 +69,13 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	}
 
 	/**
-	 * Set up things before to execute the very first test
+	 * This method is called before the first test of this test class is run.
 	 *
-	 * @return void
+	 * An example DSN would be: host=localhost;dbname=joomla_ut;user=utuser;pass=ut1234
+	 *
+	 * @return  void
+	 *
+	 * @since   12.1
 	 */
 	public static function setUpBeforeClass()
 	{
@@ -78,6 +88,69 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 			NenoLoader::init();
 		}
 
+		// Set up parent stuff
+		parent::setUpBeforeClass();
+
+		// First let's look to see if we have a DSN defined or in the environment variables.
+		if (defined('JTEST_DATABASE_MYSQLI_DSN') || getenv('JTEST_DATABASE_MYSQLI_DSN'))
+		{
+			$dsn = defined('JTEST_DATABASE_MYSQLI_DSN') ? JTEST_DATABASE_MYSQLI_DSN : getenv('JTEST_DATABASE_MYSQLI_DSN');
+		}
+		else
+		{
+			return;
+		}
+
+		// First let's trim the mysql: part off the front of the DSN if it exists.
+		if (strpos($dsn, 'mysql:') === 0)
+		{
+			$dsn = substr($dsn, 6);
+		}
+
+		// Split the DSN into its parts over semicolons.
+		$parts = explode(';', $dsn);
+
+		// Parse each part and populate the options array.
+		foreach ($parts as $part)
+		{
+			list ($k, $v) = explode('=', $part, 2);
+
+			switch ($k)
+			{
+				case 'host':
+					self::$options['host'] = $v;
+					break;
+				case 'dbname':
+					self::$options['database'] = $v;
+					break;
+				case 'user':
+					self::$options['user'] = $v;
+					break;
+				case 'pass':
+					self::$options['password'] = $v;
+					break;
+			}
+		}
+
+		try
+		{
+			// Attempt to instantiate the driver.
+			self::$driver = NenoDatabaseDriver::getInstance(self::$options);
+		}
+		catch (RuntimeException $e)
+		{
+			self::$driver = null;
+		}
+
+		// If for some reason an exception object was returned set our database object to null.
+		if (self::$driver instanceof Exception)
+		{
+			self::$driver = null;
+		}
+
+		// Setup the factory pointer for the driver and stash the old one.
+		self::$stash        = JFactory::$database;
+		JFactory::$database = self::$driver;
 	}
 
 	/**
@@ -91,7 +164,8 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	public function assignMockCallbacks($mockObject, $array)
+	public
+	function assignMockCallbacks($mockObject, $array)
 	{
 		foreach ($array as $index => $method)
 		{
@@ -123,7 +197,8 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	public function assignMockReturns($mockObject, $array)
+	public
+	function assignMockReturns($mockObject, $array)
 	{
 		foreach ($array as $method => $return)
 		{
@@ -140,7 +215,8 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	public function getMockConfig()
+	public
+	function getMockConfig()
 	{
 		return TestMockConfig::create($this);
 	}
@@ -157,7 +233,8 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	public function getMockDatabase($driver = '', array $extraMethods = array(), $nullDate = '0000-00-00 00:00:00', $dateFormat = 'Y-m-d H:i:s')
+	public
+	function getMockDatabase($driver = '', array $extraMethods = array(), $nullDate = '0000-00-00 00:00:00', $dateFormat = 'Y-m-d H:i:s')
 	{
 		// Attempt to load the real class first.
 		class_exists('NenoDatabaseDriverMysqlx');
@@ -165,7 +242,8 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 		return TestMockDatabaseDriver::create($this, $driver, $extraMethods, $nullDate, $dateFormat);
 	}
 
-	protected function getDataSet()
+	protected
+	function getDataSet()
 	{
 		return new PHPUnit_Extensions_Database_DataSet_DefaultDataSet();
 	}
@@ -177,7 +255,8 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	protected function restoreFactoryState()
+	protected
+	function restoreFactoryState()
 	{
 		JFactory::$application = $this->stashedFactoryState['application'];
 		JFactory::$config      = $this->stashedFactoryState['config'];
@@ -195,7 +274,8 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	protected function saveFactoryState()
+	protected
+	function saveFactoryState()
 	{
 		$this->stashedFactoryState['application'] = JFactory::$application;
 		$this->stashedFactoryState['config']      = JFactory::$config;
@@ -214,15 +294,15 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	protected function getConnection()
+	protected
+	function getConnection()
 	{
-		if (!is_null(self::$driver))
-		{
-			return $this->createDefaultDBConnection(self::$driver->getConnection(), ':memory:');
-		}
-		else
-		{
-			return null;
-		}
+		// Compile the connection DSN.
+		$dsn = 'mysql:host=' . self::$options['host'] . ';dbname=' . self::$options['database'];
+
+		// Create the PDO object from the DSN and options.
+		$pdo = new PDO($dsn, self::$options['user'], self::$options['password']);
+
+		return $this->createDefaultDBConnection($pdo, self::$options['database']);
 	}
 }
