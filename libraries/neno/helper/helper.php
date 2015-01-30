@@ -140,27 +140,33 @@ class NenoHelper
 	 */
 	public static function getWorkingLanguage()
 	{
-		$userId = JFactory::getUser()->id;
+		$app = JFactory::getApplication();
 
-		$db = JFactory::getDbo();
+		if ($app->getUserState('com_neno.working_language') === null)
+		{
+			$userId = JFactory::getUser()->id;
 
-		$query = $db->getQuery(true);
+			$db = JFactory::getDbo();
 
-		$query
-			->select('profile_value')
-			->from('#__user_profiles')
-			->where(
-				array(
-					'user_id = ' . intval($userId),
-					'profile_key = ' . $db->quote('neno_working_language')
-				)
-			);
+			$query = $db->getQuery(true);
 
-		$db->setQuery($query);
-		$lang = $db->loadResult();
+			$query
+				->select('profile_value')
+				->from('#__user_profiles')
+				->where(
+					array(
+						'user_id = ' . intval($userId),
+						'profile_key = ' . $db->quote('neno_working_language')
+					)
+				);
 
-		return $lang;
+			$db->setQuery($query);
+			$lang = $db->loadResult();
 
+			$app->setUserState('com_neno.working_language', $lang);
+		}
+
+		return $app->getUserState('com_neno.working_language');
 	}
 
 	/**
@@ -247,6 +253,8 @@ class NenoHelper
 		$db->setQuery($query);
 
 		$db->execute();
+
+		JFactory::getApplication()->setUserState('com_neno.working_language', $lang);
 
 		return true;
 
