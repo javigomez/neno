@@ -494,6 +494,8 @@ class NenoContentElementLangstring extends NenoContentElement
 				}
 			}
 		}
+
+		return $persistResult;
 	}
 
 	/**

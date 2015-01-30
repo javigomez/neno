@@ -66,6 +66,11 @@ class NenoContentElementTranslation extends NenoContentElement
 	protected $contentType;
 
 	/**
+	 * @var integer
+	 */
+	protected $sourceRowId;
+
+	/**
 	 * @var NenoContentElement
 	 */
 	protected $element;
@@ -164,6 +169,22 @@ class NenoContentElementTranslation extends NenoContentElement
 		}
 
 		return $translations;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getSourceRowId()
+	{
+		return $this->sourceRowId;
+	}
+
+	/**
+	 * @param int $sourceRowId
+	 */
+	public function setSourceRowId($sourceRowId)
+	{
+		$this->sourceRowId = $sourceRowId;
 	}
 
 	/**

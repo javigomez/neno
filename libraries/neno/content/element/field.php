@@ -254,6 +254,136 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
+	 * Check if the field has been marked as translatable
+	 *
+	 * @return boolean
+	 */
+	public function hasBeenMarkedAsTranslated()
+	{
+		return $this->translate;
+	}
+
+	/**
+	 * Mark a field as translatable
+	 *
+	 * @param boolean $translate
+	 *
+	 * @return $this
+	 */
+	public function markAsTranslated($translate)
+	{
+		$this->translate = $translate;
+
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isTranslatable()
+	{
+		return $this->translate;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return JObject
+	 */
+	public function toObject()
+	{
+		$object = parent::toObject();
+		$object->set('table_id', $object->table->getId());
+
+		return $object;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function persist()
+	{
+		$persistResult = parent::persist();
+
+		if ($persistResult && $this->translate)
+		{
+			// If it doesn't have translations
+			if (empty($this->translations))
+			{
+				$this->translations = NenoContentElementTranslation::getTranslations($this);
+			}
+
+			if (empty($this->translations))
+			{
+				$commonData = array(
+					'contentType' => NenoContentElementTranslation::DB_STRING,
+					'contentId'   => $this->getId(),
+					'state'       => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
+					'timeAdded'   => new DateTime
+				);
+
+				$languages          = NenoHelper::getLanguages();
+				$defaultLanguage    = JFactory::getLanguage()->getDefault();
+				$this->translations = array();
+				$strings            = $this->getStrings();
+
+				foreach ($languages as $language)
+				{
+					if ($defaultLanguage !== $language->lang_code)
+					{
+						$commonData['language'] = $language->lang_code;
+
+						foreach ($strings as $string)
+						{
+							$commonData['string']      = $string[$this->getFieldName()];
+							$commonData['sourceRowId'] = $string['pk'];
+							$translation               = new NenoContentElementTranslation($commonData);
+							$translation->persist();
+							$this->translations[] = $translation;
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			for ($i = 0; $i < count($this->translations); $i++)
+			{
+				$this->translations[$i]->setState(NenoContentElementTranslation::SOURCE_CHANGED_STATE);
+			}
+		}
+
+		return $persistResult;
+	}
+
+	/**
+	 * Get all the
+	 *
+	 * @return array
+	 */
+	protected function getStrings()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(
+				array(
+					$this->getTable()->getPrimaryKey() . ' AS pk',
+					$this->getFieldName()
+				)
+			)
+			->from($this->getTable()->getTableName());
+
+		$db->setQuery($query);
+		$rows = $db->loadAssocList();
+
+		return $rows;
+	}
+
+	/**
 	 * Get the table that contains this field
 	 *
 	 * @return NenoContentElementTable
@@ -297,50 +427,5 @@ class NenoContentElementField extends NenoContentElement
 		$this->fieldName = $fieldName;
 
 		return $this;
-	}
-
-	/**
-	 * Check if the field has been marked as translatable
-	 *
-	 * @return boolean
-	 */
-	public function hasBeenMarkedAsTranslated()
-	{
-		return $this->translate;
-	}
-
-	/**
-	 * Mark a field as translatable
-	 *
-	 * @param boolean $translate
-	 *
-	 * @return $this
-	 */
-	public function markAsTranslated($translate)
-	{
-		$this->translate = $translate;
-
-		return $this;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isTranslatable()
-	{
-		return $this->translate;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return JObject
-	 */
-	public function toObject()
-	{
-		$object = parent::toObject();
-		$object->set('table_id', $object->table->getId());
-
-		return $object;
 	}
 }
