@@ -123,16 +123,16 @@ class NenoContentElementField extends NenoContentElement
 			switch ($state)
 			{
 				case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
-					$this->stringsNotTranslated = $data['counter'];
+					$this->stringsNotTranslated = (int) $data['counter'];
 					break;
 				case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
-					$this->stringsQueuedToBeTranslated = $data['counter'];
+					$this->stringsQueuedToBeTranslated = (int) $data['counter'];
 					break;
 				case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
-					$this->stringsSourceHasChanged = $data['counter'];
+					$this->stringsSourceHasChanged = (int) $data['counter'];
 					break;
 				case NenoContentElementTranslation::TRANSLATED_STATE:
-					$this->stringsTranslated = $data['counter'];
+					$this->stringsTranslated = (int) $data['counter'];
 					break;
 			}
 		}
