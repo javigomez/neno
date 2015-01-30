@@ -555,7 +555,7 @@ class NenoHelper
 				$tableData = array(
 					'tableName'  => $tableName,
 					'primaryKey' => $db->getPrimaryKey($tableName),
-					'translate'  => 0
+					'translate'  => 1
 				);
 
 				// Create ContentElement object
@@ -568,6 +568,7 @@ class NenoHelper
 				{
 					$fieldData = array(
 						'fieldName' => $fieldName,
+						'fieldType' => $fieldType,
 						'translate' => NenoContentElementField::isTranslatableType($fieldType)
 					);
 

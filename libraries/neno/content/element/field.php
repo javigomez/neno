@@ -37,6 +37,11 @@ class NenoContentElementField extends NenoContentElement
 	protected $fieldName;
 
 	/**
+	 * @var string
+	 */
+	protected $fieldType;
+
+	/**
 	 * @var boolean
 	 */
 	protected $translate;
@@ -162,6 +167,22 @@ class NenoContentElementField extends NenoContentElement
 	public static function isTranslatableType($fieldType)
 	{
 		return in_array($fieldType, static::$translatableFields);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getFieldType()
+	{
+		return $this->fieldType;
+	}
+
+	/**
+	 * @param string $fieldType
+	 */
+	public function setFieldType($fieldType)
+	{
+		$this->fieldType = $fieldType;
 	}
 
 	/**
