@@ -74,6 +74,10 @@ class NenoContentElementField extends NenoContentElement
 	public function __construct($data, $fetchTranslations = false)
 	{
 		parent::__construct($data);
+		$this->stringsNotTranslated        = 0;
+		$this->stringsQueuedToBeTranslated = 0;
+		$this->stringsSourceHasChanged     = 0;
+		$this->stringsTranslated           = 0;
 
 		if (!$this->isNew() && $this->translate)
 		{
@@ -158,6 +162,38 @@ class NenoContentElementField extends NenoContentElement
 	public static function isTranslatableType($fieldType)
 	{
 		return in_array($fieldType, static::$translatableFields);
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getStringsNotTranslated()
+	{
+		return $this->stringsNotTranslated;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getStringsQueuedToBeTranslated()
+	{
+		return $this->stringsQueuedToBeTranslated;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getStringsTranslated()
+	{
+		return $this->stringsTranslated;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getStringsSourceHasChanged()
+	{
+		return $this->stringsSourceHasChanged;
 	}
 
 	/**
