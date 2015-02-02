@@ -135,7 +135,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	public function replacePrefix($sql, $prefix = '#__')
 	{
 		// Check if the query should be parsed.
-		if ($this->hasToBeParsed($sql))
+		if ($this->languageHasChanged() && $this->hasToBeParsed($sql))
 		{
 			// Get query type
 			$queryType = NenoDatabaseParser::getQueryType($sql);
@@ -152,6 +152,19 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 
 		// Call to the parent replacePrefix
 		return parent::replacePrefix($sql, $prefix);
+	}
+
+	/**
+	 * Check if the language is different from the default
+	 *
+	 * @return bool
+	 */
+	public function languageHasChanged()
+	{
+		$currentLanguage = JFactory::getLanguage();
+		$defaultLanguage = $currentLanguage->getDefault();
+
+		return $currentLanguage->getTag() !== $defaultLanguage;
 	}
 
 	/**
