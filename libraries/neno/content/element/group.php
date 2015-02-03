@@ -57,6 +57,11 @@ class NenoContentElementGroup extends NenoContentElement
 	private $languageStringsSourceHasChanged;
 
 	/**
+	 * @var array
+	 */
+	private $translationMethodUsed;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data Group data
@@ -71,11 +76,12 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->languageStringsQueuedToBeTranslated = 0;
 		$this->languageStringsSourceHasChanged     = 0;
 		$this->languageStringsTranslated           = 0;
+		$this->translationMethodUsed               = array();
 
 		// Only search for the statistics for existing groups
 		if (!$this->isNew())
 		{
-			$this->calculateStatistics();
+			$this->calculateExtraData();
 		}
 
 	}
@@ -85,8 +91,9 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return void
 	 */
-	protected function calculateStatistics()
+	protected function calculateExtraData()
 	{
+		/* @var $db NenoDatabaseDriverMysqlx */
 		$db              = JFactory::getDbo();
 		$query           = $db->getQuery(true);
 		$workingLanguage = NenoHelper::getWorkingLanguage();
@@ -130,6 +137,19 @@ class NenoContentElementGroup extends NenoContentElement
 					break;
 			}
 		}
+
+		$query
+			->clear()
+			->select('DISTINCT translation_method')
+			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
+			->leftJoin(
+				$db->quoteName('#__neno_content_element_langstrings', 'l') .
+				' ON t.content_id = l.id AND content_type = ' .
+				$db->quote(NenoContentElementTranslation::LANG_STRING)
+			);
+
+		$db->setQuery($query);
+		$this->translationMethodUsed = $db->loadArray();
 	}
 
 	/**
@@ -175,7 +195,6 @@ class NenoContentElementGroup extends NenoContentElement
 				$languageStrings[] = $languageString;
 			}
 		}
-
 
 		$group->setLanguageStrings($languageStrings);
 
@@ -452,5 +471,29 @@ class NenoContentElementGroup extends NenoContentElement
 	public function getLanguageStringsSourceHasChanged()
 	{
 		return $this->languageStringsSourceHasChanged;
+	}
+
+	/**
+	 * Get Translation methods used.
+	 *
+	 * @return array
+	 */
+	public function getTranslationMethodUsed()
+	{
+		return $this->translationMethodUsed;
+	}
+
+	/**
+	 * Set translation methods used
+	 *
+	 * @param   array $translationMethodUsed
+	 *
+	 * @return $this
+	 */
+	public function setTranslationMethodUsed(array $translationMethodUsed)
+	{
+		$this->translationMethodUsed = $translationMethodUsed;
+
+		return $this;
 	}
 }
