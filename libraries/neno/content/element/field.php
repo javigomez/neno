@@ -156,7 +156,7 @@ class NenoContentElementField extends NenoContentElement
 	 *
 	 * @return NenoContentElementField
 	 */
-	public static function getField($fieldId)
+	public static function getFieldById($fieldId)
 	{
 		$field = new NenoContentElementField(static::getElementDataFromDb($fieldId));
 
