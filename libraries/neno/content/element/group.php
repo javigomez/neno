@@ -59,7 +59,7 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param mixed $data
+	 * @param   mixed $data Group data
 	 */
 	public function __construct($data)
 	{
@@ -135,7 +135,7 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * Get a group object
 	 *
-	 * @param integer $groupId Group Id
+	 * @param   integer $groupId Group Id
 	 *
 	 * @return NenoContentElementGroup
 	 */
@@ -183,14 +183,16 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * @param string $groupName           Group name
-	 * @param string $contentElementFiles Content element file path
-	 * @param string $prefixPath
+	 * Parse a content element file.
+	 *
+	 * @param   string $groupName           Group name
+	 * @param   array  $contentElementFiles Content element file path
 	 *
 	 * @return bool True on success
+	 *
 	 * @throws Exception
 	 */
-	public static function parseContentElementFiles($groupName, $contentElementFiles, $prefixPath = '')
+	public static function parseContentElementFiles($groupName, $contentElementFiles)
 	{
 		// Create an array of group data
 		$groupData = array(
@@ -266,7 +268,7 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * Add a table to the list
 	 *
-	 * @param NenoContentElementTable $table
+	 * @param   NenoContentElementTable $table Table
 	 *
 	 * @return $this
 	 */
@@ -290,7 +292,7 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * Set all the tables related to this group
 	 *
-	 * @param array $tables
+	 * @param   array $tables Tables
 	 *
 	 * @return $this
 	 */
@@ -317,7 +319,7 @@ class NenoContentElementGroup extends NenoContentElement
 				$table->persist();
 			}
 
-			/* @var $languageString NenoContentElementLangfileSource */
+			/* @var $languageString NenoContentElementLangstring */
 			foreach ($this->languageStrings as $languageString)
 			{
 				$languageString->setGroup($this);
@@ -326,11 +328,23 @@ class NenoContentElementGroup extends NenoContentElement
 		}
 	}
 
+	/**
+	 * Get language strings
+	 *
+	 * @return array
+	 */
 	public function getLanguageStrings()
 	{
 		return $this->languageStrings;
 	}
 
+	/**
+	 * Set language strings
+	 *
+	 * @param   array $languageStrings Language strings
+	 *
+	 * @return $this
+	 */
 	public function setLanguageStrings(array $languageStrings)
 	{
 		$this->languageStrings = $languageStrings;
@@ -338,9 +352,18 @@ class NenoContentElementGroup extends NenoContentElement
 		return $this;
 	}
 
-	public function addLanguageString(NenoContentElementLangfileSource $languageString)
+	/**
+	 * Add language string to the array
+	 *
+	 * @param   NenoContentElementLangstring $languageString Language string
+	 *
+	 * @return $this
+	 */
+	public function addLanguageString(NenoContentElementLangstring $languageString)
 	{
 		$this->languageStrings[] = $languageString;
+
+		return $this;
 	}
 
 	/**
@@ -392,6 +415,8 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Get how many language strings haven't been translated
+	 *
 	 * @return int
 	 */
 	public function getLanguageStringsNotTranslated()
@@ -400,6 +425,8 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Get how many language strings have been queued to be translated
+	 *
 	 * @return int
 	 */
 	public function getLanguageStringsQueuedToBeTranslated()
@@ -408,6 +435,8 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Get how many language strings have been translated.
+	 *
 	 * @return int
 	 */
 	public function getLanguageStringsTranslated()
@@ -416,6 +445,8 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Get how many language strings the source language string has changed.
+	 *
 	 * @return int
 	 */
 	public function getLanguageStringsSourceHasChanged()
