@@ -63,11 +63,11 @@ abstract class NenoContentElement
 	/**
 	 * Loads all the elements using its parent id and the parent Id value
 	 *
-	 * @param string  $elementsTableName    Table Name
-	 * @param string  $parentColumnName     Parent column name
-	 * @param string  $parentId             Parent Id
-	 * @param boolean $transformProperties  If
-	 * @param array   $extraWhereStatements Extra where statements
+	 * @param   string  $elementsTableName    Table Name
+	 * @param   string  $parentColumnName     Parent column name
+	 * @param   string  $parentId             Parent Id
+	 * @param   boolean $transformProperties  If the properties should be transform to CamelCase
+	 * @param   array   $extraWhereStatements Extra where statements
 	 *
 	 * @return array
 	 */
@@ -117,7 +117,7 @@ abstract class NenoContentElement
 	/**
 	 *
 	 *
-	 * @param integer $id
+	 * @param   integer $id
 	 *
 	 * @return stdClass
 	 */

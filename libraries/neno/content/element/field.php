@@ -79,6 +79,12 @@ class NenoContentElementField extends NenoContentElement
 	public function __construct($data, $fetchTranslations = false)
 	{
 		parent::__construct($data);
+
+		$data = new JObject($data);
+
+		$this->table                       = $data->get('table') == null
+			? NenoContentElementTable::getTableById($data->get('tableId'), false)
+			: $data->get('table');
 		$this->stringsNotTranslated        = 0;
 		$this->stringsQueuedToBeTranslated = 0;
 		$this->stringsSourceHasChanged     = 0;
@@ -299,15 +305,13 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Persist all the translations
 	 *
-	 * @return bool
+	 * @return void
 	 */
-	public function persist()
+	public function persistTranslations()
 	{
-		$persistResult = parent::persist();
-
-		if ($persistResult && $this->translate)
+		if ($this->translate)
 		{
 			// If it doesn't have translations
 			if (empty($this->translations))
@@ -328,6 +332,7 @@ class NenoContentElementField extends NenoContentElement
 				$defaultLanguage    = JFactory::getLanguage()->getDefault();
 				$this->translations = array();
 				$strings            = $this->getStrings();
+				$primaryKeyData     = $this->getTable()->getPrimaryKey();
 
 				foreach ($languages as $language)
 				{
@@ -337,9 +342,22 @@ class NenoContentElementField extends NenoContentElement
 
 						foreach ($strings as $string)
 						{
-							$commonData['string']      = $string[$this->getFieldName()];
-							$commonData['sourceRowId'] = $string['pk'];
-							$translation               = new NenoContentElementTranslation($commonData);
+							$commonData['string'] = $string['string'];
+							$translation          = new NenoContentElementTranslation($commonData);
+							$sourceData           = array();
+
+							foreach ($primaryKeyData as $primaryKey)
+							{
+								$field     = self::getFieldByTableAndFieldName($this->getTable(), $primaryKey);
+								$fieldData = array(
+									'field' => $field,
+									'value' => $string[$primaryKey]
+								);
+
+								$sourceData[] = $fieldData;
+							}
+
+							$translation->setSourceElementData($sourceData);
 							$translation->persist();
 							$this->translations[] = $translation;
 						}
@@ -354,8 +372,6 @@ class NenoContentElementField extends NenoContentElement
 				$this->translations[$i]->setState(NenoContentElementTranslation::SOURCE_CHANGED_STATE);
 			}
 		}
-
-		return $persistResult;
 	}
 
 	/**
@@ -365,20 +381,28 @@ class NenoContentElementField extends NenoContentElement
 	 */
 	protected function getStrings()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$rows = array();
 
-		$query
-			->select(
-				array(
-					$this->getTable()->getPrimaryKey() . ' AS pk',
-					$this->getFieldName()
-				)
-			)
-			->from($this->getTable()->getTableName());
+		// If the table has primary key, let's go through them
+		if (!empty($this->getTable()->getPrimaryKey()))
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
 
-		$db->setQuery($query);
-		$rows = $db->loadAssocList();
+			$primaryKeyData = $this->getTable()->getPrimaryKey();
+
+			foreach ($primaryKeyData as $primaryKey)
+			{
+				$query->select($db->quoteName($primaryKey));
+			}
+
+			$query
+				->select($db->quoteName($this->getFieldName(), 'string'))
+				->from($this->getTable()->getTableName());
+
+			$db->setQuery($query);
+			$rows = $db->loadAssocList();
+		}
 
 		return $rows;
 	}
@@ -427,5 +451,68 @@ class NenoContentElementField extends NenoContentElement
 		$this->fieldName = $fieldName;
 
 		return $this;
+	}
+
+	/**
+	 *
+	 *
+	 * @param   NenoContentElementTable $table
+	 * @param   string                  $fieldName
+	 */
+	public static function getFieldByTableAndFieldName(NenoContentElementTable $table, $fieldName)
+	{
+		if (!empty($table->getFields()))
+		{
+			$fields = $table->getFields();
+			$found  = false;
+
+			for ($i = 0; $i < count($fields) && !$found; $i++)
+			{
+				/* @var $field NenoContentElementField */
+				$field = $fields[$i];
+
+				if ($field->getFieldName() == $fieldName)
+				{
+					$found = true;
+				}
+			}
+
+			if ($found)
+			{
+				if ($field->getId() == null)
+				{
+					$field = self::getFieldDataFromDatabase($table->getId(), $fieldName);
+				}
+
+				return $field;
+			}
+
+			return false;
+		}
+		else
+		{
+			return self::getFieldDataFromDatabase($table->getId(), $fieldName);
+		}
+	}
+
+	/**
+	 * @param   integer $tableId
+	 * @param   string  $fieldName
+	 *
+	 * @return NenoContentElementField
+	 */
+	private static function getFieldDataFromDatabase($tableId, $fieldName)
+	{
+		$fieldData = static::getElementsByParentId(
+			self::getDbTable(),
+			'table_id',
+			$tableId,
+			true,
+			array('field_name = ' . JFactory::getDbo()->quote($fieldName))
+		);
+
+		$field = new NenoContentElementField($fieldData[0]);
+
+		return $field;
 	}
 }

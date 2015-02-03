@@ -66,11 +66,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	protected $contentType;
 
 	/**
-	 * @var integer
-	 */
-	protected $sourceRowId;
-
-	/**
 	 * @var NenoContentElement
 	 */
 	protected $element;
@@ -116,7 +111,12 @@ class NenoContentElementTranslation extends NenoContentElement
 	protected $version;
 
 	/**
-	 * @param mixed $data
+	 * @var array
+	 */
+	private $sourceElementData;
+
+	/**
+	 * @param   mixed $data
 	 */
 	public function __construct($data)
 	{
@@ -143,7 +143,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * Get all the translation associated to a
 	 *
-	 * @param NenoContentElement $element
+	 * @param   NenoContentElement $element
 	 *
 	 * @return array
 	 */
@@ -174,29 +174,13 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * @return int
 	 */
-	public function getSourceRowId()
-	{
-		return $this->sourceRowId;
-	}
-
-	/**
-	 * @param int $sourceRowId
-	 */
-	public function setSourceRowId($sourceRowId)
-	{
-		$this->sourceRowId = $sourceRowId;
-	}
-
-	/**
-	 * @return int
-	 */
 	public function getContentType()
 	{
 		return $this->contentType;
 	}
 
 	/**
-	 * @param int $contentType
+	 * @param   int $contentType
 	 *
 	 * @return NenoContentElement
 	 */
@@ -238,7 +222,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * @param string $language
 	 *
-	 * @return NenoContentElementMetadata
+	 * @return NenoContentElementTranslation
 	 */
 	public function setLanguage($language)
 	{
@@ -258,7 +242,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * @param int $state
 	 *
-	 * @return NenoContentElementMetadata
+	 * @return NenoContentElementTranslation
 	 */
 	public function setState($state)
 	{
@@ -278,7 +262,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * @param string $string
 	 *
-	 * @return NenoContentElementMetadata
+	 * @return NenoContentElementTranslation
 	 */
 	public function setString($string)
 	{
@@ -297,10 +281,14 @@ class NenoContentElementTranslation extends NenoContentElement
 
 	/**
 	 * @param string $translationMethod
+	 *
+	 * @return NenoContentElementTranslation
 	 */
 	public function setTranslationMethod($translationMethod)
 	{
 		$this->translationMethod = $translationMethod;
+
+		return $this;
 	}
 
 	/**
@@ -313,10 +301,14 @@ class NenoContentElementTranslation extends NenoContentElement
 
 	/**
 	 * @param int $version
+	 *
+	 * @return NenoContentElementTranslation
 	 */
 	public function setVersion($version)
 	{
 		$this->version = $version;
+
+		return $this;
 	}
 
 	/**
@@ -330,7 +322,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * @param DateTime $timeAdded
 	 *
-	 * @return NenoContentElementMetadata
+	 * @return NenoContentElementTranslation
 	 */
 	public function setTimeAdded($timeAdded)
 	{
@@ -350,7 +342,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * @param DateTime $timeRequested
 	 *
-	 * @return NenoContentElementMetadata
+	 * @return NenoContentElementTranslation
 	 */
 	public function setTimeRequested($timeRequested)
 	{
@@ -370,7 +362,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * @param DateTime $timeCompleted
 	 *
-	 * @return NenoContentElementMetadata
+	 * @return NenoContentElementTranslation
 	 */
 	public function setTimeCompleted($timeCompleted)
 	{
@@ -390,5 +382,61 @@ class NenoContentElementTranslation extends NenoContentElement
 		$data->set('content_id', $this->element->getId());
 
 		return $data;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function persist()
+	{
+		$isNew         = $this->isNew();
+		$persistResult = parent::persist();
+
+		// Only execute this task when the translation is new and there are no records about how to find it.
+		if ($persistResult && $isNew)
+		{
+			$db = JFactory::getDbo();
+
+			Kint::dump($this->sourceElementData);
+
+			// Loop through the data
+			foreach ($this->sourceElementData as $sourceData)
+			{
+				/* @var $field NenoContentElementField */
+				$field      = $sourceData['field'];
+				$fieldValue = $sourceData['value'];
+
+				$data                 = new stdClass;
+				$data->field_id       = $field->getId();
+				$data->translation_id = $this->getId();
+				$data->value          = $fieldValue;
+
+				$db->insertObject('#__neno_content_element_fields_x_translations', $data);
+			}
+		}
+
+		return $persistResult;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getSourceElementData()
+	{
+		return $this->sourceElementData;
+	}
+
+	/**
+	 * @param array $sourceElementData
+	 *
+	 * @return NenoContentElementTranslation
+	 */
+	public function setSourceElementData($sourceElementData)
+	{
+		$this->sourceElementData = $sourceElementData;
+
+		return $this;
 	}
 }

@@ -555,7 +555,8 @@ class NenoHelper
 				$tableData = array(
 					'tableName'  => $tableName,
 					'primaryKey' => $db->getPrimaryKey($tableName),
-					'translate'  => 1
+					'translate'  => self::shouldBeTranslated($tableName),
+					'group'      => $componentData
 				);
 
 				// Create ContentElement object
@@ -569,7 +570,8 @@ class NenoHelper
 					$fieldData = array(
 						'fieldName' => $fieldName,
 						'fieldType' => $fieldType,
-						'translate' => NenoContentElementField::isTranslatableType($fieldType)
+						'translate' => NenoContentElementField::isTranslatableType($fieldType),
+						'table'     => $table
 					);
 
 					$field = new NenoContentElementField($fieldData);
@@ -619,6 +621,33 @@ class NenoHelper
 		$result = $db->loadResult();
 
 		return $result == 1;
+	}
+
+	/**
+	 * Check if a table should be translated.
+	 *
+	 * @param   string $tableName Table name
+	 *
+	 * @return bool
+	 */
+	public static function shouldBeTranslated($tableName)
+	{
+		$tableName = self::unifyTableName($tableName);
+
+		$coreTablesThatShouldNotBeTranslate = array(
+			'/#__users/',
+			'/__messages(.*)/',
+		);
+
+		foreach ($coreTablesThatShouldNotBeTranslate as $queryRegex)
+		{
+			if (preg_match($queryRegex, $tableName))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

@@ -139,31 +139,43 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return NenoContentElementGroup
 	 */
-	public static function getGroup($groupId)
+	public static function getGroup($groupId, $loadTables = true, $loadLanguageStrings = true)
 	{
 		$group = new NenoContentElementGroup(static::getElementDataFromDb($groupId));
 
-		/*** Loading tables related to this group ***/
-		$tablesInfo = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $group->id, true);
-		$tables     = array();
+		// Init variables
+		$languageStrings = array();
+		$tables          = array();
 
-		foreach ($tablesInfo as $tableInfo)
+		// If tables flag is activated.
+		if ($loadTables)
 		{
-			$table    = new NenoContentElementTable($tableInfo);
-			$tables[] = $table;
+			/*** Loading tables related to this group ***/
+			$tablesInfo = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $group->id, true);
+
+
+			foreach ($tablesInfo as $tableInfo)
+			{
+				$table    = new NenoContentElementTable($tableInfo);
+				$tables[] = $table;
+			}
 		}
 
 		$group->setTables($tables);
 
-		/*** Loading languages files related to this group ***/
-		$languageStringsInfo = self::getElementsByParentId(NenoContentElementLangstring::getDbTable(), 'group_id', $group->id, true);
-		$languageStrings     = array();
-
-		foreach ($languageStringsInfo as $languageStringInfo)
+		if ($loadLanguageStrings)
 		{
-			$languageString    = new NenoContentElementLangstring($languageStringInfo);
-			$languageStrings[] = $languageString;
+			/*** Loading languages files related to this group ***/
+			$languageStringsInfo = self::getElementsByParentId(NenoContentElementLangstring::getDbTable(), 'group_id', $group->id, true);
+
+
+			foreach ($languageStringsInfo as $languageStringInfo)
+			{
+				$languageString    = new NenoContentElementLangstring($languageStringInfo);
+				$languageStrings[] = $languageString;
+			}
 		}
+
 
 		$group->setLanguageStrings($languageStrings);
 
@@ -220,7 +232,8 @@ class NenoContentElementGroup extends NenoContentElement
 					{
 						$fieldData = array(
 							'fieldName' => $fieldData->getAttribute('name'),
-							'translate' => intval($fieldData->getAttribute('translate'))
+							'translate' => intval($fieldData->getAttribute('translate')),
+							'table'     => $table
 						);
 						$field     = new NenoContentElementField($fieldData);
 

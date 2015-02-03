@@ -123,7 +123,7 @@ class NenoControllerGroupsElements extends JControllerAdmin
 				$tableData = array(
 					'tableName'  => $tableName,
 					'primaryKey' => $db->getPrimaryKey($tableName),
-					'translate'  => 0
+					'translate'  => NenoHelper::shouldBeTranslated($tableName),
 				);
 
 				// Create ContentElement object
@@ -136,7 +136,8 @@ class NenoControllerGroupsElements extends JControllerAdmin
 				{
 					$fieldData = array(
 						'fieldName' => $fieldName,
-						'translate' => NenoContentElementField::isTranslatableType($fieldType)
+						'translate' => NenoContentElementField::isTranslatableType($fieldType),
+						'table'     => $table
 					);
 
 					$field = new NenoContentElementField($fieldData);

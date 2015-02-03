@@ -268,10 +268,8 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		catch (RuntimeException $ex)
 		{
 			echo $ex->getMessage() . "\n";
-
-			//NenoLog::log($ex, NenoLog::PRIORITY_ERROR);
-
-			return false;
+			Kint::dump(xdebug_get_function_stack());
+			exit;
 		}
 	}
 
@@ -396,15 +394,19 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	 */
 	public function getPrimaryKey($tableName)
 	{
-		$query   = 'SHOW INDEX FROM ' . $tableName . ' WHERE Key_name = \'PRIMARY\'';
-		$results = $this->executeQuery($query, true, true);
+		$query       = 'SHOW INDEX FROM ' . $tableName . ' WHERE Key_name = \'PRIMARY\' OR Non_unique = 0';
+		$results     = $this->executeQuery($query, true, true);
+		$foreignKeys = array();
 
 		if (!empty($results))
 		{
-			return $results[0]->Column_name;
+			foreach ($results as $result)
+			{
+				$foreignKeys[] = $result->Column_name;
+			}
 		}
 
-		return null;
+		return $foreignKeys;
 	}
 
 	/**
