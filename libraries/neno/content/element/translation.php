@@ -126,7 +126,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	private $charactersCounter;
 
 	/**
-	 * @param   mixed $data
+	 * {@inheritdoc}
+	 *
+	 * @param   mixed $data Element data
 	 */
 	public function __construct($data)
 	{
