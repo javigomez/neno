@@ -113,7 +113,12 @@ class NenoContentElementField extends NenoContentElement
 		$workingLanguage = NenoHelper::getWorkingLanguage();
 
 		$query
-			->select('COUNT(*) AS counter, state')
+			->select(
+				array(
+					'SUM((LENGTH(string) - LENGTH(replace(string,\' \',\'\'))+1)) AS counter',
+					'state'
+				)
+			)
 			->from(NenoContentElementTranslation::getDbTable())
 			->where(
 				array(

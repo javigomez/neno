@@ -101,7 +101,7 @@ class NenoContentElementGroup extends NenoContentElement
 		$query
 			->select(
 				array(
-					'COUNT(t.id) AS counter',
+					'SUM((LENGTH(l.string) - LENGTH(replace(l.string,\' \',\'\'))+1)) AS counter',
 					't.state'
 				)
 			)
