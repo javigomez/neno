@@ -116,6 +116,16 @@ class NenoContentElementTranslation extends NenoContentElement
 	private $sourceElementData;
 
 	/**
+	 * @var integer
+	 */
+	private $wordsCounter;
+
+	/**
+	 * @var integer
+	 */
+	private $charactersCounter;
+
+	/**
 	 * @param   mixed $data
 	 */
 	public function __construct($data)
@@ -138,6 +148,29 @@ class NenoContentElementTranslation extends NenoContentElement
 			$this->element      = new NenoContentElementField($contentElementData);
 		}
 
+		$this->wordsCounter      = str_word_count($this->getString());
+		$this->charactersCounter = strlen($this->getString());
+
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getString()
+	{
+		return $this->string;
+	}
+
+	/**
+	 * @param string $string
+	 *
+	 * @return NenoContentElementTranslation
+	 */
+	public function setString($string)
+	{
+		$this->string = $string;
+
+		return $this;
 	}
 
 	/**
@@ -247,26 +280,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	public function setState($state)
 	{
 		$this->state = $state;
-
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getString()
-	{
-		return $this->string;
-	}
-
-	/**
-	 * @param string $string
-	 *
-	 * @return NenoContentElementTranslation
-	 */
-	public function setString($string)
-	{
-		$this->string = $string;
 
 		return $this;
 	}
