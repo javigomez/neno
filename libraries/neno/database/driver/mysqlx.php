@@ -327,10 +327,10 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	 */
 	public function createShadowTables($tableName)
 	{
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
-		$knownLanguages  = NenoHelper::getLanguages();
-
-		$createStatement = $this->getTableCreate($tableName)[$tableName];
+		$defaultLanguage       = JFactory::getLanguage()->getDefault();
+		$knownLanguages        = NenoHelper::getLanguages();
+		$tableCreateStatements = $this->getTableCreate($tableName);
+		$createStatement       = $tableCreateStatements[$tableName];
 
 		foreach ($knownLanguages as $knownLanguage)
 		{

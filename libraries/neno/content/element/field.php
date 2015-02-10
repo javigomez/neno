@@ -381,10 +381,11 @@ class NenoContentElementField extends NenoContentElement
 	 */
 	protected function getStrings()
 	{
-		$rows = array();
+		$rows       = array();
+		$primaryKey = $this->getTable()->getPrimaryKey();
 
 		// If the table has primary key, let's go through them
-		if (!empty($this->getTable()->getPrimaryKey()))
+		if (!empty($primaryKey))
 		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
@@ -461,7 +462,10 @@ class NenoContentElementField extends NenoContentElement
 	 */
 	public static function getFieldByTableAndFieldName(NenoContentElementTable $table, $fieldName)
 	{
-		if (!empty($table->getFields()))
+		// Get fields related to this table
+		$fields = $table->getFields();
+
+		if (!empty($fields))
 		{
 			$fields = $table->getFields();
 			$found  = false;
