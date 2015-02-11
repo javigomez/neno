@@ -908,6 +908,18 @@ class NenoHelper
 	}
 
 	/**
+	 * Check if the database driver is enabled
+	 *
+	 * @return bool True if it's enabled, false otherwise
+	 */
+	public static function isTheDatabaseDriverEnable()
+	{
+		$plugin = JPluginHelper::getPlugin('system', 'neno');
+
+		return !empty($plugin);
+	}
+
+	/**
 	 * Escape a string
 	 *
 	 * @param   mixed $value Value

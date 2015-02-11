@@ -16,6 +16,14 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_neno'))
 	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
+if (!NenoHelper::isTheDatabaseDriverEnable())
+{
+	$app = JFactory::getApplication();
+	$app->enqueueMessage('Please enable the plugin to use Neno', 'error');
+	$app->setUserState('com_plugins.plugins.filter.search', 'neno');
+	$app->redirect('index.php?option=com_plugins');
+}
+
 // Include dependencies
 jimport('joomla.application.component.controller');
 
