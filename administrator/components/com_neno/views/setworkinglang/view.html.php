@@ -27,11 +27,7 @@ class NenoViewSetworkinglang extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$this->langs = NenoHelper::getTargetLanguages(false);
-        
 		JFactory::getApplication()->input->set('hidemainmenu', true);
-		JToolBarHelper::title(NenoHelper::getAdminTitle(), 'nope');
-
 		parent::display($tpl);
 	}
-
 }

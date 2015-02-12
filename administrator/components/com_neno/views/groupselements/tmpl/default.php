@@ -284,7 +284,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 				<th class="table-groups-elements-blank"></th>
 			</tr>
 			<?php
-			Kint::dump($this->items[count($this->items)-1]);
+			//Kint::dump($this->items[count($this->items)-1]);
 			//var_dump($this->items[1]->getLanguageStrings());
 			//var_dump($this->items[1]);
 			?>

@@ -120,16 +120,25 @@ class NenoHelper
 	 *
 	 * @return string
 	 */
-	public static function getAdminTitle()
+	public static function setAdminTitle($showLanguageDropDown = false)
 	{
+		$app = JFactory::getApplication();
+
 		// If there is a language constant then start with that
 		$displayData = array(
-			'view'            => JFactory::getApplication()->input->getCmd('view', ''),
-			'workingLanguage' => self::getWorkingLanguage(),
-			'targetLanguages' => self::getTargetLanguages()
+			'view' => $app->input->getCmd('view', '')
 		);
 
-		return JLayoutHelper::render('toolbar', $displayData, JPATH_NENO_LAYOUTS);
+		if ($showLanguageDropDown)
+		{
+			$displayData['workingLanguage'] = self::getWorkingLanguage();
+			$displayData['targetLanguages'] = self::getTargetLanguages();
+		}
+
+		$adminTitleLayout     = JLayoutHelper::render('toolbar', $displayData, JPATH_NENO_LAYOUTS);
+		$layout               = new JLayoutFile('joomla.toolbar.title');
+		$html                 = $layout->render(array('title' => $adminTitleLayout, 'icon' => 'nope'));
+		$app->JComponentTitle = $html;
 	}
 
 	/**
@@ -455,6 +464,7 @@ class NenoHelper
 	 */
 	public static function discoverExtensions()
 	{
+		ini_set('max_execution_time', 120);
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -920,18 +930,6 @@ class NenoHelper
 	}
 
 	/**
-	 * Escape a string
-	 *
-	 * @param   mixed $value Value
-	 *
-	 * @return string
-	 */
-	private static function escapeString($value)
-	{
-		return JFactory::getDbo()->quote($value);
-	}
-
-	/**
 	 * Output HTML code for translation progress bar
 	 *
 	 * @param array $stringsStatus Strings translated, queued to be translated, out of sync, not translated & total
@@ -939,27 +937,33 @@ class NenoHelper
 	 *
 	 * @return string
 	 */
-	public static function htmlTranslationBar($stringsStatus, $enabled = true) {
+	public static function htmlTranslationBar($stringsStatus, $enabled = true)
+	{
 		$return = '';
-		if ($enabled && count($stringsStatus) !== 0) {
+		if ($enabled && count($stringsStatus) !== 0)
+		{
 			//var_dump($stringsStatus);
-			if (!array_key_exists('totalStrings', $stringsStatus) || $stringsStatus['totalStrings'] === null ) {
+			if (!array_key_exists('totalStrings', $stringsStatus) || $stringsStatus['totalStrings'] === null)
+			{
 				$stringsStatus['totalStrings'] = $stringsStatus['translated'] + $stringsStatus['queued'] + $stringsStatus['changed'] + $stringsStatus['notTranslated'];
 			}
-			$return .= '<div class="word-count">'.$stringsStatus['totalStrings'].'</div>' . "\n";
+			$return .= '<div class="word-count">' . $stringsStatus['totalStrings'] . '</div>' . "\n";
 			$return .= '<div class="bar">' . "\n";
-			$widthTranslated = ($stringsStatus['totalStrings'])?(100*$stringsStatus['translated']/$stringsStatus['totalStrings']):(0);
-			$widthQueued = ($stringsStatus['totalStrings'])?(100*$stringsStatus['queued']/$stringsStatus['totalStrings']):(0);
-			$widthChanged = ($stringsStatus['totalStrings'])?(100*$stringsStatus['changed']/$stringsStatus['totalStrings']):(0);
-			$widthNotTranslated = ($stringsStatus['totalStrings'])?(100*$stringsStatus['notTranslated']/$stringsStatus['totalStrings']):(0);
-			$return .= '<div class="translated" style="width:' . $widthTranslated .'%" alt="' . JText::_('COM_NENO_STATUS_TRANSLATED') . ': ' . $stringsStatus['translated'] . '" title="' . JText::_('COM_NENO_STATUS_TRANSLATED') . ': ' . $stringsStatus['translated'] .'"></div>' . "\n";
-			$return .= '<div class="queued" style="width:' . $widthQueued .'%" alt="' . JText::_('COM_NENO_STATUS_QUEUED') . ': ' . $stringsStatus['queued'] . '" title="' . JText::_('COM_NENO_STATUS_QUEUED') . ': ' . $stringsStatus['queued'] .'"></div>' . "\n";
-			$return .= '<div class="changed" style="width:' . $widthChanged .'%" alt="' . JText::_('COM_NENO_STATUS_CHANGED') . ': ' . $stringsStatus['changed'] . '" title="' . JText::_('COM_NENO_STATUS_CHANGED') . ': ' . $stringsStatus['changed'] .'"></div>' . "\n";
-			$return .= '<div class="not-translated" style="width:' . $widthNotTranslated .'%" alt="' . JText::_('COM_NENO_STATUS_NOTTRANSLATED') . ': ' . $stringsStatus['notTranslated'] . '" title="' . JText::_('COM_NENO_STATUS_NOTTRANSLATED') . ': ' . $stringsStatus['notTranslated'] .'"></div>' . "\n";
+			$widthTranslated    = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['translated'] / $stringsStatus['totalStrings']) : (0);
+			$widthQueued        = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['queued'] / $stringsStatus['totalStrings']) : (0);
+			$widthChanged       = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['changed'] / $stringsStatus['totalStrings']) : (0);
+			$widthNotTranslated = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['notTranslated'] / $stringsStatus['totalStrings']) : (0);
+			$return .= '<div class="translated" style="width:' . $widthTranslated . '%" alt="' . JText::_('COM_NENO_STATUS_TRANSLATED') . ': ' . $stringsStatus['translated'] . '" title="' . JText::_('COM_NENO_STATUS_TRANSLATED') . ': ' . $stringsStatus['translated'] . '"></div>' . "\n";
+			$return .= '<div class="queued" style="width:' . $widthQueued . '%" alt="' . JText::_('COM_NENO_STATUS_QUEUED') . ': ' . $stringsStatus['queued'] . '" title="' . JText::_('COM_NENO_STATUS_QUEUED') . ': ' . $stringsStatus['queued'] . '"></div>' . "\n";
+			$return .= '<div class="changed" style="width:' . $widthChanged . '%" alt="' . JText::_('COM_NENO_STATUS_CHANGED') . ': ' . $stringsStatus['changed'] . '" title="' . JText::_('COM_NENO_STATUS_CHANGED') . ': ' . $stringsStatus['changed'] . '"></div>' . "\n";
+			$return .= '<div class="not-translated" style="width:' . $widthNotTranslated . '%" alt="' . JText::_('COM_NENO_STATUS_NOTTRANSLATED') . ': ' . $stringsStatus['notTranslated'] . '" title="' . JText::_('COM_NENO_STATUS_NOTTRANSLATED') . ': ' . $stringsStatus['notTranslated'] . '"></div>' . "\n";
 			$return .= '</div>' . "\n";
-		} else {
+		}
+		else
+		{
 			$return .= '<div class="bar bar-disabled" alt="' . JText::_('COM_NENO_STATUS_NOTTRANSLATED') . '" title="' . JText::_('COM_NENO_STATUS_NOTTRANSLATED') . '"></div>' . "\n";
 		}
+
 		return $return;
 	}
 
@@ -972,7 +976,7 @@ class NenoHelper
 	{
 		$options = array();
 
-		$db = JFactory::getDbo();
+		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true)
 			->select('id AS value, group_name AS text')
 			->from('#__neno_content_element_groups AS n')
@@ -997,5 +1001,17 @@ class NenoHelper
 		array_unshift($options, JHtml::_('select.option', '0', JText::_('COM_NENO_SELECT_GROUP')));
 
 		return $options;
+	}
+
+	/**
+	 * Escape a string
+	 *
+	 * @param   mixed $value Value
+	 *
+	 * @return string
+	 */
+	private static function escapeString($value)
+	{
+		return JFactory::getDbo()->quote($value);
 	}
 }

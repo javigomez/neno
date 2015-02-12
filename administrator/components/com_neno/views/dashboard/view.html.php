@@ -23,7 +23,7 @@ class NenoViewDashboard extends JViewLegacy
 	/**
 	 * Display the view
 	 *
-	 * @param   string  $tpl  Template to render
+	 * @param   string $tpl Template to render
 	 *
 	 * @return void
 	 *
@@ -31,9 +31,6 @@ class NenoViewDashboard extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-  		JToolBarHelper::title(NenoHelper::getAdminTitle(), 'nope');
-
 		parent::display($tpl);
 	}
-
 }

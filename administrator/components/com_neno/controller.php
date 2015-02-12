@@ -27,18 +27,24 @@ class NenoController extends JControllerLegacy
 	 */
 	public function display($cachable = false, $urlparams = array())
 	{
-		$view = JFactory::getApplication()->input->getCmd('view', 'dashboard');
-		JFactory::getApplication()->input->set('view', $view);
+		$app   = JFactory::getApplication();
+		$input = $app->input;
+		$view  = $input->getCmd('view', 'dashboard');
+		$input->set('view', $view);
+
 
 		// Ensure that a working language is set for some views
 		$viewsThatRequireWorkingLanguage = array(
 			'groupselements'
 		);
 
+		$showLanguagesDropDown = false;
+
 		if (in_array($view, $viewsThatRequireWorkingLanguage))
 		{
 			// Get working language
-			$workingLanguage = NenoHelper::getWorkingLanguage();
+			$workingLanguage       = NenoHelper::getWorkingLanguage();
+			$showLanguagesDropDown = true;
 
 			if (empty($workingLanguage))
 			{
@@ -47,6 +53,8 @@ class NenoController extends JControllerLegacy
 				$this->redirect();
 			}
 		}
+
+		NenoHelper::setAdminTitle($showLanguagesDropDown);
 
 		parent::display($cachable, $urlparams);
 
