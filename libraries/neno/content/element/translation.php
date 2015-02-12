@@ -126,6 +126,11 @@ class NenoContentElementTranslation extends NenoContentElement
 	private $charactersCounter;
 
 	/**
+	 * @var string
+	 */
+	private $originalText;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data Element data
@@ -152,6 +157,7 @@ class NenoContentElementTranslation extends NenoContentElement
 
 		$this->wordsCounter      = str_word_count($this->getString());
 		$this->charactersCounter = strlen($this->getString());
+		$this->originalText      = $this->loadOriginalText();
 
 	}
 
@@ -177,6 +183,88 @@ class NenoContentElementTranslation extends NenoContentElement
 		$this->string = $string;
 
 		return $this;
+	}
+
+	/**
+	 * Load Original text
+	 *
+	 * @return string
+	 */
+	private function loadOriginalText()
+	{
+		$string = null;
+
+		if ($this->contentType === self::DB_STRING)
+		{
+			/* @var $field NenoContentElementField */
+			$field = $this->getElement();
+
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query
+				->select($field->getFieldName())
+				->from($field->getTable()->getTableName());
+
+			$primaryKeys = $field->getTable()->getPrimaryKey();
+
+			foreach ($primaryKeys as $primaryKey)
+			{
+				$primaryKeyField = NenoContentElementField::getFieldByTableAndFieldName($field->getTable(), $primaryKey);
+				$query->where($db->quoteName($primaryKey) . ' = (SELECT value FROM `#__neno_content_element_fields_x_translations` WHERE translation_id = ' . $this->getId() . ' AND field_id = ' . $primaryKeyField->getId() . ')');
+			}
+
+			$db->setQuery($query);
+			$string = (string) $db->loadResult();
+		}
+		else
+		{
+			/* @var $languageString NenoContentElementLangstring */
+			$languageString = $this->getElement();
+			$string         = $languageString->getString();
+		}
+
+
+		return $string;
+	}
+
+	/**
+	 * Get Content element
+	 *
+	 * @return NenoContentElement
+	 */
+	public function getElement()
+	{
+		return $this->element;
+	}
+
+	/**
+	 * Set content element
+	 *
+	 * @param   NenoContentElement $element Content element
+	 *
+	 * @return NenoContentElement
+	 */
+	public function setElement(NenoContentElement $element)
+	{
+		$this->element = $element;
+
+		return $this;
+	}
+
+	/**
+	 * Load Translation by ID
+	 *
+	 * @param   integer $translationId Tran
+	 *
+	 * @return NenoContentElementTranslation
+	 */
+	public static function getTranslation($translationId)
+	{
+		$translationData = self::getElementDataFromDb($translationId);
+		$translation     = new NenoContentElementTranslation($translationData);
+
+		return $translation;
 	}
 
 	/**
@@ -230,30 +318,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	public function setContentType($contentType)
 	{
 		$this->contentType = $contentType;
-
-		return $this;
-	}
-
-	/**
-	 * Get Content element
-	 *
-	 * @return NenoContentElement
-	 */
-	public function getElement()
-	{
-		return $this->element;
-	}
-
-	/**
-	 * Set content element
-	 *
-	 * @param   NenoContentElement $element Content element
-	 *
-	 * @return NenoContentElement
-	 */
-	public function setElement(NenoContentElement $element)
-	{
-		$this->element = $element;
 
 		return $this;
 	}
@@ -495,5 +559,35 @@ class NenoContentElementTranslation extends NenoContentElement
 		$this->sourceElementData = $sourceElementData;
 
 		return $this;
+	}
+
+	/**
+	 * Get words counter of the translation
+	 *
+	 * @return int
+	 */
+	public function getWordsCounter()
+	{
+		return $this->wordsCounter;
+	}
+
+	/**
+	 * Get characters counter of the translation
+	 *
+	 * @return int
+	 */
+	public function getCharactersCounter()
+	{
+		return $this->charactersCounter;
+	}
+
+	/**
+	 * Get the original text
+	 *
+	 * @return string
+	 */
+	public function getOriginalText()
+	{
+		return $this->originalText;
 	}
 }

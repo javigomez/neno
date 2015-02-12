@@ -14,11 +14,11 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.view');
 
 /**
- * NenoViewExtensions class
+ * NenoViewGroupsElements class
  *
  * @since  1.0
  */
-class NenoViewExtensions extends JViewLegacy
+class NenoViewStrings extends JViewLegacy
 {
 	/**
 	 * @var array
@@ -62,6 +62,8 @@ class NenoViewExtensions extends JViewLegacy
 		$this->items           = $this->get('Items');
 		$this->pagination      = $this->get('Pagination');
 		$this->extensionsSaved = $this->get('ExtensionsMarkedAsTranslatable');
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -69,9 +71,10 @@ class NenoViewExtensions extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
 
-		NenoHelper::addSubmenu('extensions');
+		NenoHelper::addSubmenu('strings');
 
 		$this->addToolbar();
+		require_once JPATH_COMPONENT . '/models/fields/group.php';
 
 		$this->sidebar = JHtmlSidebar::render();
 
@@ -89,7 +92,7 @@ class NenoViewExtensions extends JViewLegacy
 	{
 		$canDo = NenoHelper::getActions();
 
-		JToolBarHelper::title(JText::_('COM_NENO_TITLE_EXTENSIONS'), 'sources.png');
+		JToolBarHelper::title(JText::_('COM_NENO_TITLE_STRINGS'), 'sources.png');
 
 		if ($canDo->get('core.admin'))
 		{
@@ -97,7 +100,7 @@ class NenoViewExtensions extends JViewLegacy
 		}
 
 		// Set sidebar action - New in 3.0
-		JHtmlSidebar::setAction('index.php?option=com_neno&view=sources');
+		JHtmlSidebar::setAction('index.php?option=com_neno&view=strings');
 
 		$this->extra_sidebar = '';
 	}

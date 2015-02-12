@@ -14,20 +14,13 @@ defined('_JEXEC') or die;
 
 <h1>Neno Dashboard</h1>
 
-<a href="<?php echo JRoute::_('index.php?option=com_neno&view=langfilesimport'); ?>" class="btn btn-info">
-	<span class="icon-download "></span>
-	Import language files
-</a>
-<a href="<?php echo JRoute::_('index.php?option=com_neno&view=translations'); ?>" class="btn">
-	<span class="icon-list-2 "></span>
-	Manage translation items
-</a>
-<a href="<?php echo JRoute::_('index.php?option=com_neno&task=extensions.discoverExtensions'); ?>" class="btn">
+<a href="<?php echo JRoute::_('index.php?option=com_neno&task=groupselements.discoverExtensions'); ?>" class="btn">
 	<span class="icon-list-2 "></span>
 	Import extensions
 </a>
 
-<form action="index.php?option=com_neno&task=extensions.readContentElementFile" method="post" enctype="multipart/form-data">
+<form action="index.php?option=com_neno&task=groupselements.readContentElementFile" method="post"
+      enctype="multipart/form-data">
 	<input type="file" name="content_element">
 
 	<button type="submit" class="btn">Upload</button>

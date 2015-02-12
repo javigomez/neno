@@ -14,11 +14,11 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modellist');
 
 /**
- * NenoModelExtensions class
+ * NenoModelGroupsElements class
  *
  * @since  1.0
  */
-class NenoModelExtensions extends JModelList
+class NenoModelStrings extends JModelList
 {
 	/**
 	 * Constructor.
@@ -33,7 +33,7 @@ class NenoModelExtensions extends JModelList
 		if (empty($config['filter_fields']))
 		{
 			$config['filter_fields'] = array(
-				'id', 'a.id',
+				/*'id', 'a.id',
 				'string', 'a.string',
 				'constant', 'a.constant',
 				'lang', 'a.lang',
@@ -41,11 +41,41 @@ class NenoModelExtensions extends JModelList
 				'time_added', 'a.time_added',
 				'time_changed', 'a.time_changed',
 				'time_deleted', 'a.time_deleted',
-				'version', 'a.version',
+				'version', 'a.version',*/
 			);
 		}
 
 		parent::__construct($config);
+	}
+
+	/**
+	 * Get and set current values of filters
+	 *
+	 * @param
+	 */
+	protected function populateState($ordering = null, $direction = null)
+	{
+		// Initialise variables.
+		$app = JFactory::getApplication('administrator');
+
+
+
+		// Other code goes here
+
+
+
+		$group = $app->getUserStateFromRequest($this->context . 'filter.group_id', 'filter_group_id', '', 'string');
+		$this->setState('filter.group_id', $group);
+
+
+
+		// Other code goes here
+
+
+
+
+		// List state information.
+		parent::populateState('a.id', 'asc');
 	}
 
 	/**
@@ -65,14 +95,22 @@ class NenoModelExtensions extends JModelList
 
 	public function getItems()
 	{
-		$groups = parent::getItems();
+		$elements = parent::getItems();
 
-		for ($i = 0; $i < count($groups); $i++)
+		//var_dump($elements);
+
+		$translations = array();
+
+		for ($i = 0; $i < count($elements)/5; $i++)
 		{
-			$groups[$i] = NenoContentElementGroup::getGroup($groups[$i]->id);
+			$element = NenoContentElementTable::getTableById($elements[$i]->id);
+			if (!empty($element)) {
+				$translations[$i] = NenoContentElementTranslation::getTranslations($element);
+			}
 		}
 
-		return $groups;
+		//var_dump($elements);
+		return $translations;
 	}
 
 	/**
@@ -84,12 +122,25 @@ class NenoModelExtensions extends JModelList
 	 */
 	protected function getListQuery()
 	{
+		$workingLanguage = NenoHelper::getWorkingLanguage();
+
 		// Create a new query object.
 		$query = parent::getListQuery();
 
-		$query
-			->select('g.id')
-			->from('`#__neno_content_element_groups` AS g');
+		$query->select('*');
+		$query->from('`#__neno_content_element_tables` AS t');
+		$query->join('LEFT', '#__neno_content_element_fields AS f ON t.id = f.table_id AND f.translate = 1');
+		$query->join('LEFT', '#__neno_content_element_translations AS tr ON tr.content_id = f.id');
+		$query->where('tr.language = "' . $workingLanguage . '"');
+
+		$group = $this->getState('filter.group_id');
+
+		if (is_numeric($group))
+		{
+			$query->where('t.group_id = '.(int) $group);
+		}
+
+		Kint::dump($query->__toString());
 
 		return $query;
 	}

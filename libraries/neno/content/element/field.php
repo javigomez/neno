@@ -72,6 +72,11 @@ class NenoContentElementField extends NenoContentElement
 	private $wordsSourceHasChanged;
 
 	/**
+	 * @var array
+	 */
+	private $translationMethodUsed;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param mixed $data
@@ -97,7 +102,7 @@ class NenoContentElementField extends NenoContentElement
 				$this->translations = NenoContentElementTranslation::getTranslations($this);
 			}
 
-			$this->calculateStatistics();
+			$this->calculateExtraData();
 		}
 	}
 
@@ -106,7 +111,7 @@ class NenoContentElementField extends NenoContentElement
 	 *
 	 * @return void
 	 */
-	protected function calculateStatistics()
+	protected function calculateExtraData()
 	{
 		$db              = JFactory::getDbo();
 		$query           = $db->getQuery(true);
@@ -152,6 +157,19 @@ class NenoContentElementField extends NenoContentElement
 					break;
 			}
 		}
+
+		$query
+			->clear()
+			->select('DISTINCT translation_method')
+			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
+			->leftJoin(
+				$db->quoteName('#__neno_content_element_langstrings', 'l') .
+				' ON t.content_id = l.id AND content_type = ' .
+				$db->quote(NenoContentElementTranslation::LANG_STRING)
+			);
+
+		$db->setQuery($query);
+		$this->translationMethodUsed = $db->loadArray();
 	}
 
 	/**
@@ -543,5 +561,15 @@ class NenoContentElementField extends NenoContentElement
 		$field = new NenoContentElementField($fieldData[0]);
 
 		return $field;
+	}
+
+	/**
+	 * Get translation method used.
+	 *
+	 * @return array
+	 */
+	public function getTranslationMethodUsed()
+	{
+		return $this->translationMethodUsed;
 	}
 }

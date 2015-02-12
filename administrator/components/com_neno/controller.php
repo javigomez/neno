@@ -31,15 +31,15 @@ class NenoController extends JControllerLegacy
 		JFactory::getApplication()->input->set('view', $view);
 
 		// Ensure that a working language is set for some views
-		$viewsThatRequireWorkingLanguage   = array();
-		$viewsThatRequireWorkingLanguage[] = 'translations';
-		$viewsThatRequireWorkingLanguage[] = 'translation';
+		$viewsThatRequireWorkingLanguage = array(
+			'groupselements'
+		);
 
 		if (in_array($view, $viewsThatRequireWorkingLanguage))
 		{
 			// Get working language
 			$workingLanguage = NenoHelper::getWorkingLanguage();
-			
+
 			if (empty($workingLanguage))
 			{
 				$url = JRoute::_('index.php?option=com_neno&view=setworkinglang&next=' . $view, false);
