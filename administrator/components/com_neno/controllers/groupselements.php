@@ -223,4 +223,37 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		echo $result;
 		JFactory::getApplication()->close();
 	}
+
+	/**
+	 *
+	 */
+	public function enableDisableContentElementField()
+	{
+		$input = JFactory::getApplication()->input;
+
+		$fieldId         = $input->getInt('fieldId');
+		$translateStatus = $input->getBool('translateStatus');
+
+		$field  = NenoContentElementField::getFieldById($fieldId);
+		//var_dump($field);
+		$result = 0;
+
+		// If the table exists, let's work with it.
+		if ($field !== false)
+		{
+			$field->setTranslate($translateStatus);
+			$field->persist();
+
+			$stringStatus = array();
+			$stringStatus['translated'] = $field->getStringsTranslated();
+			$stringStatus['queued'] = $field->getStringsQueuedToBeTranslated();
+			$stringStatus['changed'] = $field->getStringsSourceHasChanged();
+			$stringStatus['notTranslated'] = $field->getStringsNotTranslated();
+
+			$result = NenoHelper::htmlTranslationBar($stringStatus, $translateStatus);
+		}
+
+		echo $result;
+		JFactory::getApplication()->close();
+	}
 }
