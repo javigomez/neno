@@ -24,7 +24,7 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	 */
 	public function translate($text)
 	{
-		$apiKey = 'AIzaSyCeyAoTQ7fDT9dUE0FNZ3H1CgnqPZreU1c';    	
+		$apiKey = 'AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8';    	
     	$url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey . '&q=' . rawurlencode($text) . '&source=en&target=fr';
 		
     	$handle = curl_init($url);
