@@ -24,10 +24,9 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	 */
 	public function translate($text)
 	{
-		$apiKey = 'AIzaSyCeyAoTQ7fDT9dUE0FNZ3H1CgnqPZreU1c IPS:	178.62.100.46';    	
-    	//$url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey . '&q=' . rawurlencode($text) . '&source=en&target=fr';
-		$url = 'https://www.googleapis.com/language/translate/v2/languages?key=' . $apiKey;
-
+		$apiKey = 'AIzaSyCeyAoTQ7fDT9dUE0FNZ3H1CgnqPZreU1c';    	
+    	$url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey . '&q=' . rawurlencode($text) . '&source=en&target=fr';
+		
     	$handle = curl_init($url);
     	curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
     	$response = curl_exec($handle);
