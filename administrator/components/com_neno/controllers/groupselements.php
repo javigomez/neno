@@ -21,135 +21,18 @@ jimport('joomla.application.component.controlleradmin');
 class NenoControllerGroupsElements extends JControllerAdmin
 {
 	/**
-	 * @var array
-	 */
-	private static $extensionTypeAllowed = array(
-		'component',
-		'module',
-		'plugin',
-		'template'
-	);
-
-	/**
-	 * Escape a string
-	 *
-	 * @param   mixed $value Value
-	 *
-	 * @return string
-	 */
-	private static function escapeString($value)
-	{
-		return JFactory::getDbo()->quote($value);
-	}
-
-	/**
 	 * Method to import tables that need to be translated
 	 *
 	 * @return void
 	 */
 	public function discoverExtensions()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select(
-				array(
-					'e.extension_id',
-					'e.name',
-					'e.type',
-					'e.folder',
-					'e.enabled'
-				)
-			)
-			->from('`#__extensions` AS e')
-			->where(
-				array(
-					'e.type IN (' . implode(',', array_map(array('NenoControllerExtensions', 'escapeString'), self::$extensionTypeAllowed)) . ')',
-					'e.name NOT LIKE \'com_neno\'',
-					'NOT EXISTS (SELECT 1 FROM `#__neno_content_elements_groups` AS ceg WHERE e.extension_id = ceg.extension_id)'
-				)
-			)
-			->order('name');
-
-		$db->setQuery($query);
-		$extensions = $db->loadObjectList();
-
-		for ($i = 0; $i < count($extensions); $i++)
-		{
-			$groupData = array(
-				'groupName'   => $extensions[$i]->name,
-				'extensionId' => $extensions[$i]->extension_id
-			);
-
-			$group  = new NenoContentElementGroup($groupData);
-			$tables = $this->getComponentTables($group);
-
-			if (!empty($tables))
-			{
-				$group->setTables($tables);
-				$group->persist();
-			}
-		}
+		// Check all the extensions that haven't been discover yet
+		NenoHelper::discoverExtensions();
 
 		$this
 			->setRedirect('index.php?option=com_neno&view=extensions')
 			->redirect();
-	}
-
-	/**
-	 * Get all the tables of the component that matches with the Joomla naming convention.
-	 *
-	 * @param   NenoContentElementGroup $componentName Component name
-	 *
-	 * @return array
-	 */
-	public function getComponentTables(NenoContentElementGroup $componentData)
-	{
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db     = JFactory::getDbo();
-		$tables = $db->getComponentTables($componentData->getGroupName());
-
-		$result = array();
-
-		for ($i = 0; $i < count($tables); $i++)
-		{
-			// Get Table name
-			$tableName = NenoHelper::unifyTableName($tables[$i]);
-
-			if (!NenoHelper::isAlreadyDiscovered($tableName))
-			{
-				// Create an array with the table information
-				$tableData = array(
-					'tableName'  => $tableName,
-					'primaryKey' => $db->getPrimaryKey($tableName),
-					'translate'  => NenoHelper::shouldBeTranslated($tableName),
-				);
-
-				// Create ContentElement object
-				$table = new NenoContentElementTable($tableData);
-
-				// Get all the columns a table contains
-				$fields = $db->getTableColumns($table->getTableName());
-
-				foreach ($fields as $fieldName => $fieldType)
-				{
-					$fieldData = array(
-						'fieldName' => $fieldName,
-						'translate' => NenoContentElementField::isTranslatableType($fieldType),
-						'table'     => $table
-					);
-
-					$field = new NenoContentElementField($fieldData);
-
-					$table->addField($field);
-				}
-
-				$result[] = $table;
-			}
-		}
-
-		return $result;
 	}
 
 	/**
@@ -186,8 +69,8 @@ class NenoControllerGroupsElements extends JControllerAdmin
 			// Add to each content file the path of the extraction location.
 			NenoHelper::concatenateStringToStringArray($extractPath . '/', $contentElementFiles);
 
-			// Create a group for this extension.
-			NenoContentElementGroup::parseContentElementFiles(JFile::stripExt($fileData['name']), $contentElementFiles);
+			// Parse element file(s)
+			NenoHelper::parseContentElementFile(JFile::stripExt($fileData['name']), $contentElementFiles);
 
 			// Clean temporal folder
 			NenoHelper::cleanFolder(JFactory::getConfig()->get('tmp_path'));
@@ -199,7 +82,9 @@ class NenoControllerGroupsElements extends JControllerAdmin
 	}
 
 	/**
+	 * Enable/Disable a database table to be translate
 	 *
+	 * @return void
 	 */
 	public function enableDisableContentElementTable()
 	{
@@ -234,8 +119,8 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		$fieldId         = $input->getInt('fieldId');
 		$translateStatus = $input->getBool('translateStatus');
 
+		/* @var $field NenoContentElementField */
 		$field  = NenoContentElementField::getFieldById($fieldId);
-		//var_dump($field);
 		$result = 0;
 
 		// If the table exists, let's work with it.
@@ -244,11 +129,11 @@ class NenoControllerGroupsElements extends JControllerAdmin
 			$field->setTranslate($translateStatus);
 			$field->persist();
 
-			$stringStatus = array();
-			$stringStatus['translated'] = $field->getStringsTranslated();
-			$stringStatus['queued'] = $field->getStringsQueuedToBeTranslated();
-			$stringStatus['changed'] = $field->getStringsSourceHasChanged();
-			$stringStatus['notTranslated'] = $field->getStringsNotTranslated();
+			$stringStatus                  = array();
+			$stringStatus['translated']    = $field->getWordsTranslated();
+			$stringStatus['queued']        = $field->getWordsQueuedToBeTranslated();
+			$stringStatus['changed']       = $field->getWordsSourceHasChanged();
+			$stringStatus['notTranslated'] = $field->getWordsNotTranslated();
 
 			$result = NenoHelper::htmlTranslationBar($stringStatus, $translateStatus);
 		}
