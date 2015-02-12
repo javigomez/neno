@@ -38,13 +38,8 @@ class NenoControllerExtensions extends JControllerAdmin
 	 */
 	public function discoverExtensions()
 	{
-		$ini = time();
 		// Check all the extensions that haven't been discover yet
 		NenoHelper::discoverExtensions();
-
-		echo (time() - $ini) . 'seconds';
-
-		exit;
 
 		$this
 			->setRedirect('index.php?option=com_neno&view=extensions')

@@ -156,6 +156,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get the string of the translation
+	 *
 	 * @return string
 	 */
 	public function getString()
@@ -164,7 +166,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * @param string $string
+	 * Set the string
+	 *
+	 * @param   string $string String
 	 *
 	 * @return NenoContentElementTranslation
 	 */
@@ -178,7 +182,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * Get all the translation associated to a
 	 *
-	 * @param   NenoContentElement $element
+	 * @param   NenoContentElement $element Content Element
 	 *
 	 * @return array
 	 */
@@ -207,6 +211,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get type of the content to translate
+	 *
 	 * @return int
 	 */
 	public function getContentType()
@@ -215,7 +221,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * @param   int $contentType
+	 * Set content type
+	 *
+	 * @param   int $contentType content type
 	 *
 	 * @return NenoContentElement
 	 */
@@ -227,6 +235,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get Content element
+	 *
 	 * @return NenoContentElement
 	 */
 	public function getElement()
@@ -235,7 +245,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * @param NenoContentElement $element
+	 * Set content element
+	 *
+	 * @param   NenoContentElement $element Content element
 	 *
 	 * @return NenoContentElement
 	 */
@@ -247,6 +259,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get the language of the string (JISO)
+	 *
 	 * @return string
 	 */
 	public function getLanguage()
@@ -255,7 +269,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * @param string $language
+	 * Set the language of the string (JISO)
+	 *
+	 * @param   string $language Language on JISO format
 	 *
 	 * @return NenoContentElementTranslation
 	 */
@@ -267,6 +283,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get the translation state
+	 *
 	 * @return int
 	 */
 	public function getState()
@@ -275,7 +293,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * @param int $state
+	 * Set the translation state
+	 *
+	 * @param   int $state Translation state
 	 *
 	 * @return NenoContentElementTranslation
 	 */
@@ -287,6 +307,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get the method used to translate the string
+	 *
 	 * @return string
 	 */
 	public function getTranslationMethod()
@@ -295,7 +317,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * @param string $translationMethod
+	 * Set the translation method
+	 *
+	 * @param   string $translationMethod Translation method
 	 *
 	 * @return NenoContentElementTranslation
 	 */
@@ -307,6 +331,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get the translation version
+	 *
 	 * @return int
 	 */
 	public function getVersion()
@@ -315,7 +341,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * @param int $version
+	 * Set the translation version
+	 *
+	 * @param   int $version Translation version
 	 *
 	 * @return NenoContentElementTranslation
 	 */
@@ -327,6 +355,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get the time when this translation was added
+	 *
 	 * @return DateTime
 	 */
 	public function getTimeAdded()
@@ -335,6 +365,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Set the time when the translation was added
+	 *
 	 * @param DateTime $timeAdded
 	 *
 	 * @return NenoContentElementTranslation
@@ -347,6 +379,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get the time when the translation was requested to an external service
+	 *
 	 * @return DateTime
 	 */
 	public function getTimeRequested()
@@ -355,7 +389,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * @param DateTime $timeRequested
+	 * Set the time when the translation was requested to an external service
+	 *
+	 * @param   DateTime $timeRequested Time when the translation was requested
 	 *
 	 * @return NenoContentElementTranslation
 	 */
@@ -367,6 +403,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get the date when a translation has been completed
+	 *
 	 * @return DateTime
 	 */
 	public function getTimeCompleted()
@@ -375,7 +413,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * @param DateTime $timeCompleted
+	 * Set the date and the time when the translation has been completed
+	 *
+	 * @param   DateTime $timeCompleted Datetime instance when the translation has been completed
 	 *
 	 * @return NenoContentElementTranslation
 	 */
@@ -414,8 +454,6 @@ class NenoContentElementTranslation extends NenoContentElement
 		{
 			$db = JFactory::getDbo();
 
-			Kint::dump($this->sourceElementData);
-
 			// Loop through the data
 			foreach ($this->sourceElementData as $sourceData)
 			{
@@ -436,6 +474,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get all the data related to the source element
+	 *
 	 * @return array
 	 */
 	public function getSourceElementData()
@@ -444,7 +484,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * @param array $sourceElementData
+	 * Set all the data related to the source element
+	 *
+	 * @param   array $sourceElementData Source element data
 	 *
 	 * @return NenoContentElementTranslation
 	 */

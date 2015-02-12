@@ -54,22 +54,22 @@ class NenoContentElementField extends NenoContentElement
 	/**
 	 * @var integer
 	 */
-	private $stringsNotTranslated;
+	private $wordsNotTranslated;
 
 	/**
 	 * @var integer
 	 */
-	private $stringsQueuedToBeTranslated;
+	private $wordsQueuedToBeTranslated;
 
 	/**
 	 * @var integer
 	 */
-	private $stringsTranslated;
+	private $wordsTranslated;
 
 	/**
 	 * @var integer
 	 */
-	private $stringsSourceHasChanged;
+	private $wordsSourceHasChanged;
 
 	/**
 	 * {@inheritdoc}
@@ -82,13 +82,13 @@ class NenoContentElementField extends NenoContentElement
 
 		$data = new JObject($data);
 
-		$this->table                       = $data->get('table') == null
+		$this->table                     = $data->get('table') == null
 			? NenoContentElementTable::getTableById($data->get('tableId'), false)
 			: $data->get('table');
-		$this->stringsNotTranslated        = 0;
-		$this->stringsQueuedToBeTranslated = 0;
-		$this->stringsSourceHasChanged     = 0;
-		$this->stringsTranslated           = 0;
+		$this->wordsNotTranslated        = 0;
+		$this->wordsQueuedToBeTranslated = 0;
+		$this->wordsSourceHasChanged     = 0;
+		$this->wordsTranslated           = 0;
 
 		if (!$this->isNew() && $this->translate)
 		{
@@ -139,16 +139,16 @@ class NenoContentElementField extends NenoContentElement
 			switch ($state)
 			{
 				case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
-					$this->stringsNotTranslated = (int) $data['counter'];
+					$this->wordsNotTranslated = (int) $data['counter'];
 					break;
 				case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
-					$this->stringsQueuedToBeTranslated = (int) $data['counter'];
+					$this->wordsQueuedToBeTranslated = (int) $data['counter'];
 					break;
 				case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
-					$this->stringsSourceHasChanged = (int) $data['counter'];
+					$this->wordsSourceHasChanged = (int) $data['counter'];
 					break;
 				case NenoContentElementTranslation::TRANSLATED_STATE:
-					$this->stringsTranslated = (int) $data['counter'];
+					$this->wordsTranslated = (int) $data['counter'];
 					break;
 			}
 		}
@@ -181,6 +181,8 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
+	 * Get field type
+	 *
 	 * @return string
 	 */
 	public function getFieldType()
@@ -189,43 +191,47 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
-	 * @param string $fieldType
+	 * @param   string $fieldType
+	 *
+	 * @return $this
 	 */
 	public function setFieldType($fieldType)
 	{
 		$this->fieldType = $fieldType;
+
+		return $this;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getStringsNotTranslated()
+	public function getWordsNotTranslated()
 	{
-		return $this->stringsNotTranslated;
+		return $this->wordsNotTranslated;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getStringsQueuedToBeTranslated()
+	public function getWordsQueuedToBeTranslated()
 	{
-		return $this->stringsQueuedToBeTranslated;
+		return $this->wordsQueuedToBeTranslated;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getStringsTranslated()
+	public function getWordsTranslated()
 	{
-		return $this->stringsTranslated;
+		return $this->wordsTranslated;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getStringsSourceHasChanged()
+	public function getWordsSourceHasChanged()
 	{
-		return $this->stringsSourceHasChanged;
+		return $this->wordsSourceHasChanged;
 	}
 
 	/**
@@ -241,15 +247,19 @@ class NenoContentElementField extends NenoContentElement
 	/**
 	 * Mark this field as translatable
 	 *
-	 * @param boolean $translate
+	 * @param   boolean $translate
+	 *
+	 * @return $this
 	 */
 	public function setTranslate($translate)
 	{
 		$this->translate = $translate;
+
+		return $this;
 	}
 
 	/**
-	 * @return mixed
+	 * @return array
 	 */
 	public function getTranslations()
 	{
@@ -257,11 +267,15 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
-	 * @param mixed $translations
+	 * @param array $translations
+	 *
+	 * @return $this
 	 */
-	public function setTranslations($translations)
+	public function setTranslations(array $translations)
 	{
 		$this->translations = $translations;
+
+		return $this;
 	}
 
 	/**
@@ -277,7 +291,7 @@ class NenoContentElementField extends NenoContentElement
 	/**
 	 * Mark a field as translatable
 	 *
-	 * @param boolean $translate
+	 * @param   boolean $translate
 	 *
 	 * @return $this
 	 */
@@ -289,6 +303,8 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
+	 * Check if this field is translatable
+	 *
 	 * @return bool
 	 */
 	public function isTranslatable()
@@ -380,7 +396,7 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
-	 * Get all the
+	 * Get all the strings related to this field
 	 *
 	 * @return array
 	 */
@@ -426,7 +442,7 @@ class NenoContentElementField extends NenoContentElement
 	/**
 	 * Set Table
 	 *
-	 * @param NenoContentElementTable $table
+	 * @param   NenoContentElementTable $table Table
 	 *
 	 * @return $this
 	 */
@@ -448,7 +464,9 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
-	 * @param string $fieldName
+	 * Set field name
+	 *
+	 * @param   string $fieldName Field name
 	 *
 	 * @return $this
 	 */
@@ -460,10 +478,12 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
+	 * Get a ContentElementField related to a table and field name
 	 *
+	 * @param   NenoContentElementTable $table     Table
+	 * @param   string                  $fieldName Field name
 	 *
-	 * @param   NenoContentElementTable $table
-	 * @param   string                  $fieldName
+	 * @return NenoContentElementField
 	 */
 	public static function getFieldByTableAndFieldName(NenoContentElementTable $table, $fieldName)
 	{

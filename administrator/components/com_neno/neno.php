@@ -16,6 +16,28 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_neno'))
 	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
+// Make sure that the Neno package is defined.
+if (!defined('JPATH_NENO'))
+{
+	$nenoLoader = JPATH_LIBRARIES . '/neno/loader.php';
+
+	if (file_exists($nenoLoader))
+	{
+		JLoader::register('NenoLoader', $nenoLoader);
+
+		// Register the Class prefix in the autoloader
+		NenoLoader::init();
+	}
+}
+
+if (!NenoHelper::isTheDatabaseDriverEnable())
+{
+	$app = JFactory::getApplication();
+	$app->enqueueMessage('Please enable the plugin to use Neno', 'error');
+	$app->setUserState('com_plugins.plugins.filter.search', 'neno');
+	$app->redirect('index.php?option=com_plugins');
+}
+
 // Include dependencies
 jimport('joomla.application.component.controller');
 
