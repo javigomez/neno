@@ -322,10 +322,10 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 				}
 				$totalFields = $fieldsTranslated + $fieldsQueued + $fieldsChanged + $fieldsNotTranslated;
 
-				$stringsTranslated = $group->getLanguageStringsTranslated();
-				$stringsQueued = $group->getLanguageStringsQueuedToBeTranslated();
-				$stringsChanged = $group->getLanguageStringsSourceHasChanged();
-				$stringsNotTranslated = $group->getLanguageStringsNotTranslated();
+				$stringsTranslated = $group->getLanguageWordsTranslated();
+				$stringsQueued = $group->getLanguageWordsQueuedToBeTranslated();
+				$stringsChanged = $group->getLanguageWordsSourceHasChanged();
+				$stringsNotTranslated = $group->getLanguageWordsNotTranslated();
 				$countLanguageStrings = $stringsTranslated + $stringsQueued + $stringsChanged + $stringsNotTranslated;
 				if ($countLanguageStrings !== 0)
 				{
