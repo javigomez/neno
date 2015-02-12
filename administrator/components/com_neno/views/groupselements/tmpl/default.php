@@ -272,14 +272,14 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 						}
 						$groupTables[$table->getId()][$field->getId()] = array();
 						$groupTables[$table->getId()][$field->getId()]['totalStrings'] = 1;
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['translated'] = $field->getStringsTranslated());
-						$fieldsTranslated += $field->getStringsTranslated();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['queued'] = $field->getStringsQueuedToBeTranslated());
-						$fieldsQueued += $field->getStringsQueuedToBeTranslated();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['changed'] = $field->getStringsSourceHasChanged());
-						$fieldsChanged += $field->getStringsSourceHasChanged();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['notTranslated'] = $field->getStringsNotTranslated());
-						$fieldsNotTranslated += $field->getStringsNotTranslated();
+						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['translated'] = $field->getWordsTranslated());
+						$fieldsTranslated += $field->getWordsTranslated();
+						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['queued'] = $field->getWordsQueuedToBeTranslated());
+						$fieldsQueued += $field->getWordsQueuedToBeTranslated();
+						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['changed'] = $field->getWordsSourceHasChanged());
+						$fieldsChanged += $field->getWordsSourceHasChanged();
+						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['notTranslated'] = $field->getWordsNotTranslated());
+						$fieldsNotTranslated += $field->getWordsNotTranslated();
 					}
 				}
 				$totalFields = $fieldsTranslated + $fieldsQueued + $fieldsChanged + $fieldsNotTranslated +1;
@@ -291,10 +291,10 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					$stringsFile = NenoHelper::getWorkingLanguage() . '.' . $group->getGroupName() . '.ini';
 					$countElements++;
 				}
-				$stringsTranslated = $group->getLanguageStringsTranslated();
-				$stringsQueued = $group->getLanguageStringsQueuedToBeTranslated();
-				$stringsChanged = $group->getLanguageStringsSourceHasChanged();
-				$stringsNotTranslated = $group->getLanguageStringsNotTranslated();
+				$stringsTranslated = $group->getLanguageWordsTranslated();
+				$stringsQueued = $group->getLanguageWordsQueuedToBeTranslated();
+				$stringsChanged = $group->getLanguageWordsSourceHasChanged();
+				$stringsNotTranslated = $group->getLanguageWordsNotTranslated();
 
 				?>
 

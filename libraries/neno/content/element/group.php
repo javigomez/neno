@@ -39,22 +39,22 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * @var integer
 	 */
-	private $languageStringsNotTranslated;
+	private $languageWordsNotTranslated;
 
 	/**
 	 * @var integer
 	 */
-	private $languageStringsQueuedToBeTranslated;
+	private $languageWordsQueuedToBeTranslated;
 
 	/**
 	 * @var integer
 	 */
-	private $languageStringsTranslated;
+	private $languageWordsTranslated;
 
 	/**
 	 * @var integer
 	 */
-	private $languageStringsSourceHasChanged;
+	private $languageWordsSourceHasChanged;
 
 	/**
 	 * @var array
@@ -70,13 +70,13 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		parent::__construct($data);
 
-		$this->tables                              = array();
-		$this->languageStrings                     = array();
-		$this->languageStringsNotTranslated        = 0;
-		$this->languageStringsQueuedToBeTranslated = 0;
-		$this->languageStringsSourceHasChanged     = 0;
-		$this->languageStringsTranslated           = 0;
-		$this->translationMethodUsed               = array();
+		$this->tables                            = array();
+		$this->languageStrings                   = array();
+		$this->languageWordsNotTranslated        = 0;
+		$this->languageWordsQueuedToBeTranslated = 0;
+		$this->languageWordsSourceHasChanged     = 0;
+		$this->languageWordsTranslated           = 0;
+		$this->translationMethodUsed             = array();
 
 		// Only search for the statistics for existing groups
 		if (!$this->isNew())
@@ -124,16 +124,16 @@ class NenoContentElementGroup extends NenoContentElement
 			switch ($state)
 			{
 				case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
-					$this->languageStringsNotTranslated = (int) $data['counter'];
+					$this->languageWordsNotTranslated = (int) $data['counter'];
 					break;
 				case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
-					$this->languageStringsQueuedToBeTranslated = (int) $data['counter'];
+					$this->languageWordsQueuedToBeTranslated = (int) $data['counter'];
 					break;
 				case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
-					$this->languageStringsSourceHasChanged = (int) $data['counter'];
+					$this->languageWordsSourceHasChanged = (int) $data['counter'];
 					break;
 				case NenoContentElementTranslation::TRANSLATED_STATE:
-					$this->languageStringsTranslated = (int) $data['counter'];
+					$this->languageWordsTranslated = (int) $data['counter'];
 					break;
 			}
 		}
@@ -438,9 +438,9 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return int
 	 */
-	public function getLanguageStringsNotTranslated()
+	public function getLanguageWordsNotTranslated()
 	{
-		return $this->languageStringsNotTranslated;
+		return $this->languageWordsNotTranslated;
 	}
 
 	/**
@@ -448,9 +448,9 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return int
 	 */
-	public function getLanguageStringsQueuedToBeTranslated()
+	public function getLanguageWordsQueuedToBeTranslated()
 	{
-		return $this->languageStringsQueuedToBeTranslated;
+		return $this->languageWordsQueuedToBeTranslated;
 	}
 
 	/**
@@ -458,9 +458,9 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return int
 	 */
-	public function getLanguageStringsTranslated()
+	public function getLanguageWordsTranslated()
 	{
-		return $this->languageStringsTranslated;
+		return $this->languageWordsTranslated;
 	}
 
 	/**
@@ -468,9 +468,9 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return int
 	 */
-	public function getLanguageStringsSourceHasChanged()
+	public function getLanguageWordsSourceHasChanged()
 	{
-		return $this->languageStringsSourceHasChanged;
+		return $this->languageWordsSourceHasChanged;
 	}
 
 	/**
