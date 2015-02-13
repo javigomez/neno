@@ -7,6 +7,12 @@
  * @copyright   Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
+
+/**
+ * Class NenoDatabaseDriverMysqlxTest
+ *
+ * @since  1.0
+ */
 class NenoDatabaseDriverMysqlxTest extends TestCase
 {
 	/**

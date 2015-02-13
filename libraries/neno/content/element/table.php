@@ -43,7 +43,7 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param mixed $data
+	 * @param   mixed $data Table data
 	 */
 	public function __construct($data, $loadFields = true)
 	{
@@ -77,7 +77,7 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * Load a table using its ID
 	 *
-	 * @param integer $tableId
+	 * @param   integer $tableId Table Id
 	 *
 	 * @return bool|NenoContentElementTable
 	 */
@@ -127,7 +127,7 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * Set the group that contains this table
 	 *
-	 * @param NenoContentElementGroup $group
+	 * @param   NenoContentElementGroup $group Group
 	 *
 	 * @return $this
 	 */
@@ -151,7 +151,7 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * Set Table name
 	 *
-	 * @param string $tableName
+	 * @param   string $tableName Table name
 	 *
 	 * @return $this
 	 */
@@ -180,11 +180,11 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * Set Primary key
 	 *
-	 * @param string $primaryKey
+	 * @param   array $primaryKey Primary keys
 	 *
 	 * @return $this
 	 */
-	public function setPrimaryKey($primaryKey)
+	public function setPrimaryKey(array $primaryKey)
 	{
 		$this->primaryKey = $primaryKey;
 
@@ -204,7 +204,7 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * Mark a table as translatable or not.
 	 *
-	 * @param boolean $translate
+	 * @param   boolean $translate If the table needs to be translated
 	 *
 	 * @return $this
 	 */
@@ -228,7 +228,7 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * Set the fields related to this table
 	 *
-	 * @param array $fields
+	 * @param   array $fields Table fields
 	 *
 	 * @return $this
 	 */
@@ -242,7 +242,7 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * Add a field to the field list.
 	 *
-	 * @param NenoContentElementField $field
+	 * @param   NenoContentElementField $field Field
 	 *
 	 * @return NenoContentElementTable
 	 */
