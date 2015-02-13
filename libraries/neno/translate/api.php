@@ -14,7 +14,7 @@ defined('JPATH_NENO') or die;
  *
  * @since  1.0
  */
-abstract class NenoTranslateApi
+abstract class NenoTranslateApi extends JHttp
 {
 	/**
 	 * Method to translate content
