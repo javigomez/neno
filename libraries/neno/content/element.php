@@ -60,9 +60,9 @@ abstract class NenoContentElement
 		$properties   = $data->getProperties();
 		$sanitizeData = new JObject;
 
-		foreach ($properties as $property)
+		foreach ($properties as $property => $value)
 		{
-			$sanitizeData->set(NenoHelper::convertDatabaseColumnNameToPropertyName($property), $data->get($property));
+			$sanitizeData->set(NenoHelper::convertDatabaseColumnNameToPropertyName($property), $value);
 		}
 
 		return $sanitizeData;
