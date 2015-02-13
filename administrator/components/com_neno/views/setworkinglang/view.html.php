@@ -18,11 +18,21 @@ jimport('joomla.application.component.view');
  *
  * @since  1.0
  */
-class NenoViewSetworkinglang extends JViewLegacy
+class NenoViewSetWorkingLang extends JViewLegacy
 {
+	/**
+	 * @var array
+	 */
+	protected $langs;
 
 	/**
 	 * Display the view
+	 *
+	 * @param   string $tpl Template name
+	 *
+	 * @return void
+	 *
+	 * @throws Exception
 	 */
 	public function display($tpl = null)
 	{
