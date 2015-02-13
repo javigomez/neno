@@ -1,4 +1,4 @@
-<?php
+    <?php
 /**
  * @package     Neno
  * @subpackage  TranslateApi
@@ -20,7 +20,7 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	 *
 	 * @param string $text
 	 *
-	 * @return json
+	 * @return string
 	 */
 	public function translate($text)
 	{
@@ -28,17 +28,16 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 		$url    = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey . '&q=' . rawurlencode($text) . '&source=en&target=fr';
 
 		// Invoke the GET request.
-		$response = $this->get($url);
-		print_r($response);
-		if ($response != 200)
+		$response = $this->get($url);	
+                       
+              	if ($response->code != 200)
 		{
-			echo 'Fetching translation failed! Server response code:' . $response;
-			//echo 'Error description: ' . $responseDecoded['error']['errors'][0]['message'];
+			echo 'Fetching translation failed! Server response code:' . $response->code;			
 		}
 		else
 		{
-			echo 'Source: ' . $text . '<br>';
-			//echo 'Translation: ' . $responseDecoded['data']['translations'][0]['translatedText'];
+			$reponse_body=json_decode($response->body);
+			echo $reponse_body->data->translations[0]->translatedText;
 		}
 
 	}
