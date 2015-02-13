@@ -101,12 +101,16 @@ class NenoModelStrings extends JModelList
 
 		$translations = array();
 
-		for ($i = 0; $i < count($elements)/5; $i++)
+		for ($i = 0; $i < count($elements); $i++)
 		{
-			$element = NenoContentElementTable::getTableById($elements[$i]->id);
+			$translations[] = new NenoContentElementTranslation($elements[$i]);
+
+
+			/*$element = NenoContentElementField::getFieldById($elements[$i]->id);
 			if (!empty($element)) {
 				$translations[$i] = NenoContentElementTranslation::getTranslations($element);
-			}
+
+			}*/
 		}
 
 		//var_dump($elements);
@@ -127,7 +131,7 @@ class NenoModelStrings extends JModelList
 		// Create a new query object.
 		$query = parent::getListQuery();
 
-		$query->select('*');
+		$query->select('tr.*');
 		$query->from('`#__neno_content_element_tables` AS t');
 		$query->join('LEFT', '#__neno_content_element_fields AS f ON t.id = f.table_id AND f.translate = 1');
 		$query->join('LEFT', '#__neno_content_element_translations AS tr ON tr.content_id = f.id');

@@ -194,7 +194,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	{
 		$string = null;
 
-		if ($this->contentType === self::DB_STRING)
+		if ($this->contentType == self::DB_STRING)
 		{
 			/* @var $field NenoContentElementField */
 			$field = $this->getElement();
