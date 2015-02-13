@@ -90,7 +90,8 @@ if (!empty($this->extra_sidebar))
 		-->
 		<?php endif;
 		//Kint::dump(count($this->items));
-		Kint::dump($this->items);
+		Kint::dump($this->items[0]);
+		Kint::dump($this->items[0]->getSourceElementData());
 		?>
 
 		<?php
@@ -113,11 +114,13 @@ if (!empty($this->extra_sidebar))
 			</thead>
 			<tbody>
 			<?php /* @var $group NenoContentElementTranslation */ ?>
-			<?php foreach ($this->items as $string):?>
+			<?php foreach ($this->items as $translation):
+				$element = $translation->getElement();
+				?>
 				<tr class="row-string">
 					<td class="cell-check"><input type="checkbox"/></td>
 					<td class="cell-status"><span class="status translated icon-checkmark"></span></td>
-					<td></td>
+					<td><?php //echo $translation->getString(); ?></td>
 					<td></td>
 					<td></td>
 					<td></td>
