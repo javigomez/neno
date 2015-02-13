@@ -29,7 +29,7 @@ abstract class NenoContentElement
 	public function __construct($data)
 	{
 		// Create a JObject object to unify the way to assign the properties
-		$data = new JObject($data);
+		$data = $this->sanitizeConstructorData($data);
 
 		// Create a reflection class to use it to dynamic properties loading
 		$classReflection = $this->getClassReflectionObject();
@@ -45,6 +45,27 @@ abstract class NenoContentElement
 				$this->{$property->getName()} = $data->get($property->getName());
 			}
 		}
+	}
+
+	/**
+	 * Make sure that the data contains CamelCase properties
+	 *
+	 * @param   mixed $data Data to sanitize
+	 *
+	 * @return JObject
+	 */
+	protected function sanitizeConstructorData($data)
+	{
+		$data         = new JObject($data);
+		$properties   = $data->getProperties();
+		$sanitizeData = new JObject;
+
+		foreach ($properties as $property)
+		{
+			$sanitizeData->set(NenoHelper::convertDatabaseColumnNameToPropertyName($property), $data->get($property));
+		}
+
+		return $sanitizeData;
 	}
 
 	/**
