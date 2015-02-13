@@ -164,8 +164,7 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	public
-	function assignMockCallbacks($mockObject, $array)
+	public function assignMockCallbacks($mockObject, $array)
 	{
 		foreach ($array as $index => $method)
 		{
@@ -197,8 +196,7 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	public
-	function assignMockReturns($mockObject, $array)
+	public function assignMockReturns($mockObject, $array)
 	{
 		foreach ($array as $method => $return)
 		{
@@ -208,44 +206,9 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 		}
 	}
 
-	/**
-	 * Gets a mock configuration object.
-	 *
-	 * @return  JConfig
-	 *
-	 * @since   12.1
-	 */
-	public
-	function getMockConfig()
+	protected function getDataSet()
 	{
-		return TestMockConfig::create($this);
-	}
-
-	/**
-	 * Gets a mock database object.
-	 *
-	 * @param   string $driver       Optional driver to create a sub-class of JDatabaseDriver
-	 * @param   array  $extraMethods An array of additional methods to add to the mock
-	 * @param   string $nullDate     A null date string for the driver.
-	 * @param   string $dateFormat   A date format for the driver.
-	 *
-	 * @return  JDatabaseDriver
-	 *
-	 * @since   12.1
-	 */
-	public
-	function getMockDatabase($driver = '', array $extraMethods = array(), $nullDate = '0000-00-00 00:00:00', $dateFormat = 'Y-m-d H:i:s')
-	{
-		// Attempt to load the real class first.
-		class_exists('NenoDatabaseDriverMysqlx');
-
-		return TestMockDatabaseDriver::create($this, $driver, $extraMethods, $nullDate, $dateFormat);
-	}
-
-	protected
-	function getDataSet()
-	{
-		return new PHPUnit_Extensions_Database_DataSet_DefaultDataSet();
+		return new PHPUnit_Extensions_Database_DataSet_DefaultDataSet;
 	}
 
 	/**
@@ -255,8 +218,7 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	protected
-	function restoreFactoryState()
+	protected function restoreFactoryState()
 	{
 		JFactory::$application = $this->stashedFactoryState['application'];
 		JFactory::$config      = $this->stashedFactoryState['config'];
@@ -274,8 +236,7 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	protected
-	function saveFactoryState()
+	protected function saveFactoryState()
 	{
 		$this->stashedFactoryState['application'] = JFactory::$application;
 		$this->stashedFactoryState['config']      = JFactory::$config;
@@ -294,8 +255,7 @@ abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @since   12.1
 	 */
-	protected
-	function getConnection()
+	protected function getConnection()
 	{
 		// Compile the connection DSN.
 		$dsn = 'mysql:host=' . self::$options['host'] . ';dbname=' . self::$options['database'];
