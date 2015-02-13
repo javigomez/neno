@@ -19,7 +19,7 @@ class NenoControllerDemo extends JControllerLegacy
 	/**
 	 * Method to handle ajax call for google translation
 	 *	 
-	 * @return json
+	 * @return string
 	 */
 	public function ajaxTranslate()
 	{ 
@@ -38,8 +38,8 @@ class NenoControllerDemo extends JControllerLegacy
 			}			
 		}	
 		    $result = $neno_translate->translate($text);	
-			print_r($result);
-			exit;
+		    print_r($result);
+		    exit;
 	}
 
 }
