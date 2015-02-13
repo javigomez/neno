@@ -24,26 +24,23 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	 */
 	public function translate($text)
 	{
-            $apiKey = 'AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8';    	
-            $url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey . '&q=' . rawurlencode($text) . '&source=en&target=fr';
-            
-            // Create an instance of a default JHttp object.
-            $http = JHttpFactory::getHttp();
-            
-            // Invoke the GET request.
-            $response = $http->get($http);
-            print_r($response);
-            if($response != 200)
-	        {
-                echo 'Fetching translation failed! Server response code:' . $response; 
-                //echo 'Error description: ' . $responseDecoded['error']['errors'][0]['message'];                
-            }
-            else 
-	       {
-        	echo 'Source: ' . $text . '<br>';
-        	//echo 'Translation: ' . $responseDecoded['data']['translations'][0]['translatedText']; 
-	       }
-    	
+		$apiKey = 'AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8';
+		$url    = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey . '&q=' . rawurlencode($text) . '&source=en&target=fr';
+
+		// Invoke the GET request.
+		$response = $this->get($url);
+		print_r($response);
+		if ($response != 200)
+		{
+			echo 'Fetching translation failed! Server response code:' . $response;
+			//echo 'Error description: ' . $responseDecoded['error']['errors'][0]['message'];
+		}
+		else
+		{
+			echo 'Source: ' . $text . '<br>';
+			//echo 'Translation: ' . $responseDecoded['data']['translations'][0]['translatedText'];
+		}
+
 	}
-	
+
 }
