@@ -162,11 +162,8 @@ class NenoContentElementField extends NenoContentElement
 			->clear()
 			->select('DISTINCT translation_method')
 			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
-			->leftJoin(
-				$db->quoteName('#__neno_content_element_langstrings', 'l') .
-				' ON t.content_id = l.id AND content_type = ' .
-				$db->quote(NenoContentElementTranslation::LANG_STRING)
-			);
+			->leftJoin($db->quoteName('#__neno_content_element_langstrings', 'l') . ' ON t.content_id = l.id')
+			->where('content_type = ' . $db->quote(NenoContentElementTranslation::LANG_STRING));
 
 		$db->setQuery($query);
 		$this->translationMethodUsed = $db->loadArray();
