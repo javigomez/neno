@@ -304,20 +304,19 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					/* @var $field NenoContentElementField */
 					foreach ($table->getFields() as $field)
 					{
-						if (!$field->isTranslate())
+						if ($field->isTranslate())
 						{
-							continue;
+							$groupTables[$table->getId()][$field->getId()] = array();
+							$groupTables[$table->getId()][$field->getId()]['totalStrings'] = 0;
+							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['translated'] = $field->getWordsTranslated());
+							$fieldsTranslated += $field->getWordsTranslated();
+							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['queued'] = $field->getWordsQueuedToBeTranslated());
+							$fieldsQueued += $field->getWordsQueuedToBeTranslated();
+							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['changed'] = $field->getWordsSourceHasChanged());
+							$fieldsChanged += $field->getWordsSourceHasChanged();
+							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['notTranslated'] = $field->getWordsNotTranslated());
+							$fieldsNotTranslated += $field->getWordsNotTranslated();
 						}
-						$groupTables[$table->getId()][$field->getId()] = array();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] = 0;
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['translated'] = $field->getWordsTranslated());
-						$fieldsTranslated += $field->getWordsTranslated();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['queued'] = $field->getWordsQueuedToBeTranslated());
-						$fieldsQueued += $field->getWordsQueuedToBeTranslated();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['changed'] = $field->getWordsSourceHasChanged());
-						$fieldsChanged += $field->getWordsSourceHasChanged();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['notTranslated'] = $field->getWordsNotTranslated());
-						$fieldsNotTranslated += $field->getWordsNotTranslated();
 					}
 				}
 				$totalFields = $fieldsTranslated + $fieldsQueued + $fieldsChanged + $fieldsNotTranslated;
