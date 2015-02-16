@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.controller');
 jimport('neno.translate.api.google');
+jimport('neno.translate.api.yandex');
 
 class NenoControllerDemo extends JControllerLegacy
 {
@@ -33,11 +34,16 @@ class NenoControllerDemo extends JControllerLegacy
 			switch($api)
 			{
 				case "google":
-				$neno_translate = new NenoTranslateApiGoogle();
-				break;						
+				$nenoTranslate = new NenoTranslateApiGoogle();
+				break;
+
+				case "yandex":
+				$nenoTranslate = new NenoTranslateApiYandex();
+				break;
 			}			
-		}	
-		    $result = $neno_translate->translate($text);	
+		}
+                                                           
+		    $result = $nenoTranslate->translate($text);
 		    print_r($result);
 		    exit;
 	}
