@@ -19,13 +19,22 @@ abstract class NenoTranslateApi extends JHttp
 	/**
 	 * Method to translate content
 	 *
-	 * @param   string $apiKey  the key provided by user
-         * @param   string $text    text to translate
-	 * @param   string $source  source language
-         * @param   string $target  target language
+ 	 * @param   string $apiKey  the key provided by user
+	 * @param   string $text    text to translate
+ 	 * @param   string $source  source language
+ 	 * @param   string $target  target language
+ 	 *
+ 	 * @return json
+ 	 */
+	abstract public function translate($text,$source,$target);
+
+	/**
+	 * Method to make supplied language codes equivalent to translation api codes
 	 *
-	 * @return json
+	 * @param   string $jiso Joomla ISO language code
+	 *
+	 * @return string
 	 */
-	abstract public function translate($text,$source="en",$target="fr");
-	
+	abstract public function convertFromJisoToIso($jiso);
+
 }
