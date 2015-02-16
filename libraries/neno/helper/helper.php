@@ -1004,6 +1004,27 @@ class NenoHelper
 	}
 
 	/**
+	 * This methods convert Joomla ISO language code (JISO)
+	 *
+	 * @param string $jiso Joomla ISO language code
+	 *
+	 * @return string
+	 */
+	public static function convertFromJisoToIso($jiso)
+	{
+		$iso2 = $jiso;
+
+		// If the JISO
+		if ($iso2 != 'zh-TW')
+		{
+			$isoParts = explode('-', $iso2);
+			$iso2     = strtolower($isoParts[0]);
+		}
+
+		return $iso2;
+	}
+
+	/**
 	 * Escape a string
 	 *
 	 * @param   mixed $value Value
