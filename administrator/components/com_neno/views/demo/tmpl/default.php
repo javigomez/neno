@@ -15,60 +15,67 @@ JHtml::_('behavior.keepalive');
 ?>
 
 <style type="text/css">
-	#translate_btn{float:right}	
+	button.btn-primary {
+		float: right
+	}
 </style>
 
 <script type="text/javascript">
-    // function to get translation using ajax	
-	function translate(apiMethod)
-	{
-     	var source = jQuery("#"+apiMethod+"Source").val();
+	// function to get translation using ajax
+	function translate(apiMethod) {
+		var source = jQuery("#" + apiMethod + "Source").val();
 
-		if(source !== "")
-		 { 
-                jQuery.ajax({
-				url: "index.php?option=com_neno&task=demo.ajaxTranslate",			 
-				data: {'api':apiMethod ,'source':source},
-                 type:'post',
-				success: function(msg){                 
-                                 jQuery("#"+apiMethod+"Translate").val(jQuery.trim(msg));
-			        }				 
-			      });
-		 }	 
+		if (source !== "") {
+			jQuery.ajax({
+				url: "index.php?option=com_neno&task=demo.ajaxTranslate",
+				data: {'api': apiMethod, 'source': source},
+				type: 'post',
+				success: function (msg) {
+					jQuery("#" + apiMethod + "Translate").val(jQuery.trim(msg));
+				}
+			});
+		}
 	}
+
+	jQuery(document).ready(function () {
+		jQuery("button.btn-primary").on("click", function () {
+			translate(jQuery(this).attr('data-api'));
+		});
+	});
+
 </script>
 
 <!-- (start) Google translation Block -->
 <div class="row-fluid">
-    
-    <div class="span1">Source Text</div>
-    
-    <div class="span4">
-        <form>
-            <textarea id="googleSource" class="span12" rows="8" cols="200" placeholder="English"></textarea>
-        </form>
-    </div>   
-   
-    
-    <div class="span1">Translated Text</div>
 
-    <div class="span4">
+	<div class="span1">Source Text</div>
 
-        <form action="" method="post" enctype="multipart/form-data">
+	<div class="span4">
+		<form>
+			<textarea id="googleSource" class="span12" rows="8" cols="200" placeholder="English"></textarea>
+		</form>
+	</div>
 
-            <textarea id="googleTranslate" class="span12" rows="8" cols="200" placeholder="French"></textarea>
 
-            <input type="hidden" name="task" value="" />
-            <?php echo JHtml::_('form.token'); ?>
+	<div class="span1">Translated Text</div>
 
-        </form>
+	<div class="span4">
 
-    </div>  
-    
-     <div class="span5">
-     <button onclick="translate('google');" class="btn btn-primary">Google Translate</button>
-    </div> 
-    
+		<form action="" method="post" enctype="multipart/form-data">
+
+			<textarea id="googleTranslate" class="span12" rows="8" cols="200" placeholder="French"></textarea>
+
+			<input type="hidden" name="task" value=""/>
+			<?php echo JHtml::_('form.token'); ?>
+
+		</form>
+
+	</div>
+
+	<div class="span5">
+		<button id="googleTranslateButton" class="btn btn-primary" data-api="google">Google Translate</button>
+	</div>
+
 </div>
 <!-- (end) Google translation Block -->
 
@@ -77,33 +84,33 @@ JHtml::_('behavior.keepalive');
 <!-- (start) Yandex translation Block -->
 <div class="row-fluid">
 
-    <div class="span1">Source Text</div>
+	<div class="span1">Source Text</div>
 
-    <div class="span4">
-        <form>
-            <textarea id="yandexSource" class="span12" rows="8" cols="200" placeholder="English"></textarea>
-        </form>
-    </div>
+	<div class="span4">
+		<form>
+			<textarea id="yandexSource" class="span12" rows="8" cols="200" placeholder="English"></textarea>
+		</form>
+	</div>
 
 
-    <div class="span1">Translated Text</div>
+	<div class="span1">Translated Text</div>
 
-    <div class="span4">
+	<div class="span4">
 
-        <form action="" method="post" enctype="multipart/form-data">
+		<form action="" method="post" enctype="multipart/form-data">
 
-            <textarea id="yandexTranslate" class="span12" rows="8" cols="200" placeholder="French"></textarea>
+			<textarea id="yandexTranslate" class="span12" rows="8" cols="200" placeholder="French"></textarea>
 
-            <input type="hidden" name="task" value="" />
-            <?php echo JHtml::_('form.token'); ?>
+			<input type="hidden" name="task" value=""/>
+			<?php echo JHtml::_('form.token'); ?>
 
-        </form>
+		</form>
 
-    </div>
+	</div>
 
-    <div class="span5">
-        <button onclick="translate('yandex');" class="btn btn-primary">Yandex Translate</button>
-    </div>
+	<div class="span5">
+		<button class="btn btn-primary" data-api="yandex">Yandex Translate</button>
+	</div>
 
 </div>
 <!-- (end) Yandex translation Block -->
