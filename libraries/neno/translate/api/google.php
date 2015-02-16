@@ -16,62 +16,50 @@ jimport('joomla.application.component.helper');
  */
 class NenoTranslateApiGoogle extends NenoTranslateApi
 {
-        /**
-	 * @var TranslateApi
+	/**
+	 * @var string TranslateApi
 	 */
 	protected $apiKey;
-        
+
 	/**
 	 * Translate text using google api
 	 *
-	 * @param   string $apiKey  the key provided by user
-         * @param   string $text    text to translate
-	 * @param   string $source  source language
-         * @param   string $target  target language
+	 * @param   string $text   text to translate
+	 * @param   string $source source language
+	 * @param   string $target target language
 	 *
 	 * @return string
 	 */
-	public function translate($text,$source="en",$target="fr")
+	public function translate($text, $source = "en", $target = "fr")
 	{
-            // get the key configured by user              
-            $this->apiKey = JComponentHelper::getParams('com_neno')->get('googleApiKey');
-            
-                if($this->apiKey == "")
-                {    
-                    // Use default key if not provided
-                    $this->apiKey = 'AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8';
-                }
-                
-		$url    = 'https://www.googleapis.com/language/translate/v2?key=' . $this->apiKey . '&q=' . rawurlencode($text) . '&source=' . $source .'&target=' .$target;
+		// Get the key configured by user
+		$this->apiKey = JComponentHelper::getParams('com_neno')->get('googleApiKey');
+
+		if ($this->apiKey == "")
+		{
+			// Use default key if not provided
+			$this->apiKey = 'AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8';
+		}
+
+		$url = 'https://www.googleapis.com/language/translate/v2?key=' . $this->apiKey . '&q=' . rawurlencode($text) . '&source=' . $source . '&target=' . $target;
 
 		// Invoke the GET request.
-		}
-
-	}
-
-	public function getLanguagePairs()
-	{
-		$url      = 'https://www.googleapis.com/language/translate/v2/languages?key=AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8';
 		$response = $this->get($url);
 
-		$responseBody = json_decode($response->body, true);
-		$languages    = $responseBody['data']['languages'];
-		$db           = JFactory::getDbo();
-		foreach ($languages as $key => $language)
+		$text = null;
+
+		// Log it if server response is not OK.
+		if ($response->code != 200)
 		{
-			$languagePair                        = new stdClass;
-			$languagePair->translation_method_id = 1;
-			$languagePair->source_language       = $language['language'];
-			foreach ($languages as $otherKey => $otherLanguage)
-			{
-				if ($key != $otherKey)
-				{
-					$languagePair->destination_language = $otherLanguage['language'];
-					$db->insertObject('#__neno_translation_methods_language_pairs', $languagePair);
-				}
-
-			}
+			NenoLog::log('Google api failed with response: ' . $response->code, 1);
 		}
-	}
+		else
+		{
+			$responseBody = json_decode($response->body);
 
+			$text = $responseBody->data->translations[0]->translatedText;
+		}
+
+		return $text;
+	}
 }
