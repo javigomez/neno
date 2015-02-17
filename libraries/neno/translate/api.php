@@ -37,4 +37,30 @@ abstract class NenoTranslateApi extends JHttp
 	 */
 	abstract public function convertFromJisoToIso($jiso);
 
+	/**
+	 * Method to check if language pair is available or not in translation api
+	 *
+	 * @param   string $iso2Pair ISO2 language code pair
+	 *
+	 * @return boolen
+	 */
+	abstract public function isTranslationAvailable($isoPair);
+
+	/**
+	 * Method to get supported language pairs for translation from translation api
+	 *
+	 * @return json
+	 */
+	abstract public function getApiSupportedLanguagePairs();
+
+	/**
+	 * Method to get supported language pairs for translation from our server
+	 *
+	 * @return json
+	 */
+	public function getSupportedLanguagePairs()
+	{
+		echo "working...";
+	}
+
 }

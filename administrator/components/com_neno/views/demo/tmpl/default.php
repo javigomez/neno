@@ -23,6 +23,7 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript">
 	// function to get translation using ajax
 	function translate(apiMethod) {
+		jQuery('.alert').addClass('hidden');
 		var source = jQuery("#" + apiMethod + "Source").val();
 
 		if (source !== "") {
@@ -31,7 +32,15 @@ JHtml::_('behavior.keepalive');
 				data: {'api': apiMethod, 'source': source},
 				type: 'post',
 				success: function (msg) {
-					jQuery("#" + apiMethod + "Translate").val(jQuery.trim(msg));
+					if(msg !== "warning")
+					{
+						jQuery("#" + apiMethod + "Translate").val(jQuery.trim(msg));
+					}
+					else
+					{
+						jQuery('.alert').removeClass('hidden');
+					}
+
 				}
 			});
 		}
@@ -44,6 +53,12 @@ JHtml::_('behavior.keepalive');
 	});
 
 </script>
+
+<!--(start) error message block -->
+<div class="span12 alert alert-info hidden">
+	<?php echo JText::_('COM_NENO_NO_TRANSLATION_FOUND'); ?>
+</div>
+<!--(end) error message block -->
 
 <!-- (start) Google translation Block -->
 <div class="row-fluid">
