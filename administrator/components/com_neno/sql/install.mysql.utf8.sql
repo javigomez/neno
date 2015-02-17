@@ -65,9 +65,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_langstrings` (
   `extension` varchar(150) NOT NULL,
   `time_added` datetime NOT NULL,
   `time_changed` datetime NOT NULL,
-  `time_deleted` datetime NOT NULL,
-  `state` tinyint(1) NOT NULL,
-  `version` tinyint(4) NOT NULL
+  `time_deleted` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -125,8 +123,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_translations` (
   `time_added` datetime NOT NULL,
   `time_requested` datetime NOT NULL,
   `time_completed` datetime NOT NULL,
-  `translation_method` enum('machine','manual','pro','') NOT NULL,
-  `version` int(11) NOT NULL DEFAULT '0'
+  `translation_method` enum('machine','manual','pro','') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
