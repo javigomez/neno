@@ -92,8 +92,12 @@ abstract class NenoContentElement
 	 *
 	 * @return array
 	 */
-	public static function getElementsByParentId($elementsTableName, $parentColumnName, $parentId,
-	                                             $transformProperties = false, $extraWhereStatements = array())
+	public static function getElementsByParentId(
+		$elementsTableName,
+		$parentColumnName,
+		$parentId,
+		$transformProperties = false,
+		$extraWhereStatements = array ())
 	{
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -136,21 +140,30 @@ abstract class NenoContentElement
 	}
 
 	/**
+	 * Load element from the database
 	 *
-	 *
-	 * @param   integer $id
+	 * @param   mixed $pk it could be the ID of the element or an array of clauses
 	 *
 	 * @return stdClass
 	 */
-	protected static function getElementDataFromDb($id)
+	public static function load($pk)
 	{
+		if (!is_array($pk))
+		{
+			$pk = array ('id' => $pk);
+		}
+
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query
 			->select('*')
-			->from(static::getDbTable())
-			->where('id = ' . intval($id));
+			->from(static::getDbTable());
+
+		foreach ($pk as $field => $value)
+		{
+			$query->where($db->quoteName($field) . ' = ' . $db->quote($value));
+		}
 
 		$db->setQuery($query);
 

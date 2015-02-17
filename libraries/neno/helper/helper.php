@@ -103,7 +103,7 @@ class NenoHelper
 
 		$assetName = 'com_neno';
 
-		$actions = array(
+		$actions = array (
 			'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
 		);
 
@@ -118,6 +118,8 @@ class NenoHelper
 	/**
 	 * Create the HTML for the fairly advanced title that allows changing the language you are working in
 	 *
+	 * @param   boolean $showLanguageDropDown If we should show the languages dropdown
+	 *
 	 * @return string
 	 */
 	public static function setAdminTitle($showLanguageDropDown = false)
@@ -125,7 +127,7 @@ class NenoHelper
 		$app = JFactory::getApplication();
 
 		// If there is a language constant then start with that
-		$displayData = array(
+		$displayData = array (
 			'view' => $app->input->getCmd('view', '')
 		);
 
@@ -137,7 +139,7 @@ class NenoHelper
 
 		$adminTitleLayout     = JLayoutHelper::render('toolbar', $displayData, JPATH_NENO_LAYOUTS);
 		$layout               = new JLayoutFile('joomla.toolbar.title');
-		$html                 = $layout->render(array('title' => $adminTitleLayout, 'icon' => 'nope'));
+		$html                 = $layout->render(array ('title' => $adminTitleLayout, 'icon' => 'nope'));
 		$app->JComponentTitle = $html;
 	}
 
@@ -163,7 +165,7 @@ class NenoHelper
 				->select('profile_value')
 				->from('#__user_profiles')
 				->where(
-					array(
+					array (
 						'user_id = ' . intval($userId),
 						'profile_key = ' . $db->quote('neno_working_language')
 					)
@@ -192,7 +194,7 @@ class NenoHelper
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
 
 		// Create a simple array
-		$arr = array();
+		$arr = array ();
 
 		foreach ($languages as $lang)
 		{
@@ -253,7 +255,7 @@ class NenoHelper
 		$query
 			->replace('#__user_profiles')
 			->set(
-				array(
+				array (
 					'profile_value = ' . $db->quote($lang),
 					'profile_key = ' . $db->quote('neno_working_language'),
 					'user_id = ' . intval($userId)
@@ -266,7 +268,6 @@ class NenoHelper
 		JFactory::getApplication()->setUserState('com_neno.working_language', $lang);
 
 		return true;
-
 	}
 
 	/**
@@ -278,7 +279,7 @@ class NenoHelper
 	 */
 	public static function convertStdClassArrayToJObjectArray(array $objectList)
 	{
-		$jObjectList = array();
+		$jObjectList = array ();
 
 		foreach ($objectList as $object)
 		{
@@ -312,7 +313,7 @@ class NenoHelper
 	{
 		$prefix = JFactory::getDbo()->getPrefix();
 
-		return $prefix . str_replace(array('com_'), '', strtolower($componentName));
+		return $prefix . str_replace(array ('com_'), '', strtolower($componentName));
 	}
 
 	/**
@@ -325,7 +326,7 @@ class NenoHelper
 	 */
 	public static function convertOnePropertyObjectListToArray($objectList, $propertyName = null)
 	{
-		$arrayResult = array();
+		$arrayResult = array ();
 
 		if (!empty($objectList))
 		{
@@ -386,7 +387,7 @@ class NenoHelper
 	 */
 	public static function convertDatabaseArrayToClassArray(array $databaseArray)
 	{
-		$objectData = array();
+		$objectData = array ();
 
 		foreach ($databaseArray as $fieldName => $fieldValue)
 		{
@@ -399,7 +400,7 @@ class NenoHelper
 	/**
 	 * Convert a underscore case column name to a camelcase property name
 	 *
-	 * @param  string $columnName Database column name
+	 * @param   string $columnName Database column name
 	 *
 	 * @return string
 	 */
@@ -411,11 +412,11 @@ class NenoHelper
 		// If there are word left, let's capitalize them.
 		if (!empty($nameParts))
 		{
-			$nameParts = array_merge(array($firstWord), array_map('ucfirst', $nameParts));
+			$nameParts = array_merge(array ($firstWord), array_map('ucfirst', $nameParts));
 		}
 		else
 		{
-			$nameParts = array($firstWord);
+			$nameParts = array ($firstWord);
 		}
 
 		return implode('', $nameParts);
@@ -468,11 +469,11 @@ class NenoHelper
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$extensions = array_map(array('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
+		$extensions = array_map(array ('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
 
 		$query
 			->select(
-				array(
+				array (
 					'e.extension_id',
 					'e.name',
 					'e.type',
@@ -482,7 +483,7 @@ class NenoHelper
 			)
 			->from('`#__extensions` AS e')
 			->where(
-				array(
+				array (
 					'e.type IN (' . implode(',', $extensions) . ')',
 					'e.name NOT LIKE \'com_neno\'',
 					'NOT EXISTS (SELECT 1 FROM ' . $db->quoteName(NenoContentElementGroup::getDbTable()) . ' AS ceg WHERE e.extension_id = ceg.extension_id)'
@@ -495,32 +496,13 @@ class NenoHelper
 
 		for ($i = 0; $i < count($extensions); $i++)
 		{
-			$groupData = array(
+			$groupData = array (
 				'groupName'   => $extensions[$i]->name,
 				'extensionId' => $extensions[$i]->extension_id
 			);
 
-			$group           = new NenoContentElementGroup($groupData);
-			$tables          = self::getComponentTables($group);
-			$languageStrings = self::getLanguageStrings($group);
-
-			// If there are tables, let's assign to the group
-			if (!empty($tables))
-			{
-				$group->setTables($tables);
-			}
-
-			// If there are language strings, let's assign to the group
-			if (!empty($languageStrings))
-			{
-				$group->setLanguageStrings($languageStrings);
-			}
-
-			// If there are tables or language strings assigned, save the group
-			if (!empty($tables) || !empty($languageStrings))
-			{
-				$group->persist();
-			}
+			$group = new NenoContentElementGroup($groupData);
+			$group->refresh();
 		}
 	}
 
@@ -531,7 +513,7 @@ class NenoHelper
 	 */
 	protected static function whichExtensionsShouldBeTranslated()
 	{
-		return array(
+		return array (
 			'component',
 			'module',
 			'plugin',
@@ -542,31 +524,31 @@ class NenoHelper
 	/**
 	 * Get all the tables of the component that matches with the Joomla naming convention.
 	 *
-	 * @param   NenoContentElementGroup $componentData Component name
+	 * @param   NenoContentElementGroup $group Component name
 	 *
 	 * @return array
 	 */
-	public static function getComponentTables(NenoContentElementGroup $componentData)
+	public static function getComponentTables(NenoContentElementGroup $group)
 	{
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db     = JFactory::getDbo();
-		$tables = $db->getComponentTables($componentData->getGroupName());
+		$tables = $db->getComponentTables($group->getGroupName());
 
-		$result = array();
+		$result = array ();
 
 		for ($i = 0; $i < count($tables); $i++)
 		{
 			// Get Table name
 			$tableName = self::unifyTableName($tables[$i]);
 
-			if (!self::isAlreadyDiscovered($tableName))
+			if (!self::isTableAlreadyDiscovered($tableName))
 			{
 				// Create an array with the table information
-				$tableData = array(
+				$tableData = array (
 					'tableName'  => $tableName,
 					'primaryKey' => $db->getPrimaryKey($tableName),
 					'translate'  => self::shouldBeTranslated($tableName),
-					'group'      => $componentData
+					'group'      => $group
 				);
 
 				// Create ContentElement object
@@ -577,7 +559,7 @@ class NenoHelper
 
 				foreach ($fields as $fieldName => $fieldType)
 				{
-					$fieldData = array(
+					$fieldData = array (
 						'fieldName' => $fieldName,
 						'fieldType' => $fieldType,
 						'translate' => NenoContentElementField::isTranslatableType($fieldType),
@@ -585,12 +567,16 @@ class NenoHelper
 					);
 
 					$field = new NenoContentElementField($fieldData);
-
 					$table->addField($field);
 				}
-
-				$result[] = $table;
 			}
+			else
+			{
+				$tableData = NenoContentElementTable::load(array ('table_name' => $tableName, 'group_id' => $group->getId()));
+				$table     = new NenoContentElementTable($tableData);
+			}
+
+			$result[] = $table;
 		}
 
 		return $result;
@@ -607,17 +593,17 @@ class NenoHelper
 	{
 		$prefix = JFactory::getDbo()->getPrefix();
 
-		return '#__' . str_replace(array($prefix, '#__'), '', $tableName);
+		return '#__' . str_replace(array ($prefix, '#__'), '', $tableName);
 	}
 
 	/**
 	 * Check if a table has been already discovered.
 	 *
-	 * @param   string $tableName
+	 * @param   string $tableName Table name
 	 *
 	 * @return bool
 	 */
-	public static function isAlreadyDiscovered($tableName)
+	public static function isTableAlreadyDiscovered($tableName)
 	{
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -644,7 +630,7 @@ class NenoHelper
 	{
 		$tableName = self::unifyTableName($tableName);
 
-		$coreTablesThatShouldNotBeTranslate = array(
+		$coreTablesThatShouldNotBeTranslate = array (
 			'/#__users/',
 			'/__messages(.*)/',
 		);
@@ -661,6 +647,37 @@ class NenoHelper
 	}
 
 	/**
+	 * Check if a table has been already discovered.
+	 *
+	 * @param   string $extensionName Extension Name
+	 * @param   string $constant      Language file constant
+	 * @param   string $language      Language (JISO)
+	 *
+	 * @return bool
+	 */
+	public static function isLanguageStringAlreadyDiscovered($extensionName, $constant, $language)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('1')
+			->from(NenoContentElementLangstring::getDbTable())
+			->where(
+				array (
+					'extensionName = ' . $db->quote($extensionName),
+					'constant = ' . $db->quote($constant),
+					'language = ' . $db->quote($language)
+				)
+			);
+
+		$db->setQuery($query);
+		$result = $db->loadResult();
+
+		return $result == 1;
+	}
+
+	/**
 	 * Get all the language strings related to a extension (group).
 	 *
 	 * @param   NenoContentElementGroup $group Group object
@@ -673,7 +690,7 @@ class NenoHelper
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
 
 		$languageFile          = NenoLanguageFile::openLanguageFile($defaultLanguage, $extensionName);
-		$sourceLanguageStrings = array();
+		$sourceLanguageStrings = array ();
 
 		// Only save the language strings if it's not a Joomla core components
 		if (!self::isJoomlaCoreLanguageFile($languageFile->getFileName()))
@@ -683,9 +700,27 @@ class NenoHelper
 			foreach ($languageStrings as $languageStringKey => $languageStringText)
 			{
 				$sourceLanguageStringData             = self::getLanguageStringFromLanguageKey($languageStringKey);
-				$sourceLanguageStringData['string']   = $languageStringText;
 				$sourceLanguageStringData['language'] = $defaultLanguage;
-				$sourceLanguageString                 = new NenoContentElementLangstring($sourceLanguageStringData);
+
+				// If the string was already discovered, let's get if the it has changed.
+				if (self::isTableAlreadyDiscovered($sourceLanguageStringData['extension'], $sourceLanguageStringData['constant'], $defaultLanguage))
+				{
+					$languageStringData   = NenoContentElementLangstring::load($sourceLanguageStringData);
+					$sourceLanguageString = new NenoContentElementLangstring($languageStringData);
+
+					// If the string has changed, let's update it and mark the translation as out of sync
+					if ($sourceLanguageString->getString() != $languageStringText)
+					{
+						$sourceLanguageString
+							->setString($languageStringText)
+							->contentHasChanged();
+					}
+				}
+				else
+				{
+					$sourceLanguageStringData['string'] = $languageStringText;
+					$sourceLanguageString               = new NenoContentElementLangstring($sourceLanguageStringData);
+				}
 
 				$sourceLanguageStrings[] = $sourceLanguageString;
 			}
@@ -739,7 +774,6 @@ class NenoHelper
 		}
 
 		return $extensionName;
-
 	}
 
 	/**
@@ -758,7 +792,7 @@ class NenoHelper
 	/**
 	 * Checks if a file is a Joomla Core language file
 	 *
-	 * @param   string $languageFileName
+	 * @param   string $languageFileName Language file name
 	 *
 	 * @return bool
 	 */
@@ -766,7 +800,7 @@ class NenoHelper
 	{
 		$fileParts = explode('.', $languageFileName);
 
-		$result = self::removeCoreLanguageFilesFromArray(array($languageFileName), $fileParts[0]);
+		$result = self::removeCoreLanguageFilesFromArray(array ($languageFileName), $fileParts[0]);
 
 		return empty($result);
 	}
@@ -784,7 +818,7 @@ class NenoHelper
 		// Get all the language files from Joomla core extensions based on a particular language
 		$coreFiles = self::getJoomlaCoreLanguageFiles($language);
 
-		$validFiles = array();
+		$validFiles = array ();
 
 		// Filter
 		foreach ($files as $file)
@@ -811,20 +845,20 @@ class NenoHelper
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db         = JFactory::getDbo();
 		$query      = $db->getQuery(true);
-		$extensions = array_map(array('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
+		$extensions = array_map(array ('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
 
 		$query
 			->select('CONCAT(' . $db->quote($language . '.') . ',IF(type = \'plugin\' OR type = \'template\', IF(type = \'plugin\', CONCAT(\'plg_\',folder,\'_\'), IF(type = \'template\', \'tpl_\',\'\')),\'\'),element,\'.ini\') as extension_name')
 			->from('#__extensions')
 			->where(
-				array(
+				array (
 					'extension_id < 10000',
 					'type IN (' . implode(',', $extensions) . ')'
 				)
 			);
 
 		$db->setQuery($query);
-		$joomlaCoreLanguageFiles = array_merge($db->loadArray(), array($language . '.ini'));
+		$joomlaCoreLanguageFiles = array_merge($db->loadArray(), array ($language . '.ini'));
 
 		return $joomlaCoreLanguageFiles;
 	}
@@ -838,7 +872,7 @@ class NenoHelper
 	 */
 	public static function getLanguageStringFromLanguageKey($languageKey)
 	{
-		$info = array();
+		$info = array ();
 
 		if (empty($languageKey))
 		{
@@ -974,7 +1008,7 @@ class NenoHelper
 	 */
 	public static function getGroupOptions()
 	{
-		$options = array();
+		$options = array ();
 
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true)

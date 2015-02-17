@@ -32,16 +32,6 @@ class NenoContentElementLangstring extends NenoContentElement
 	protected $timeDeleted;
 
 	/**
-	 * @var integer
-	 */
-	protected $state;
-
-	/**
-	 * @var integer
-	 */
-	protected $version;
-
-	/**
 	 * @var string
 	 */
 	protected $constant;
@@ -72,8 +62,15 @@ class NenoContentElementLangstring extends NenoContentElement
 	protected $translations;
 
 	/**
-	 * @param mixed $data
-	 * @param bool  $fetchTranslations
+	 * @var boolean
+	 */
+	private $hasChanged;
+
+	/**
+	 * Constructor
+	 *
+	 * @param   mixed $data              Language string data
+	 * @param   bool  $fetchTranslations If the translations should be loaded
 	 */
 	public function __construct($data, $fetchTranslations = false)
 	{
@@ -88,129 +85,7 @@ class NenoContentElementLangstring extends NenoContentElement
 	}
 
 	/**
-	 * @param string $language
-	 *
-	 * @return array
-	 */
-	public static function loadSourceLanguageStrings($language)
-	{
-		// Load from DB
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select(
-				array(
-					'a.*',
-					'CONCAT(a.extension,".ini:", UPPER(a.constant)) AS arraykey'
-				)
-			)
-			->from($db->quoteName(self::getDbTable()) . ' AS a')
-			->where(
-				array(
-					'a.language = ' . $db->quote($language),
-					'a.state = 1'
-				)
-			)
-			->order(
-			// Order by lang and then extension
-				array(
-					'a.language',
-					'a.extension'
-				)
-			);
-
-
-		$db->setQuery($query);
-		$sourceLanguageStrings = $db->loadObjectList('arraykey');
-
-		$arrayKeys = array_keys($sourceLanguageStrings);
-
-		foreach ($arrayKeys as $arrayKey)
-		{
-			$sourceLanguageStrings[$arrayKey] = new NenoContentElementLangstring($sourceLanguageStrings[$arrayKeys]);
-		}
-
-		// Log it if the debug mode is on
-		if (JDEBUG)
-		{
-			NenoLog::log('Loaded ' . count($sourceLanguageStrings) . ' source language strings in the database', 3);
-		}
-
-		return $sourceLanguageStrings;
-	}
-
-	/**
-	 * @param string $type
-	 * @param array  $options ('fieldName' => 'fieldValue')
-	 *
-	 * @return NenoContentElementLangstring
-	 */
-	public static function getLanguageString(array $options)
-	{
-		$db = JFactory::getDbo();
-		$db->setQuery(static::getLanguageStringQuery($options));
-		$data           = $db->loadAssoc();
-		$languageString = new NenoContentElementLangstring($data);
-
-		return $languageString;
-	}
-
-	/**
-	 * @param string $type
-	 * @param array  $options
-	 *
-	 * @return JDatabaseQuery
-	 */
-	protected static function getLanguageStringQuery(array $options)
-	{
-		$tableName = self::getDbTable();
-		$db        = JFactory::getDbo();
-		$query     = $db->getQuery(true);
-
-		$query
-			->select('*')
-			->from($tableName);
-
-		foreach ($options as $fieldName => $fieldValue)
-		{
-			if (!is_null($fieldValue) && !is_null($fieldName))
-			{
-				$query->where($db->quoteName($fieldName) . ' = ' . $db->quote($fieldValue));
-			}
-		}
-
-		return $query;
-	}
-
-	/**
-	 * @param string $type
-	 * @param array  $options
-	 *
-	 * @return array
-	 */
-	public static function getLanguageStrings($type, array $options)
-	{
-		$db = JFactory::getDbo();
-		$db->setQuery(static::getLanguageStringQuery($type, $options));
-		$dataList = $db->loadAssocList();
-
-		$languageStringList = array();
-
-		foreach ($dataList as $data)
-		{
-			// Sanitize the array
-			$data                                               = NenoHelper::convertDatabaseArrayToClassArray($data);
-			$languageString                                     = new NenoContentElementLangstring($data);
-			$languageStringList[$languageString->generateKey()] = $languageString;
-		}
-
-		return $languageStringList;
-
-	}
-
-	/**
-	 * Generate the language key based on its datas
+	 * Generate the language key based on its data
 	 *
 	 * @return string
 	 */
@@ -232,7 +107,7 @@ class NenoContentElementLangstring extends NenoContentElement
 	/**
 	 * Set the name of the extension that owns this string
 	 *
-	 * @param string $extension
+	 * @param   string $extension Extension name
 	 *
 	 * @return NenoContentElementLangstring
 	 */
@@ -268,6 +143,8 @@ class NenoContentElementLangstring extends NenoContentElement
 	}
 
 	/**
+	 * Get translations
+	 *
 	 * @return array
 	 */
 	public function getTranslations()
@@ -281,11 +158,17 @@ class NenoContentElementLangstring extends NenoContentElement
 	}
 
 	/**
-	 * @param array $translations
+	 * Set translations
+	 *
+	 * @param   array $translations Translations
+	 *
+	 * @return $this
 	 */
-	public function setTranslations($translations)
+	public function setTranslations(array $translations)
 	{
 		$this->translations = $translations;
+
+		return $this;
 	}
 
 	/**
@@ -299,6 +182,8 @@ class NenoContentElementLangstring extends NenoContentElement
 	}
 
 	/**
+	 * Get group
+	 *
 	 * @return NenoContentElementGroup
 	 */
 	public function getGroup()
@@ -307,11 +192,17 @@ class NenoContentElementLangstring extends NenoContentElement
 	}
 
 	/**
-	 * @param NenoContentElementGroup $group
+	 * Set group
+	 *
+	 * @param   NenoContentElementGroup $group Group
+	 *
+	 * @return $this
 	 */
 	public function setGroup(NenoContentElementGroup $group)
 	{
 		$this->group = $group;
+
+		return $this;
 	}
 
 	/**
@@ -351,7 +242,7 @@ class NenoContentElementLangstring extends NenoContentElement
 	/**
 	 * Set the time when the string changed
 	 *
-	 * @param   DateTime $timeChanged
+	 * @param   DateTime $timeChanged When the string has changed
 	 *
 	 * @return NenoContentElementLangstring
 	 */
@@ -376,16 +267,8 @@ class NenoContentElementLangstring extends NenoContentElement
 	}
 
 	/**
-	 * @return $this
-	 */
-	public function increaseVersion()
-	{
-		$this->version = $this->version + 1;
-
-		return $this;
-	}
-
-	/**
+	 * Get Language
+	 *
 	 * @return string
 	 */
 	public function getLanguage()
@@ -394,14 +277,22 @@ class NenoContentElementLangstring extends NenoContentElement
 	}
 
 	/**
-	 * @param string $language
+	 * Set Language
+	 *
+	 * @param   string $language Language JISO
+	 *
+	 * @return $this
 	 */
 	public function setLanguage($language)
 	{
 		$this->language = $language;
+
+		return $this;
 	}
 
 	/**
+	 * Get the time when the string
+	 *
 	 * @return DateTime
 	 */
 	public function getTimeDeleted()
@@ -410,45 +301,24 @@ class NenoContentElementLangstring extends NenoContentElement
 	}
 
 	/**
-	 * @param DateTime $timeDeleted
+	 * Set the time when the string has been deleted
+	 *
+	 * @param   Datetime $timeDeleted Time when the string was deleted
+	 *
+	 * @return $this
 	 */
-	public function setTimeDeleted($timeDeleted)
+	public function setTimeDeleted(DateTime $timeDeleted)
 	{
 		$this->timeDeleted = $timeDeleted;
+
+		return $this;
 	}
 
 	/**
-	 * @return int
+	 * {@inheritdoc}
+	 *
+	 * @return bool
 	 */
-	public function getState()
-	{
-		return $this->state;
-	}
-
-	/**
-	 * @param int $state
-	 */
-	public function setState($state)
-	{
-		$this->state = $state;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getVersion()
-	{
-		return $this->version;
-	}
-
-	/**
-	 * @param int $version
-	 */
-	public function setVersion($version)
-	{
-		$this->version = $version;
-	}
-
 	public function persist()
 	{
 		$persistResult = parent::persist();
@@ -463,7 +333,7 @@ class NenoContentElementLangstring extends NenoContentElement
 
 			if (empty($this->translations))
 			{
-				$commonData = array(
+				$commonData = array (
 					'contentType' => NenoContentElementTranslation::LANG_STRING,
 					'contentId'   => $this->getId(),
 					'state'       => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
@@ -473,7 +343,7 @@ class NenoContentElementLangstring extends NenoContentElement
 
 				$languages          = NenoHelper::getLanguages();
 				$defaultLanguage    = JFactory::getLanguage()->getDefault();
-				$this->translations = array();
+				$this->translations = array ();
 
 				foreach ($languages as $language)
 				{
@@ -486,11 +356,23 @@ class NenoContentElementLangstring extends NenoContentElement
 					}
 				}
 			}
-			else
+			elseif ($this->hasChanged)
 			{
 				for ($i = 0; $i < count($this->translations); $i++)
 				{
-					$this->translations[$i]->setState(NenoContentElementTranslation::SOURCE_CHANGED_STATE);
+					/* @var $translation NenoContentElementTranslation */
+					$translation = $this->translations[$i];
+
+					// If the state is queued or translate, let's mark it as out of sync
+					if (in_array(
+						$translation->getState(),
+						array (NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE, NenoContentElementTranslation::TRANSLATED_STATE)
+					))
+					{
+						$translation->setState(NenoContentElementTranslation::SOURCE_CHANGED_STATE);
+					}
+
+					$this->translations[$i] = $translation;
 				}
 			}
 		}
@@ -499,6 +381,8 @@ class NenoContentElementLangstring extends NenoContentElement
 	}
 
 	/**
+	 * Get the string
+	 *
 	 * @return String
 	 */
 	public function getString()
@@ -507,10 +391,29 @@ class NenoContentElementLangstring extends NenoContentElement
 	}
 
 	/**
-	 * @param String $string
+	 * Get the string
+	 *
+	 * @param   string $string String
+	 *
+	 * @return $this
 	 */
 	public function setString($string)
 	{
 		$this->string = $string;
+
+		return $this;
+	}
+
+	/**
+	 * Set that the content has changed
+	 *
+	 * @return $this
+	 */
+	public function contentHasChanged()
+	{
+		$this->hasChanged  = true;
+		$this->timeChanged = new DateTime;
+
+		return $this;
 	}
 }

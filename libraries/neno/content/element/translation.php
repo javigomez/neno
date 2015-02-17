@@ -106,11 +106,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	protected $translationMethod;
 
 	/**
-	 * @var integer
-	 */
-	protected $version;
-
-	/**
 	 * @var array
 	 */
 	private $sourceElementData;
@@ -146,19 +141,18 @@ class NenoContentElementTranslation extends NenoContentElement
 		// If it's a language string, let's create a NenoContentElementLangstring
 		if ($this->contentType == self::LANG_STRING)
 		{
-			$contentElementData = NenoContentElementLangstring::getElementDataFromDb($content_id);
+			$contentElementData = NenoContentElementLangstring::load($content_id);
 			$this->element      = new NenoContentElementLangstring($contentElementData, false);
 		}
 		else
 		{
-			$contentElementData = NenoContentElementField::getElementDataFromDb($content_id);
+			$contentElementData = NenoContentElementField::load($content_id);
 			$this->element      = new NenoContentElementField($contentElementData);
 		}
 
 		$this->wordsCounter      = str_word_count($this->getString());
 		$this->charactersCounter = strlen($this->getString());
 		$this->originalText      = $this->loadOriginalText();
-
 	}
 
 	/**
@@ -224,7 +218,6 @@ class NenoContentElementTranslation extends NenoContentElement
 			$string         = $languageString->getString();
 		}
 
-
 		return $string;
 	}
 
@@ -261,7 +254,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	 */
 	public static function getTranslation($translationId)
 	{
-		$translationData = self::getElementDataFromDb($translationId);
+		$translationData = self::load($translationId);
 		$translation     = new NenoContentElementTranslation($translationData);
 
 		return $translation;
@@ -286,9 +279,9 @@ class NenoContentElementTranslation extends NenoContentElement
 
 		$translationsData = self::getElementsByParentId(
 			self::getDbTable(), 'content_id', $element->getId(), true,
-			array('content_type = \'' . $type . '\'')
+			array ('content_type = \'' . $type . '\'')
 		);
-		$translations     = array();
+		$translations     = array ();
 
 		foreach ($translationsData as $translationData)
 		{
@@ -395,30 +388,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * Get the translation version
-	 *
-	 * @return int
-	 */
-	public function getVersion()
-	{
-		return $this->version;
-	}
-
-	/**
-	 * Set the translation version
-	 *
-	 * @param   int $version Translation version
-	 *
-	 * @return NenoContentElementTranslation
-	 */
-	public function setVersion($version)
-	{
-		$this->version = $version;
-
-		return $this;
-	}
-
-	/**
 	 * Get the time when this translation was added
 	 *
 	 * @return DateTime
@@ -431,7 +400,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * Set the time when the translation was added
 	 *
-	 * @param DateTime $timeAdded
+	 * @param   DateTime $timeAdded When the translation has been added
 	 *
 	 * @return NenoContentElementTranslation
 	 */

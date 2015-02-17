@@ -70,20 +70,19 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		parent::__construct($data);
 
-		$this->tables                            = array();
-		$this->languageStrings                   = array();
+		$this->tables                            = array ();
+		$this->languageStrings                   = array ();
 		$this->languageWordsNotTranslated        = 0;
 		$this->languageWordsQueuedToBeTranslated = 0;
 		$this->languageWordsSourceHasChanged     = 0;
 		$this->languageWordsTranslated           = 0;
-		$this->translationMethodUsed             = array();
+		$this->translationMethodUsed             = array ();
 
 		// Only search for the statistics for existing groups
 		if (!$this->isNew())
 		{
 			$this->calculateExtraData();
 		}
-
 	}
 
 	/**
@@ -100,7 +99,7 @@ class NenoContentElementGroup extends NenoContentElement
 
 		$query
 			->select(
-				array(
+				array (
 					'SUM((LENGTH(l.string) - LENGTH(replace(l.string,\' \',\'\'))+1)) AS counter',
 					't.state'
 				)
@@ -150,26 +149,48 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Get
+	 *
+	 * @param   integer $extensionId Extension Id
+	 *
+	 * @return NenoContentElementGroup|null
+	 */
+	public static function getGroupByExtensionId($extensionId)
+	{
+		$groupsData = static::getElementsByParentId(self::getDbTable(), 'extension_id', $extensionId);
+
+		$group = null;
+
+		if (!empty($groupsData))
+		{
+			$group = self::getGroup($groupsData[0]->id);
+		}
+
+		return $group;
+	}
+
+	/**
 	 * Get a group object
 	 *
-	 * @param   integer $groupId Group Id
+	 * @param   integer $groupId             Group Id
+	 * @param   boolean $loadTables          If the tables needs to be loaded
+	 * @param   boolean $loadLanguageStrings Load language strings
 	 *
 	 * @return NenoContentElementGroup
 	 */
 	public static function getGroup($groupId, $loadTables = true, $loadLanguageStrings = true)
 	{
-		$group = new NenoContentElementGroup(static::getElementDataFromDb($groupId));
+		$group = new NenoContentElementGroup(static::load($groupId));
 
 		// Init variables
-		$languageStrings = array();
-		$tables          = array();
+		$languageStrings = array ();
+		$tables          = array ();
 
 		// If tables flag is activated.
 		if ($loadTables)
 		{
 			/*** Loading tables related to this group ***/
 			$tablesInfo = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $group->id, true);
-
 
 			foreach ($tablesInfo as $tableInfo)
 			{
@@ -184,7 +205,6 @@ class NenoContentElementGroup extends NenoContentElement
 		{
 			/*** Loading languages files related to this group ***/
 			$languageStringsInfo = self::getElementsByParentId(NenoContentElementLangstring::getDbTable(), 'group_id', $group->id, true);
-
 
 			foreach ($languageStringsInfo as $languageStringInfo)
 			{
@@ -211,7 +231,7 @@ class NenoContentElementGroup extends NenoContentElement
 	public static function parseContentElementFiles($groupName, $contentElementFiles)
 	{
 		// Create an array of group data
-		$groupData = array(
+		$groupData = array (
 			'groupName' => $groupName
 		);
 
@@ -234,10 +254,10 @@ class NenoContentElementGroup extends NenoContentElement
 				$tableName = $tableData->getAttribute('name');
 
 				// If the table hasn't been added yet, let's add it
-				if (!NenoHelper::isAlreadyDiscovered($tableName))
+				if (!NenoHelper::isTableAlreadyDiscovered($tableName))
 				{
 					$table = new NenoContentElementTable(
-						array(
+						array (
 							'tableName' => $tableName,
 							'translate' => 0
 						)
@@ -248,7 +268,7 @@ class NenoContentElementGroup extends NenoContentElement
 					/* @var $fieldData DOMElement */
 					foreach ($fields as $fieldData)
 					{
-						$fieldData = array(
+						$fieldData = array (
 							'fieldName' => $fieldData->getAttribute('name'),
 							'translate' => intval($fieldData->getAttribute('translate')),
 							'table'     => $table
@@ -276,7 +296,6 @@ class NenoContentElementGroup extends NenoContentElement
 		{
 			$group->persist();
 		}
-
 
 		return true;
 	}
@@ -342,30 +361,6 @@ class NenoContentElementGroup extends NenoContentElement
 				$languageString->persist();
 			}
 		}
-	}
-
-	/**
-	 * Get language strings
-	 *
-	 * @return array
-	 */
-	public function getLanguageStrings()
-	{
-		return $this->languageStrings;
-	}
-
-	/**
-	 * Set language strings
-	 *
-	 * @param   array $languageStrings Language strings
-	 *
-	 * @return $this
-	 */
-	public function setLanguageStrings(array $languageStrings)
-	{
-		$this->languageStrings = $languageStrings;
-
-		return $this;
 	}
 
 	/**
@@ -483,13 +478,66 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * Set translation methods used
 	 *
-	 * @param   array $translationMethodUsed
+	 * @param   array $translationMethodUsed Translation methods used
 	 *
 	 * @return $this
 	 */
 	public function setTranslationMethodUsed(array $translationMethodUsed)
 	{
 		$this->translationMethodUsed = $translationMethodUsed;
+
+		return $this;
+	}
+
+	/**
+	 * Refresh NenoContentElementGroup data
+	 *
+	 * @return void
+	 */
+	public function refresh()
+	{
+		$tables          = NenoHelper::getComponentTables($this);
+		$languageStrings = NenoHelper::getLanguageStrings($this);
+
+		// If there are tables, let's assign to the group
+		if (!empty($tables))
+		{
+			$this->setTables($tables);
+		}
+
+		// If there are language strings, let's assign to the group
+		if (!empty($languageStrings))
+		{
+			$this->setLanguageStrings($languageStrings);
+		}
+
+		// If there are tables or language strings assigned, save the group
+		if (!empty($tables) || !empty($languageStrings))
+		{
+			$this->persist();
+		}
+	}
+
+	/**
+	 * Get language strings
+	 *
+	 * @return array
+	 */
+	public function getLanguageStrings()
+	{
+		return $this->languageStrings;
+	}
+
+	/**
+	 * Set language strings
+	 *
+	 * @param   array $languageStrings Language strings
+	 *
+	 * @return $this
+	 */
+	public function setLanguageStrings(array $languageStrings)
+	{
+		$this->languageStrings = $languageStrings;
 
 		return $this;
 	}
