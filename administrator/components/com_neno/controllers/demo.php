@@ -12,8 +12,8 @@
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.controller');
-jimport('neno.translate.api.google');
-jimport('neno.translate.api.yandex');
+jimport('neno.translate');
+//jimport('neno.translate.api.yandex');
 
 class NenoControllerDemo extends JControllerLegacy
 {
@@ -23,8 +23,9 @@ class NenoControllerDemo extends JControllerLegacy
 	 * @return string
 	 */
 	public function ajaxTranslate()
-	{ 
-		$jinput = JFactory::getApplication()->input;
+	{
+		$app = JFactory::getApplication();
+		$jinput = $app->input;
 		$api = $jinput->get('api', '', 'string');
 		$text = $jinput->get('source', '', 'string');	
 			
@@ -44,8 +45,40 @@ class NenoControllerDemo extends JControllerLegacy
 		}
                                                            
 		    $result = $nenoTranslate->translate($text);
-		    print_r($result);
+		    if($result == null)
+			{
+				$result = "warning";
+			}
+				print_r($result);
+
 		    exit;
 	}
+
+	/**
+	 * Method to get supported languages by translation api
+	 *
+	 * @return json
+	 */
+	public function getSupportedLangs()
+	{
+		$app = JFactory::getApplication();
+		$jinput = $app->input;
+		$api = $jinput->get('api', '', 'string');
+
+		if($api=="yandex")
+		{
+			$nenoTranslate = new NenoTranslateApiYandex();
+		}
+		else
+		{
+			$nenoTranslate = new NenoTranslateApiGoogle();
+		}
+
+		$result = $nenoTranslate->getApiSupportedLanguagePairs();
+		print_r($result);
+
+		exit;
+	}
+
 
 }
