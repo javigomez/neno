@@ -31,7 +31,7 @@ class NenoTranslateApiYandex extends NenoTranslateApi
      *
      * @return string
      */
-    public function translate($text,$source="en-US",$target="fr-Fr")
+    public function translate($text,$source="en-US",$target="fr-FR")
     {
         // get the key configured by user
         $this->apiKey = JComponentHelper::getParams('com_neno')->get('yandexApiKey');
@@ -42,6 +42,14 @@ class NenoTranslateApiYandex extends NenoTranslateApi
         // language parameter for url
         $source = $this->convertFromJisoToIso($source);
         $lang = $source."-".$target;
+
+        // check availability of langauage pair for translation
+        $isAvailable = $this->isTranslationAvailable($lang);
+
+        if(!$isAvailable)
+        {
+            return null;
+        }
 
 
         if($this->apiKey == "")
@@ -105,6 +113,69 @@ class NenoTranslateApiYandex extends NenoTranslateApi
         }
 
         return $iso2;
+    }
+
+    /**
+     * Method to check if language pair is available or not in yandex api
+     *
+     * @param   string $iso2Pair ISO2 language code pair
+     *
+     * @return boolen
+     */
+    public function isTranslationAvailable($isoPair)
+    {
+        // split the language pair using hypen
+        $isoParts = (explode("-",$isoPair));
+
+        // array of iso language codes not available in yandex api
+        $languages = array("gl", "ja", "af", "ko", "fa", "sy", "ta", "ug", "hi", "sw", "srp", "cy", "si");
+        $available = 1;
+
+        foreach($isoParts as $part)
+        {
+            if (in_array($part , $languages))
+            {
+                $available = 0;
+            }
+        }
+
+        return $available;
+    }
+
+    /**
+     * Method to get supported language pairs for translation from yandex api
+     *
+     * @return json
+     */
+    public function getApiSupportedLanguagePairs()
+    {
+        // get the key configured by user
+        $this->apiKey = JComponentHelper::getParams('com_neno')->get('yandexApiKey');
+
+        if($this->apiKey == "")
+        {
+            // Use default key if not provided
+            $this->apiKey = 'trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0';
+        }
+
+        $url    = 'https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=' . $this->apiKey . '&ui=uk';
+
+        // Invoke the GET request.
+        $response = $this->get($url);
+
+        $json = null;
+
+        // Log it if server response is not OK.
+        if ($response->code != 200)
+        {
+            NenoLog::log('Yandex api failed with response: ' . $response->code, 1);
+        }
+        else
+        {
+            $json = $response->body;
+        }
+
+        return $json;
     }
 
 }
