@@ -324,30 +324,40 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	/**
 	 * Create all the shadow tables needed for
 	 *
-	 * @param   string $tableName
+	 * @param   string $tableName Table name
 	 *
 	 * @return void
 	 */
 	public function createShadowTables($tableName)
 	{
-		$defaultLanguage       = JFactory::getLanguage()->getDefault();
-		$knownLanguages        = NenoHelper::getLanguages();
-		$tableCreateStatements = $this->getTableCreate($tableName);
-		$createStatement       = $tableCreateStatements[$tableName];
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$knownLanguages  = NenoHelper::getLanguages();
 
 		foreach ($knownLanguages as $knownLanguage)
 		{
 			if ($knownLanguage->lang_code !== $defaultLanguage)
 			{
 				$shadowTableName            = NenoDatabaseParser::generateShadowTableName($tableName, $knownLanguage->lang_code);
-				$shadowTableCreateStatement = str_replace($tableName, $shadowTableName, $createStatement);
-
+				$shadowTableCreateStatement = 'CREATE TABLE ' . $this->quoteName($shadowTableName) . ' LIKE ' . $tableName;
 				$this->executeQuery($shadowTableCreateStatement);
 				$this->copyContentElementsFromSourceTableToShadowTables($tableName, $shadowTableName);
 			}
 		}
+	}
 
-
+	/**
+	 * Copy all the content to the shadow table
+	 *
+	 * @param   string $sourceTableName Name of the source table
+	 * @param   string $shadowTableName Name of the shadow table
+	 *
+	 * @return void
+	 */
+	public function copyContentElementsFromSourceTableToShadowTables($sourceTableName, $shadowTableName)
+	{
+		$columns = array_map(array ($this, 'quoteName'), array_keys($this->getTableColumns($sourceTableName)));
+		$query   = 'REPLACE INTO ' . $shadowTableName . ' (' . implode(',', $columns) . ' ) SELECT * FROM ' . $sourceTableName;
+		$this->executeQuery($query);
 	}
 
 	/**
@@ -372,21 +382,6 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Copy all the content to the shadow table
-	 *
-	 * @param   string $sourceTableName Name of the source table
-	 * @param   string $shadowTableName Name of the shadow table
-	 *
-	 * @return void
-	 */
-	public function copyContentElementsFromSourceTableToShadowTables($sourceTableName, $shadowTableName)
-	{
-		$columns = array_map(array ($this, 'quoteName'), array_keys($this->getTableColumns($sourceTableName)));
-		$query   = 'REPLACE INTO ' . $shadowTableName . ' (' . implode(',', $columns) . ' ) SELECT * FROM ' . $sourceTableName;
-		$this->executeQuery($query);
 	}
 
 	/**
