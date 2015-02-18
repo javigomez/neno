@@ -62,26 +62,15 @@ class NenoContentElementLangstring extends NenoContentElement
 	protected $translations;
 
 	/**
-	 * @var boolean
-	 */
-	private $hasChanged;
-
-	/**
 	 * Constructor
 	 *
 	 * @param   mixed $data              Language string data
 	 * @param   bool  $fetchTranslations If the translations should be loaded
 	 */
-	public function __construct($data, $fetchTranslations = false)
+	public function __construct($data)
 	{
 		parent::__construct($data);
-
 		$this->translations = null;
-
-		if (!$this->isNew() && $fetchTranslations)
-		{
-			$this->translations = NenoContentElementTranslation::getTranslations($this);
-		}
 	}
 
 	/**

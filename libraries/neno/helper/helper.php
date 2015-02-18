@@ -239,7 +239,7 @@ class NenoHelper
 	/**
 	 * Set the working language on the currently logged in user
 	 *
-	 * @param   string $lang 'eb-GB' or 'de-DE'
+	 * @param   string $lang 'en-GB' or 'de-DE'
 	 *
 	 * @return boolean
 	 */
@@ -279,14 +279,66 @@ class NenoHelper
 	 */
 	public static function convertStdClassArrayToJObjectArray(array $objectList)
 	{
-		$jObjectList = array ();
+		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
 
-		foreach ($objectList as $object)
+		if (self::getCacheData($cacheId) === null)
 		{
-			$jObjectList[] = new JObject($object);
+			$jObjectList = array ();
+
+			foreach ($objectList as $object)
+			{
+				$jObjectList[] = new JObject($object);
+			}
+
+			self::setCacheData($cacheId, $jObjectList);
 		}
 
-		return $jObjectList;
+		return self::getCacheData($cacheId);
+	}
+
+	/**
+	 * Get cache Id
+	 *
+	 * @param   string $functionName Function name
+	 * @param   mixed  $arguments    Function arguments
+	 *
+	 * @return string
+	 */
+	public static function getCacheId($functionName, $arguments)
+	{
+		return $functionName . implode('+', $arguments);
+	}
+
+	/**
+	 * Get data from the Application cache
+	 *
+	 * @param   string $cacheId Cache Identifier
+	 * @param   mixed  $default Default value for this cache data
+	 *
+	 * @return mixed Data cached
+	 *
+	 * @throws Exception
+	 */
+	public static function getCacheData($cacheId, $default = null)
+	{
+		$app = JFactory::getApplication();
+
+		return $app->get($cacheId, $default);
+	}
+
+	/**
+	 * Set data into the cache
+	 *
+	 * @param   string $cacheId Cache Identifier
+	 * @param   mixed  $data    Data to cache
+	 *
+	 * @return void
+	 * @throws Exception
+	 */
+	public static function setCacheData($cacheId, $data)
+	{
+		$app = JFactory::getApplication();
+		$app->set($cacheId, $data);
 	}
 
 	/**
@@ -299,7 +351,14 @@ class NenoHelper
 	 */
 	public static function endsWith($string, $suffix)
 	{
-		return $suffix === "" || strpos($string, $suffix, strlen($string) - strlen($suffix)) !== false;
+		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+
+		if (self::getCacheData($cacheId) === null)
+		{
+			self::setCacheData($cacheId, $suffix === "" || strpos($string, $suffix, strlen($string) - strlen($suffix)) !== false);
+		}
+
+		return self::getCacheData($cacheId);
 	}
 
 	/**
@@ -311,9 +370,15 @@ class NenoHelper
 	 */
 	public static function getTableNamePatternBasedOnComponentName($componentName)
 	{
-		$prefix = JFactory::getDbo()->getPrefix();
+		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
 
-		return $prefix . str_replace(array ('com_'), '', strtolower($componentName));
+		if (self::getCacheData($cacheId) === null)
+		{
+			$prefix = JFactory::getDbo()->getPrefix();
+			self::setCacheData($cacheId, $prefix . str_replace(array ('com_'), '', strtolower($componentName)));
+		}
+
+		return self::getCacheData($cacheId);
 	}
 
 	/**
@@ -355,7 +420,14 @@ class NenoHelper
 	 */
 	public static function convertPropertyNameToDatabaseColumnName($propertyName)
 	{
-		return implode('_', self::splitCamelCaseString($propertyName));
+		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+
+		if (self::getCacheData($cacheId) === null)
+		{
+			self::setCacheData($cacheId, implode('_', self::splitCamelCaseString($propertyName)));
+		}
+
+		return self::getCacheData($cacheId);
 	}
 
 	/**
@@ -367,15 +439,22 @@ class NenoHelper
 	 */
 	public static function splitCamelCaseString($string)
 	{
-		preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $string, $matches);
-		$ret = $matches[0];
+		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
 
-		foreach ($ret as &$match)
+		if (self::getCacheData($cacheId) === null)
 		{
-			$match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+			preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $string, $matches);
+			$ret = $matches[0];
+
+			foreach ($ret as &$match)
+			{
+				$match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+			}
+
+			self::setCacheData($cacheId, $ret);
 		}
 
-		return $ret;
+		return self::getCacheData($cacheId);
 	}
 
 	/**
@@ -387,14 +466,20 @@ class NenoHelper
 	 */
 	public static function convertDatabaseArrayToClassArray(array $databaseArray)
 	{
-		$objectData = array ();
+		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
 
-		foreach ($databaseArray as $fieldName => $fieldValue)
+		// If this data hasn't been stored in the cache, let's store it
+		if (self::getCacheData($cacheId) === null)
 		{
-			$objectData[self::convertDatabaseColumnNameToPropertyName($fieldName)] = $fieldValue;
+			$objectData = array ();
+
+			foreach ($databaseArray as $fieldName => $fieldValue)
+			{
+				$objectData[self::convertDatabaseColumnNameToPropertyName($fieldName)] = $fieldValue;
+			}
 		}
 
-		return $objectData;
+		return self::getCacheData($cacheId);
 	}
 
 	/**
@@ -406,20 +491,27 @@ class NenoHelper
 	 */
 	public static function convertDatabaseColumnNameToPropertyName($columnName)
 	{
-		$nameParts = explode('_', $columnName);
-		$firstWord = array_shift($nameParts);
+		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
 
-		// If there are word left, let's capitalize them.
-		if (!empty($nameParts))
+		if (self::getCacheData($cacheId) === null)
 		{
-			$nameParts = array_merge(array ($firstWord), array_map('ucfirst', $nameParts));
-		}
-		else
-		{
-			$nameParts = array ($firstWord);
+			$nameParts = explode('_', $columnName);
+			$firstWord = array_shift($nameParts);
+
+			// If there are word left, let's capitalize them.
+			if (!empty($nameParts))
+			{
+				$nameParts = array_merge(array ($firstWord), array_map('ucfirst', $nameParts));
+			}
+			else
+			{
+				$nameParts = array ($firstWord);
+			}
+
+			self::setCacheData($cacheId, implode('', $nameParts));
 		}
 
-		return implode('', $nameParts);
+		return self::getCacheData($cacheId);
 	}
 
 	/**
@@ -591,9 +683,15 @@ class NenoHelper
 	 */
 	public static function unifyTableName($tableName)
 	{
-		$prefix = JFactory::getDbo()->getPrefix();
+		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
 
-		return '#__' . str_replace(array ($prefix, '#__'), '', $tableName);
+		if (self::getCacheData($cacheId) === null)
+		{
+			$prefix = JFactory::getDbo()->getPrefix();
+			self::setCacheData($cacheId, '#__' . str_replace(array ($prefix, '#__'), '', $tableName));
+		}
+
+		return self::getCacheData($cacheId);
 	}
 
 	/**
@@ -647,37 +745,6 @@ class NenoHelper
 	}
 
 	/**
-	 * Check if a table has been already discovered.
-	 *
-	 * @param   string $extensionName Extension Name
-	 * @param   string $constant      Language file constant
-	 * @param   string $language      Language (JISO)
-	 *
-	 * @return bool
-	 */
-	public static function isLanguageStringAlreadyDiscovered($extensionName, $constant, $language)
-	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('1')
-			->from(NenoContentElementLangstring::getDbTable())
-			->where(
-				array (
-					'extensionName = ' . $db->quote($extensionName),
-					'constant = ' . $db->quote($constant),
-					'language = ' . $db->quote($language)
-				)
-			);
-
-		$db->setQuery($query);
-		$result = $db->loadResult();
-
-		return $result == 1;
-	}
-
-	/**
 	 * Get all the language strings related to a extension (group).
 	 *
 	 * @param   NenoContentElementGroup $group Group object
@@ -703,7 +770,7 @@ class NenoHelper
 				$sourceLanguageStringData['language'] = $defaultLanguage;
 
 				// If the string was already discovered, let's get if the it has changed.
-				if (self::isTableAlreadyDiscovered($sourceLanguageStringData['extension'], $sourceLanguageStringData['constant'], $defaultLanguage))
+				if (self::isLanguageStringAlreadyDiscovered($sourceLanguageStringData['extension'], $sourceLanguageStringData['constant'], $defaultLanguage))
 				{
 					$languageStringData   = NenoContentElementLangstring::load($sourceLanguageStringData);
 					$sourceLanguageString = new NenoContentElementLangstring($languageStringData);
@@ -751,29 +818,36 @@ class NenoHelper
 
 		$extensionName = $extensionData['element'];
 
-		switch ($extensionData['type'])
+		$cacheId = self::getCacheId(__FUNCTION__, array ($extensionName));
+
+		if (self::getCacheData($cacheId) === null)
 		{
-			case 'component':
-				if (!self::startsWith($extensionName, 'com_'))
-				{
-					$extensionName = 'com_' . $extensionName;
-				}
-				break;
-			case 'plugin':
-				if (!self::startsWith($extensionName, 'plg_'))
-				{
-					$extensionName = 'plg_' . $extensionData['folder'] . '_' . $extensionName;
-				}
-				break;
-			case 'module':
-				if (!self::startsWith($extensionName, 'mod_'))
-				{
-					$extensionName = 'mod_' . $extensionName;
-				}
-				break;
+			switch ($extensionData['type'])
+			{
+				case 'component':
+					if (!self::startsWith($extensionName, 'com_'))
+					{
+						$extensionName = 'com_' . $extensionName;
+					}
+					break;
+				case 'plugin':
+					if (!self::startsWith($extensionName, 'plg_'))
+					{
+						$extensionName = 'plg_' . $extensionData['folder'] . '_' . $extensionName;
+					}
+					break;
+				case 'module':
+					if (!self::startsWith($extensionName, 'mod_'))
+					{
+						$extensionName = 'mod_' . $extensionName;
+					}
+					break;
+			}
+
+			self::setCacheData($cacheId, $extensionName);
 		}
 
-		return $extensionName;
+		return self::getCacheData($cacheId);
 	}
 
 	/**
@@ -798,11 +872,18 @@ class NenoHelper
 	 */
 	public static function isJoomlaCoreLanguageFile($languageFileName)
 	{
-		$fileParts = explode('.', $languageFileName);
+		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
 
-		$result = self::removeCoreLanguageFilesFromArray(array ($languageFileName), $fileParts[0]);
+		if (self::getCacheData($cacheId) === null)
+		{
+			$fileParts = explode('.', $languageFileName);
 
-		return empty($result);
+			$result = self::removeCoreLanguageFilesFromArray(array ($languageFileName), $fileParts[0]);
+
+			self::setCacheData($cacheId, empty($result));
+		}
+
+		return self::getCacheData($cacheId);
 	}
 
 	/**
@@ -816,8 +897,7 @@ class NenoHelper
 	public static function removeCoreLanguageFilesFromArray($files, $language)
 	{
 		// Get all the language files from Joomla core extensions based on a particular language
-		$coreFiles = self::getJoomlaCoreLanguageFiles($language);
-
+		$coreFiles  = self::getJoomlaCoreLanguageFiles($language);
 		$validFiles = array ();
 
 		// Filter
@@ -872,30 +952,68 @@ class NenoHelper
 	 */
 	public static function getLanguageStringFromLanguageKey($languageKey)
 	{
-		$info = array ();
+		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
 
-		if (empty($languageKey))
+		if (self::getCacheData($cacheId) === null)
 		{
-			return $info;
-		}
+			$info = array ();
 
-		// Split by : to separate file name and constant
-		list($fileName, $info['constant']) = explode(':', $languageKey);
-
-		// Split the file name by . for additional information
-		$fileParts         = explode('.', $fileName);
-		$info['extension'] = $fileParts[0];
-
-		// Add .sys and other file parts to the name
-		foreach ($fileParts as $k => $filePart)
-		{
-			if ($k > 0 && $filePart != 'ini')
+			if (empty($languageKey))
 			{
-				$info['extension'] .= '.' . $filePart;
+				return $info;
 			}
+
+			// Split by : to separate file name and constant
+			list($fileName, $info['constant']) = explode(':', $languageKey);
+
+			// Split the file name by . for additional information
+			$fileParts         = explode('.', $fileName);
+			$info['extension'] = $fileParts[0];
+
+			// Add .sys and other file parts to the name
+			foreach ($fileParts as $k => $filePart)
+			{
+				if ($k > 0 && $filePart != 'ini')
+				{
+					$info['extension'] .= '.' . $filePart;
+				}
+			}
+
+			self::setCacheData($cacheId, $info);
 		}
 
-		return $info;
+		return self::getCacheData($cacheId);
+	}
+
+	/**
+	 * Check if a table has been already discovered.
+	 *
+	 * @param   string $extensionName Extension Name
+	 * @param   string $constant      Language file constant
+	 * @param   string $language      Language (JISO)
+	 *
+	 * @return bool
+	 */
+	public static function isLanguageStringAlreadyDiscovered($extensionName, $constant, $language)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('1')
+			->from(NenoContentElementLangstring::getDbTable())
+			->where(
+				array (
+					'extension = ' . $db->quote($extensionName),
+					'constant = ' . $db->quote($constant),
+					'language = ' . $db->quote($language)
+				)
+			);
+
+		$db->setQuery($query);
+		$result = $db->loadResult();
+
+		return $result == 1;
 	}
 
 	/**

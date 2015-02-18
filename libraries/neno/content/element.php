@@ -17,9 +17,19 @@ defined('JPATH_NENO') or die;
 abstract class NenoContentElement
 {
 	/**
+	 * @var string
+	 */
+	protected static $databaseTableNames = array ();
+
+	/**
 	 * @var integer
 	 */
 	protected $id;
+
+	/**
+	 * @var boolean
+	 */
+	protected $hasChanged;
 
 	/**
 	 * Constructor
@@ -45,6 +55,8 @@ abstract class NenoContentElement
 				$this->{$property->getName()} = $data->get($property->getName());
 			}
 		}
+
+		$this->hasChanged;
 	}
 
 	/**
@@ -158,7 +170,7 @@ abstract class NenoContentElement
 
 		$query
 			->select('*')
-			->from(static::getDbTable());
+			->from(self::getDbTable());
 
 		foreach ($pk as $field => $value)
 		{
@@ -186,11 +198,30 @@ abstract class NenoContentElement
 	 */
 	public static function getDbTable()
 	{
-		$className           = get_called_class();
-		$classNameComponents = NenoHelper::splitCamelCaseString($className);
-		$classNameComponents[count($classNameComponents) - 1] .= 's';
+		$className = get_called_class();
 
-		return '#__' . implode('_', $classNameComponents);
+		if (empty(self::$databaseTableNames[$className]))
+		{
+			$classNameComponents = NenoHelper::splitCamelCaseString($className);
+			$classNameComponents[count($classNameComponents) - 1] .= 's';
+
+			self::$databaseTableNames[$className] = '#__' . implode('_', $classNameComponents);
+		}
+
+		return self::$databaseTableNames[$className];
+
+	}
+
+	public static function __callStatic($name, $arguments)
+	{
+		Kint::dump(func_get_args());
+		exit;
+	}
+
+	public function __call($name, $arguments)
+	{
+		Kint::dump(func_get_args());
+		exit;
 	}
 
 	/**
@@ -200,20 +231,35 @@ abstract class NenoContentElement
 	 */
 	public function persist()
 	{
-		$db   = JFactory::getDbo();
-		$data = $this->toObject();
+		$result = false;
 
-		if ($this->isNew())
+		if ($this->hasChanged || $this->isNew())
 		{
-			$result   = $db->insertObject(static::getDbTable(), $data, 'id');
-			$this->id = $db->insertid();
-		}
-		else
-		{
-			$result = $db->updateObject(static::getDbTable(), $data, 'id');
+			$db   = JFactory::getDbo();
+			$data = $this->toObject();
+
+			if ($this->isNew())
+			{
+				$result   = $db->insertObject(self::getDbTable(), $data, 'id');
+				$this->id = $db->insertid();
+			}
+			else
+			{
+				$result = $db->updateObject(self::getDbTable(), $data, 'id');
+			}
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Check if the object is new
+	 *
+	 * @return bool
+	 */
+	public function isNew()
+	{
+		return empty($this->id);
 	}
 
 	/**
@@ -229,7 +275,10 @@ abstract class NenoContentElement
 		$classReflection = $this->getClassReflectionObject();
 
 		// Getting all the properties marked as 'protected'
-		$properties = $classReflection->getProperties(ReflectionProperty::IS_PROTECTED);
+		$properties = array_diff(
+			$classReflection->getProperties(ReflectionProperty::IS_PROTECTED),
+			$classReflection->getProperties(ReflectionProperty::IS_STATIC)
+		);
 
 		// Go through them and assign a value to them if they exist in the argument passed as parameter.
 		foreach ($properties as $property)
@@ -238,16 +287,6 @@ abstract class NenoContentElement
 		}
 
 		return $data;
-	}
-
-	/**
-	 * Check if the object is new
-	 *
-	 * @return bool
-	 */
-	public function isNew()
-	{
-		return empty($this->id);
 	}
 
 	/**
@@ -263,7 +302,7 @@ abstract class NenoContentElement
 			/* @var $db NenoDatabaseDriverMysqlx */
 			$db = JFactory::getDbo();
 
-			return $db->deleteObject(static::getDbTable(), $this->id);
+			return $db->deleteObject(self::getDbTable(), $this->id);
 		}
 
 		return false;
