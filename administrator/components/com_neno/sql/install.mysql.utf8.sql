@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups` (
   `group_name`   VARCHAR(150) NOT NULL,
   `extension_id` INT          NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `group_name_UNIQUE` (`group_name` ASC)
+  UNIQUE INDEX `group_name_UNIQUE` (`group_name` ASC),
+  UNIQUE INDEX `extension_idx` (`extension_id` ASC)
 )
   ENGINE = InnoDB;
 
