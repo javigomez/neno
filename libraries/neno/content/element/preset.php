@@ -81,6 +81,8 @@ class NenoContentElementPreset extends NenoContentElement
 
 	/**
 	 * @param string $language
+	 *
+	 * @return $this
 	 */
 	public function setLanguage($language)
 	{

@@ -64,8 +64,7 @@ class NenoContentElementLangstring extends NenoContentElement
 	/**
 	 * Constructor
 	 *
-	 * @param   mixed $data              Language string data
-	 * @param   bool  $fetchTranslations If the translations should be loaded
+	 * @param   mixed $data Language string data
 	 */
 	public function __construct($data)
 	{

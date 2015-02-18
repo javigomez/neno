@@ -46,15 +46,22 @@ class NenoFactory extends JFactory
 	{
 		$conf = self::getConfig();
 
+		/** @noinspection PhpUndefinedMethodInspection */
 		$host     = $conf->get('host');
+		/** @noinspection PhpUndefinedMethodInspection */
 		$user     = $conf->get('user');
+		/** @noinspection PhpUndefinedMethodInspection */
 		$password = $conf->get('password');
+		/** @noinspection PhpUndefinedMethodInspection */
 		$database = $conf->get('db');
+		/** @noinspection PhpUndefinedMethodInspection */
 		$prefix   = $conf->get('dbprefix');
+		/** @noinspection PhpUndefinedMethodInspection */
 		$driver   = $conf->get('dbtype');
+		/** @noinspection PhpUndefinedMethodInspection */
 		$debug    = $conf->get('debug');
 
-		$options = array(
+		$options = array (
 			'driver' => $driver
 		, 'host'     => $host
 		, 'user'     => $user
@@ -63,17 +70,18 @@ class NenoFactory extends JFactory
 		, 'prefix'   => $prefix
 		);
 
+		$db = null;
+
 		try
 		{
 			NenoDatabaseDriver::clearInstances();
 			$db = NenoDatabaseDriver::getInstance($options);
+			$db->setDebug($debug);
 		}
-		catch ( RuntimeException $ex )
+		catch (RuntimeException $ex)
 		{
 			jexit('Database Error: ' . $ex->getMessage());
 		}
-
-		$db->setDebug($debug);
 
 		return $db;
 	}

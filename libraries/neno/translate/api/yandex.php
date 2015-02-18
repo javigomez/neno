@@ -16,141 +16,140 @@ jimport('joomla.application.component.helper');
  */
 class NenoTranslateApiYandex extends NenoTranslateApi
 {
-    /**
-     * @var string
-     */
-    protected $apiKey;
+	/**
+	 * @var string
+	 */
+	protected $apiKey;
 
-    /**
-     * Translate text using yandex api
-     *
-     * @param   string $apiKey  the key provided by user
-     * @param   string $text    text to translate
-     * @param   string $source  source language
-     * @param   string $target  target language default french
-     *
-     * @return string
-     */
-    public function translate($text,$source="en-US",$target="fr-FR")
-    {
-        // get the key configured by user
-        $this->apiKey = JComponentHelper::getParams('com_neno')->get('yandexApiKey');
+	/**
+	 * Translate text using yandex api
+	 *
+	 * @param   string $text   text to translate
+	 * @param   string $source source language
+	 * @param   string $target target language default french
+	 *
+	 * @return string
+	 */
+	public function translate($text, $source = "en-US", $target = "fr-FR")
+	{
+		// Get the key configured by user
+		/** @noinspection PhpUndefinedMethodInspection */
+		$this->apiKey = JComponentHelper::getParams('com_neno')->get('yandexApiKey');
 
-        // convert from JISO to ISO codes
-        $target = $this->convertFromJisoToIso($target);
+		// Convert from JISO to ISO codes
+		$target = $this->convertFromJisoToIso($target);
 
-        // language parameter for url
-        $source = $this->convertFromJisoToIso($source);
-        $lang = $source."-".$target;
+		// Language parameter for url
+		$source = $this->convertFromJisoToIso($source);
+		$lang   = $source . "-" . $target;
 
-        // check availability of langauage pair for translation
-        $isAvailable = $this->isTranslationAvailable($lang);
+		// Check availability of language pair for translation
+		$isAvailable = $this->isTranslationAvailable($lang);
 
-        if(!$isAvailable)
-        {
-            return null;
-        }
+		if (!$isAvailable)
+		{
+			return null;
+		}
 
 
-        if($this->apiKey == "")
-        {
-            // Use default key if not provided
-            $this->apiKey = 'trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0';
-        }
+		if ($this->apiKey == "")
+		{
+			// Use default key if not provided
+			$this->apiKey = 'trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0';
+		}
 
-        // For POST requests, the maximum size of the text being passed is 10000 characters.
-        $textString = str_split($text, 10000);
-        $textStrings='';
-        foreach($textString as $str)
-        {
-            $textStrings .= '&text=' . rawurlencode($str);
-        }
+		// For POST requests, the maximum size of the text being passed is 10000 characters.
+		$textString  = str_split($text, 10000);
+		$textStrings = '';
 
-        $url    = 'https://translate.yandex.net/api/v1.5/tr.json/translate?key=' . $this->apiKey . '&lang=' . $lang . $textStrings;
+		foreach ($textString as $str)
+		{
+			$textStrings .= '&text=' . rawurlencode($str);
+		}
 
-        // Invoke the GET request.
-        $response = $this->get($url);
+		$url = 'https://translate.yandex.net/api/v1.5/tr.json/translate?key=' . $this->apiKey . '&lang=' . $lang . $textStrings;
 
-        $text = null;
+		// Invoke the GET request.
+		$response = $this->get($url);
 
-        // Log it if server response is not OK.
-        if ($response->code != 200)
-        {
-            NenoLog::log('Yandex api failed with response: ' . $response->code, 1);
-        }
-        else
-        {
-            $reponseBody=json_decode($response->body);
-            $text = $reponseBody->text[0];
-        }
+		$text = null;
 
-        return $text;
+		// Log it if server response is not OK.
+		if ($response->code != 200)
+		{
+			NenoLog::log('Yandex api failed with response: ' . $response->code, 1);
+		}
+		else
+		{
+			$responseBody = json_decode($response->body);
+			$text         = $responseBody->text[0];
+		}
 
-    }
+		return $text;
 
-    /**
-     * Method to make supplied language codes equivalent to yandex api codes
-     *
-     * @param   string $jiso Joomla ISO language code
-     *
-     * @return string
-     */
-    public function convertFromJisoToIso($jiso)
-    {
-        // split the language code parts using hypen
-        $jisoParts = (explode("-",$jiso));
-        $iso2Tag = strtolower($jisoParts[0]);
+	}
 
-        switch($iso2Tag)
-        {
-            case "nb":
-                $iso2 = "no";
-                break;
+	/**
+	 * Method to make supplied language codes equivalent to yandex api codes
+	 *
+	 * @param   string $jiso Joomla ISO language code
+	 *
+	 * @return string
+	 */
+	public function convertFromJisoToIso($jiso)
+	{
+		// Split the language code parts using hyphen
+		$jisoParts = (explode("-", $jiso));
+		$iso2Tag   = strtolower($jisoParts[0]);
 
-            default:
-                $iso2 = $iso2Tag;
-                break;
-        }
+		switch ($iso2Tag)
+		{
+			case "nb":
+				$iso2 = "no";
+				break;
 
-        return $iso2;
-    }
+			default:
+				$iso2 = $iso2Tag;
+				break;
+		}
 
-    /**
-     * Method to check if language pair is available or not in yandex api
-     *
-     * @param   string $iso2Pair ISO2 language code pair
-     *
-     * @return boolen
-     */
-    public function isTranslationAvailable($isoPair)
-    {
-        // split the language pair using hypen
-        $isoParts = (explode("-",$isoPair));
+		return $iso2;
+	}
 
-        $available = 1;
+	/**
+	 * Method to check if language pair is available or not in yandex api
+	 *
+	 * @param   string $isoPair ISO2 language code pair
+	 *
+	 * @return boolean
+	 */
+	public function isTranslationAvailable($isoPair)
+	{
+		// Split the language pair using hyphen
+		$isoParts = (explode("-", $isoPair));
 
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+		$available = 1;
 
-        $query
-            ->select('*')
-            ->from($db->quoteName('#__neno_translation_methods_language_pairs', 'mlp'))
-            ->join('INNER', $db->quoteName('#__neno_translation_methods', 'm') . ' ON (' . $db->quoteName('mlp.translation_method_id') . ' = ' . $db->quoteName('m.id') . ')')
-            ->where($db->quoteName('m.translator_name') . '=' . $db->quote('Yandex Translate'))
-            ->where('mlp.source_language = ' . $db->quote($isoParts[0]))
-            ->where('mlp.destination_language = ' . $db->quote($isoParts[1]));
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
-        $db->setQuery($query);
-        $db->execute();
-        $num_rows = $db->getNumRows();
+		$query
+			->select('*')
+			->from($db->quoteName('#__neno_translation_methods_language_pairs', 'mlp'))
+			->innerJoin($db->quoteName('#__neno_translation_methods', 'm') . ' ON (' . $db->quoteName('mlp.translation_method_id') . ' = ' . $db->quoteName('m.id') . ')')
+			->where($db->quoteName('m.translator_name') . '=' . $db->quote('Yandex Translate'))
+			->where('mlp.source_language = ' . $db->quote($isoParts[0]))
+			->where('mlp.destination_language = ' . $db->quote($isoParts[1]));
 
-        if($num_rows == 0)
-        {
-            $available = 0;
-        }
+		$db->setQuery($query);
+		$db->execute();
+		$num_rows = $db->getNumRows();
 
-        return $available;
-    }
+		if ($num_rows == 0)
+		{
+			$available = 0;
+		}
 
+		return $available;
+	}
 }
-

@@ -178,14 +178,17 @@ abstract class NenoContentElement
 		}
 
 		$db->setQuery($query);
+		$data       = $db->loadAssoc();
+		$objectData = null;
 
-		$data = $db->loadAssoc();
-
-		$objectData = new stdClass;
-
-		foreach ($data as $key => $value)
+		if (!empty($data))
 		{
-			$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
+			$objectData = new stdClass;
+
+			foreach ($data as $key => $value)
+			{
+				$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
+			}
 		}
 
 		return $objectData;
@@ -209,21 +212,8 @@ abstract class NenoContentElement
 		}
 
 		return self::$databaseTableNames[$className];
-
 	}
-
-	public static function __callStatic($name, $arguments)
-	{
-		Kint::dump(func_get_args());
-		exit;
-	}
-
-	public function __call($name, $arguments)
-	{
-		Kint::dump(func_get_args());
-		exit;
-	}
-
+	
 	/**
 	 * Method to persist object in the database
 	 *
@@ -281,6 +271,7 @@ abstract class NenoContentElement
 		);
 
 		// Go through them and assign a value to them if they exist in the argument passed as parameter.
+		/* @var $property ReflectionProperty */
 		foreach ($properties as $property)
 		{
 			$data->set(NenoHelper::convertPropertyNameToDatabaseColumnName($property->getName()), $this->{$property->getName()});

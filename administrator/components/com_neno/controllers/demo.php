@@ -12,66 +12,64 @@
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.controller');
-jimport('neno.translate');
-//jimport('neno.translate.api.yandex');
 
 class NenoControllerDemo extends JControllerLegacy
 {
 	/**
 	 * Method to handle ajax call for google translation
-	 *	 
+	 *
 	 * @return string
 	 */
 	public function ajaxTranslate()
 	{
-		$app = JFactory::getApplication();
-		$jinput = $app->input;
-		$api = $jinput->get('api', '', 'string');
-		$text = $jinput->get('source', '', 'string');	
-			
-		if(!empty($text))
+		$app   = JFactory::getApplication();
+		$input = $app->input;
+		$api   = $input->get('api', '', 'string');
+		$text  = $input->get('source', '', 'string');
+
+		if (!empty($text))
 		{
-			// select the api as per request
-			switch($api)
+			// Select the api as per request
+			switch ($api)
 			{
 				case "google":
-				$nenoTranslate = new NenoTranslateApiGoogle();
-				break;
+					$nenoTranslate = new NenoTranslateApiGoogle;
+					break;
 
 				case "yandex":
-				$nenoTranslate = new NenoTranslateApiYandex();
-				break;
-			}			
-		}
-                                                           
-		    $result = $nenoTranslate->translate($text);
-		    if($result == null)
-			{
-				$result = "warning";
+					$nenoTranslate = new NenoTranslateApiYandex;
+					break;
 			}
-				print_r($result);
+		}
 
-		    exit;
+		$result = $nenoTranslate->translate($text);
+		if ($result == null)
+		{
+			$result = "warning";
+		}
+		print_r($result);
+
+		exit;
 	}
 
 	/**
 	 * Method to get supported languages by translation api
 	 *
-	 * @return json
+	 * @return string
 	 */
 	public function getSupportedLangs()
 	{
-		$app = JFactory::getApplication();
-		$jinput = $app->input;
-		$api = $jinput->get('api', '', 'string');
+		$app   = JFactory::getApplication();
+		$input = $app->input;
+		$api   = $input->get('api', '', 'string');
 
-		if($api=="yandex")
+		if ($api == "yandex")
 		{
-			$nenoTranslate = new NenoTranslateApiYandex();
+			$nenoTranslate = new NenoTranslateApiYandex;
 		}
 		else
 		{
-			$nenoTranslate = new NenoTranslateApiGoogle();
+			$nenoTranslate = new NenoTranslateApiGoogle;
 		}
 
 		$result = $nenoTranslate->getApiSupportedLanguagePairs();
@@ -79,6 +77,4 @@ class NenoControllerDemo extends JControllerLegacy
 
 		exit;
 	}
-
-
 }

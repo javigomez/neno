@@ -139,7 +139,9 @@ class NenoHelper
 
 		$adminTitleLayout     = JLayoutHelper::render('toolbar', $displayData, JPATH_NENO_LAYOUTS);
 		$layout               = new JLayoutFile('joomla.toolbar.title');
+		/** @noinspection PhpParamsInspection */
 		$html                 = $layout->render(array ('title' => $adminTitleLayout, 'icon' => 'nope'));
+		/** @noinspection PhpUndefinedFieldInspection */
 		$app->JComponentTitle = $html;
 	}
 

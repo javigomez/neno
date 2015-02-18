@@ -754,7 +754,7 @@ class com_nenoInstallerScript
 						)
 					);
 				$db->setQuery($query);
-				$db->query();
+				$db->execute();
 			}
 		}
 	}

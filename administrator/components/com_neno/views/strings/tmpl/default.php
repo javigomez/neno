@@ -71,7 +71,8 @@ if (!empty($this->extra_sidebar))
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
 	</div>
-<form action="<?php echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php /** @noinspection PhpToStringImplementationInspection */
+echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name="adminForm" id="adminForm">
 <div id="j-main-container" class="span10">
 	<?php else : ?>
 	<form action="<?php echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name="adminForm" id="adminForm">

@@ -11,6 +11,7 @@
 defined('JPATH_NENO') or die;
 
 // If the database type is mysqli, let's created a middle class that inherit from the Mysqli drive
+/** @noinspection PhpUndefinedMethodInspection */
 if (JFactory::getConfig()->get('dbtype') === 'mysqli')
 {
 	/**
@@ -42,6 +43,8 @@ else
  * @subpackage  Database
  * @since       1.0
  */
+
+/** @noinspection PhpUndefinedClassInspection */
 class NenoDatabaseDriverMysqlx extends CommonDriver
 {
 	/**
@@ -70,7 +73,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 				->select($this->quoteName('AUTO_INCREMENT'))
 				->from('INFORMATION_SCHEMA.TABLES')
 				->where(
-					array(
+					array (
 						'TABLE_SCHEMA = ' . $this->quote($this->getDatabase()),
 						'TABLE_NAME = ' . $this->quote($this->replacePrefix($tableName))
 					)
@@ -151,6 +154,8 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		}
 
 		// Call to the parent replacePrefix
+		/** @noinspection PhpUndefinedClassInspection */
+
 		return parent::replacePrefix($sql, $prefix);
 	}
 
@@ -174,7 +179,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	 */
 	private function hasToBeParsed($sql)
 	{
-		$ignoredQueryRegex = array(
+		$ignoredQueryRegex = array (
 			'/show (.+)/i',
 			'/#__neno_(.+)/',
 			'/#__extensions/',
@@ -221,7 +226,8 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	 */
 	public function executeQuery($sql, $preservePreviousQuery = true, $returnObjectList = false)
 	{
-		$currentSql = null;
+		$currentSql   = null;
+		$returnObject = null;
 
 		// If the flag is activated, let's keep it save
 		if ($preservePreviousQuery)
@@ -244,10 +250,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 			$this->sql = $currentSql;
 		}
 
-		if ($returnObjectList)
-		{
-			return $returnObject;
-		}
+		return $returnObject;
 	}
 
 	/**
@@ -259,15 +262,15 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	{
 		try
 		{
+			/** @noinspection PhpUndefinedClassInspection */
 			$result = parent::execute();
-
-			//$this->processQueryExecution();
 
 			return $result;
 		}
 		catch (RuntimeException $ex)
 		{
 			echo $ex->getMessage() . "\n";
+			/** @noinspection PhpUndefinedClassInspection */
 			Kint::dump(xdebug_get_function_stack());
 			exit;
 		}
@@ -288,7 +291,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 
 		$manifestTablesObjectList = $this->executeQuery($query, true, true);
 
-		$this->manifestTables = array();
+		$this->manifestTables = array ();
 
 		foreach ($manifestTablesObjectList as $object)
 		{
@@ -356,6 +359,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	 */
 	public function getTableCreate($tables)
 	{
+		/** @noinspection PhpUndefinedClassInspection */
 		$result = parent::getTableCreate($tables);
 
 		// Get all the keys for the create table array
@@ -364,7 +368,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		// Go through all the create statements and make them IF NOT EXISTS create statements
 		foreach ($tableNames as $tableName)
 		{
-			$result[$tableName] = str_replace(array('CREATE TABLE', $this->getPrefix()), array('CREATE TABLE IF NOT EXISTS', '#__'), $result[$tableName]);
+			$result[$tableName] = str_replace(array ('CREATE TABLE', $this->getPrefix()), array ('CREATE TABLE IF NOT EXISTS', '#__'), $result[$tableName]);
 		}
 
 		return $result;
@@ -380,7 +384,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	 */
 	public function copyContentElementsFromSourceTableToShadowTables($sourceTableName, $shadowTableName)
 	{
-		$columns = array_map(array($this, 'quoteName'), array_keys($this->getTableColumns($sourceTableName)));
+		$columns = array_map(array ($this, 'quoteName'), array_keys($this->getTableColumns($sourceTableName)));
 		$query   = 'REPLACE INTO ' . $shadowTableName . ' (' . implode(',', $columns) . ' ) SELECT * FROM ' . $sourceTableName;
 		$this->executeQuery($query);
 	}
@@ -396,7 +400,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	{
 		$query       = 'SHOW INDEX FROM ' . $tableName . ' WHERE Key_name = \'PRIMARY\' OR Non_unique = 0';
 		$results     = $this->executeQuery($query, true, true);
-		$foreignKeys = array();
+		$foreignKeys = array ();
 
 		if (!empty($results))
 		{
@@ -451,8 +455,9 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	 */
 	public function loadArray()
 	{
+		/** @noinspection PhpUndefinedClassInspection */
 		$list  = parent::loadRowList();
-		$array = array();
+		$array = array ();
 
 		foreach ($list as $listElement)
 		{
@@ -460,22 +465,5 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		}
 
 		return $array;
-	}
-
-	/**
-	 *
-	 */
-	private function processQueryExecution()
-	{
-		$sqlParsed = NenoDatabaseParser::parseQuery($this->sql);
-
-		// Process insertions
-		if (!empty($sqlParsed['INSERT']) || !empty($sqlParsed['REPLACE']))
-		{
-//			Kint::dump($sqlParsed);
-//			exit;
-		}
-
-		// Process updating
 	}
 }

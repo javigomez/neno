@@ -19,14 +19,13 @@ abstract class NenoTranslateApi extends JHttp
 	/**
 	 * Method to translate content
 	 *
- 	 * @param   string $apiKey  the key provided by user
-	 * @param   string $text    text to translate
- 	 * @param   string $source  source language
- 	 * @param   string $target  target language
- 	 *
- 	 * @return json
- 	 */
-	abstract public function translate($text,$source,$target);
+	 * @param   string $text   text to translate
+	 * @param   string $source source language
+	 * @param   string $target target language
+	 *
+	 * @return string
+	 */
+	abstract public function translate($text, $source, $target);
 
 	/**
 	 * Method to make supplied language codes equivalent to translation api codes
@@ -40,16 +39,16 @@ abstract class NenoTranslateApi extends JHttp
 	/**
 	 * Method to check if language pair is available or not in translation api
 	 *
-	 * @param   string $iso2Pair ISO2 language code pair
+	 * @param   string $isoPair ISO2 language code pair
 	 *
-	 * @return boolen
+	 * @return boolean
 	 */
 	abstract public function isTranslationAvailable($isoPair);
 
 	/**
 	 * Method to get supported language pairs for translation from our server
 	 *
-	 * @return json
+	 * @return string JSON string
 	 */
 	public function getSupportedLanguagePairs()
 	{
@@ -57,14 +56,13 @@ abstract class NenoTranslateApi extends JHttp
 		$query = $db->getQuery(true);
 
 		$query
-			->select($db->quoteName(array('m.translator_name', 'm.translation_type', 'mlp.source_language', 'mlp.destination_language')))
+			->select($db->quoteName(array ('m.translator_name', 'm.translation_type', 'mlp.source_language', 'mlp.destination_language')))
 			->from($db->quoteName('#__neno_translation_methods_language_pairs', 'mlp'))
-			->join('INNER', $db->quoteName('#__neno_translation_methods', 'm') . ' ON (' . $db->quoteName('mlp.translation_method_id') . ' = ' . $db->quoteName('m.id') . ')');
+			->innerJoin($db->quoteName('#__neno_translation_methods', 'm') . ' ON (' . $db->quoteName('mlp.translation_method_id') . ' = ' . $db->quoteName('m.id') . ')');
 
 		$db->setQuery($query);
 		$pairs = $db->loadObjectList();
 
 		return json_encode($pairs);
 	}
-
 }

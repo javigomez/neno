@@ -45,6 +45,7 @@ class NenoLogLoggerApi extends JLogLogger
 	 */
 	public function addEntry(JLogEntry $entry)
 	{
+		/** @noinspection PhpUndefinedClassInspection */
 		Kint::dump($entry);
 	}
 }

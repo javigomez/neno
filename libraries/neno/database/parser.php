@@ -210,6 +210,7 @@ class NenoDatabaseParser
 	 */
 	private static function cleanTableName($tableName)
 	{
+		/** @noinspection PhpUndefinedMethodInspection */
 		return str_replace(array('#__', JFactory::getConfig()->get('dbprefix')), '', $tableName);
 	}
 

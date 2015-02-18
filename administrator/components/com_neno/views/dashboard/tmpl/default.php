@@ -14,7 +14,8 @@ defined('_JEXEC') or die;
 
 <h1>Neno Dashboard</h1>
 
-<a href="<?php echo JRoute::_('index.php?option=com_neno&task=groupselements.discoverExtensions'); ?>" class="btn">
+<a href="<?php /** @noinspection PhpToStringImplementationInspection */
+echo JRoute::_('index.php?option=com_neno&task=groupselements.discoverExtensions'); ?>" class="btn">
 	<span class="icon-list-2 "></span>
 	Import extensions
 </a>
