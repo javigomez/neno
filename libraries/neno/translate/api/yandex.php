@@ -127,55 +127,29 @@ class NenoTranslateApiYandex extends NenoTranslateApi
         // split the language pair using hypen
         $isoParts = (explode("-",$isoPair));
 
-        // array of iso language codes not available in yandex api
-        $languages = array("gl", "ja", "af", "ko", "fa", "sy", "ta", "ug", "hi", "sw", "srp", "cy", "si");
         $available = 1;
 
-        foreach($isoParts as $part)
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from($db->quoteName('#__neno_translation_methods_language_pairs', 'mlp'))
+            ->join('INNER', $db->quoteName('#__neno_translation_methods', 'm') . ' ON (' . $db->quoteName('mlp.translation_method_id') . ' = ' . $db->quoteName('m.id') . ')')
+            ->where($db->quoteName('m.translator_name') . '=' . $db->quote('Yandex Translate'))
+            ->where('mlp.source_language = ' . $db->quote($isoParts[0]))
+            ->where('mlp.destination_language = ' . $db->quote($isoParts[1]));
+
+        $db->setQuery($query);
+        $db->execute();
+        $num_rows = $db->getNumRows();
+
+        if($num_rows == 0)
         {
-            if (in_array($part , $languages))
-            {
-                $available = 0;
-            }
+            $available = 0;
         }
 
         return $available;
-    }
-
-    /**
-     * Method to get supported language pairs for translation from yandex api
-     *
-     * @return json
-     */
-    public function getApiSupportedLanguagePairs()
-    {
-        // get the key configured by user
-        $this->apiKey = JComponentHelper::getParams('com_neno')->get('yandexApiKey');
-
-        if($this->apiKey == "")
-        {
-            // Use default key if not provided
-            $this->apiKey = 'trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0';
-        }
-
-        $url    = 'https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=' . $this->apiKey . '&ui=uk';
-
-        // Invoke the GET request.
-        $response = $this->get($url);
-
-        $json = null;
-
-        // Log it if server response is not OK.
-        if ($response->code != 200)
-        {
-            NenoLog::log('Yandex api failed with response: ' . $response->code, 1);
-        }
-        else
-        {
-            $json = $response->body;
-        }
-
-        return $json;
     }
 
 }

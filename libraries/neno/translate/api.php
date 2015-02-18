@@ -47,20 +47,24 @@ abstract class NenoTranslateApi extends JHttp
 	abstract public function isTranslationAvailable($isoPair);
 
 	/**
-	 * Method to get supported language pairs for translation from translation api
-	 *
-	 * @return json
-	 */
-	abstract public function getApiSupportedLanguagePairs();
-
-	/**
 	 * Method to get supported language pairs for translation from our server
 	 *
 	 * @return json
 	 */
 	public function getSupportedLanguagePairs()
 	{
-		echo "working...";
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select($db->quoteName(array('m.translator_name', 'm.translation_type', 'mlp.source_language', 'mlp.destination_language')))
+			->from($db->quoteName('#__neno_translation_methods_language_pairs', 'mlp'))
+			->join('INNER', $db->quoteName('#__neno_translation_methods', 'm') . ' ON (' . $db->quoteName('mlp.translation_method_id') . ' = ' . $db->quoteName('m.id') . ')');
+
+		$db->setQuery($query);
+		$pairs = $db->loadObjectList();
+
+		return json_encode($pairs);
 	}
 
 }
