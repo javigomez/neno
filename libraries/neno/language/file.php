@@ -42,7 +42,7 @@ class NenoLanguageFile
 		$this->language  = $language;
 		$this->extension = $extension;
 
-		$this->strings = array();
+		$this->strings = array ();
 
 		// If the loadString flag is activated, let's load the strings
 		if ($loadStrings)
@@ -68,7 +68,7 @@ class NenoLanguageFile
 			if ($strings !== false)
 			{
 				// Init the string array
-				$this->strings = array();
+				$this->strings = array ();
 
 				// Loop through all the strings and index them creating the key
 				foreach ($strings as $key => $string)
@@ -144,7 +144,7 @@ class NenoLanguageFile
 	 */
 	public static function getLanguageString($language, $key)
 	{
-		$languageStringInfo = static::getLanguageFileStringInfoFromStringKey($key);
+		$languageStringInfo = self::getLanguageFileStringInfoFromStringKey($key);
 
 		// If there were errors extracting the information from the key, return false.
 		if (empty($languageStringInfo['extension']) || empty($languageStringInfo['constant']))
@@ -152,7 +152,7 @@ class NenoLanguageFile
 			return false;
 		}
 
-		$languageFile = static::openLanguageFile($language, $languageStringInfo['extension']);
+		$languageFile = self::openLanguageFile($language, $languageStringInfo['extension']);
 
 		return $languageFile->getString($languageStringInfo['constant']);
 	}
@@ -167,7 +167,7 @@ class NenoLanguageFile
 	 */
 	public static function getLanguageFileStringInfoFromStringKey($key)
 	{
-		$info = array();
+		$info = array ();
 
 		if (empty($key))
 		{
@@ -235,14 +235,14 @@ class NenoLanguageFile
 	 */
 	public static function getLanguagesFilesBasedOnLanguage($language)
 	{
-		$files   = array();
-		$folders = static::getLanguageFileFolders(null, $language);
+		$files   = array ();
+		$folders = self::getLanguageFileFolders(null, $language);
 
 		if (!empty($folders))
 		{
 			foreach ($folders as $folder)
 			{
-				$files = array_merge($files, static::getLanguageFilesInPath($folder, $language));
+				$files = array_merge($files, self::getLanguageFilesInPath($folder, $language));
 			}
 		}
 
@@ -267,7 +267,7 @@ class NenoLanguageFile
 	 */
 	protected static function getLanguageFileFolders($extension = null, $language = null)
 	{
-		$folders = array();
+		$folders = array ();
 
 		// Always language first
 		if (!is_null($language))
@@ -358,7 +358,7 @@ class NenoLanguageFile
 		// Remove Joomla core files if needed
 		if ($ignoreJoomlaCore === true && !empty($files))
 		{
-			$files = static::removeCoreLanguageFilesFromArray($files, $language);
+			$files = self::removeCoreLanguageFilesFromArray($files, $language);
 		}
 
 		// Debug
@@ -370,7 +370,7 @@ class NenoLanguageFile
 			}
 		}
 
-		return $files === false ? array() : $files;
+		return $files === false ? array () : $files;
 	}
 
 	/**
@@ -383,7 +383,7 @@ class NenoLanguageFile
 	 */
 	public static function removeCoreLanguageFilesFromArray($files, $lang)
 	{
-		$coreFiles = array(
+		$coreFiles = array (
 
 			// Core components language files
 			$lang . '.com_ajax.ini'
@@ -485,7 +485,7 @@ class NenoLanguageFile
 		, $lang . '.tpl_isis.sys.ini'
 		);
 
-		$validFiles = array();
+		$validFiles = array ();
 
 		// Filter
 		foreach ($files as $file)

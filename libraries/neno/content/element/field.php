@@ -91,6 +91,7 @@ class NenoContentElementField extends NenoContentElement
 		$this->table                     = $data->get('table') == null
 			? NenoContentElementTable::getTableById($data->get('tableId'), false)
 			: $data->get('table');
+		$this->translations              = null;
 		$this->wordsNotTranslated        = 0;
 		$this->wordsQueuedToBeTranslated = 0;
 		$this->wordsSourceHasChanged     = 0;
@@ -98,11 +99,6 @@ class NenoContentElementField extends NenoContentElement
 
 		if (!$this->isNew() && $this->translate)
 		{
-			if ($fetchTranslations)
-			{
-				$this->translations = NenoContentElementTranslation::getTranslations($this);
-			}
-
 			$this->calculateExtraData();
 		}
 	}
@@ -180,7 +176,7 @@ class NenoContentElementField extends NenoContentElement
 	 */
 	public static function getFieldById($fieldId)
 	{
-		$field = new NenoContentElementField(static::load($fieldId));
+		$field = new NenoContentElementField(self::load($fieldId));
 
 		return $field;
 	}
@@ -194,7 +190,7 @@ class NenoContentElementField extends NenoContentElement
 	 */
 	public static function isTranslatableType($fieldType)
 	{
-		return in_array($fieldType, static::$translatableFields);
+		return in_array($fieldType, self::$translatableFields);
 	}
 
 	/**
@@ -292,6 +288,11 @@ class NenoContentElementField extends NenoContentElement
 	 */
 	public function getTranslations()
 	{
+		if ($this->translations === null)
+		{
+			$this->translations = NenoContentElementTranslation::getTranslations($this);
+		}
+
 		return $this->translations;
 	}
 
