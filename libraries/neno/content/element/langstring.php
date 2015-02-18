@@ -132,45 +132,6 @@ class NenoContentElementLangstring extends NenoContentElement
 	}
 
 	/**
-	 * Get translations
-	 *
-	 * @return array
-	 */
-	public function getTranslations()
-	{
-		if ($this->translations == null)
-		{
-			$this->loadTranslations();
-		}
-
-		return $this->translations;
-	}
-
-	/**
-	 * Set translations
-	 *
-	 * @param   array $translations Translations
-	 *
-	 * @return $this
-	 */
-	public function setTranslations(array $translations)
-	{
-		$this->translations = $translations;
-
-		return $this;
-	}
-
-	/**
-	 * Load all the translation associated to this element
-	 *
-	 * @return void
-	 */
-	protected function loadTranslations()
-	{
-		$this->translations = NenoContentElementTranslation::getTranslations($this);
-	}
-
-	/**
 	 * Get group
 	 *
 	 * @return NenoContentElementGroup
@@ -400,8 +361,55 @@ class NenoContentElementLangstring extends NenoContentElement
 	 */
 	public function contentHasChanged()
 	{
-		$this->hasChanged  = true;
+		parent::contentHasChanged();
 		$this->timeChanged = new DateTime;
+
+		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function remove()
+	{
+		$translations = $this->getTranslations();
+
+		/* @var $translation NenoContentElementTranslation */
+		foreach ($translations as $translation)
+		{
+			$translation->remove();
+		}
+
+		return parent::remove();
+	}
+
+	/**
+	 * Get translations
+	 *
+	 * @return array
+	 */
+	public function getTranslations()
+	{
+		if ($this->translations == null)
+		{
+			$this->translations = NenoContentElementTranslation::getTranslations($this);
+		}
+
+		return $this->translations;
+	}
+
+	/**
+	 * Set translations
+	 *
+	 * @param   array $translations Translations
+	 *
+	 * @return $this
+	 */
+	public function setTranslations(array $translations)
+	{
+		$this->translations = $translations;
 
 		return $this;
 	}

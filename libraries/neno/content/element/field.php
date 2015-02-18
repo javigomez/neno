@@ -89,7 +89,7 @@ class NenoContentElementField extends NenoContentElement
 		$data = new JObject($data);
 
 		$this->table                     = $data->get('table') == null
-			? NenoContentElementTable::getTableById($data->get('tableId'), false)
+			? NenoContentElementTable::getTableById($data->get('tableId'))
 			: $data->get('table');
 		$this->translations              = null;
 		$this->wordsNotTranslated        = 0;
@@ -277,35 +277,6 @@ class NenoContentElementField extends NenoContentElement
 	public function setTranslate($translate)
 	{
 		$this->translate = $translate;
-
-		return $this;
-	}
-
-	/**
-	 * Get all the translations for this field
-	 *
-	 * @return array
-	 */
-	public function getTranslations()
-	{
-		if ($this->translations === null)
-		{
-			$this->translations = NenoContentElementTranslation::getTranslations($this);
-		}
-
-		return $this->translations;
-	}
-
-	/**
-	 * Set translations
-	 *
-	 * @param   array $translations Translations
-	 *
-	 * @return $this
-	 */
-	public function setTranslations(array $translations)
-	{
-		$this->translations = $translations;
 
 		return $this;
 	}
@@ -571,5 +542,50 @@ class NenoContentElementField extends NenoContentElement
 	public function getTranslationMethodUsed()
 	{
 		return $this->translationMethodUsed;
+	}
+
+	/**
+	 * Remove all the translations associated to this field
+	 *
+	 * @return void
+	 */
+	public function removeTranslations()
+	{
+		$translations = $this->getTranslations();
+
+		/* @var $translation NenoContentElementTranslation */
+		foreach ($translations as $translation)
+		{
+			$translation->remove();
+		}
+	}
+
+	/**
+	 * Get all the translations for this field
+	 *
+	 * @return array
+	 */
+	public function getTranslations()
+	{
+		if ($this->translations === null)
+		{
+			$this->translations = NenoContentElementTranslation::getTranslations($this);
+		}
+
+		return $this->translations;
+	}
+
+	/**
+	 * Set translations
+	 *
+	 * @param   array $translations Translations
+	 *
+	 * @return $this
+	 */
+	public function setTranslations(array $translations)
+	{
+		$this->translations = $translations;
+
+		return $this;
 	}
 }

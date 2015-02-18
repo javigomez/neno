@@ -155,14 +155,14 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return NenoContentElementGroup|null
 	 */
-	public static function getGroupByExtensionId($extensionId, $justGroupData = false)
+	public static function getGroupByExtensionId($extensionId)
 	{
 		$groupsData = self::load(array ('extension_id' => $extensionId));
 		$group      = null;
 
 		if (!empty($groupsData))
 		{
-			$group = self::getGroup($groupsData->id, !$justGroupData, !$justGroupData);
+			$group = self::getGroup($groupsData->id);
 		}
 
 		return $group;
@@ -340,20 +340,6 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * Add language string to the array
-	 *
-	 * @param   NenoContentElementLangstring $languageString Language string
-	 *
-	 * @return $this
-	 */
-	public function addLanguageString(NenoContentElementLangstring $languageString)
-	{
-		$this->languageStrings[] = $languageString;
-
-		return $this;
-	}
-
-	/**
 	 * Get group name
 	 *
 	 * @return string
@@ -472,11 +458,8 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function refresh()
 	{
-		$profiler = new JProfiler;
 		$tables   = NenoHelper::getComponentTables($this);
-		echo $profiler->mark('Tables loaded');
 		$languageStrings = NenoHelper::getLanguageStrings($this);
-		echo $profiler->mark('Language files loaded');
 
 		// If there are tables, let's assign to the group
 		if (!empty($tables))
@@ -495,6 +478,34 @@ class NenoContentElementGroup extends NenoContentElement
 		{
 			$this->persist();
 		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function remove()
+	{
+		// Get the tables
+		$tables = $this->getTables();
+
+		/* @var $table NenoContentElementTable */
+		foreach ($tables as $table)
+		{
+			$table->remove();
+		}
+
+		// Get language strings
+		$languageStrings = $this->getLanguageStrings();
+
+		/* @var $languageString NenoContentElementLangstring */
+		foreach ($languageStrings as $languageString)
+		{
+			$languageString->remove();
+		}
+
+		return parent::remove();
 	}
 
 	/**
@@ -531,5 +542,17 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->languageStrings = $languageStrings;
 
 		return $this;
+	}
+
+	/**
+	 * Mark this group as deleted
+	 *
+	 * @return void
+	 */
+	public function markAsDeleted()
+	{
+		$this->extensionId = -1;
+		$this->contentHasChanged();
+		$this->persist();
 	}
 }

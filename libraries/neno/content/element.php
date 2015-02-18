@@ -317,4 +317,16 @@ abstract class NenoContentElement
 	{
 		return $this->id;
 	}
+
+	/**
+	 * Set that the content has changed
+	 *
+	 * @return $this
+	 */
+	public function contentHasChanged()
+	{
+		$this->hasChanged = true;
+
+		return $this;
+	}
 }

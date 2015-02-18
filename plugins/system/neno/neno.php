@@ -52,7 +52,7 @@ class PlgSystemNeno extends JPlugin
 	public function onExtensionBeforeUninstall($extensionId)
 	{
 		$group = NenoContentElementGroup::getGroupByExtensionId($extensionId);
-		$group->remove();
+		$group->markAsDeleted();
 	}
 
 	/**
@@ -65,7 +65,7 @@ class PlgSystemNeno extends JPlugin
 	 */
 	public function onExtensionAfterInstall($installer, $extensionId)
 	{
-		$group = NenoContentElementGroup::getGroupByExtensionId($extensionId, true);
+		$group = NenoContentElementGroup::getGroupByExtensionId($extensionId);
 		$group->refresh();
 	}
 

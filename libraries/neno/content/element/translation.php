@@ -559,4 +559,24 @@ class NenoContentElementTranslation extends NenoContentElement
 	{
 		return $this->originalText;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function remove()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->delete('#__neno_content_element_fields_x_translations')
+			->where('translation_id =' . $this->getId());
+
+		$db->setQuery($query);
+		$db->execute();
+
+		return parent::remove();
+	}
 }
