@@ -112,7 +112,7 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	}
 
 	/**
-	 * Method to check if language pair is available or not in google api
+	 * Method to check if translation language pair is available or not in google api
 	 *
 	 * @param   string $iso2Pair ISO2 language code pair
 	 *
@@ -123,54 +123,31 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 		// split the language pair using hypen
 		$isoParts = (explode("-",$isoPair));
 
-		// array of iso2 language codes not available in google api
-		$languages = array("sy", "ug", "si", "bs");
 		$available = 1;
 
-		foreach($isoParts as $part)
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('*')
+			->from($db->quoteName('#__neno_translation_methods_language_pairs', 'mlp'))
+			->join('INNER', $db->quoteName('#__neno_translation_methods', 'm') . ' ON (' . $db->quoteName('mlp.translation_method_id') . ' = ' . $db->quoteName('m.id') . ')')
+			->where($db->quoteName('m.translator_name') . '=' . $db->quote('Google Translate'))
+			->where('mlp.source_language = ' . $db->quote($isoParts[0]))
+			->where('mlp.destination_language = ' . $db->quote($isoParts[1]));
+
+		$db->setQuery($query);
+
+		$db->setQuery($query);
+		$db->execute();
+		$num_rows = $db->getNumRows();
+
+		if($num_rows == 0)
 		{
-			if (in_array($part , $languages))
-			{
-				$available = 0;
-			}
+			$available = 0;
 		}
 
 		return $available;
 	}
 
-	/**
-	 * Method to get supported language pairs for translation from translation api
-	 *
-	 * @return json
-	 */
-	 public function getApiSupportedLanguagePairs()
-	 {
-		 // get the key configured by user
-		 $this->apiKey = JComponentHelper::getParams('com_neno')->get('googleApiKey');
-
-		 if($this->apiKey == "")
-		 {
-			 // Use default key if not provided
-			 $this->apiKey = 'AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8';
-		 }
-
-		 $url    = 'https://www.googleapis.com/language/translate/v2/languages?key='.$this->apiKey;
-
-		 // Invoke the GET request.
-		 $response = $this->get($url);
-
-		 $json = null;
-
-		 // Log it if server response is not OK.
-		 if ($response->code != 200)
-		 {
-			 NenoLog::log('Google api failed with response: ' . $response->code, 1);
-		 }
-		 else
-		 {
-			 $json = $response->body;
-		 }
-
-		 return $json;
-	 }
 }
