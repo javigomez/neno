@@ -81,8 +81,79 @@ class NenoContentElementGroup extends NenoContentElement
 		// Only search for the statistics for existing groups
 		if (!$this->isNew())
 		{
+			$this->getContentElementFromCache();
 			$this->calculateExtraData();
 		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return void
+	 */
+	public function getContentElementFromCache()
+	{
+		/* @var $groupCachedData NenoContentElementGroup */
+		$groupCachedData = parent::getContentElementFromCache();
+
+		if ($groupCachedData === null)
+		{
+			$this->getTables();
+			$this->setContentElementIntoCache();
+		}
+		else
+		{
+			/* @var $table NenoContentElementTable */
+			$tables        = $groupCachedData->getTables();
+			$tablesCounter = count($tables);
+
+			// Go through all the tables and get their data from cache
+			for ($i = 0; $i < $tablesCounter; $i++)
+			{
+				/* @var $table NenoContentElementTable */
+				$table = $tables[$i];
+				$table->getContentElementFromCache();
+				$tables[$i] = $table;
+			}
+
+			$this->tables = $tables;
+		}
+	}
+
+	/**
+	 * Get all the tables related to this group
+	 *
+	 * @return array
+	 */
+	public function getTables()
+	{
+		if ($this->tables === null)
+		{
+			$this->tables = array ();
+			$tablesInfo   = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $this->id, true);
+
+			foreach ($tablesInfo as $tableInfo)
+			{
+				$table          = new NenoContentElementTable($tableInfo);
+				$this->tables[] = $table;
+			}
+		}
+
+		return $this->tables;
+	}
+
+	/**
+	 * Set all the tables related to this group
+	 *
+	 * @param   array $tables Tables
+	 *
+	 * @return $this
+	 */
+	public function setTables(array $tables)
+	{
+		$this->tables = $tables;
+
+		return $this;
 	}
 
 	/**
@@ -90,7 +161,7 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return void
 	 */
-	protected function calculateExtraData()
+	public function calculateExtraData()
 	{
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db              = JFactory::getDbo();
@@ -149,7 +220,7 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * Get
+	 * Get a group from an extension Id
 	 *
 	 * @param   integer $extensionId Extension Id
 	 *
@@ -274,42 +345,6 @@ class NenoContentElementGroup extends NenoContentElement
 	public function addTable(NenoContentElementTable $table)
 	{
 		$this->tables[] = $table;
-
-		return $this;
-	}
-
-	/**
-	 * Get all the tables related to this group
-	 *
-	 * @return array
-	 */
-	public function getTables()
-	{
-		if ($this->tables === null)
-		{
-			$this->tables = array ();
-			$tablesInfo   = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $this->id, true);
-
-			foreach ($tablesInfo as $tableInfo)
-			{
-				$table          = new NenoContentElementTable($tableInfo);
-				$this->tables[] = $table;
-			}
-		}
-
-		return $this->tables;
-	}
-
-	/**
-	 * Set all the tables related to this group
-	 *
-	 * @param   array $tables Tables
-	 *
-	 * @return $this
-	 */
-	public function setTables(array $tables)
-	{
-		$this->tables = $tables;
 
 		return $this;
 	}
@@ -458,7 +493,7 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function refresh()
 	{
-		$tables   = NenoHelper::getComponentTables($this);
+		$tables          = NenoHelper::getComponentTables($this);
 		$languageStrings = NenoHelper::getLanguageStrings($this);
 
 		// If there are tables, let's assign to the group

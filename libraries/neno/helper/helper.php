@@ -137,10 +137,10 @@ class NenoHelper
 			$displayData['targetLanguages'] = self::getTargetLanguages();
 		}
 
-		$adminTitleLayout     = JLayoutHelper::render('toolbar', $displayData, JPATH_NENO_LAYOUTS);
-		$layout               = new JLayoutFile('joomla.toolbar.title');
+		$adminTitleLayout = JLayoutHelper::render('toolbar', $displayData, JPATH_NENO_LAYOUTS);
+		$layout           = new JLayoutFile('joomla.toolbar.title');
 		/** @noinspection PhpParamsInspection */
-		$html                 = $layout->render(array ('title' => $adminTitleLayout, 'icon' => 'nope'));
+		$html = $layout->render(array ('title' => $adminTitleLayout, 'icon' => 'nope'));
 		/** @noinspection PhpUndefinedFieldInspection */
 		$app->JComponentTitle = $html;
 	}
@@ -281,9 +281,9 @@ class NenoHelper
 	 */
 	public static function convertStdClassArrayToJObjectArray(array $objectList)
 	{
-		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
 
-		if (self::getCacheData($cacheId) === null)
+		if (NenoCache::getCacheData($cacheId) === null)
 		{
 			$jObjectList = array ();
 
@@ -292,56 +292,10 @@ class NenoHelper
 				$jObjectList[] = new JObject($object);
 			}
 
-			self::setCacheData($cacheId, $jObjectList);
+			NenoCache::setCacheData($cacheId, $jObjectList);
 		}
 
-		return self::getCacheData($cacheId);
-	}
-
-	/**
-	 * Get cache Id
-	 *
-	 * @param   string $functionName Function name
-	 * @param   mixed  $arguments    Function arguments
-	 *
-	 * @return string
-	 */
-	public static function getCacheId($functionName, $arguments)
-	{
-		return $functionName . implode('+', $arguments);
-	}
-
-	/**
-	 * Get data from the Application cache
-	 *
-	 * @param   string $cacheId Cache Identifier
-	 * @param   mixed  $default Default value for this cache data
-	 *
-	 * @return mixed Data cached
-	 *
-	 * @throws Exception
-	 */
-	public static function getCacheData($cacheId, $default = null)
-	{
-		$app = JFactory::getApplication();
-
-		return $app->get($cacheId, $default);
-	}
-
-	/**
-	 * Set data into the cache
-	 *
-	 * @param   string $cacheId Cache Identifier
-	 * @param   mixed  $data    Data to cache
-	 *
-	 * @return void
-	 *
-	 * @throws Exception
-	 */
-	public static function setCacheData($cacheId, $data)
-	{
-		$app = JFactory::getApplication();
-		$app->set($cacheId, $data);
+		return NenoCache::getCacheData($cacheId);
 	}
 
 	/**
@@ -354,14 +308,14 @@ class NenoHelper
 	 */
 	public static function endsWith($string, $suffix)
 	{
-		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
 
-		if (self::getCacheData($cacheId) === null)
+		if (NenoCache::getCacheData($cacheId) === null)
 		{
-			self::setCacheData($cacheId, $suffix === "" || strpos($string, $suffix, strlen($string) - strlen($suffix)) !== false);
+			NenoCache::setCacheData($cacheId, $suffix === "" || strpos($string, $suffix, strlen($string) - strlen($suffix)) !== false);
 		}
 
-		return self::getCacheData($cacheId);
+		return NenoCache::getCacheData($cacheId);
 	}
 
 	/**
@@ -373,15 +327,15 @@ class NenoHelper
 	 */
 	public static function getTableNamePatternBasedOnComponentName($componentName)
 	{
-		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
 
-		if (self::getCacheData($cacheId) === null)
+		if (NenoCache::getCacheData($cacheId) === null)
 		{
 			$prefix = JFactory::getDbo()->getPrefix();
-			self::setCacheData($cacheId, $prefix . str_replace(array ('com_'), '', strtolower($componentName)));
+			NenoCache::setCacheData($cacheId, $prefix . str_replace(array ('com_'), '', strtolower($componentName)));
 		}
 
-		return self::getCacheData($cacheId);
+		return NenoCache::getCacheData($cacheId);
 	}
 
 	/**
@@ -423,14 +377,14 @@ class NenoHelper
 	 */
 	public static function convertPropertyNameToDatabaseColumnName($propertyName)
 	{
-		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
 
-		if (self::getCacheData($cacheId) === null)
+		if (NenoCache::getCacheData($cacheId) === null)
 		{
-			self::setCacheData($cacheId, implode('_', self::splitCamelCaseString($propertyName)));
+			NenoCache::setCacheData($cacheId, implode('_', self::splitCamelCaseString($propertyName)));
 		}
 
-		return self::getCacheData($cacheId);
+		return NenoCache::getCacheData($cacheId);
 	}
 
 	/**
@@ -442,9 +396,9 @@ class NenoHelper
 	 */
 	public static function splitCamelCaseString($string)
 	{
-		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
 
-		if (self::getCacheData($cacheId) === null)
+		if (NenoCache::getCacheData($cacheId) === null)
 		{
 			preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $string, $matches);
 			$ret = $matches[0];
@@ -454,10 +408,10 @@ class NenoHelper
 				$match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
 			}
 
-			self::setCacheData($cacheId, $ret);
+			NenoCache::setCacheData($cacheId, $ret);
 		}
 
-		return self::getCacheData($cacheId);
+		return NenoCache::getCacheData($cacheId);
 	}
 
 	/**
@@ -469,10 +423,10 @@ class NenoHelper
 	 */
 	public static function convertDatabaseArrayToClassArray(array $databaseArray)
 	{
-		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
 
 		// If this data hasn't been stored in the cache, let's store it
-		if (self::getCacheData($cacheId) === null)
+		if (NenoCache::getCacheData($cacheId) === null)
 		{
 			$objectData = array ();
 
@@ -480,9 +434,11 @@ class NenoHelper
 			{
 				$objectData[self::convertDatabaseColumnNameToPropertyName($fieldName)] = $fieldValue;
 			}
+
+			NenoCache::setCacheData($cacheId, $objectData);
 		}
 
-		return self::getCacheData($cacheId);
+		return NenoCache::getCacheData($cacheId);
 	}
 
 	/**
@@ -494,9 +450,9 @@ class NenoHelper
 	 */
 	public static function convertDatabaseColumnNameToPropertyName($columnName)
 	{
-		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
 
-		if (self::getCacheData($cacheId) === null)
+		if (NenoCache::getCacheData($cacheId) === null)
 		{
 			$nameParts = explode('_', $columnName);
 			$firstWord = array_shift($nameParts);
@@ -511,10 +467,10 @@ class NenoHelper
 				$nameParts = array ($firstWord);
 			}
 
-			self::setCacheData($cacheId, implode('', $nameParts));
+			NenoCache::setCacheData($cacheId, implode('', $nameParts));
 		}
 
-		return self::getCacheData($cacheId);
+		return NenoCache::getCacheData($cacheId);
 	}
 
 	/**
@@ -686,15 +642,15 @@ class NenoHelper
 	 */
 	public static function unifyTableName($tableName)
 	{
-		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
 
-		if (self::getCacheData($cacheId) === null)
+		if (NenoCache::getCacheData($cacheId) === null)
 		{
 			$prefix = JFactory::getDbo()->getPrefix();
-			self::setCacheData($cacheId, '#__' . str_replace(array ($prefix, '#__'), '', $tableName));
+			NenoCache::setCacheData($cacheId, '#__' . str_replace(array ($prefix, '#__'), '', $tableName));
 		}
 
-		return self::getCacheData($cacheId);
+		return NenoCache::getCacheData($cacheId);
 	}
 
 	/**
@@ -821,9 +777,9 @@ class NenoHelper
 
 		$extensionName = $extensionData['element'];
 
-		$cacheId = self::getCacheId(__FUNCTION__, array ($extensionName));
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, array ($extensionName));
 
-		if (self::getCacheData($cacheId) === null)
+		if (NenoCache::getCacheData($cacheId) === null)
 		{
 			switch ($extensionData['type'])
 			{
@@ -847,10 +803,10 @@ class NenoHelper
 					break;
 			}
 
-			self::setCacheData($cacheId, $extensionName);
+			NenoCache::setCacheData($cacheId, $extensionName);
 		}
 
-		return self::getCacheData($cacheId);
+		return NenoCache::getCacheData($cacheId);
 	}
 
 	/**
@@ -875,18 +831,18 @@ class NenoHelper
 	 */
 	public static function isJoomlaCoreLanguageFile($languageFileName)
 	{
-		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
 
-		if (self::getCacheData($cacheId) === null)
+		if (NenoCache::getCacheData($cacheId) === null)
 		{
 			$fileParts = explode('.', $languageFileName);
 
 			$result = self::removeCoreLanguageFilesFromArray(array ($languageFileName), $fileParts[0]);
 
-			self::setCacheData($cacheId, empty($result));
+			NenoCache::setCacheData($cacheId, empty($result));
 		}
 
-		return self::getCacheData($cacheId);
+		return NenoCache::getCacheData($cacheId);
 	}
 
 	/**
@@ -955,9 +911,9 @@ class NenoHelper
 	 */
 	public static function getLanguageStringFromLanguageKey($languageKey)
 	{
-		$cacheId = self::getCacheId(__FUNCTION__, func_get_args());
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
 
-		if (self::getCacheData($cacheId) === null)
+		if (NenoCache::getCacheData($cacheId) === null)
 		{
 			$info = array ();
 
@@ -982,10 +938,10 @@ class NenoHelper
 				}
 			}
 
-			self::setCacheData($cacheId, $info);
+			NenoCache::setCacheData($cacheId, $info);
 		}
 
-		return self::getCacheData($cacheId);
+		return NenoCache::getCacheData($cacheId);
 	}
 
 	/**

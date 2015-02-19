@@ -160,38 +160,47 @@ abstract class NenoContentElement
 	 */
 	public static function load($pk)
 	{
-		if (!is_array($pk))
+		$cacheId    = NenoCache::getCacheId(__FUNCTION__, func_get_args());
+		$cachedData = NenoCache::getCacheData($cacheId);
+
+		if ($cachedData === null)
 		{
-			$pk = array ('id' => $pk);
-		}
-
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('*')
-			->from(self::getDbTable());
-
-		foreach ($pk as $field => $value)
-		{
-			$query->where($db->quoteName($field) . ' = ' . $db->quote($value));
-		}
-
-		$db->setQuery($query);
-		$data       = $db->loadAssoc();
-		$objectData = null;
-
-		if (!empty($data))
-		{
-			$objectData = new stdClass;
-
-			foreach ($data as $key => $value)
+			if (!is_array($pk))
 			{
-				$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
+				$pk = array ('id' => $pk);
 			}
+
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query
+				->select('*')
+				->from(self::getDbTable());
+
+			foreach ($pk as $field => $value)
+			{
+				$query->where($db->quoteName($field) . ' = ' . $db->quote($value));
+			}
+
+			$db->setQuery($query);
+			$data       = $db->loadAssoc();
+			$objectData = null;
+
+			if (!empty($data))
+			{
+				$objectData = new stdClass;
+
+				foreach ($data as $key => $value)
+				{
+					$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
+				}
+			}
+
+			NenoCache::setCacheData($cacheId, $objectData);
+			$cachedData = $objectData;
 		}
 
-		return $objectData;
+		return $cachedData;
 	}
 
 	/**
@@ -300,6 +309,37 @@ abstract class NenoContentElement
 	}
 
 	/**
+	 * Set that the content has changed
+	 *
+	 * @return $this
+	 */
+	public function contentHasChanged()
+	{
+		$this->hasChanged = true;
+
+		return $this;
+	}
+
+	/**
+	 * Get the data from the cache
+	 *
+	 * @return NenoContentElement|null An instance of the NenoContentElement or null if it doesn't exist
+	 */
+	public function getContentElementFromCache()
+	{
+		$dataCached = null;
+
+		// The element needs to be saved on the database to be on cache.
+		if (!$this->isNew())
+		{
+			$cacheId    = $this->getClassReflectionObject()->getName() . '.' . $this->getId();
+			$dataCached = NenoCache::getCacheData($cacheId);
+		}
+
+		return $dataCached;
+	}
+
+	/**
 	 * Id getter
 	 *
 	 * @return integer
@@ -310,14 +350,16 @@ abstract class NenoContentElement
 	}
 
 	/**
-	 * Set that the content has changed
+	 * Save this NenoContentElement in the cache
 	 *
-	 * @return $this
+	 * @return void
 	 */
-	public function contentHasChanged()
+	public function setContentElementIntoCache()
 	{
-		$this->hasChanged = true;
-
-		return $this;
+		if (!$this->isNew())
+		{
+			$cacheId = $this->getClassReflectionObject()->getName() . '.' . $this->getId();
+			NenoCache::setCacheData($cacheId, $this);
+		}
 	}
 }

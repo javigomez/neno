@@ -56,6 +56,77 @@ class NenoContentElementTable extends NenoContentElement
 
 		// Init the field list
 		$this->fields = null;
+		$this->getContentElementFromCache();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return void
+	 */
+	public function getContentElementFromCache()
+	{
+		/* @var $tableData NenoContentElementTable */
+		$tableData = parent::getContentElementFromCache();
+
+		if ($tableData === null)
+		{
+			$this->getFields();
+			$this->setContentElementIntoCache();
+		}
+		else
+		{
+			$fields        = $tableData->getFields();
+			$fieldsCounter = count($fields);
+
+			for ($i = 0; $i < $fieldsCounter; $i++)
+			{
+				/* @var $field NenoContentElementField */
+				$field = $fields[$i];
+				$field->getContentElementFromCache();
+				$fields[$i] = $field;
+			}
+
+			$this->fields = $fields;
+		}
+	}
+
+	/**
+	 * Get the fields related to this table
+	 *
+	 * @return array
+	 */
+	public function getFields()
+	{
+		if ($this->fields === null)
+		{
+			$this->fields = array ();
+			$fieldsInfo   = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $this->getId(), true);
+
+			for ($i = 0; $i < count($fieldsInfo); $i++)
+			{
+				$fieldInfo        = $fieldsInfo[$i];
+				$fieldInfo->table = $this;
+				$field            = new NenoContentElementField($fieldInfo);
+				$this->fields[]   = $field;
+			}
+		}
+
+		return $this->fields;
+	}
+
+	/**
+	 * Set the fields related to this table
+	 *
+	 * @param   array $fields Table fields
+	 *
+	 * @return $this
+	 */
+	public function setFields(array $fields)
+	{
+		$this->fields = $fields;
+
+		return $this;
 	}
 
 	/**
@@ -275,44 +346,6 @@ class NenoContentElementTable extends NenoContentElement
 		$db->deleteShadowTables($this->getTableName());
 
 		return parent::remove();
-	}
-
-	/**
-	 * Get the fields related to this table
-	 *
-	 * @return array
-	 */
-	public function getFields()
-	{
-		if ($this->fields === null)
-		{
-			$this->fields = array ();
-			$fieldsInfo   = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $this->getId(), true);
-
-			for ($i = 0; $i < count($fieldsInfo); $i++)
-			{
-				$fieldInfo        = $fieldsInfo[$i];
-				$fieldInfo->table = $this;
-				$field            = new NenoContentElementField($fieldInfo);
-				$this->fields[]   = $field;
-			}
-		}
-
-		return $this->fields;
-	}
-
-	/**
-	 * Set the fields related to this table
-	 *
-	 * @param   array $fields Table fields
-	 *
-	 * @return $this
-	 */
-	public function setFields(array $fields)
-	{
-		$this->fields = $fields;
-
-		return $this;
 	}
 
 	/**
