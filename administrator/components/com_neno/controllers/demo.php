@@ -26,6 +26,7 @@ class NenoControllerDemo extends JControllerLegacy
 		$input = $app->input;
 		$api   = $input->get('api', '', 'string');
 		$text  = $input->get('source', '', 'string');
+		$nenoTranslate = null;
 
 		if (!empty($text))
 		{
@@ -62,19 +63,8 @@ class NenoControllerDemo extends JControllerLegacy
 		$app   = JFactory::getApplication();
 		$input = $app->input;
 		$api   = $input->get('api', '', 'string');
-
-		if ($api == "yandex")
-		{
-			$nenoTranslate = new NenoTranslateApiYandex;
-		}
-		else
-		{
-			$nenoTranslate = new NenoTranslateApiGoogle;
-		}
-
-		$result = $nenoTranslate->getApiSupportedLanguagePairs();
+		$result = NenoTranslateApi::getSupportedLanguagePairs($api);
 		print_r($result);
-
 		exit;
 	}
 }
