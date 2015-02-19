@@ -215,7 +215,7 @@ class NenoContentElementTranslation extends NenoContentElement
 							'field_id = ' . $primaryKeyField->getId()
 						)
 					);
-				$query->where($db->quoteName($primaryKey) . ' = ' . (string) $query2);
+				$query->where($db->quoteName($primaryKey) . ' = (' . (string) $query2 . ')');
 			}
 
 			$db->setQuery($query);
