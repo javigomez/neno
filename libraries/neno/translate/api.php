@@ -84,12 +84,13 @@ abstract class NenoTranslateApi extends JHttp
 	 *
 	 * @return string JSON string
 	 */
-	public function getSupportedLanguagePairs($methodName)
+	public static function getSupportedLanguagePairs($methodName)
 	{
-		$url = 'https://serverUrl?method='.$methodName;
+		// Proper url is not available so function is kept commented
+		/*$url = 'https://serverUrl?method='.$methodName;
 
 		// Invoke the GET request.
-		$response = $this->get($url);
+		$response =JHttp::get($url);
 
 		$text = null;
 
@@ -103,6 +104,6 @@ abstract class NenoTranslateApi extends JHttp
 			$text         = $response->body;
 		}
 
-		return $text;
+		return $text;*/
 	}
 }
