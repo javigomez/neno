@@ -302,10 +302,43 @@ abstract class NenoContentElement
 			/* @var $db NenoDatabaseDriverMysqlx */
 			$db = JFactory::getDbo();
 
-			return $db->deleteObject(self::getDbTable(), $this->id);
+			$result = $db->deleteObject(self::getDbTable(), $this->id);
+
+			if ($result)
+			{
+				NenoCache::setCacheData($this->getCacheId(), null);
+			}
 		}
 
 		return false;
+	}
+
+	/**
+	 *Get Cache Id for a particular
+	 *
+	 * @return bool|string False if the cacheId doesn't exist
+	 */
+	private function getCacheId()
+	{
+		$cacheId = false;
+
+		// Only existing records can have cache file
+		if (!$this->isNew())
+		{
+			$cacheId = $this->getClassReflectionObject()->getName() . '.' . $this->getId();
+		}
+
+		return $cacheId;
+	}
+
+	/**
+	 * Id getter
+	 *
+	 * @return integer
+	 */
+	public function getId()
+	{
+		return $this->id;
 	}
 
 	/**
@@ -340,16 +373,6 @@ abstract class NenoContentElement
 	}
 
 	/**
-	 * Id getter
-	 *
-	 * @return integer
-	 */
-	public function getId()
-	{
-		return $this->id;
-	}
-
-	/**
 	 * Save this NenoContentElement in the cache
 	 *
 	 * @return void
@@ -358,8 +381,7 @@ abstract class NenoContentElement
 	{
 		if (!$this->isNew())
 		{
-			$cacheId = $this->getClassReflectionObject()->getName() . '.' . $this->getId();
-			NenoCache::setCacheData($cacheId, $this);
+			NenoCache::setCacheData($this->getCacheId(), $this);
 		}
 	}
 }
