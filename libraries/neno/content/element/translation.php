@@ -205,7 +205,17 @@ class NenoContentElementTranslation extends NenoContentElement
 			foreach ($primaryKeys as $primaryKey)
 			{
 				$primaryKeyField = NenoContentElementField::getFieldByTableAndFieldName($field->getTable(), $primaryKey);
-				$query->where($db->quoteName($primaryKey) . ' = (SELECT value FROM `#__neno_content_element_fields_x_translations` WHERE translation_id = ' . $this->getId() . ' AND field_id = ' . $primaryKeyField->getId() . ')');
+				$query2          = $db->getQuery(true);
+				$query2
+					->select('value')
+					->from('#__neno_content_element_fields_x_translations')
+					->where(
+						array (
+							'translation_id = ' . $this->getId(),
+							'field_id = ' . $primaryKeyField->getId()
+						)
+					);
+				$query->where($db->quoteName($primaryKey) . ' = ' . (string) $query2);
 			}
 
 			$db->setQuery($query);

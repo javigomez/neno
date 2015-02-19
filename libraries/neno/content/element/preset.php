@@ -32,6 +32,8 @@ class NenoContentElementPreset extends NenoContentElement
 	protected $language;
 
 	/**
+	 * Get Group
+	 *
 	 * @return NenoContentElementGroup
 	 */
 	public function getGroup()
@@ -40,7 +42,9 @@ class NenoContentElementPreset extends NenoContentElement
 	}
 
 	/**
-	 * @param NenoContentElementGroup $group
+	 * Set group
+	 *
+	 * @param   NenoContentElementGroup $group Group
 	 *
 	 * @return NenoContentElementPreset
 	 */
@@ -52,6 +56,8 @@ class NenoContentElementPreset extends NenoContentElement
 	}
 
 	/**
+	 * Get table
+	 *
 	 * @return NenoContentElementTable|null
 	 */
 	public function getTable()
@@ -60,7 +66,9 @@ class NenoContentElementPreset extends NenoContentElement
 	}
 
 	/**
-	 * @param NenoContentElementTable $table
+	 * Set table
+	 *
+	 * @param   NenoContentElementTable $table Table
 	 *
 	 * @return NenoContentElementPreset
 	 */
@@ -72,6 +80,8 @@ class NenoContentElementPreset extends NenoContentElement
 	}
 
 	/**
+	 * Get Language
+	 *
 	 * @return string
 	 */
 	public function getLanguage()
@@ -80,7 +90,9 @@ class NenoContentElementPreset extends NenoContentElement
 	}
 
 	/**
-	 * @param string $language
+	 * Set language
+	 *
+	 * @param   string $language Language
 	 *
 	 * @return $this
 	 */

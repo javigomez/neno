@@ -213,7 +213,7 @@ abstract class NenoContentElement
 
 		return self::$databaseTableNames[$className];
 	}
-	
+
 	/**
 	 * Method to persist object in the database
 	 *

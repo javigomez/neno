@@ -21,7 +21,6 @@ use PHPSQL\Parser;
  */
 class NenoDatabaseParser
 {
-
 	/**
 	 * Select query constant
 	 */
@@ -55,7 +54,7 @@ class NenoDatabaseParser
 	/**
 	 * Get the name of shadow table for a particular table
 	 *
-	 * @param   string $sql
+	 * @param   string $sql SQL Query
 	 *
 	 * @return string
 	 */
@@ -92,7 +91,7 @@ class NenoDatabaseParser
 	/**
 	 * Parse SQL clause
 	 *
-	 * @param   string $sql
+	 * @param   string $sql SQL Query
 	 *
 	 * @return array
 	 */
@@ -106,7 +105,7 @@ class NenoDatabaseParser
 	/**
 	 * Get the real from statement
 	 *
-	 * @param   array $fromStatements
+	 * @param   array $fromStatements FROM Statements
 	 *
 	 * @return array|false [0 => From index, 1 => From data]
 	 */
@@ -130,7 +129,7 @@ class NenoDatabaseParser
 
 		if ($fromTable !== null)
 		{
-			return array($index, $fromTable);
+			return array ($index, $fromTable);
 		}
 
 		return false;
@@ -139,7 +138,7 @@ class NenoDatabaseParser
 	/**
 	 * Check if a from statement data is the real one.
 	 *
-	 * @param   array $fromStatement
+	 * @param   array $fromStatement FROM Statements
 	 *
 	 * @return boolean True if it's a from statement, false otherwise
 	 */
@@ -177,18 +176,6 @@ class NenoDatabaseParser
 	}
 
 	/**
-	 * Clean language tag
-	 *
-	 * @param   string $languageTag
-	 *
-	 * @return string language tag cleaned
-	 */
-	private static function cleanLanguageTag($languageTag)
-	{
-		return strtolower(str_replace(array('-'), array(''), $languageTag));
-	}
-
-	/**
 	 * Generate shadow table name
 	 *
 	 * @param   string $tableName   Table name
@@ -202,22 +189,34 @@ class NenoDatabaseParser
 	}
 
 	/**
+	 * Clean language tag
+	 *
+	 * @param   string $languageTag Language Tag
+	 *
+	 * @return string language tag cleaned
+	 */
+	private static function cleanLanguageTag($languageTag)
+	{
+		return strtolower(str_replace(array ('-'), array (''), $languageTag));
+	}
+
+	/**
 	 * Get table name without Joomla prefixes
 	 *
-	 * @param   string $tableName
+	 * @param   string $tableName Table name
 	 *
 	 * @return string clean table name
 	 */
 	private static function cleanTableName($tableName)
 	{
 		/** @noinspection PhpUndefinedMethodInspection */
-		return str_replace(array('#__', JFactory::getConfig()->get('dbprefix')), '', $tableName);
+		return str_replace(array ('#__', JFactory::getConfig()->get('dbprefix')), '', $tableName);
 	}
 
 	/**
 	 * Get the type of query
 	 *
-	 * @param   string $sql
+	 * @param   string $sql SQL Query
 	 *
 	 * @return integer (Check Class constants)
 	 */
@@ -266,7 +265,7 @@ class NenoDatabaseParser
 	/**
 	 * Get table name of a particular query
 	 *
-	 * @param   string $sql
+	 * @param   string $sql SQL Query
 	 *
 	 * @return string|false
 	 */
@@ -288,6 +287,15 @@ class NenoDatabaseParser
 		return false;
 	}
 
+	/**
+	 * Build query
+	 *
+	 * @param   array $parserQuery Query parsed
+	 *
+	 * @return string
+	 *
+	 * @throws \PHPSQL\Exception\UnsupportedFeature
+	 */
 	public static function buildQuery(array $parserQuery)
 	{
 		$creator = new Creator;

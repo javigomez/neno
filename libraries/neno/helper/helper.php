@@ -335,6 +335,7 @@ class NenoHelper
 	 * @param   mixed  $data    Data to cache
 	 *
 	 * @return void
+	 *
 	 * @throws Exception
 	 */
 	public static function setCacheData($cacheId, $data)

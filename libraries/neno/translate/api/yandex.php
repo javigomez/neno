@@ -86,7 +86,6 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		}
 
 		return $text;
-
 	}
 
 	/**

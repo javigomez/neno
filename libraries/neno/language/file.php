@@ -106,13 +106,12 @@ class NenoLanguageFile
 		$fileName = str_replace('[EXTENSION]', (is_null($this->extension) ? '' : $this->extension . '.'), $fileName);
 
 		return $fileName;
-
 	}
 
-	/**.
+	/**
 	 * Based on the file path, this method creates a NenoLanguageFile object.
 	 *
-	 * @param string $filePath Language file path
+	 * @param   string $filePath Language file path
 	 *
 	 * @return NenoLanguageFile
 	 */
@@ -137,8 +136,10 @@ class NenoLanguageFile
 	}
 
 	/**
-	 * @param string $language
-	 * @param string $key
+	 * Get Language string
+	 *
+	 * @param   string $language Language JISO
+	 * @param   string $key      Language string key
 	 *
 	 * @return bool|string
 	 */
@@ -196,8 +197,8 @@ class NenoLanguageFile
 	/**
 	 * Open a language file and read it.
 	 *
-	 * @param string $language  Language (JISO)
-	 * @param string $extension Extension name
+	 * @param   string $language  Language (JISO)
+	 * @param   string $extension Extension name
 	 *
 	 * @return NenoLanguageFile
 	 */
@@ -229,7 +230,9 @@ class NenoLanguageFile
 	}
 
 	/**
-	 * @param string $language
+	 * Get all the languages files based on a language
+	 *
+	 * @param   string $language Language (JISO)
 	 *
 	 * @return array
 	 */
@@ -260,8 +263,8 @@ class NenoLanguageFile
 	/**
 	 * Get all the folders that contain language files related to an extension and/or a language
 	 *
-	 * @param null|string $extension Extension name or null if it's not specified
-	 * @param null|string $language  Language tag (JISO) or null it's not specified
+	 * @param   null|string $extension Extension name or null if it's not specified
+	 * @param   null|string $language  Language tag (JISO) or null it's not specified
 	 *
 	 * @return array
 	 */
@@ -325,10 +328,12 @@ class NenoLanguageFile
 	}
 
 	/**
-	 * @param string      $path
-	 * @param null|string $language
-	 * @param bool        $recursive
-	 * @param bool        $ignoreJoomlaCore
+	 * Get all the languages files in a particular path
+	 *
+	 * @param   string      $path             Path
+	 * @param   null|string $language         Language tag
+	 * @param   bool        $recursive        If a recursive search should be applied
+	 * @param   bool        $ignoreJoomlaCore If Joomla core languages files should be ignored
 	 *
 	 * @return array
 	 */
@@ -540,7 +545,7 @@ class NenoLanguageFile
 	 */
 	public function saveStringsIntoFile()
 	{
-
+		// Save strings to a file
 	}
 
 	/**
@@ -580,7 +585,7 @@ class NenoLanguageFile
 	/**
 	 * Set the language of this file.
 	 *
-	 * @param   string $language
+	 * @param   string $language Language
 	 *
 	 * @return NenoLanguageFile
 	 */

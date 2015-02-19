@@ -42,9 +42,8 @@ else
  * @package     Neno
  * @subpackage  Database
  * @since       1.0
+ * @noinspection PhpUndefinedClassInspection
  */
-
-/** @noinspection PhpUndefinedClassInspection */
 class NenoDatabaseDriverMysqlx extends CommonDriver
 {
 	/**
@@ -93,7 +92,9 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	}
 
 	/**
-	 * @param bool $new
+	 * {@inheritdoc}
+	 *
+	 * @param   bool $new If the query should be new
 	 *
 	 * @return JDatabaseQuery|string
 	 */
@@ -130,8 +131,8 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param string $sql
-	 * @param string $prefix
+	 * @param   string $sql    SQL Query
+	 * @param   string $prefix DB Prefix
 	 *
 	 * @return string
 	 */
@@ -173,7 +174,9 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	}
 
 	/**
-	 * @param string $sql
+	 * Check if a table should be parsed
+	 *
+	 * @param   string $sql SQL Query
 	 *
 	 * @return bool
 	 */
@@ -200,13 +203,12 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		}
 
 		return true;
-
 	}
 
 	/**
 	 * Check if a table is translatable
 	 *
-	 * @param string $tableName
+	 * @param   string $tableName Table name
 	 *
 	 * @return boolean
 	 */
@@ -218,9 +220,9 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	/**
 	 * Execute a sql preventing to lose the query previously assigned.
 	 *
-	 * @param mixed   $sql                   JDatabaseQuery object or SQL query
-	 * @param boolean $preservePreviousQuery True if the previous query will be saved before, false otherwise
-	 * @param boolean $returnObjectList      True if the method should return a list of object as query result, false otherwise
+	 * @param   mixed   $sql                   JDatabaseQuery object or SQL query
+	 * @param   boolean $preservePreviousQuery True if the previous query will be saved before, false otherwise
+	 * @param   boolean $returnObjectList      True if the method should return a list of object as query result, false otherwise
 	 *
 	 * @return void|array
 	 */
@@ -302,7 +304,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	/**
 	 * Delete all the shadow tables related to a table
 	 *
-	 * @param string $tableName
+	 * @param   string $tableName Table name
 	 *
 	 * @return void
 	 */
@@ -361,33 +363,9 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	}
 
 	/**
-	 * {@inheritdoc}
-	 *
-	 * @param mixed $tables
-	 *
-	 * @return array
-	 */
-	public function getTableCreate($tables)
-	{
-		/** @noinspection PhpUndefinedClassInspection */
-		$result = parent::getTableCreate($tables);
-
-		// Get all the keys for the create table array
-		$tableNames = array_keys($result);
-
-		// Go through all the create statements and make them IF NOT EXISTS create statements
-		foreach ($tableNames as $tableName)
-		{
-			$result[$tableName] = str_replace(array ('CREATE TABLE', $this->getPrefix()), array ('CREATE TABLE IF NOT EXISTS', '#__'), $result[$tableName]);
-		}
-
-		return $result;
-	}
-
-	/**
 	 * Get primary key of a table
 	 *
-	 * @param string $tableName
+	 * @param   string $tableName Table name
 	 *
 	 * @return string|null
 	 */
@@ -411,7 +389,7 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	/**
 	 * Get all the tables that belong to a particular component.
 	 *
-	 * @param string $componentName
+	 * @param   string $componentName Component name
 	 *
 	 * @return array
 	 */
@@ -425,10 +403,10 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 	}
 
 	/**
+	 * Delete an object from the database
 	 *
-	 *
-	 * @param string  $table
-	 * @param integer $id
+	 * @param   string  $table Table name
+	 * @param   integer $id    Identifier
 	 *
 	 * @return bool
 	 */
@@ -442,10 +420,11 @@ class NenoDatabaseDriverMysqlx extends CommonDriver
 		$this->setQuery($query);
 
 		return $this->execute() !== false;
-
 	}
 
 	/**
+	 * Load an array using the first column of the query
+	 *
 	 * @return array
 	 */
 	public function loadArray()
