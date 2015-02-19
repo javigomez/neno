@@ -67,7 +67,8 @@ class NenoModelGroupsElements extends JModelList
 	{
 		$groups = parent::getItems();
 
-		for ($i = 0; $i < count($groups); $i++)
+		$countGroups = count($groups);
+		for ($i = 0; $i < $countGroups; $i++)
 		{
 			$groups[$i] = NenoContentElementGroup::getGroup($groups[$i]->id);
 		}

@@ -21,6 +21,18 @@ if (!empty($this->extra_sidebar))
 {
 	$this->sidebar .= $this->extra_sidebar;
 }
+
+$translationStatesClasses = array();
+$translationStatesClasses[NenoContentElementTranslation::TRANSLATED_STATE] = 'translated icon-checkmark';
+$translationStatesClasses[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = 'queued icon-clock';
+$translationStatesClasses[NenoContentElementTranslation::SOURCE_CHANGED_STATE] = 'changed icon-loop';
+$translationStatesClasses[NenoContentElementTranslation::NOT_TRANSLATED_STATE] = 'not-translated icon-cancel-2';
+
+$translationStatesText = array();
+$translationStatesText[NenoContentElementTranslation::TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_TRANSLATED');
+$translationStatesText[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_QUEUED');
+$translationStatesText[NenoContentElementTranslation::SOURCE_CHANGED_STATE] = JText::_('COM_NENO_STATUS_CHANGED');
+$translationStatesText[NenoContentElementTranslation::NOT_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_NOTTRANSLATED');
 ?>
 
 <style>
@@ -58,6 +70,9 @@ if (!empty($this->extra_sidebar))
 	.table-strings .status.not-translated {
 		background-color: #e61e26;
 	}
+	.multiselect-wrapper {
+		width: 200px;
+	}
 </style>
 
 <script type="text/javascript">
@@ -90,14 +105,21 @@ if (!empty($this->extra_sidebar))
 		-->
 		<?php endif;
 		//Kint::dump(count($this->items));
-		Kint::dump($this->items[0]);
-		Kint::dump($this->items[0]->getSourceElementData());
+		//Kint::dump($this->items[0]);
+		//Kint::dump($this->items[0]->getSourceElementData());
 		?>
 
 		<?php
 		// Search tools bar
 		echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
 		?>
+		<div class="multiselect-wrapper">
+		<?php
+		// Search tools bar
+		$displayData = NenoHelper::getGroups();
+		echo JLayoutHelper::render('multiselect', $displayData, JPATH_NENO_LAYOUTS);
+		?>
+		</div>
 		<table class="table table-striped table-strings" id="table-strings">
 			<thead>
 				<tr>
@@ -113,20 +135,34 @@ if (!empty($this->extra_sidebar))
 				</tr>
 			</thead>
 			<tbody>
-			<?php /* @var $group NenoContentElementTranslation */ ?>
+			<?php /* @var $translation NenoContentElementTranslation */ ?>
 			<?php foreach ($this->items as $translation):
-				$element = $translation->getElement();
+				$elementObject = $translation->getElement();
+				//Kint::dump($elementObject);
+				if (is_a($elementObject,'NenoContentElementField')) {
+					$group = $elementObject->getTable()->getGroup()->getGroupName();
+					$element = $elementObject->getTable()->getTableName();
+					$key = $elementObject->getFieldName();
+
+
+				} elseif (is_a($elementObject,'NenoContentElementLangstring')) {
+
+				}
+
+
 				?>
 				<tr class="row-string">
 					<td class="cell-check"><input type="checkbox"/></td>
-					<td class="cell-status"><span class="status translated icon-checkmark"></span></td>
-					<td><?php //echo $translation->getString(); ?></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
+					<td class="cell-status">
+						<span class="status <?php echo $translationStatesClasses[$translation->getState()]; ?>" alt="<?php echo $translationStatesText[$translation->getState()]; ?>" title="<?php echo $translationStatesText[$translation->getState()]; ?>"></span>
+					</td>
+					<td title="<?php echo $translation->getOriginalText(); ?>"><?php echo $translation->getString(); ?></td>
+					<td><?php echo $group; ?></td>
+					<td><?php echo $element; ?></td>
+					<td><?php echo $key; ?></td>
+					<td><?php echo JText::_('COM_NENO_TRANSLATION_METHODS_' . strtoupper($translation->getTranslationMethod())); ?></td>
+					<td><?php echo $translation->getWordsCounter(); ?></td>
+					<td><?php echo $translation->getCharactersCounter(); ?></td>
 				</tr>
 			<?php endforeach; ?>
 			</tbody>
