@@ -40,12 +40,12 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		$target = $this->convertFromJisoToIso($target);
 
 		// Language parameter for url
-		$source = $this->convertFromJisoToIso($source);
-		$lang   = $source . "-" . $target;
+		$source  = $this->convertFromJisoToIso($source);
+		$lang    = $source . "-" . $target;
 		$isoPair = $source . "," . $target;
 
 		// Check availability of language pair for translation
-		$isAvailable = $this->isTranslationAvailable($isoPair,'Yandex Translate');
+		$isAvailable = $this->isTranslationAvailable($isoPair, 'Yandex Translate');
 
 		if (!$isAvailable)
 		{
@@ -114,5 +114,4 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 
 		return $iso2;
 	}
-
 }

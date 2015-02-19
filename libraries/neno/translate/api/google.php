@@ -43,7 +43,7 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 		$isoPair = $source . "," . $target;
 
 		// Check availability of language pair for translation
-		$isAvailable = $this->isTranslationAvailable($isoPair,'Google Translate');
+		$isAvailable = $this->isTranslationAvailable($isoPair, 'Google Translate');
 
 		if (!$isAvailable)
 		{
@@ -111,5 +111,4 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 
 		return $iso2;
 	}
-
 }
