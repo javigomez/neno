@@ -19,14 +19,13 @@ abstract class NenoTranslateApi extends JHttp
 	/**
 	 * Method to translate content
 	 *
- 	 * @param   string $apiKey  the key provided by user
-	 * @param   string $text    text to translate
- 	 * @param   string $source  source language
- 	 * @param   string $target  target language
- 	 *
- 	 * @return json
- 	 */
-	abstract public function translate($text,$source,$target);
+	 * @param   string $text   text to translate
+	 * @param   string $source source language
+	 * @param   string $target target language
+	 *
+	 * @return string
+	 */
+	abstract public function translate($text, $source, $target);
 
 	/**
 	 * Method to make supplied language codes equivalent to translation api codes
@@ -40,27 +39,71 @@ abstract class NenoTranslateApi extends JHttp
 	/**
 	 * Method to check if language pair is available or not in translation api
 	 *
-	 * @param   string $iso2Pair ISO2 language code pair
+	 * @param   string $isoPair	ISO2 language code pair
+	 * @param   string $methodName api method name to check
 	 *
-	 * @return boolen
+	 * @return boolean
 	 */
-	abstract public function isTranslationAvailable($isoPair);
+	public function isTranslationAvailable($isoPair,$methodName)
+	{
+		// Split the language pair using comma
+		$isoParts = (explode(",", $isoPair));
 
-	/**
-	 * Method to get supported language pairs for translation from translation api
-	 *
-	 * @return json
-	 */
-	abstract public function getApiSupportedLanguagePairs();
+		$available = 1;
+
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('*')
+			->from($db->quoteName('#__neno_translation_methods_language_pairs', 'mlp'))
+			->innerJoin($db->quoteName('#__neno_translation_methods', 'm') . ' ON (' . $db->quoteName('mlp.translation_method_id') . ' = ' . $db->quoteName('m.id') . ')')
+			->where($db->quoteName('m.translator_name') . '=' . $db->quote($methodName))
+			->where('mlp.source_language = ' . $db->quote($isoParts[0]))
+			->where('mlp.destination_language = ' . $db->quote($isoParts[1]));
+
+		$db->setQuery($query);
+
+		$db->setQuery($query);
+		$db->execute();
+		$num_rows = $db->getNumRows();
+
+		if ($num_rows == 0)
+		{
+			$available = 0;
+		}
+
+		return $available;
+	}
+
 
 	/**
 	 * Method to get supported language pairs for translation from our server
 	 *
-	 * @return json
+	 * @param   string $methodName api method name
+	 *
+	 * @return string JSON string
 	 */
-	public function getSupportedLanguagePairs()
+	public static function getSupportedLanguagePairs($methodName)
 	{
-		echo "working...";
-	}
+		// Proper url is not available so function is kept commented
+		/*$url = 'https://serverUrl?method='.$methodName;
 
+		// Invoke the GET request.
+		$response =JHttp::get($url);
+
+		$text = null;
+
+		// Log it if server response is not OK.
+		if ($response->code != 200)
+		{
+			NenoLog::log('Call to server url failed with response: ' . $response->code, 1);
+		}
+		else
+		{
+			$text         = $response->body;
+		}
+
+		return $text;*/
+	}
 }

@@ -42,7 +42,7 @@ class NenoLanguageFile
 		$this->language  = $language;
 		$this->extension = $extension;
 
-		$this->strings = array();
+		$this->strings = array ();
 
 		// If the loadString flag is activated, let's load the strings
 		if ($loadStrings)
@@ -68,7 +68,7 @@ class NenoLanguageFile
 			if ($strings !== false)
 			{
 				// Init the string array
-				$this->strings = array();
+				$this->strings = array ();
 
 				// Loop through all the strings and index them creating the key
 				foreach ($strings as $key => $string)
@@ -106,13 +106,12 @@ class NenoLanguageFile
 		$fileName = str_replace('[EXTENSION]', (is_null($this->extension) ? '' : $this->extension . '.'), $fileName);
 
 		return $fileName;
-
 	}
 
-	/**.
+	/**
 	 * Based on the file path, this method creates a NenoLanguageFile object.
 	 *
-	 * @param string $filePath Language file path
+	 * @param   string $filePath Language file path
 	 *
 	 * @return NenoLanguageFile
 	 */
@@ -137,14 +136,16 @@ class NenoLanguageFile
 	}
 
 	/**
-	 * @param string $language
-	 * @param string $key
+	 * Get Language string
+	 *
+	 * @param   string $language Language JISO
+	 * @param   string $key      Language string key
 	 *
 	 * @return bool|string
 	 */
 	public static function getLanguageString($language, $key)
 	{
-		$languageStringInfo = static::getLanguageFileStringInfoFromStringKey($key);
+		$languageStringInfo = self::getLanguageFileStringInfoFromStringKey($key);
 
 		// If there were errors extracting the information from the key, return false.
 		if (empty($languageStringInfo['extension']) || empty($languageStringInfo['constant']))
@@ -152,7 +153,7 @@ class NenoLanguageFile
 			return false;
 		}
 
-		$languageFile = static::openLanguageFile($language, $languageStringInfo['extension']);
+		$languageFile = self::openLanguageFile($language, $languageStringInfo['extension']);
 
 		return $languageFile->getString($languageStringInfo['constant']);
 	}
@@ -167,7 +168,7 @@ class NenoLanguageFile
 	 */
 	public static function getLanguageFileStringInfoFromStringKey($key)
 	{
-		$info = array();
+		$info = array ();
 
 		if (empty($key))
 		{
@@ -196,8 +197,8 @@ class NenoLanguageFile
 	/**
 	 * Open a language file and read it.
 	 *
-	 * @param string $language  Language (JISO)
-	 * @param string $extension Extension name
+	 * @param   string $language  Language (JISO)
+	 * @param   string $extension Extension name
 	 *
 	 * @return NenoLanguageFile
 	 */
@@ -229,20 +230,22 @@ class NenoLanguageFile
 	}
 
 	/**
-	 * @param string $language
+	 * Get all the languages files based on a language
+	 *
+	 * @param   string $language Language (JISO)
 	 *
 	 * @return array
 	 */
 	public static function getLanguagesFilesBasedOnLanguage($language)
 	{
-		$files   = array();
-		$folders = static::getLanguageFileFolders(null, $language);
+		$files   = array ();
+		$folders = self::getLanguageFileFolders(null, $language);
 
 		if (!empty($folders))
 		{
 			foreach ($folders as $folder)
 			{
-				$files = array_merge($files, static::getLanguageFilesInPath($folder, $language));
+				$files = array_merge($files, self::getLanguageFilesInPath($folder, $language));
 			}
 		}
 
@@ -260,14 +263,14 @@ class NenoLanguageFile
 	/**
 	 * Get all the folders that contain language files related to an extension and/or a language
 	 *
-	 * @param null|string $extension Extension name or null if it's not specified
-	 * @param null|string $language  Language tag (JISO) or null it's not specified
+	 * @param   null|string $extension Extension name or null if it's not specified
+	 * @param   null|string $language  Language tag (JISO) or null it's not specified
 	 *
 	 * @return array
 	 */
 	protected static function getLanguageFileFolders($extension = null, $language = null)
 	{
-		$folders = array();
+		$folders = array ();
 
 		// Always language first
 		if (!is_null($language))
@@ -325,10 +328,12 @@ class NenoLanguageFile
 	}
 
 	/**
-	 * @param string      $path
-	 * @param null|string $language
-	 * @param bool        $recursive
-	 * @param bool        $ignoreJoomlaCore
+	 * Get all the languages files in a particular path
+	 *
+	 * @param   string      $path             Path
+	 * @param   null|string $language         Language tag
+	 * @param   bool        $recursive        If a recursive search should be applied
+	 * @param   bool        $ignoreJoomlaCore If Joomla core languages files should be ignored
 	 *
 	 * @return array
 	 */
@@ -358,7 +363,7 @@ class NenoLanguageFile
 		// Remove Joomla core files if needed
 		if ($ignoreJoomlaCore === true && !empty($files))
 		{
-			$files = static::removeCoreLanguageFilesFromArray($files, $language);
+			$files = self::removeCoreLanguageFilesFromArray($files, $language);
 		}
 
 		// Debug
@@ -370,7 +375,7 @@ class NenoLanguageFile
 			}
 		}
 
-		return $files === false ? array() : $files;
+		return $files === false ? array () : $files;
 	}
 
 	/**
@@ -383,7 +388,7 @@ class NenoLanguageFile
 	 */
 	public static function removeCoreLanguageFilesFromArray($files, $lang)
 	{
-		$coreFiles = array(
+		$coreFiles = array (
 
 			// Core components language files
 			$lang . '.com_ajax.ini'
@@ -485,7 +490,7 @@ class NenoLanguageFile
 		, $lang . '.tpl_isis.sys.ini'
 		);
 
-		$validFiles = array();
+		$validFiles = array ();
 
 		// Filter
 		foreach ($files as $file)
@@ -540,7 +545,7 @@ class NenoLanguageFile
 	 */
 	public function saveStringsIntoFile()
 	{
-
+		// Save strings to a file
 	}
 
 	/**
@@ -580,7 +585,7 @@ class NenoLanguageFile
 	/**
 	 * Set the language of this file.
 	 *
-	 * @param   string $language
+	 * @param   string $language Language
 	 *
 	 * @return NenoLanguageFile
 	 */

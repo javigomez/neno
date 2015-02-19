@@ -45,7 +45,7 @@ class NenoContentElementTable extends NenoContentElement
 	 *
 	 * @param   mixed $data Table data
 	 */
-	public function __construct($data, $loadFields = true)
+	public function __construct($data)
 	{
 		parent::__construct($data);
 
@@ -55,23 +55,7 @@ class NenoContentElementTable extends NenoContentElement
 		$this->primaryKey = is_array($this->primaryKey) ? json_encode($this->primaryKey) : json_decode($this->primaryKey);
 
 		// Init the field list
-		$this->fields = array();
-
-		if (!$this->isNew() && $loadFields)
-		{
-			$fieldsInfo = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $this->getId(), true);
-
-			$fields = array();
-
-			foreach ($fieldsInfo as $fieldInfo)
-			{
-				$fieldInfo->table = $this;
-				$field            = new NenoContentElementField($fieldInfo);
-				$fields[]         = $field;
-			}
-
-			$this->setFields($fields);
-		}
+		$this->fields = null;
 	}
 
 	/**
@@ -81,14 +65,14 @@ class NenoContentElementTable extends NenoContentElement
 	 *
 	 * @return bool|NenoContentElementTable
 	 */
-	public static function getTableById($tableId, $loadFields = true)
+	public static function getTableById($tableId)
 	{
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query
 			->select('*')
-			->from(static::getDbTable())
+			->from(self::getDbTable())
 			->where('id = ' . intval($tableId));
 
 		$db->setQuery($query);
@@ -96,14 +80,14 @@ class NenoContentElementTable extends NenoContentElement
 
 		if ($tableData)
 		{
-			$tableInfo = array();
+			$tableInfo = array ();
 
 			foreach ($tableData as $property => $value)
 			{
 				$tableInfo[NenoHelper::convertDatabaseColumnNameToPropertyName($property)] = $value;
 			}
 
-			$table = new NenoContentElementTable($tableInfo, $loadFields);
+			$table = new NenoContentElementTable($tableInfo);
 
 			$group = NenoContentElementGroup::getGroup($tableInfo['groupId'], false);
 			$table->setGroup($group);
@@ -134,30 +118,6 @@ class NenoContentElementTable extends NenoContentElement
 	public function setGroup(NenoContentElementGroup $group)
 	{
 		$this->group = $group;
-
-		return $this;
-	}
-
-	/**
-	 * Get Table name
-	 *
-	 * @return string
-	 */
-	public function getTableName()
-	{
-		return $this->tableName;
-	}
-
-	/**
-	 * Set Table name
-	 *
-	 * @param   string $tableName Table name
-	 *
-	 * @return $this
-	 */
-	public function setTableName($tableName)
-	{
-		$this->tableName = $tableName;
 
 		return $this;
 	}
@@ -211,30 +171,6 @@ class NenoContentElementTable extends NenoContentElement
 	public function markAsTranslatable($translate)
 	{
 		$this->translate = $translate;
-
-		return $this;
-	}
-
-	/**
-	 * Get the fields related to this table
-	 *
-	 * @return array
-	 */
-	public function getFields()
-	{
-		return $this->fields;
-	}
-
-	/**
-	 * Set the fields related to this table
-	 *
-	 * @param   array $fields Table fields
-	 *
-	 * @return $this
-	 */
-	public function setFields(array $fields)
-	{
-		$this->fields = $fields;
 
 		return $this;
 	}
@@ -300,7 +236,7 @@ class NenoContentElementTable extends NenoContentElement
 	public function toObject()
 	{
 		$object = parent::toObject();
-		$object->set('group_id', $object->group->getId());
+		$object->set('group_id', $this->group->getId());
 
 		// If it's an array, let's json it!
 		if (is_array($this->primaryKey))
@@ -309,5 +245,97 @@ class NenoContentElementTable extends NenoContentElement
 		}
 
 		return $object;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function remove()
+	{
+		$fields = $this->getFields();
+
+		// Delete all the translations first
+		/* @var $field NenoContentElementField */
+		foreach ($fields as $field)
+		{
+			$field->removeTranslations();
+		}
+
+		// The delete the field itself
+		/* @var $field NenoContentElementField */
+		foreach ($fields as $field)
+		{
+			$field->remove();
+		}
+
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db = JFactory::getDbo();
+		$db->deleteShadowTables($this->getTableName());
+
+		return parent::remove();
+	}
+
+	/**
+	 * Get the fields related to this table
+	 *
+	 * @return array
+	 */
+	public function getFields()
+	{
+		if ($this->fields === null)
+		{
+			$this->fields = array ();
+			$fieldsInfo   = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $this->getId(), true);
+
+			for ($i = 0; $i < count($fieldsInfo); $i++)
+			{
+				$fieldInfo        = $fieldsInfo[$i];
+				$fieldInfo->table = $this;
+				$field            = new NenoContentElementField($fieldInfo);
+				$this->fields[]   = $field;
+			}
+		}
+
+		return $this->fields;
+	}
+
+	/**
+	 * Set the fields related to this table
+	 *
+	 * @param   array $fields Table fields
+	 *
+	 * @return $this
+	 */
+	public function setFields(array $fields)
+	{
+		$this->fields = $fields;
+
+		return $this;
+	}
+
+	/**
+	 * Get Table name
+	 *
+	 * @return string
+	 */
+	public function getTableName()
+	{
+		return $this->tableName;
+	}
+
+	/**
+	 * Set Table name
+	 *
+	 * @param   string $tableName Table name
+	 *
+	 * @return $this
+	 */
+	public function setTableName($tableName)
+	{
+		$this->tableName = $tableName;
+
+		return $this;
 	}
 }

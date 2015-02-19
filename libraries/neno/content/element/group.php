@@ -70,20 +70,19 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		parent::__construct($data);
 
-		$this->tables                            = array();
-		$this->languageStrings                   = array();
+		$this->tables                            = null;
+		$this->languageStrings                   = null;
 		$this->languageWordsNotTranslated        = 0;
 		$this->languageWordsQueuedToBeTranslated = 0;
 		$this->languageWordsSourceHasChanged     = 0;
 		$this->languageWordsTranslated           = 0;
-		$this->translationMethodUsed             = array();
+		$this->translationMethodUsed             = array ();
 
 		// Only search for the statistics for existing groups
 		if (!$this->isNew())
 		{
 			$this->calculateExtraData();
 		}
-
 	}
 
 	/**
@@ -100,7 +99,7 @@ class NenoContentElementGroup extends NenoContentElement
 
 		$query
 			->select(
-				array(
+				array (
 					'SUM((LENGTH(l.string) - LENGTH(replace(l.string,\' \',\'\'))+1)) AS counter',
 					't.state'
 				)
@@ -150,50 +149,35 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Get
+	 *
+	 * @param   integer $extensionId Extension Id
+	 *
+	 * @return NenoContentElementGroup|null
+	 */
+	public static function getGroupByExtensionId($extensionId)
+	{
+		$groupsData = self::load(array ('extension_id' => $extensionId));
+		$group      = null;
+
+		if (!empty($groupsData))
+		{
+			$group = self::getGroup($groupsData->id);
+		}
+
+		return $group;
+	}
+
+	/**
 	 * Get a group object
 	 *
 	 * @param   integer $groupId Group Id
 	 *
 	 * @return NenoContentElementGroup
 	 */
-	public static function getGroup($groupId, $loadTables = true, $loadLanguageStrings = true)
+	public static function getGroup($groupId)
 	{
-		$group = new NenoContentElementGroup(static::getElementDataFromDb($groupId));
-
-		// Init variables
-		$languageStrings = array();
-		$tables          = array();
-
-		// If tables flag is activated.
-		if ($loadTables)
-		{
-			/*** Loading tables related to this group ***/
-			$tablesInfo = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $group->id, true);
-
-
-			foreach ($tablesInfo as $tableInfo)
-			{
-				$table    = new NenoContentElementTable($tableInfo);
-				$tables[] = $table;
-			}
-		}
-
-		$group->setTables($tables);
-
-		if ($loadLanguageStrings)
-		{
-			/*** Loading languages files related to this group ***/
-			$languageStringsInfo = self::getElementsByParentId(NenoContentElementLangstring::getDbTable(), 'group_id', $group->id, true);
-
-
-			foreach ($languageStringsInfo as $languageStringInfo)
-			{
-				$languageString    = new NenoContentElementLangstring($languageStringInfo);
-				$languageStrings[] = $languageString;
-			}
-		}
-
-		$group->setLanguageStrings($languageStrings);
+		$group = new NenoContentElementGroup(self::load($groupId));
 
 		return $group;
 	}
@@ -211,7 +195,7 @@ class NenoContentElementGroup extends NenoContentElement
 	public static function parseContentElementFiles($groupName, $contentElementFiles)
 	{
 		// Create an array of group data
-		$groupData = array(
+		$groupData = array (
 			'groupName' => $groupName
 		);
 
@@ -234,10 +218,10 @@ class NenoContentElementGroup extends NenoContentElement
 				$tableName = $tableData->getAttribute('name');
 
 				// If the table hasn't been added yet, let's add it
-				if (!NenoHelper::isAlreadyDiscovered($tableName))
+				if (!NenoHelper::isTableAlreadyDiscovered($tableName))
 				{
 					$table = new NenoContentElementTable(
-						array(
+						array (
 							'tableName' => $tableName,
 							'translate' => 0
 						)
@@ -248,7 +232,7 @@ class NenoContentElementGroup extends NenoContentElement
 					/* @var $fieldData DOMElement */
 					foreach ($fields as $fieldData)
 					{
-						$fieldData = array(
+						$fieldData = array (
 							'fieldName' => $fieldData->getAttribute('name'),
 							'translate' => intval($fieldData->getAttribute('translate')),
 							'table'     => $table
@@ -277,7 +261,6 @@ class NenoContentElementGroup extends NenoContentElement
 			$group->persist();
 		}
 
-
 		return true;
 	}
 
@@ -302,6 +285,18 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function getTables()
 	{
+		if ($this->tables === null)
+		{
+			$this->tables = array ();
+			$tablesInfo   = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $this->id, true);
+
+			foreach ($tablesInfo as $tableInfo)
+			{
+				$table          = new NenoContentElementTable($tableInfo);
+				$this->tables[] = $table;
+			}
+		}
+
 		return $this->tables;
 	}
 
@@ -328,58 +323,20 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		if (parent::persist())
 		{
-			/* @var $table NenoContentElementTable */
-			foreach ($this->tables as $table)
-			{
-				$table->setGroup($this);
-				$table->persist();
-			}
-
 			/* @var $languageString NenoContentElementLangstring */
 			foreach ($this->languageStrings as $languageString)
 			{
 				$languageString->setGroup($this);
 				$languageString->persist();
 			}
+
+			/* @var $table NenoContentElementTable */
+			foreach ($this->tables as $table)
+			{
+				$table->setGroup($this);
+				$table->persist();
+			}
 		}
-	}
-
-	/**
-	 * Get language strings
-	 *
-	 * @return array
-	 */
-	public function getLanguageStrings()
-	{
-		return $this->languageStrings;
-	}
-
-	/**
-	 * Set language strings
-	 *
-	 * @param   array $languageStrings Language strings
-	 *
-	 * @return $this
-	 */
-	public function setLanguageStrings(array $languageStrings)
-	{
-		$this->languageStrings = $languageStrings;
-
-		return $this;
-	}
-
-	/**
-	 * Add language string to the array
-	 *
-	 * @param   NenoContentElementLangstring $languageString Language string
-	 *
-	 * @return $this
-	 */
-	public function addLanguageString(NenoContentElementLangstring $languageString)
-	{
-		$this->languageStrings[] = $languageString;
-
-		return $this;
 	}
 
 	/**
@@ -483,7 +440,7 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * Set translation methods used
 	 *
-	 * @param   array $translationMethodUsed
+	 * @param   array $translationMethodUsed Translation methods used
 	 *
 	 * @return $this
 	 */
@@ -492,5 +449,110 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->translationMethodUsed = $translationMethodUsed;
 
 		return $this;
+	}
+
+	/**
+	 * Refresh NenoContentElementGroup data
+	 *
+	 * @return void
+	 */
+	public function refresh()
+	{
+		$tables   = NenoHelper::getComponentTables($this);
+		$languageStrings = NenoHelper::getLanguageStrings($this);
+
+		// If there are tables, let's assign to the group
+		if (!empty($tables))
+		{
+			$this->setTables($tables);
+		}
+
+		// If there are language strings, let's assign to the group
+		if (!empty($languageStrings))
+		{
+			$this->setLanguageStrings($languageStrings);
+		}
+
+		// If there are tables or language strings assigned, save the group
+		if (!empty($tables) || !empty($languageStrings))
+		{
+			$this->persist();
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function remove()
+	{
+		// Get the tables
+		$tables = $this->getTables();
+
+		/* @var $table NenoContentElementTable */
+		foreach ($tables as $table)
+		{
+			$table->remove();
+		}
+
+		// Get language strings
+		$languageStrings = $this->getLanguageStrings();
+
+		/* @var $languageString NenoContentElementLangstring */
+		foreach ($languageStrings as $languageString)
+		{
+			$languageString->remove();
+		}
+
+		return parent::remove();
+	}
+
+	/**
+	 * Get language strings
+	 *
+	 * @return array
+	 */
+	public function getLanguageStrings()
+	{
+		if ($this->languageStrings === null)
+		{
+			$this->languageStrings = array ();
+			$languageStringsInfo   = self::getElementsByParentId(NenoContentElementLangstring::getDbTable(), 'group_id', $this->id, true);
+
+			foreach ($languageStringsInfo as $languageStringInfo)
+			{
+				$languageString          = new NenoContentElementLangstring($languageStringInfo);
+				$this->languageStrings[] = $languageString;
+			}
+		}
+
+		return $this->languageStrings;
+	}
+
+	/**
+	 * Set language strings
+	 *
+	 * @param   array $languageStrings Language strings
+	 *
+	 * @return $this
+	 */
+	public function setLanguageStrings(array $languageStrings)
+	{
+		$this->languageStrings = $languageStrings;
+
+		return $this;
+	}
+
+	/**
+	 * Mark this group as deleted
+	 *
+	 * @return void
+	 */
+	public function markAsDeleted()
+	{
+		$this->extensionId = -1;
+		$this->contentHasChanged();
+		$this->persist();
 	}
 }

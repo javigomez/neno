@@ -106,11 +106,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	protected $translationMethod;
 
 	/**
-	 * @var integer
-	 */
-	protected $version;
-
-	/**
 	 * @var array
 	 */
 	private $sourceElementData;
@@ -146,19 +141,18 @@ class NenoContentElementTranslation extends NenoContentElement
 		// If it's a language string, let's create a NenoContentElementLangstring
 		if ($this->contentType == self::LANG_STRING)
 		{
-			$contentElementData = NenoContentElementLangstring::getElementDataFromDb($content_id);
+			$contentElementData = NenoContentElementLangstring::load($content_id);
 			$this->element      = new NenoContentElementLangstring($contentElementData, false);
 		}
 		else
 		{
-			$contentElementData = NenoContentElementField::getElementDataFromDb($content_id);
+			$contentElementData = NenoContentElementField::load($content_id);
 			$this->element      = new NenoContentElementField($contentElementData);
 		}
 
 		$this->wordsCounter      = str_word_count($this->getString());
 		$this->charactersCounter = strlen($this->getString());
 		$this->originalText      = $this->loadOriginalText();
-
 	}
 
 	/**
@@ -211,7 +205,17 @@ class NenoContentElementTranslation extends NenoContentElement
 			foreach ($primaryKeys as $primaryKey)
 			{
 				$primaryKeyField = NenoContentElementField::getFieldByTableAndFieldName($field->getTable(), $primaryKey);
-				$query->where($db->quoteName($primaryKey) . ' = (SELECT value FROM `#__neno_content_element_fields_x_translations` WHERE translation_id = ' . $this->getId() . ' AND field_id = ' . $primaryKeyField->getId() . ')');
+				$query2          = $db->getQuery(true);
+				$query2
+					->select('value')
+					->from('#__neno_content_element_fields_x_translations')
+					->where(
+						array (
+							'translation_id = ' . $this->getId(),
+							'field_id = ' . $primaryKeyField->getId()
+						)
+					);
+				$query->where($db->quoteName($primaryKey) . ' = ' . (string) $query2);
 			}
 
 			$db->setQuery($query);
@@ -223,7 +227,6 @@ class NenoContentElementTranslation extends NenoContentElement
 			$languageString = $this->getElement();
 			$string         = $languageString->getString();
 		}
-
 
 		return $string;
 	}
@@ -261,7 +264,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	 */
 	public static function getTranslation($translationId)
 	{
-		$translationData = self::getElementDataFromDb($translationId);
+		$translationData = self::load($translationId);
 		$translation     = new NenoContentElementTranslation($translationData);
 
 		return $translation;
@@ -286,9 +289,9 @@ class NenoContentElementTranslation extends NenoContentElement
 
 		$translationsData = self::getElementsByParentId(
 			self::getDbTable(), 'content_id', $element->getId(), true,
-			array('content_type = \'' . $type . '\'')
+			array ('content_type = \'' . $type . '\'')
 		);
-		$translations     = array();
+		$translations     = array ();
 
 		foreach ($translationsData as $translationData)
 		{
@@ -395,30 +398,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * Get the translation version
-	 *
-	 * @return int
-	 */
-	public function getVersion()
-	{
-		return $this->version;
-	}
-
-	/**
-	 * Set the translation version
-	 *
-	 * @param   int $version Translation version
-	 *
-	 * @return NenoContentElementTranslation
-	 */
-	public function setVersion($version)
-	{
-		$this->version = $version;
-
-		return $this;
-	}
-
-	/**
 	 * Get the time when this translation was added
 	 *
 	 * @return DateTime
@@ -431,7 +410,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * Set the time when the translation was added
 	 *
-	 * @param DateTime $timeAdded
+	 * @param   DateTime $timeAdded When the translation has been added
 	 *
 	 * @return NenoContentElementTranslation
 	 */
@@ -589,5 +568,25 @@ class NenoContentElementTranslation extends NenoContentElement
 	public function getOriginalText()
 	{
 		return $this->originalText;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function remove()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->delete('#__neno_content_element_fields_x_translations')
+			->where('translation_id =' . $this->getId());
+
+		$db->setQuery($query);
+		$db->execute();
+
+		return parent::remove();
 	}
 }

@@ -20,7 +20,6 @@ defined('JPATH_BASE') or die;
  */
 class PlgSystemNeno extends JPlugin
 {
-
 	/**
 	 * Method to register a custom database driver
 	 *
@@ -41,5 +40,46 @@ class PlgSystemNeno extends JPlugin
 			JFactory::$database = null;
 			JFactory::$database = NenoFactory::getDbo();
 		}
+	}
+
+	/**
+	 * Event triggered before uninstall an extension
+	 *
+	 * @param   integer $extensionId Extension ID
+	 *
+	 * @return void
+	 */
+	public function onExtensionBeforeUninstall($extensionId)
+	{
+		$group = NenoContentElementGroup::getGroupByExtensionId($extensionId);
+		$group->markAsDeleted();
+	}
+
+	/**
+	 * Event triggered after install an extension
+	 *
+	 * @param   JInstaller $installer   Installer instance
+	 * @param   integer    $extensionId Extension Id
+	 *
+	 * @return void
+	 */
+	public function onExtensionAfterInstall($installer, $extensionId)
+	{
+		$group = NenoContentElementGroup::getGroupByExtensionId($extensionId);
+		$group->refresh();
+	}
+
+	/**
+	 * Event triggered after update an extension
+	 *
+	 * @param   JInstaller $installer   Installer instance
+	 * @param   integer    $extensionId Extension Id
+	 *
+	 * @return void
+	 */
+	public function onExtensionAfterUpdate($installer, $extensionId)
+	{
+		$group = NenoContentElementGroup::getGroupByExtensionId($extensionId);
+		$group->refresh();
 	}
 }
