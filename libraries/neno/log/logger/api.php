@@ -25,7 +25,7 @@ class NenoLogLoggerApi extends JLogLogger
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param array $options
+	 * @param   array &$options Logger options
 	 */
 	public function __construct(array &$options)
 	{

@@ -73,7 +73,6 @@ class NenoLog extends JLog
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -129,6 +128,16 @@ class NenoLog extends JLog
 		);
 	}
 
+	/**
+	 * Add an entry into the Log
+	 *
+	 * @param   mixed  $entry    Log entry
+	 * @param   int    $priority Entry Priority
+	 * @param   string $category Entry Category
+	 * @param   null   $date     Entry Date
+	 *
+	 * @return void
+	 */
 	public static function add($entry, $priority = self::INFO, $category = '', $date = null)
 	{
 		// Automatically instantiate the singleton object if not already done.

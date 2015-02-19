@@ -23,6 +23,8 @@ class NenoDatabaseQueryMysqli extends JDatabaseQueryMysqli
 	protected $insert = null;
 
 	/**
+	 * Set a replace statement
+	 *
 	 * @param   string $table Table name
 	 *
 	 * @return NenoDatabaseQueryMysqli

@@ -51,7 +51,6 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 			return null;
 		}
 
-
 		if ($this->apiKey == "")
 		{
 			// Use default key if not provided
@@ -86,7 +85,6 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		}
 
 		return $text;
-
 	}
 
 	/**
