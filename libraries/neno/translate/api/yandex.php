@@ -25,7 +25,7 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	 * Translate text using yandex api
 	 *
 	 * @param   string $text   text to translate
-	 * @param   string $source source language
+	 * @param   string $source source language default english
 	 * @param   string $target target language default french
 	 *
 	 * @return string
@@ -42,9 +42,10 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		// Language parameter for url
 		$source = $this->convertFromJisoToIso($source);
 		$lang   = $source . "-" . $target;
+		$isoPair = $source . "," . $target;
 
 		// Check availability of language pair for translation
-		$isAvailable = $this->isTranslationAvailable($lang);
+		$isAvailable = $this->isTranslationAvailable($isoPair,'Yandex Translate');
 
 		if (!$isAvailable)
 		{
@@ -114,40 +115,4 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		return $iso2;
 	}
 
-	/**
-	 * Method to check if language pair is available or not in yandex api
-	 *
-	 * @param   string $isoPair ISO2 language code pair
-	 *
-	 * @return boolean
-	 */
-	public function isTranslationAvailable($isoPair)
-	{
-		// Split the language pair using hyphen
-		$isoParts = (explode("-", $isoPair));
-
-		$available = 1;
-
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('*')
-			->from($db->quoteName('#__neno_translation_methods_language_pairs', 'mlp'))
-			->innerJoin($db->quoteName('#__neno_translation_methods', 'm') . ' ON (' . $db->quoteName('mlp.translation_method_id') . ' = ' . $db->quoteName('m.id') . ')')
-			->where($db->quoteName('m.translator_name') . '=' . $db->quote('Yandex Translate'))
-			->where('mlp.source_language = ' . $db->quote($isoParts[0]))
-			->where('mlp.destination_language = ' . $db->quote($isoParts[1]));
-
-		$db->setQuery($query);
-		$db->execute();
-		$num_rows = $db->getNumRows();
-
-		if ($num_rows == 0)
-		{
-			$available = 0;
-		}
-
-		return $available;
-	}
 }

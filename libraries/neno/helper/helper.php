@@ -1048,34 +1048,26 @@ class NenoHelper
 	 *
 	 * @return string
 	 */
-	public static function htmlTranslationBar($stringsStatus, $enabled = true)
+	public static function printTranslationBar($stringsStatus, $enabled = true)
 	{
-		$return = '';
+		$displayData = null;
+
 		if ($enabled && count($stringsStatus) !== 0)
 		{
-			//var_dump($stringsStatus);
+			$displayData = new stdClass;
 			if (!array_key_exists('totalStrings', $stringsStatus) || $stringsStatus['totalStrings'] === null)
 			{
 				$stringsStatus['totalStrings'] = $stringsStatus['translated'] + $stringsStatus['queued'] + $stringsStatus['changed'] + $stringsStatus['notTranslated'];
 			}
-			$return .= '<div class="word-count">' . $stringsStatus['totalStrings'] . '</div>' . "\n";
-			$return .= '<div class="bar">' . "\n";
-			$widthTranslated    = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['translated'] / $stringsStatus['totalStrings']) : (0);
-			$widthQueued        = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['queued'] / $stringsStatus['totalStrings']) : (0);
-			$widthChanged       = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['changed'] / $stringsStatus['totalStrings']) : (0);
-			$widthNotTranslated = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['notTranslated'] / $stringsStatus['totalStrings']) : (0);
-			$return .= '<div class="translated" style="width:' . $widthTranslated . '%" alt="' . JText::_('COM_NENO_STATUS_TRANSLATED') . ': ' . $stringsStatus['translated'] . '" title="' . JText::_('COM_NENO_STATUS_TRANSLATED') . ': ' . $stringsStatus['translated'] . '"></div>' . "\n";
-			$return .= '<div class="queued" style="width:' . $widthQueued . '%" alt="' . JText::_('COM_NENO_STATUS_QUEUED') . ': ' . $stringsStatus['queued'] . '" title="' . JText::_('COM_NENO_STATUS_QUEUED') . ': ' . $stringsStatus['queued'] . '"></div>' . "\n";
-			$return .= '<div class="changed" style="width:' . $widthChanged . '%" alt="' . JText::_('COM_NENO_STATUS_CHANGED') . ': ' . $stringsStatus['changed'] . '" title="' . JText::_('COM_NENO_STATUS_CHANGED') . ': ' . $stringsStatus['changed'] . '"></div>' . "\n";
-			$return .= '<div class="not-translated" style="width:' . $widthNotTranslated . '%" alt="' . JText::_('COM_NENO_STATUS_NOTTRANSLATED') . ': ' . $stringsStatus['notTranslated'] . '" title="' . JText::_('COM_NENO_STATUS_NOTTRANSLATED') . ': ' . $stringsStatus['notTranslated'] . '"></div>' . "\n";
-			$return .= '</div>' . "\n";
-		}
-		else
-		{
-			$return .= '<div class="bar bar-disabled" alt="' . JText::_('COM_NENO_STATUS_NOTTRANSLATED') . '" title="' . JText::_('COM_NENO_STATUS_NOTTRANSLATED') . '"></div>' . "\n";
+
+			$displayData->stringsStatus = $stringsStatus;
+			$displayData->widthTranslated     = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['translated'] / $stringsStatus['totalStrings']) : (0);
+			$displayData->widthQueued         = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['queued'] / $stringsStatus['totalStrings']) : (0);
+			$displayData->widthChanged        = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['changed'] / $stringsStatus['totalStrings']) : (0);
+			$displayData->widthNotTranslated  = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['notTranslated'] / $stringsStatus['totalStrings']) : (0);
 		}
 
-		return $return;
+		return JLayoutHelper::render('progressbar', $displayData, JPATH_NENO_LAYOUTS);
 	}
 
 	/**
@@ -1103,7 +1095,8 @@ class NenoHelper
 		}
 		catch (RuntimeException $e)
 		{
-			JError::raiseWarning(500, $e->getMessage());
+			// FIX IT!
+			//JError::raiseWarning(500, $e->getMessage());
 		}
 
 		// Merge any additional options in the XML definition.
@@ -1145,5 +1138,36 @@ class NenoHelper
 	private static function escapeString($value)
 	{
 		return JFactory::getDbo()->quote($value);
+	}
+
+	/**
+	 * Return all groups.
+	 *
+	 * @return  string  The component to access.
+	 *
+	 * @since   1.5
+	 */
+	public static function getGroups()
+	{
+		// Create a new query object.
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('g.id')
+			->from('`#__neno_content_element_groups` AS g');
+
+		$db->setQuery($query);
+		$db->execute();
+
+		$groups = $db->loadObjectList();
+
+		$countGroups = count($groups);
+		for ($i = 0; $i < $countGroups; $i++)
+		{
+			$groups[$i] = NenoContentElementGroup::getGroup($groups[$i]->id);
+		}
+
+		return $groups;
 	}
 }

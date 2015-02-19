@@ -144,8 +144,7 @@ class NenoModelStrings extends JModelList
 			$query->where('t.group_id = '.(int) $group);
 		}
 
-		/** @noinspection PhpUndefinedClassInspection */
-		Kint::dump($query->__toString());
+		//Kint::dump($query->__toString());
 
 		return $query;
 	}

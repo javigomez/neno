@@ -331,10 +331,10 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					$stringsFile = NenoHelper::getWorkingLanguage() . '.' . $group->getGroupName() . '.ini';
 					$countElements++;
 				}
-				$stringsTranslated = $group->getLanguageWordsTranslated();
+				/*$stringsTranslated = $group->getLanguageWordsTranslated();
 				$stringsQueued = $group->getLanguageWordsQueuedToBeTranslated();
 				$stringsChanged = $group->getLanguageWordsSourceHasChanged();
-				$stringsNotTranslated = $group->getLanguageWordsNotTranslated();
+				$stringsNotTranslated = $group->getLanguageWordsNotTranslated();*/
 
 				?>
 
@@ -378,7 +378,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 								if (!isset($groupTables[$table->getId()][$field->getId()])) {
 									$groupTables[$table->getId()][$field->getId()] = array();
 								}
-								echo NenoHelper::htmlTranslationBar($groupTables[$table->getId()][$field->getId()], $field->isTranslate());
+								echo NenoHelper::printTranslationBar($groupTables[$table->getId()][$field->getId()], $field->isTranslate());
 								?>
 							</td>
 							<td class="toggle-translate">
@@ -401,13 +401,16 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 						<td colspan="2"><?php echo $stringsFile; ?></td>
 						<td class="type-icon"><span class="icon-file"></span> <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_FILE'); ?></td>
 						<td class="translation-progress-bar">
-							<div class="word-count"><?php echo $countLanguageStrings; ?></div>
-							<div class="bar">
-								<div class="translated" style="width: <?php echo 100*$stringsTranslated/$countLanguageStrings; ?>%" alt="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_TRANSLATED'); ?>" title="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_TRANSLATED') . ': ' . $stringsTranslated; ?>"></div>
-								<div class="queued" style="width: <?php echo 100*$stringsQueued/$countLanguageStrings; ?>%" alt="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_QUEUED'); ?>" title="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_QUEUED') . ': ' . $stringsQueued; ?>"></div>
-								<div class="changed" style="width: <?php echo 100*$stringsChanged/$countLanguageStrings; ?>%" alt="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_CHANGED'); ?>" title="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_CHANGED') . ': ' . $stringsChanged; ?>"></div>
-								<div class="not-translated" style="width: <?php echo 100*$stringsNotTranslated/$countLanguageStrings; ?>%" alt="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_NOTTRANSLATED'); ?>" title="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_NOTTRANSLATED') . ': ' . $stringsNotTranslated; ?>"></div>
-							</div>
+							<?php
+							$stringsStatus = array(
+								'totalStrings'  => $countLanguageStrings,
+								'translated'    => $stringsTranslated,
+								'queued'  => $stringsQueued,
+								'changed'  => $stringsChanged,
+								'notTranslated'  => $stringsNotTranslated
+							);
+							echo NenoHelper::printTranslationBar($stringsStatus);
+							?>
 						</td>
 						<td></td>
 						<td></td>
