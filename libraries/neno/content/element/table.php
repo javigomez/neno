@@ -267,7 +267,9 @@ class NenoContentElementTable extends NenoContentElement
 	 */
 	public function persist()
 	{
-		if (parent::persist())
+		$result = parent::persist();
+
+		if ($result)
 		{
 			/* @var $db NenoDatabaseDriverMysqlx */
 			$db = JFactory::getDbo();
@@ -296,7 +298,11 @@ class NenoContentElementTable extends NenoContentElement
 			{
 				$field->persistTranslations();
 			}
+
+			$this->setContentElementIntoCache();
 		}
+
+		return $result;
 	}
 
 	/**

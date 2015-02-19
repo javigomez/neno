@@ -324,6 +324,8 @@ class NenoContentElementLangstring extends NenoContentElement
 					$this->translations[$i] = $translation;
 				}
 			}
+
+			$this->setContentElementIntoCache();
 		}
 
 		return $persistResult;

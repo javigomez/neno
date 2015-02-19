@@ -356,7 +356,10 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function persist()
 	{
-		if (parent::persist())
+		$result = parent::persist();
+
+		// Check if the saving process has been completed succesfully
+		if ($result)
 		{
 			/* @var $languageString NenoContentElementLangstring */
 			foreach ($this->languageStrings as $languageString)
@@ -371,7 +374,11 @@ class NenoContentElementGroup extends NenoContentElement
 				$table->setGroup($this);
 				$table->persist();
 			}
+
+			$this->setContentElementIntoCache();
 		}
+
+		return $result;
 	}
 
 	/**

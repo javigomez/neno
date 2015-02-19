@@ -493,24 +493,29 @@ class NenoContentElementTranslation extends NenoContentElement
 		$persistResult = parent::persist();
 
 		// Only execute this task when the translation is new and there are no records about how to find it.
-		if ($persistResult && $isNew)
+		if ($persistResult)
 		{
-			$db = JFactory::getDbo();
-
-			// Loop through the data
-			foreach ($this->sourceElementData as $sourceData)
+			if ($isNew)
 			{
-				/* @var $field NenoContentElementField */
-				$field      = $sourceData['field'];
-				$fieldValue = $sourceData['value'];
+				$db = JFactory::getDbo();
 
-				$data                 = new stdClass;
-				$data->field_id       = $field->getId();
-				$data->translation_id = $this->getId();
-				$data->value          = $fieldValue;
+				// Loop through the data
+				foreach ($this->sourceElementData as $sourceData)
+				{
+					/* @var $field NenoContentElementField */
+					$field      = $sourceData['field'];
+					$fieldValue = $sourceData['value'];
 
-				$db->insertObject('#__neno_content_element_fields_x_translations', $data);
+					$data                 = new stdClass;
+					$data->field_id       = $field->getId();
+					$data->translation_id = $this->getId();
+					$data->value          = $fieldValue;
+
+					$db->insertObject('#__neno_content_element_fields_x_translations', $data);
+				}
 			}
+
+			$this->setContentElementIntoCache();
 		}
 
 		return $persistResult;

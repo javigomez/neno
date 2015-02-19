@@ -588,4 +588,22 @@ class NenoContentElementField extends NenoContentElement
 
 		return $this;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function persist()
+	{
+		$result = parent::persist();
+
+		// If the element was stored properly, let's update cache file
+		if ($result)
+		{
+			$this->setContentElementIntoCache();
+		}
+
+		return $result;
+	}
 }
