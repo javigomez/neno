@@ -160,7 +160,15 @@ abstract class NenoContentElement
 	 */
 	public static function load($pk)
 	{
-		$cacheId    = NenoCache::getCacheId(__FUNCTION__, func_get_args());
+		$arguments = func_get_args();
+
+		// Check if the argument is an array
+		if (is_array($pk))
+		{
+			$arguments = $pk;
+		}
+
+		$cacheId    = NenoCache::getCacheId(__FUNCTION__, $arguments);
 		$cachedData = NenoCache::getCacheData($cacheId);
 
 		if ($cachedData === null)
