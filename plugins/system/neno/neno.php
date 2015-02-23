@@ -52,7 +52,12 @@ class PlgSystemNeno extends JPlugin
 	public function onExtensionBeforeUninstall($extensionId)
 	{
 		$group = NenoContentElementGroup::getGroupByExtensionId($extensionId);
-		$group->markAsDeleted();
+
+		// If the group exists, let's mark it as deleted
+		if ($group !== null)
+		{
+			$group->markAsDeleted();
+		}
 	}
 
 	/**
