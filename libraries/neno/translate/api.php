@@ -17,6 +17,11 @@ defined('JPATH_NENO') or die;
 abstract class NenoTranslateApi extends JHttp
 {
 	/**
+	 * @var string
+	 */
+	protected $apiKey;
+
+	/**
 	 * Method to translate content
 	 *
 	 * @param   string $text   text to translate
@@ -107,6 +112,49 @@ abstract class NenoTranslateApi extends JHttp
 		 return $exe;
 
 	 }
+
+	/**
+	 * Method to get api key for translation api
+	 *
+	 * @param   string $methodName api method name
+	 *
+	 * @return string
+	 */
+	protected function getApiKey($methodName)
+	{
+		$paramName  = null;
+		$defaultKey = null;
+
+		switch ($methodName)
+		{
+			case "Google Translate":
+			{
+				$paramName  = "googleApiKey";
+				$defaultKey = "AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8";
+			}
+				break;
+
+			case "Yandex Translate":
+			{
+				$paramName  = "yandexApiKey";
+				$defaultKey = "trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0";
+			}
+
+				break;
+		}
+
+		// Get the key configured by user
+		/** @noinspection PhpUndefinedMethodInspection */
+		$this->apiKey = JComponentHelper::getParams('com_neno')->get($paramName);
+
+		if ($this->apiKey == "")
+		{
+			// Use default key if not provided
+			$this->apiKey = $defaultKey;
+		}
+
+		return $this->apiKey;
+	}
 
 	/**
 	 * Method to check if language pair is available or not in translation api
