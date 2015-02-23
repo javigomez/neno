@@ -19,7 +19,18 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	/**
 	 * @var string
 	 */
-	protected $apiKey;
+	protected $methodName;
+
+	/**
+	 * Method to get api method name
+	 *
+	 * @return string
+	 */
+	protected function getMethodName()
+	{
+		$this->methodName = 'Google Translate';
+		return $this->methodName;
+	}
 
 	/**
 	 * Translate text using google api
@@ -32,9 +43,11 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	 */
 	public function translate($text, $source = "en-US", $target = "fr-FR")
 	{
-		// Get the key configured by user
-		/** @noinspection PhpUndefinedMethodInspection */
-		$this->apiKey = JComponentHelper::getParams('com_neno')->get('googleApiKey');
+		// Get the method name for api
+		$this->methodName = $this->getMethodName();
+
+		// Get the api key configured by user
+		$this->apiKey = $this->getApiKey($this->methodName);
 
 		// Convert from JISO to ISO codes
 		$source = $this->convertFromJisoToIso($source);
@@ -43,17 +56,11 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 		$isoPair = $source . "," . $target;
 
 		// Check availability of language pair for translation
-		$isAvailable = $this->isTranslationAvailable($isoPair, 'Google Translate');
+		$isAvailable = $this->isTranslationAvailable($isoPair, $this->methodName);
 
 		if (!$isAvailable)
 		{
 			return null;
-		}
-
-		if ($this->apiKey == "")
-		{
-			// Use default key if not provided
-			$this->apiKey = 'AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8';
 		}
 
 		$url = 'https://www.googleapis.com/language/translate/v2?key=' . $this->apiKey . '&q=' . rawurlencode($text) . '&source=' . $source . '&target=' . $target;
@@ -111,4 +118,5 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 
 		return $iso2;
 	}
+
 }
