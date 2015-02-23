@@ -514,3 +514,6 @@ cache.properties
 composer.phar
 composer.lock
 .gitignore
+*hikashop*
+*_redirect
+custom_quantity_tax
