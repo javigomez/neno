@@ -19,7 +19,18 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	/**
 	 * @var string
 	 */
-	protected $apiKey;
+	protected $methodName;
+
+	/**
+	 * Method to get api method name
+	 *
+	 * @return string
+	 */
+	protected function getMethodName()
+	{
+		$this->methodName = 'Yandex Translate';
+		return $this->methodName;
+	}
 
 	/**
 	 * Translate text using yandex api
@@ -32,30 +43,26 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	 */
 	public function translate($text, $source = "en-US", $target = "fr-FR")
 	{
-		// Get the key configured by user
-		/** @noinspection PhpUndefinedMethodInspection */
-		$this->apiKey = JComponentHelper::getParams('com_neno')->get('yandexApiKey');
+		// Get the method name for api
+		$this->methodName = $this->getMethodName();
+
+		// Get the api key configured by user
+		$this->apiKey = $this->getApiKey($this->methodName);
 
 		// Convert from JISO to ISO codes
 		$target = $this->convertFromJisoToIso($target);
 
 		// Language parameter for url
-		$source  = $this->convertFromJisoToIso($source);
-		$lang    = $source . "-" . $target;
+		$source = $this->convertFromJisoToIso($source);
+		$lang   = $source . "-" . $target;
 		$isoPair = $source . "," . $target;
 
 		// Check availability of language pair for translation
-		$isAvailable = $this->isTranslationAvailable($isoPair, 'Yandex Translate');
+		$isAvailable = $this->isTranslationAvailable($isoPair, $this->methodName);
 
 		if (!$isAvailable)
 		{
 			return null;
-		}
-
-		if ($this->apiKey == "")
-		{
-			// Use default key if not provided
-			$this->apiKey = 'trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0';
 		}
 
 		// For POST requests, the maximum size of the text being passed is 10000 characters.
@@ -86,6 +93,7 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		}
 
 		return $text;
+
 	}
 
 	/**
@@ -114,4 +122,5 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 
 		return $iso2;
 	}
+
 }
