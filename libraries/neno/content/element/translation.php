@@ -136,23 +136,36 @@ class NenoContentElementTranslation extends NenoContentElement
 
 		$data = new JObject($data);
 
-		$content_id = $data->get('content_id') === null ? $data->get('contentId') : $data->get('content_id');
 
-		// If it's a language string, let's create a NenoContentElementLangstring
-		if ($this->contentType == self::LANG_STRING)
+		if ($data->get('content') !== null)
 		{
-			$contentElementData = NenoContentElementLangstring::load($content_id);
-			$this->element      = new NenoContentElementLangstring($contentElementData, false);
+			$this->element = $data->get('content');
 		}
 		else
 		{
-			$contentElementData = NenoContentElementField::load($content_id);
-			$this->element      = new NenoContentElementField($contentElementData);
+			$content_id = $data->get('content_id') === null ? $data->get('contentId') : $data->get('content_id');
+
+			// If it's a language string, let's create a NenoContentElementLangstring
+			if ($this->contentType == self::LANG_STRING)
+			{
+				$contentElementData = NenoContentElementLangstring::load($content_id);
+				$this->element      = new NenoContentElementLangstring($contentElementData, false);
+			}
+			else
+			{
+				$contentElementData = NenoContentElementField::load($content_id);
+				$this->element      = new NenoContentElementField($contentElementData);
+			}
 		}
+
 
 		$this->wordsCounter      = str_word_count($this->getString());
 		$this->charactersCounter = strlen($this->getString());
-		$this->originalText      = $this->loadOriginalText();
+
+		if (!$this->isNew())
+		{
+			$this->originalText = $this->loadOriginalText();
+		}
 	}
 
 	/**
@@ -495,7 +508,7 @@ class NenoContentElementTranslation extends NenoContentElement
 		// Only execute this task when the translation is new and there are no records about how to find it.
 		if ($persistResult)
 		{
-			if ($isNew)
+			if ($isNew && $this->contentType == self::DB_STRING)
 			{
 				$db = JFactory::getDbo();
 
@@ -514,12 +527,16 @@ class NenoContentElementTranslation extends NenoContentElement
 					$db->insertObject('#__neno_content_element_fields_x_translations', $data);
 				}
 			}
-
-			$this->setContentElementIntoCache();
 		}
 
 		return $persistResult;
 	}
+
+	public function setContentElementIntoCache()
+	{
+		return null;
+	}
+
 
 	/**
 	 * Get all the data related to the source element
@@ -593,5 +610,19 @@ class NenoContentElementTranslation extends NenoContentElement
 		$db->execute();
 
 		return parent::remove();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return $this
+	 */
+	protected function prepareCacheContent()
+	{
+		/* @var $data $this */
+		$data          = parent::prepareCacheContent();
+		$data->element = null;
+
+		return $data;
 	}
 }

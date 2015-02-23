@@ -99,7 +99,6 @@ class NenoContentElementGroup extends NenoContentElement
 		if ($groupCachedData === null)
 		{
 			$this->getTables();
-			$this->setContentElementIntoCache();
 		}
 		else
 		{
@@ -152,6 +151,7 @@ class NenoContentElementGroup extends NenoContentElement
 	public function setTables(array $tables)
 	{
 		$this->tables = $tables;
+		$this->contentHasChanged();
 
 		return $this;
 	}
@@ -358,27 +358,95 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		$result = parent::persist();
 
-		// Check if the saving process has been completed succesfully
+		// Check if the saving process has been completed successfully
 		if ($result)
 		{
-			/* @var $languageString NenoContentElementLangstring */
-			foreach ($this->languageStrings as $languageString)
+			if (!empty($this->languageStrings))
 			{
-				$languageString->setGroup($this);
-				$languageString->persist();
+				/* @var $languageString NenoContentElementLangstring */
+				foreach ($this->languageStrings as $languageString)
+				{
+					$languageString->setGroup($this);
+					$languageString->persist();
+				}
 			}
 
-			/* @var $table NenoContentElementTable */
-			foreach ($this->tables as $table)
+			if (!empty($this->tables))
 			{
-				$table->setGroup($this);
-				$table->persist();
+				/* @var $table NenoContentElementTable */
+				foreach ($this->tables as $table)
+				{
+					$table->setGroup($this);
+					$table->persist();
+				}
 			}
-
-			$this->setContentElementIntoCache();
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Create a NenoContentElementGroup based on the extension Id
+	 *
+	 * @param integer $extensionId Extension Id
+	 *
+	 * @return NenoContentElementGroup
+	 */
+	public static function createNenoContentElementGroupByExtensionId($extensionId)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(
+				array (
+					'e.extension_id',
+					'e.name'
+				)
+			)
+			->from('`#__extensions` AS e')
+			->where('e.extension_id = ' . (int) $extensionId);
+
+		$db->setQuery($query);
+
+		$extension = $db->loadAssoc();
+		$group     = new NenoContentElementGroup(
+			array (
+				'groupName'   => $extension['name'],
+				'extensionId' => $extension['extension_id']
+			)
+		);
+
+		return $group;
+	}
+
+	/**
+	 * Refresh NenoContentElementGroup data
+	 *
+	 * @return void
+	 */
+	public function refresh()
+	{
+		$tables          = NenoHelper::getComponentTables($this);
+		$languageStrings = NenoHelper::getLanguageStrings($this->getGroupName());
+
+		// If there are tables, let's assign to the group
+		if (!empty($tables))
+		{
+			$this->setTables($tables);
+		}
+
+		// If there are language strings, let's assign to the group
+		if (!empty($languageStrings))
+		{
+			$this->setLanguageStrings($languageStrings);
+		}
+
+		// If there are tables or language strings assigned, save the group
+		if (!empty($tables) || !empty($languageStrings))
+		{
+			$this->persist();
+		}
 	}
 
 	/**
@@ -494,35 +562,6 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * Refresh NenoContentElementGroup data
-	 *
-	 * @return void
-	 */
-	public function refresh()
-	{
-		$tables          = NenoHelper::getComponentTables($this);
-		$languageStrings = NenoHelper::getLanguageStrings($this);
-
-		// If there are tables, let's assign to the group
-		if (!empty($tables))
-		{
-			$this->setTables($tables);
-		}
-
-		// If there are language strings, let's assign to the group
-		if (!empty($languageStrings))
-		{
-			$this->setLanguageStrings($languageStrings);
-		}
-
-		// If there are tables or language strings assigned, save the group
-		if (!empty($tables) || !empty($languageStrings))
-		{
-			$this->persist();
-		}
-	}
-
-	/**
 	 * {@inheritdoc}
 	 *
 	 * @return bool
@@ -582,6 +621,7 @@ class NenoContentElementGroup extends NenoContentElement
 	public function setLanguageStrings(array $languageStrings)
 	{
 		$this->languageStrings = $languageStrings;
+		$this->contentHasChanged();
 
 		return $this;
 	}
@@ -596,5 +636,20 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->extensionId = -1;
 		$this->contentHasChanged();
 		$this->persist();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return NenoContentElementGroup
+	 */
+	protected function prepareCacheContent()
+	{
+		/* @var $data NenoContentElementGroup */
+		$data                  = parent::prepareCacheContent();
+		$data->tables          = null;
+		$data->languageStrings = null;
+
+		return $data;
 	}
 }

@@ -254,6 +254,8 @@ abstract class NenoContentElement
 			{
 				$result = $db->updateObject(self::getDbTable(), $data, 'id');
 			}
+
+			$this->setContentElementIntoCache();
 		}
 
 		return $result;
@@ -291,34 +293,26 @@ abstract class NenoContentElement
 		/* @var $property ReflectionProperty */
 		foreach ($properties as $property)
 		{
-			$data->set(NenoHelper::convertPropertyNameToDatabaseColumnName($property->getName()), $this->{$property->getName()});
+			if ($property->getName() !== 'hasChanged')
+			{
+				$data->set(NenoHelper::convertPropertyNameToDatabaseColumnName($property->getName()), $this->{$property->getName()});
+			}
 		}
 
 		return $data;
 	}
 
 	/**
-	 * Remove the object from the database
+	 * Save this NenoContentElement in the cache
 	 *
-	 * @return bool
+	 * @return void
 	 */
-	public function remove()
+	public function setContentElementIntoCache()
 	{
-		// Only perform this task if the ID is not null or 0.
-		if (!empty($this->id))
+		if (!$this->isNew())
 		{
-			/* @var $db NenoDatabaseDriverMysqlx */
-			$db = JFactory::getDbo();
-
-			$result = $db->deleteObject(self::getDbTable(), $this->id);
-
-			if ($result)
-			{
-				NenoCache::setCacheData($this->getCacheId(), null);
-			}
+			NenoCache::setCacheData($this->getCacheId(), $this->prepareCacheContent());
 		}
-
-		return false;
 	}
 
 	/**
@@ -350,6 +344,42 @@ abstract class NenoContentElement
 	}
 
 	/**
+	 * Prepare content for cache
+	 *
+	 * @return NenoContentElement
+	 */
+	protected function prepareCacheContent()
+	{
+		$data = clone $this;
+
+		return $data;
+	}
+
+	/**
+	 * Remove the object from the database
+	 *
+	 * @return bool
+	 */
+	public function remove()
+	{
+		// Only perform this task if the ID is not null or 0.
+		if (!empty($this->id))
+		{
+			/* @var $db NenoDatabaseDriverMysqlx */
+			$db = JFactory::getDbo();
+
+			$result = $db->deleteObject(self::getDbTable(), $this->id);
+
+			if ($result)
+			{
+				NenoCache::setCacheData($this->getCacheId(), null);
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Set that the content has changed
 	 *
 	 * @return $this
@@ -378,18 +408,5 @@ abstract class NenoContentElement
 		}
 
 		return $dataCached;
-	}
-
-	/**
-	 * Save this NenoContentElement in the cache
-	 *
-	 * @return void
-	 */
-	public function setContentElementIntoCache()
-	{
-		if (!$this->isNew())
-		{
-			NenoCache::setCacheData($this->getCacheId(), $this);
-		}
 	}
 }

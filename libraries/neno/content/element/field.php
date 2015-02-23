@@ -334,6 +334,7 @@ class NenoContentElementField extends NenoContentElement
 				$commonData = array (
 					'contentType' => NenoContentElementTranslation::DB_STRING,
 					'contentId'   => $this->getId(),
+					'content'     => $this,
 					'state'       => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
 					'timeAdded'   => new DateTime
 				);
@@ -592,18 +593,15 @@ class NenoContentElementField extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @return bool
+	 * @return $this
 	 */
-	public function persist()
+	protected function prepareCacheContent()
 	{
-		$result = parent::persist();
+		/* @var $data $this */
+		$data               = parent::prepareCacheContent();
+		$data->table        = null;
+		$data->translations = null;
 
-		// If the element was stored properly, let's update cache file
-		if ($result)
-		{
-			$this->setContentElementIntoCache();
-		}
-
-		return $result;
+		return $data;
 	}
 }

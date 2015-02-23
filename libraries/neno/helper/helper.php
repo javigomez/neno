@@ -281,21 +281,14 @@ class NenoHelper
 	 */
 	public static function convertStdClassArrayToJObjectArray(array $objectList)
 	{
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
+		$jObjectList = array ();
 
-		if (NenoCache::getCacheData($cacheId) === null)
+		foreach ($objectList as $object)
 		{
-			$jObjectList = array ();
-
-			foreach ($objectList as $object)
-			{
-				$jObjectList[] = new JObject($object);
-			}
-
-			NenoCache::setCacheData($cacheId, $jObjectList);
+			$jObjectList[] = new JObject($object);
 		}
 
-		return NenoCache::getCacheData($cacheId);
+		return $jObjectList;
 	}
 
 	/**
@@ -308,14 +301,7 @@ class NenoHelper
 	 */
 	public static function endsWith($string, $suffix)
 	{
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
-
-		if (NenoCache::getCacheData($cacheId) === null)
-		{
-			NenoCache::setCacheData($cacheId, $suffix === "" || strpos($string, $suffix, strlen($string) - strlen($suffix)) !== false);
-		}
-
-		return NenoCache::getCacheData($cacheId);
+		return $suffix === "" || strpos($string, $suffix, strlen($string) - strlen($suffix)) !== false;
 	}
 
 	/**
@@ -327,15 +313,9 @@ class NenoHelper
 	 */
 	public static function getTableNamePatternBasedOnComponentName($componentName)
 	{
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
+		$prefix = JFactory::getDbo()->getPrefix();
 
-		if (NenoCache::getCacheData($cacheId) === null)
-		{
-			$prefix = JFactory::getDbo()->getPrefix();
-			NenoCache::setCacheData($cacheId, $prefix . str_replace(array ('com_'), '', strtolower($componentName)));
-		}
-
-		return NenoCache::getCacheData($cacheId);
+		return $prefix . str_replace(array ('com_'), '', strtolower($componentName));
 	}
 
 	/**
@@ -377,14 +357,7 @@ class NenoHelper
 	 */
 	public static function convertPropertyNameToDatabaseColumnName($propertyName)
 	{
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
-
-		if (NenoCache::getCacheData($cacheId) === null)
-		{
-			NenoCache::setCacheData($cacheId, implode('_', self::splitCamelCaseString($propertyName)));
-		}
-
-		return NenoCache::getCacheData($cacheId);
+		return implode('_', self::splitCamelCaseString($propertyName));
 	}
 
 	/**
@@ -396,22 +369,15 @@ class NenoHelper
 	 */
 	public static function splitCamelCaseString($string)
 	{
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
+		preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $string, $matches);
+		$ret = $matches[0];
 
-		if (NenoCache::getCacheData($cacheId) === null)
+		foreach ($ret as &$match)
 		{
-			preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $string, $matches);
-			$ret = $matches[0];
-
-			foreach ($ret as &$match)
-			{
-				$match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
-			}
-
-			NenoCache::setCacheData($cacheId, $ret);
+			$match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
 		}
 
-		return NenoCache::getCacheData($cacheId);
+		return $ret;
 	}
 
 	/**
@@ -423,22 +389,14 @@ class NenoHelper
 	 */
 	public static function convertDatabaseArrayToClassArray(array $databaseArray)
 	{
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
+		$objectData = array ();
 
-		// If this data hasn't been stored in the cache, let's store it
-		if (NenoCache::getCacheData($cacheId) === null)
+		foreach ($databaseArray as $fieldName => $fieldValue)
 		{
-			$objectData = array ();
-
-			foreach ($databaseArray as $fieldName => $fieldValue)
-			{
-				$objectData[self::convertDatabaseColumnNameToPropertyName($fieldName)] = $fieldValue;
-			}
-
-			NenoCache::setCacheData($cacheId, $objectData);
+			$objectData[self::convertDatabaseColumnNameToPropertyName($fieldName)] = $fieldValue;
 		}
 
-		return NenoCache::getCacheData($cacheId);
+		$objectData;
 	}
 
 	/**
@@ -450,27 +408,20 @@ class NenoHelper
 	 */
 	public static function convertDatabaseColumnNameToPropertyName($columnName)
 	{
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
+		$nameParts = explode('_', $columnName);
+		$firstWord = array_shift($nameParts);
 
-		if (NenoCache::getCacheData($cacheId) === null)
+		// If there are word left, let's capitalize them.
+		if (!empty($nameParts))
 		{
-			$nameParts = explode('_', $columnName);
-			$firstWord = array_shift($nameParts);
-
-			// If there are word left, let's capitalize them.
-			if (!empty($nameParts))
-			{
-				$nameParts = array_merge(array ($firstWord), array_map('ucfirst', $nameParts));
-			}
-			else
-			{
-				$nameParts = array ($firstWord);
-			}
-
-			NenoCache::setCacheData($cacheId, implode('', $nameParts));
+			$nameParts = array_merge(array ($firstWord), array_map('ucfirst', $nameParts));
+		}
+		else
+		{
+			$nameParts = array ($firstWord);
 		}
 
-		return NenoCache::getCacheData($cacheId);
+		return implode('', $nameParts);
 	}
 
 	/**
@@ -517,21 +468,61 @@ class NenoHelper
 	public static function discoverExtensions()
 	{
 		ini_set('max_execution_time', 120);
+
+		// Discover Joomla Core extensions
+		self::createJoomlaContentElementGroup();
+
+		// Discover other extensions
+	}
+
+	/**
+	 * Create a group that groups all the Joomla extensions
+	 *
+	 * @return void
+	 */
+	protected static function createJoomlaContentElementGroup()
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = self::getJoomlaExtensionQuery(true);
+		$db->setQuery($query);
+		$extensions = $db->loadAssocList();
+
+		$group = new NenoContentElementGroup(array ('group_name' => 'Joomla Core'));
+		$group->persist();
+
+		$languageStrings = array ();
+		$tables          = array ();
+
+		foreach ($extensions as $extension)
+		{
+			$extensionName   = self::getExtensionNameByExtensionId($extension['extension_id']);
+			$languageStrings = array_merge(self::getLanguageStrings($extensionName), $languageStrings);
+			$tables          = array_merge(self::getComponentTables($group, $extensionName), $tables);
+		}
+
+		$group->setLanguageStrings($languageStrings);
+		$group->setTables($tables);
+		$group->persist();
+	}
+
+	/**
+	 * Get Joomla extensions query
+	 *
+	 * @param   bool $onlyJoomlaCoreExtensions True if the query only will load Joomla core extensions
+	 *
+	 * @return JDatabaseQuery
+	 */
+	protected static function getJoomlaExtensionQuery($onlyJoomlaCoreExtensions = false)
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$extensions = array_map(array ('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
 
 		$query
-			->select(
-				array (
-					'e.extension_id',
-					'e.name',
-					'e.type',
-					'e.folder',
-					'e.enabled'
-				)
-			)
+			->select('e.*')
 			->from('`#__extensions` AS e')
 			->where(
 				array (
@@ -542,19 +533,12 @@ class NenoHelper
 			)
 			->order('name');
 
-		$db->setQuery($query);
-		$extensions = $db->loadObjectList();
-
-		for ($i = 0; $i < count($extensions); $i++)
+		if ($onlyJoomlaCoreExtensions)
 		{
-			$groupData = array (
-				'groupName'   => $extensions[$i]->name,
-				'extensionId' => $extensions[$i]->extension_id
-			);
-
-			$group = new NenoContentElementGroup($groupData);
-			$group->refresh();
+			$query->where('e.extension_id < 10000');
 		}
+
+		return $query;
 	}
 
 	/**
@@ -573,146 +557,74 @@ class NenoHelper
 	}
 
 	/**
-	 * Get all the tables of the component that matches with the Joomla naming convention.
+	 * Get the name of an extension based on its ID
 	 *
-	 * @param   NenoContentElementGroup $group Component name
+	 * @param   integer $extensionId Extension ID
 	 *
-	 * @return array
+	 * @return string
 	 */
-	public static function getComponentTables(NenoContentElementGroup $group)
-	{
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db     = JFactory::getDbo();
-		$tables = $db->getComponentTables($group->getGroupName());
-
-		$result = array ();
-
-		for ($i = 0; $i < count($tables); $i++)
-		{
-			// Get Table name
-			$tableName = self::unifyTableName($tables[$i]);
-
-			if (!self::isTableAlreadyDiscovered($tableName))
-			{
-				// Create an array with the table information
-				$tableData = array (
-					'tableName'  => $tableName,
-					'primaryKey' => $db->getPrimaryKey($tableName),
-					'translate'  => self::shouldBeTranslated($tableName),
-					'group'      => $group
-				);
-
-				// Create ContentElement object
-				$table = new NenoContentElementTable($tableData);
-
-				// Get all the columns a table contains
-				$fields = $db->getTableColumns($table->getTableName());
-
-				foreach ($fields as $fieldName => $fieldType)
-				{
-					$fieldData = array (
-						'fieldName' => $fieldName,
-						'fieldType' => $fieldType,
-						'translate' => NenoContentElementField::isTranslatableType($fieldType),
-						'table'     => $table
-					);
-
-					$field = new NenoContentElementField($fieldData);
-					$table->addField($field);
-				}
-			}
-			else
-			{
-				$tableData = NenoContentElementTable::load(array ('table_name' => $tableName, 'group_id' => $group->getId()));
-				$table     = new NenoContentElementTable($tableData);
-			}
-
-			$result[] = $table;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Converts a table name to the Joomla table naming convention: #__table_name
-	 *
-	 * @param   string $tableName Table name
-	 *
-	 * @return mixed
-	 */
-	public static function unifyTableName($tableName)
-	{
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
-
-		if (NenoCache::getCacheData($cacheId) === null)
-		{
-			$prefix = JFactory::getDbo()->getPrefix();
-			NenoCache::setCacheData($cacheId, '#__' . str_replace(array ($prefix, '#__'), '', $tableName));
-		}
-
-		return NenoCache::getCacheData($cacheId);
-	}
-
-	/**
-	 * Check if a table has been already discovered.
-	 *
-	 * @param   string $tableName Table name
-	 *
-	 * @return bool
-	 */
-	public static function isTableAlreadyDiscovered($tableName)
+	public static function getExtensionNameByExtensionId($extensionId)
 	{
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query
-			->select('1')
-			->from(NenoContentElementTable::getDbTable())
-			->where('table_name LIKE ' . $db->quote(self::unifyTableName($tableName)));
+			->select('*')
+			->from('#__extensions')
+			->where('extension_id = ' . (int) $extensionId);
 
 		$db->setQuery($query);
-		$result = $db->loadResult();
+		$extensionData = $db->loadAssoc();
 
-		return $result == 1;
+		$extensionName = $extensionData['element'];
+
+		switch ($extensionData['type'])
+		{
+			case 'component':
+				if (!self::startsWith($extensionName, 'com_'))
+				{
+					$extensionName = 'com_' . $extensionName;
+				}
+				break;
+			case 'plugin':
+				if (!self::startsWith($extensionName, 'plg_'))
+				{
+					$extensionName = 'plg_' . $extensionData['folder'] . '_' . $extensionName;
+				}
+				break;
+			case 'module':
+				if (!self::startsWith($extensionName, 'mod_'))
+				{
+					$extensionName = 'mod_' . $extensionName;
+				}
+				break;
+		}
+
+		return $extensionName;
 	}
 
 	/**
-	 * Check if a table should be translated.
+	 * Check if a string starts with a particular string
 	 *
-	 * @param   string $tableName Table name
+	 * @param   string $string String to be checked
+	 * @param   string $prefix Prefix of the string
 	 *
 	 * @return bool
 	 */
-	public static function shouldBeTranslated($tableName)
+	public static function startsWith($string, $prefix)
 	{
-		$tableName = self::unifyTableName($tableName);
-
-		$coreTablesThatShouldNotBeTranslate = array (
-			'/#__users/',
-			'/__messages(.*)/',
-		);
-
-		foreach ($coreTablesThatShouldNotBeTranslate as $queryRegex)
-		{
-			if (preg_match($queryRegex, $tableName))
-			{
-				return false;
-			}
-		}
-
-		return true;
+		return $prefix === "" || strrpos($string, $prefix, -strlen($string)) !== false;
 	}
 
 	/**
 	 * Get all the language strings related to a extension (group).
 	 *
-	 * @param   NenoContentElementGroup $group Group object
+	 * @param   string $extensionName Group object
 	 *
 	 * @return array
 	 */
-	public static function getLanguageStrings(NenoContentElementGroup $group)
+	public static function getLanguageStrings($extensionName)
 	{
-		$extensionName   = self::getExtensionNameByExtensionId($group->getExtensionId());
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
 
 		$languageFile          = NenoLanguageFile::openLanguageFile($defaultLanguage, $extensionName);
@@ -756,73 +668,6 @@ class NenoHelper
 	}
 
 	/**
-	 * Get the name of an extension based on its ID
-	 *
-	 * @param   integer $extensionId Extension ID
-	 *
-	 * @return string
-	 */
-	public static function getExtensionNameByExtensionId($extensionId)
-	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('*')
-			->from('#__extensions')
-			->where('extension_id = ' . (int) $extensionId);
-
-		$db->setQuery($query);
-		$extensionData = $db->loadAssoc();
-
-		$extensionName = $extensionData['element'];
-
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, array ($extensionName));
-
-		if (NenoCache::getCacheData($cacheId) === null)
-		{
-			switch ($extensionData['type'])
-			{
-				case 'component':
-					if (!self::startsWith($extensionName, 'com_'))
-					{
-						$extensionName = 'com_' . $extensionName;
-					}
-					break;
-				case 'plugin':
-					if (!self::startsWith($extensionName, 'plg_'))
-					{
-						$extensionName = 'plg_' . $extensionData['folder'] . '_' . $extensionName;
-					}
-					break;
-				case 'module':
-					if (!self::startsWith($extensionName, 'mod_'))
-					{
-						$extensionName = 'mod_' . $extensionName;
-					}
-					break;
-			}
-
-			NenoCache::setCacheData($cacheId, $extensionName);
-		}
-
-		return NenoCache::getCacheData($cacheId);
-	}
-
-	/**
-	 * Check if a string starts with a particular string
-	 *
-	 * @param   string $string String to be checked
-	 * @param   string $prefix Prefix of the string
-	 *
-	 * @return bool
-	 */
-	public static function startsWith($string, $prefix)
-	{
-		return $prefix === "" || strrpos($string, $prefix, -strlen($string)) !== false;
-	}
-
-	/**
 	 * Checks if a file is a Joomla Core language file
 	 *
 	 * @param   string $languageFileName Language file name
@@ -831,18 +676,11 @@ class NenoHelper
 	 */
 	public static function isJoomlaCoreLanguageFile($languageFileName)
 	{
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
+		$fileParts = explode('.', $languageFileName);
 
-		if (NenoCache::getCacheData($cacheId) === null)
-		{
-			$fileParts = explode('.', $languageFileName);
+		$result = self::removeCoreLanguageFilesFromArray(array ($languageFileName), $fileParts[0]);
 
-			$result = self::removeCoreLanguageFilesFromArray(array ($languageFileName), $fileParts[0]);
-
-			NenoCache::setCacheData($cacheId, empty($result));
-		}
-
-		return NenoCache::getCacheData($cacheId);
+		return empty($result);
 	}
 
 	/**
@@ -911,37 +749,29 @@ class NenoHelper
 	 */
 	public static function getLanguageStringFromLanguageKey($languageKey)
 	{
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, func_get_args());
-
-		if (NenoCache::getCacheData($cacheId) === null)
+		$info = array ();
+		if (empty($languageKey))
 		{
-			$info = array ();
-
-			if (empty($languageKey))
-			{
-				return $info;
-			}
-
-			// Split by : to separate file name and constant
-			list($fileName, $info['constant']) = explode(':', $languageKey);
-
-			// Split the file name by . for additional information
-			$fileParts         = explode('.', $fileName);
-			$info['extension'] = $fileParts[0];
-
-			// Add .sys and other file parts to the name
-			foreach ($fileParts as $k => $filePart)
-			{
-				if ($k > 0 && $filePart != 'ini')
-				{
-					$info['extension'] .= '.' . $filePart;
-				}
-			}
-
-			NenoCache::setCacheData($cacheId, $info);
+			return $info;
 		}
 
-		return NenoCache::getCacheData($cacheId);
+		// Split by : to separate file name and constant
+		list($fileName, $info['constant']) = explode(':', $languageKey);
+
+		// Split the file name by . for additional information
+		$fileParts         = explode('.', $fileName);
+		$info['extension'] = $fileParts[0];
+
+		// Add .sys and other file parts to the name
+		foreach ($fileParts as $k => $filePart)
+		{
+			if ($k > 0 && $filePart != 'ini')
+			{
+				$info['extension'] .= '.' . $filePart;
+			}
+		}
+
+		return $info;
 	}
 
 	/**
@@ -973,6 +803,131 @@ class NenoHelper
 		$result = $db->loadResult();
 
 		return $result == 1;
+	}
+
+	/**
+	 * Get all the tables of the component that matches with the Joomla naming convention.
+	 *
+	 * @param   NenoContentElementGroup $group Component name
+	 *
+	 * @return array
+	 */
+	public static function getComponentTables(NenoContentElementGroup $group, $tablePattern = null)
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db     = JFactory::getDbo();
+		$tables = $db->getComponentTables($tablePattern === null ? $group->getGroupName() : $tablePattern);
+
+		$result = array ();
+
+		for ($i = 0; $i < count($tables); $i++)
+		{
+			// Get Table name
+			$tableName = self::unifyTableName($tables[$i]);
+
+			if (!self::isTableAlreadyDiscovered($tableName))
+			{
+				// Create an array with the table information
+				$tableData = array (
+					'tableName'  => $tableName,
+					'primaryKey' => $db->getPrimaryKey($tableName),
+					'translate'  => self::shouldBeTranslated($tableName),
+					'group'      => $group
+				);
+
+				// Create ContentElement object
+				$table = new NenoContentElementTable($tableData);
+
+				// Get all the columns a table contains
+				$fields = $db->getTableColumns($table->getTableName());
+
+				foreach ($fields as $fieldName => $fieldType)
+				{
+					$fieldData = array (
+						'fieldName' => $fieldName,
+						'fieldType' => $fieldType,
+						'translate' => NenoContentElementField::isTranslatableType($fieldType),
+						'table'     => $table
+					);
+
+					$field = new NenoContentElementField($fieldData);
+					$table->addField($field);
+				}
+			}
+			else
+			{
+				$tableData = NenoContentElementTable::load(array ('table_name' => $tableName, 'group_id' => $group->getId()));
+				$table     = new NenoContentElementTable($tableData);
+			}
+
+			$result[] = $table;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Converts a table name to the Joomla table naming convention: #__table_name
+	 *
+	 * @param   string $tableName Table name
+	 *
+	 * @return mixed
+	 */
+	public static function unifyTableName($tableName)
+	{
+		$prefix = JFactory::getDbo()->getPrefix();
+
+		return '#__' . str_replace(array ($prefix, '#__'), '', $tableName);
+	}
+
+	/**
+	 * Check if a table has been already discovered.
+	 *
+	 * @param   string $tableName Table name
+	 *
+	 * @return bool
+	 */
+	public static function isTableAlreadyDiscovered($tableName)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('1')
+			->from(NenoContentElementTable::getDbTable())
+			->where('table_name LIKE ' . $db->quote(self::unifyTableName($tableName)));
+
+		$db->setQuery($query);
+		$result = $db->loadResult();
+
+		return $result == 1;
+	}
+
+	/**
+	 * Check if a table should be translated.
+	 *
+	 * @param   string $tableName Table name
+	 *
+	 * @return bool
+	 */
+	public static function shouldBeTranslated($tableName)
+	{
+		$tableName = self::unifyTableName($tableName);
+
+		$coreTablesThatShouldNotBeTranslate = array (
+			'/#__users/',
+			'/__messages(.*)/',
+		);
+
+		foreach ($coreTablesThatShouldNotBeTranslate as $queryRegex)
+		{
+			if (preg_match($queryRegex, $tableName))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -1060,11 +1015,11 @@ class NenoHelper
 				$stringsStatus['totalStrings'] = $stringsStatus['translated'] + $stringsStatus['queued'] + $stringsStatus['changed'] + $stringsStatus['notTranslated'];
 			}
 
-			$displayData->stringsStatus = $stringsStatus;
-			$displayData->widthTranslated     = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['translated'] / $stringsStatus['totalStrings']) : (0);
-			$displayData->widthQueued         = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['queued'] / $stringsStatus['totalStrings']) : (0);
-			$displayData->widthChanged        = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['changed'] / $stringsStatus['totalStrings']) : (0);
-			$displayData->widthNotTranslated  = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['notTranslated'] / $stringsStatus['totalStrings']) : (0);
+			$displayData->stringsStatus      = $stringsStatus;
+			$displayData->widthTranslated    = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['translated'] / $stringsStatus['totalStrings']) : (0);
+			$displayData->widthQueued        = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['queued'] / $stringsStatus['totalStrings']) : (0);
+			$displayData->widthChanged       = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['changed'] / $stringsStatus['totalStrings']) : (0);
+			$displayData->widthNotTranslated = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['notTranslated'] / $stringsStatus['totalStrings']) : (0);
 		}
 
 		return JLayoutHelper::render('progressbar', $displayData, JPATH_NENO_LAYOUTS);
@@ -1129,18 +1084,6 @@ class NenoHelper
 	}
 
 	/**
-	 * Escape a string
-	 *
-	 * @param   mixed $value Value
-	 *
-	 * @return string
-	 */
-	private static function escapeString($value)
-	{
-		return JFactory::getDbo()->quote($value);
-	}
-
-	/**
 	 * Return all groups.
 	 *
 	 * @return  string  The component to access.
@@ -1150,7 +1093,7 @@ class NenoHelper
 	public static function getGroups()
 	{
 		// Create a new query object.
-		$db = JFactory::getDbo();
+		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query
@@ -1169,5 +1112,75 @@ class NenoHelper
 		}
 
 		return $groups;
+	}
+
+	/**
+	 * Create a group that groups all the Joomla extensions
+	 *
+	 * @return void
+	 */
+	protected static function discoverNonJoomlaCoreExtensions()
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = self::getJoomlaExtensionQuery(true);
+		$db->setQuery($query);
+		$extensions = $db->loadAssocList();
+
+		$group = new NenoContentElementGroup(array ('group_name' => 'Joomla Core'));
+		$group->persist();
+
+		$languageStrings = array ();
+		$tables          = array ();
+
+		foreach ($extensions as $extension)
+		{
+			$group = new NenoContentElementGroup(array ('group_name' => 'Joomla Core'));
+			$group->persist();
+
+			$extensionName   = self::getExtensionNameByExtensionId($extension['extension_id']);
+			$languageStrings = array_merge(self::getLanguageStrings($extensionName), $languageStrings);
+			$tables          = array_merge(self::getComponentTables($group, $extensionName), $tables);
+		}
+
+		$group->setLanguageStrings($languageStrings);
+		$group->setTables($tables);
+		$group->persist();
+	}
+
+	/**
+	 * Escape a string
+	 *
+	 * @param   mixed $value Value
+	 *
+	 * @return string
+	 */
+	private static function escapeString($value)
+	{
+		return JFactory::getDbo()->quote($value);
+	}
+
+	public function getJoomlaExtensions()
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$extensions = array_map(array ('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
+
+		$query
+			->select('e.extension_id')
+			->from('`#__extensions` AS e')
+			->where(
+				array (
+					'e.type IN (' . implode(',', $extensions) . ')',
+					'e.name NOT LIKE \'com_neno\'',
+					'NOT EXISTS (SELECT 1 FROM ' . $db->quoteName(NenoContentElementGroup::getDbTable()) . ' AS ceg WHERE e.extension_id = ceg.extension_id)'
+				)
+			)
+			->order('name');
+
+		$db->setQuery($query);
+		$extensions = $db->loadArray();
 	}
 }

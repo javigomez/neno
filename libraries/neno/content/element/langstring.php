@@ -324,11 +324,11 @@ class NenoContentElementLangstring extends NenoContentElement
 					$this->translations[$i] = $translation;
 				}
 			}
-
-			$this->setContentElementIntoCache();
 		}
 
 		return $persistResult;
+
+
 	}
 
 	/**
@@ -413,5 +413,20 @@ class NenoContentElementLangstring extends NenoContentElement
 		$this->translations = $translations;
 
 		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return $this
+	 */
+	protected function prepareCacheContent()
+	{
+		/* @var $data $this */
+		$data               = parent::prepareCacheContent();
+		$data->translations = null;
+		$data->group        = null;
+
+		return $data;
 	}
 }

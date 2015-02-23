@@ -70,7 +70,15 @@ class PlgSystemNeno extends JPlugin
 	 */
 	public function onExtensionAfterInstall($installer, $extensionId)
 	{
+		ini_set('max_execution_time', 1000);
 		$group = NenoContentElementGroup::getGroupByExtensionId($extensionId);
+
+		// If the group doesn't exist, let's create it
+		if ($group === null)
+		{
+			$group = NenoContentElementGroup::createNenoContentElementGroupByExtensionId($extensionId);
+		}
+
 		$group->refresh();
 	}
 

@@ -71,18 +71,18 @@ class NenoCache
 	 *
 	 * @return void
 	 */
-	public static function setCacheData($cacheId, $data)
+	public static function setCacheData($cacheId, $data, $group = null)
 	{
 		self::initCache();
 
 		// If the data is null, let's delete that cache file.
 		if ($data === null)
 		{
-			self::$cache->remove($cacheId);
+			self::$cache->remove($cacheId, $group);
 		}
 		else
 		{
-			self::$cache->store(serialize($data), $cacheId);
+			self::$cache->store(serialize($data), $cacheId, $group);
 		}
 	}
 

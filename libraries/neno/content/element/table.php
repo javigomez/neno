@@ -72,7 +72,6 @@ class NenoContentElementTable extends NenoContentElement
 		if ($tableData === null)
 		{
 			$this->getFields();
-			$this->setContentElementIntoCache();
 		}
 		else
 		{
@@ -298,8 +297,6 @@ class NenoContentElementTable extends NenoContentElement
 			{
 				$field->persistTranslations();
 			}
-
-			$this->setContentElementIntoCache();
 		}
 
 		return $result;
@@ -376,5 +373,20 @@ class NenoContentElementTable extends NenoContentElement
 		$this->tableName = $tableName;
 
 		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return $this
+	 */
+	protected function prepareCacheContent()
+	{
+		/* @var $data $this */
+		$data         = parent::prepareCacheContent();
+		$data->fields = null;
+		$data->group  = null;
+
+		return $data;
 	}
 }
