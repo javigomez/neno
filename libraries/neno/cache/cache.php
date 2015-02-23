@@ -59,7 +59,7 @@ class NenoCache
 		// If cache hasn't been initialise, let's do it
 		if (self::$cache === null)
 		{
-			self::$cache = new JCache(array ('caching' => true, 'lifetime' >= PHP_INT_MAX, 'defaultgroup' => 'neno'));
+			self::$cache = new JCache(array ('caching' => true, 'checkTime' >= false, 'defaultgroup' => 'neno'));
 		}
 	}
 
