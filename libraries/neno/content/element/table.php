@@ -72,6 +72,7 @@ class NenoContentElementTable extends NenoContentElement
 		if ($tableData === null)
 		{
 			$this->getFields();
+			//$this->setContentElementIntoCache();
 		}
 		else
 		{
@@ -380,11 +381,19 @@ class NenoContentElementTable extends NenoContentElement
 	 *
 	 * @return $this
 	 */
-	protected function prepareCacheContent()
+	public function prepareCacheContent()
 	{
 		/* @var $data $this */
-		$data         = parent::prepareCacheContent();
-		$data->fields = null;
+		$data   = parent::prepareCacheContent();
+		$fields = array ();
+
+		/* @var $field NenoContentElementField */
+		foreach ($data->getFields() as $field)
+		{
+			$fields[] = $field->prepareCacheContent();
+		}
+
+		$data->fields = $fields;
 		$data->group  = null;
 
 		return $data;

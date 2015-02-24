@@ -219,23 +219,31 @@ class NenoHelper
 	 */
 	public static function getLanguages($published = true)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$cacheId   = NenoCache::getCacheId(__FUNCTION__, func_get_args());
+		$cacheData = NenoCache::getCacheData($cacheId);
 
-		$query
-			->select('*')
-			->from('#__languages')
-			->order('ordering');
-
-		if ($published)
+		if ($cacheData === null)
 		{
-			$query->where('published = 1');
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query
+				->select('*')
+				->from('#__languages')
+				->order('ordering');
+
+			if ($published)
+			{
+				$query->where('published = 1');
+			}
+
+			$db->setQuery($query);
+			$rows      = $db->loadObjectList('lang_code');
+			$cacheData = $rows;
+			NenoCache::setCacheData($cacheId, $cacheData);
 		}
 
-		$db->setQuery($query);
-		$rows = $db->loadObjectList('lang_code');
-
-		return $rows;
+		return $cacheData;
 	}
 
 	/**
@@ -467,6 +475,8 @@ class NenoHelper
 	 */
 	public static function discoverExtensions()
 	{
+		ini_set('max_execution_time', 300);
+
 		// Discover Joomla Core extensions
 		self::createJoomlaContentElementGroup();
 

@@ -420,7 +420,7 @@ class NenoContentElementLangstring extends NenoContentElement
 	 *
 	 * @return $this
 	 */
-	protected function prepareCacheContent()
+	public function prepareCacheContent()
 	{
 		/* @var $data $this */
 		$data               = parent::prepareCacheContent();

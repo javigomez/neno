@@ -254,8 +254,6 @@ abstract class NenoContentElement
 			{
 				$result = $db->updateObject(self::getDbTable(), $data, 'id');
 			}
-
-			$this->setContentElementIntoCache();
 		}
 
 		return $result;
@@ -348,7 +346,7 @@ abstract class NenoContentElement
 	 *
 	 * @return NenoContentElement
 	 */
-	protected function prepareCacheContent()
+	public function prepareCacheContent()
 	{
 		$data = clone $this;
 

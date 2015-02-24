@@ -72,10 +72,10 @@ class NenoContentElementGroup extends NenoContentElement
 
 		$this->tables                            = null;
 		$this->languageStrings                   = null;
-		$this->languageWordsNotTranslated        = 0;
-		$this->languageWordsQueuedToBeTranslated = 0;
-		$this->languageWordsSourceHasChanged     = 0;
-		$this->languageWordsTranslated           = 0;
+		$this->languageWordsNotTranslated        = null;
+		$this->languageWordsQueuedToBeTranslated = null;
+		$this->languageWordsSourceHasChanged     = null;
+		$this->languageWordsTranslated           = null;
 		$this->translationMethodUsed             = array ();
 		$this->extensionId                       = array ();
 
@@ -83,7 +83,6 @@ class NenoContentElementGroup extends NenoContentElement
 		if (!$this->isNew())
 		{
 			$this->getContentElementFromCache();
-			$this->calculateExtraData();
 		}
 	}
 
@@ -100,6 +99,8 @@ class NenoContentElementGroup extends NenoContentElement
 		if ($groupCachedData === null)
 		{
 			$this->getTables();
+			$this->getLanguageStrings();
+			$this->setContentElementIntoCache();
 		}
 		else
 		{
@@ -117,6 +118,21 @@ class NenoContentElementGroup extends NenoContentElement
 			}
 
 			$this->tables = $tables;
+
+			/* @var $table NenoContentElementTable */
+			$languageStrings        = $groupCachedData->getLanguageStrings();
+			$languageStringsCounter = count($languageStrings);
+
+			// Go through all the tables and get their data from cache
+			for ($i = 0; $i < $languageStringsCounter; $i++)
+			{
+				/* @var $table NenoContentElementLangstring */
+				$languageString = $languageStrings[$i];
+				$languageString->getContentElementFromCache();
+				$languageStrings[$i] = $languageString;
+			}
+
+			$this->languageStrings = $languageStrings;
 		}
 	}
 
@@ -134,7 +150,8 @@ class NenoContentElementGroup extends NenoContentElement
 
 			foreach ($tablesInfo as $tableInfo)
 			{
-				$table          = new NenoContentElementTable($tableInfo);
+				$table = new NenoContentElementTable($tableInfo);
+				$table->setGroup($this);
 				$this->tables[] = $table;
 			}
 		}
@@ -158,66 +175,41 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * Calculate language string statistics
+	 * Get language strings
 	 *
-	 * @return void
+	 * @return array
 	 */
-	public function calculateExtraData()
+	public function getLanguageStrings()
 	{
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db              = JFactory::getDbo();
-		$query           = $db->getQuery(true);
-		$workingLanguage = NenoHelper::getWorkingLanguage();
-
-		$query
-			->select(
-				array (
-					'SUM((LENGTH(l.string) - LENGTH(replace(l.string,\' \',\'\'))+1)) AS counter',
-					't.state'
-				)
-			)
-			->from($db->quoteName(NenoContentElementLangstring::getDbTable()) . ' AS l')
-			->leftJoin(
-				$db->quoteName(NenoContentElementTranslation::getDbTable()) .
-				' AS t ON t.content_id = l.id AND t.content_type = ' .
-				$db->quote('lang_string') .
-				' AND t.language LIKE ' . $db->quote($workingLanguage)
-			)
-			->where('l.group_id = ' . $this->getId())
-			->group('t.state');
-
-		$db->setQuery($query);
-		$statistics = $db->loadAssocList('state');
-
-		// Assign the statistics
-		foreach ($statistics as $state => $data)
+		if ($this->languageStrings === null)
 		{
-			switch ($state)
+			$this->languageStrings = array ();
+			$languageStringsInfo   = self::getElementsByParentId(NenoContentElementLangstring::getDbTable(), 'group_id', $this->id, true);
+
+			foreach ($languageStringsInfo as $languageStringInfo)
 			{
-				case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
-					$this->languageWordsNotTranslated = (int) $data['counter'];
-					break;
-				case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
-					$this->languageWordsQueuedToBeTranslated = (int) $data['counter'];
-					break;
-				case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
-					$this->languageWordsSourceHasChanged = (int) $data['counter'];
-					break;
-				case NenoContentElementTranslation::TRANSLATED_STATE:
-					$this->languageWordsTranslated = (int) $data['counter'];
-					break;
+				$languageString = new NenoContentElementLangstring($languageStringInfo);
+				$languageString->setGroup($this);
+				$this->languageStrings[] = $languageString;
 			}
 		}
 
-		$query
-			->clear()
-			->select('DISTINCT translation_method')
-			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
-			->leftJoin($db->quoteName('#__neno_content_element_langstrings', 'l') . ' ON t.content_id = l.id')
-			->where('content_type = ' . $db->quote(NenoContentElementTranslation::LANG_STRING));
+		return $this->languageStrings;
+	}
 
-		$db->setQuery($query);
-		$this->translationMethodUsed = $db->loadArray();
+	/**
+	 * Set language strings
+	 *
+	 * @param   array $languageStrings Language strings
+	 *
+	 * @return $this
+	 */
+	public function setLanguageStrings(array $languageStrings)
+	{
+		$this->languageStrings = $languageStrings;
+		$this->contentHasChanged();
+
+		return $this;
 	}
 
 	/**
@@ -410,6 +402,8 @@ class NenoContentElementGroup extends NenoContentElement
 			}
 		}
 
+		$this->setContentElementIntoCache();
+
 		return $result;
 	}
 
@@ -532,7 +526,81 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function getLanguageWordsNotTranslated()
 	{
+		if ($this->languageWordsNotTranslated === null)
+		{
+			$this->calculateExtraData();
+		}
+
 		return $this->languageWordsNotTranslated;
+	}
+
+	/**
+	 * Calculate language string statistics
+	 *
+	 * @return void
+	 */
+	public function calculateExtraData()
+	{
+		$this->languageWordsNotTranslated        = 0;
+		$this->languageWordsQueuedToBeTranslated = 0;
+		$this->languageWordsSourceHasChanged     = 0;
+		$this->languageWordsTranslated           = 0;
+		$this->translationMethodUsed             = array ();
+
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db              = JFactory::getDbo();
+		$query           = $db->getQuery(true);
+		$workingLanguage = NenoHelper::getWorkingLanguage();
+
+		$query
+			->select(
+				array (
+					'SUM((LENGTH(l.string) - LENGTH(replace(l.string,\' \',\'\'))+1)) AS counter',
+					't.state'
+				)
+			)
+			->from($db->quoteName(NenoContentElementLangstring::getDbTable()) . ' AS l')
+			->leftJoin(
+				$db->quoteName(NenoContentElementTranslation::getDbTable()) .
+				' AS t ON t.content_id = l.id AND t.content_type = ' .
+				$db->quote('lang_string') .
+				' AND t.language LIKE ' . $db->quote($workingLanguage)
+			)
+			->where('l.group_id = ' . $this->getId())
+			->group('t.state');
+
+		$db->setQuery($query);
+		$statistics = $db->loadAssocList('state');
+
+		// Assign the statistics
+		foreach ($statistics as $state => $data)
+		{
+			switch ($state)
+			{
+				case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
+					$this->languageWordsNotTranslated = (int) $data['counter'];
+					break;
+				case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
+					$this->languageWordsQueuedToBeTranslated = (int) $data['counter'];
+					break;
+				case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
+					$this->languageWordsSourceHasChanged = (int) $data['counter'];
+					break;
+				case NenoContentElementTranslation::TRANSLATED_STATE:
+					$this->languageWordsTranslated = (int) $data['counter'];
+					break;
+			}
+		}
+
+		$query
+			->clear()
+			->select('DISTINCT translation_method')
+			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
+			->leftJoin($db->quoteName('#__neno_content_element_langstrings', 'l') . ' ON t.content_id = l.id')
+			->where('content_type = ' . $db->quote(NenoContentElementTranslation::LANG_STRING));
+
+		$db->setQuery($query);
+		$this->translationMethodUsed = $db->loadArray();
 	}
 
 	/**
@@ -542,6 +610,11 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function getLanguageWordsQueuedToBeTranslated()
 	{
+		if ($this->languageWordsQueuedToBeTranslated === null)
+		{
+			$this->calculateExtraData();
+		}
+
 		return $this->languageWordsQueuedToBeTranslated;
 	}
 
@@ -552,6 +625,11 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function getLanguageWordsTranslated()
 	{
+		if ($this->languageWordsTranslated === null)
+		{
+			$this->calculateExtraData();
+		}
+
 		return $this->languageWordsTranslated;
 	}
 
@@ -562,6 +640,11 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function getLanguageWordsSourceHasChanged()
 	{
+		if ($this->languageWordsSourceHasChanged === null)
+		{
+			$this->calculateExtraData();
+		}
+
 		return $this->languageWordsSourceHasChanged;
 	}
 
@@ -572,6 +655,11 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function getTranslationMethodUsed()
 	{
+		if ($this->translationMethodUsed === null)
+		{
+			$this->calculateExtraData();
+		}
+
 		return $this->translationMethodUsed;
 	}
 
@@ -618,43 +706,6 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * Get language strings
-	 *
-	 * @return array
-	 */
-	public function getLanguageStrings()
-	{
-		if ($this->languageStrings === null)
-		{
-			$this->languageStrings = array ();
-			$languageStringsInfo   = self::getElementsByParentId(NenoContentElementLangstring::getDbTable(), 'group_id', $this->id, true);
-
-			foreach ($languageStringsInfo as $languageStringInfo)
-			{
-				$languageString          = new NenoContentElementLangstring($languageStringInfo);
-				$this->languageStrings[] = $languageString;
-			}
-		}
-
-		return $this->languageStrings;
-	}
-
-	/**
-	 * Set language strings
-	 *
-	 * @param   array $languageStrings Language strings
-	 *
-	 * @return $this
-	 */
-	public function setLanguageStrings(array $languageStrings)
-	{
-		$this->languageStrings = $languageStrings;
-		$this->contentHasChanged();
-
-		return $this;
-	}
-
-	/**
 	 * Mark this group as deleted
 	 *
 	 * @return void
@@ -693,14 +744,30 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @return NenoContentElementGroup
+	 * @return $this
 	 */
-	protected function prepareCacheContent()
+	public function prepareCacheContent()
 	{
-		/* @var $data NenoContentElementGroup */
-		$data                  = parent::prepareCacheContent();
-		$data->tables          = null;
-		$data->languageStrings = null;
+		/* @var $data $this */
+		$data = parent::prepareCacheContent();
+
+		$tables          = array ();
+		$languageStrings = array ();
+
+		/* @var $table NenoContentElementTable */
+		foreach ($data->getTables() as $table)
+		{
+			$tables[] = $table->prepareCacheContent();
+		}
+
+		/* @var $languageString NenoContentElementLangstring */
+		foreach ($data->getLanguageStrings() as $languageString)
+		{
+			$languageStrings [] = $languageString->prepareCacheContent();
+		}
+
+		$data->tables          = $tables;
+		$data->languageStrings = $languageStrings;
 
 		return $data;
 	}
@@ -724,4 +791,6 @@ class NenoContentElementGroup extends NenoContentElement
 		$db->setQuery($query);
 		$this->extensionId = $db->loadArray();
 	}
+
+
 }

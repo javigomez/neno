@@ -510,21 +510,32 @@ class NenoContentElementTranslation extends NenoContentElement
 		{
 			if ($isNew && $this->contentType == self::DB_STRING)
 			{
-				$db = JFactory::getDbo();
-
-				// Loop through the data
-				foreach ($this->sourceElementData as $sourceData)
+				if (!empty($this->sourceElementData))
 				{
-					/* @var $field NenoContentElementField */
-					$field      = $sourceData['field'];
-					$fieldValue = $sourceData['value'];
+					$db    = JFactory::getDbo();
+					$query = $db->getQuery(true);
+					$query
+						->insert('#__neno_content_element_fields_x_translations')
+						->columns(
+							array (
+								'field_id',
+								'translation_id',
+								'value'
+							)
+						);
 
-					$data                 = new stdClass;
-					$data->field_id       = $field->getId();
-					$data->translation_id = $this->getId();
-					$data->value          = $fieldValue;
+					// Loop through the data
+					foreach ($this->sourceElementData as $sourceData)
+					{
+						/* @var $field NenoContentElementField */
+						$field      = $sourceData['field'];
+						$fieldValue = $sourceData['value'];
 
-					$db->insertObject('#__neno_content_element_fields_x_translations', $data);
+						$query->values($field->getId() . ',' . $this->getId() . ',' . $db->quote($fieldValue));
+					}
+
+					$db->setQuery($query);
+					$db->execute();
 				}
 			}
 		}
@@ -617,7 +628,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	 *
 	 * @return $this
 	 */
-	protected function prepareCacheContent()
+	public function prepareCacheContent()
 	{
 		/* @var $data $this */
 		$data          = parent::prepareCacheContent();

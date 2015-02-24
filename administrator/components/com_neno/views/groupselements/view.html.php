@@ -58,10 +58,9 @@ class NenoViewGroupsElements extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->state           = $this->get('State');
-		$this->items           = $this->get('Items');
-		$this->pagination      = $this->get('Pagination');
-		$this->extensionsSaved = $this->get('ExtensionsMarkedAsTranslatable');
+		$this->state      = $this->get('State');
+		$this->items      = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -107,7 +106,7 @@ class NenoViewGroupsElements extends JViewLegacy
 	 */
 	protected function getSortFields()
 	{
-		return array(
+		return array (
 			'a.id'           => JText::_('JGRID_HEADING_ID'),
 			'a.string'       => JText::_('COM_NENO_SOURCES_STRING'),
 			'a.constant'     => JText::_('COM_NENO_SOURCES_CONSTANT'),
