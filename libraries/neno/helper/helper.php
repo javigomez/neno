@@ -471,6 +471,7 @@ class NenoHelper
 		self::createJoomlaContentElementGroup();
 
 		// Discover other extensions
+		self::discoverNonJoomlaCoreExtensions();
 	}
 
 	/**
@@ -486,23 +487,26 @@ class NenoHelper
 		$db->setQuery($query);
 		$extensions = $db->loadAssocList();
 
-		$group = new NenoContentElementGroup(array ('group_name' => 'Joomla Core'));
-		$group->persist();
-
-		$languageStrings = array ();
-		$tables          = array ();
-
-		foreach ($extensions as $extension)
+		if (!empty($extensions))
 		{
-			$extensionName   = self::getExtensionNameByExtensionId($extension['extension_id']);
-			$languageStrings = array_merge(self::getLanguageStrings($extensionName), $languageStrings);
-			$tables          = array_merge(self::getComponentTables($group, $extensionName), $tables);
-			$group->addExtensionId($extension['extension_id']);
-		}
+			$group = new NenoContentElementGroup(array ('group_name' => 'Joomla Core'));
+			$group->persist();
 
-		$group->setLanguageStrings($languageStrings);
-		$group->setTables($tables);
-		$group->persist();
+			$languageStrings = array ();
+			$tables          = array ();
+
+			foreach ($extensions as $extension)
+			{
+				$extensionName   = self::getExtensionNameByExtensionId($extension['extension_id']);
+				$languageStrings = array_merge(self::getLanguageStrings($extensionName), $languageStrings);
+				$tables          = array_merge(self::getComponentTables($group, $extensionName), $tables);
+				$group->addExtensionId($extension['extension_id']);
+			}
+
+			$group->setLanguageStrings($languageStrings);
+			$group->setTables($tables);
+			$group->persist();
+		}
 	}
 
 	/**
@@ -930,6 +934,39 @@ class NenoHelper
 	}
 
 	/**
+	 * Create a group that groups all the Joomla extensions
+	 *
+	 * @return void
+	 */
+	protected static function discoverNonJoomlaCoreExtensions()
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = self::getJoomlaExtensionQuery();
+		$db->setQuery($query);
+		$extensions = $db->loadAssocList();
+
+		foreach ($extensions as $extension)
+		{
+			$group           = new NenoContentElementGroup(array ('group_name' => $extension['name']));
+			$extensionName   = self::getExtensionNameByExtensionId($extension['extension_id']);
+			$languageStrings = self::getLanguageStrings($extensionName);
+			$tables          = self::getComponentTables($group, $extensionName);
+
+			// If the group contains tables and/or language strings, let's save it
+			if (!empty($tables) || !empty($languageStrings))
+			{
+				$group
+					->addExtensionId($extension['extension_id'])
+					->setLanguageStrings($languageStrings)
+					->setTables($tables)
+					->persist();
+			}
+
+		}
+	}
+
+	/**
 	 * Read content element file(s) and create the content element hierarchy needed.
 	 *
 	 * @param   string $extensionName
@@ -1111,40 +1148,6 @@ class NenoHelper
 		}
 
 		return $groups;
-	}
-
-	/**
-	 * Create a group that groups all the Joomla extensions
-	 *
-	 * @return void
-	 */
-	protected static function discoverNonJoomlaCoreExtensions()
-	{
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = self::getJoomlaExtensionQuery(true);
-		$db->setQuery($query);
-		$extensions = $db->loadAssocList();
-
-		$group = new NenoContentElementGroup(array ('group_name' => 'Joomla Core'));
-		$group->persist();
-
-		$languageStrings = array ();
-		$tables          = array ();
-
-		foreach ($extensions as $extension)
-		{
-			$group = new NenoContentElementGroup(array ('group_name' => 'Joomla Core'));
-			$group->persist();
-
-			$extensionName   = self::getExtensionNameByExtensionId($extension['extension_id']);
-			$languageStrings = array_merge(self::getLanguageStrings($extensionName), $languageStrings);
-			$tables          = array_merge(self::getComponentTables($group, $extensionName), $tables);
-		}
-
-		$group->setLanguageStrings($languageStrings);
-		$group->setTables($tables);
-		$group->persist();
 	}
 
 	/**

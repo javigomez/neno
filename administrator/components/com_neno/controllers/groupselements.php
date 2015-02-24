@@ -31,7 +31,7 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		NenoHelper::discoverExtensions();
 
 		$this
-			->setRedirect('index.php?option=com_neno&view=extensions')
+			->setRedirect('index.php?option=com_neno&view=groupselements')
 			->redirect();
 	}
 
@@ -77,7 +77,7 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		}
 
 		$this
-			->setRedirect('index.php?option=com_neno&view=extensions')
+			->setRedirect('index.php?option=com_neno&view=groupselements')
 			->redirect();
 	}
 
