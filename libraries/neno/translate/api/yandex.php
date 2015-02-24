@@ -22,9 +22,13 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	protected $methodName;
 
 	/**
-	 * Constructor
+	 * {@inheritdoc}
+	 *
+	 * @param JRegistry      $options
+	 * @param JHttpTransport $transport
+	 *
 	 */
-	public function __construct()
+	public function __construct(JRegistry $options = null, JHttpTransport $transport = null)
 	{
 		parent::__construct();
 
