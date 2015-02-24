@@ -11,6 +11,28 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups` (
 )
   ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `#__neno_content_element_groups_x_extensions`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups_x_extensions` (
+  `group_id` int(11) NOT NULL,
+  `extension_id` int(11) NOT NULL,
+  PRIMARY KEY (`group_id`,`extension_id`),
+  UNIQUE KEY `extension_id` (`extension_id`),
+  INDEX `fk_extension_idx` (`extension_id`),
+  INDEX `fk_group_idx` (`group_id`),
+  CONSTRAINT `fk_group_idx1`
+  FOREIGN KEY (`group_id`)
+  REFERENCES `#__neno_content_element_groups` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_extension_idx1`
+  FOREIGN KEY (`extension_id`)
+  REFERENCES `#__extensions` (`extension_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `#__neno_content_element_langfile`

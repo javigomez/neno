@@ -22,11 +22,6 @@ class NenoContentElementGroup extends NenoContentElement
 	protected $groupName;
 
 	/**
-	 * @var integer|null
-	 */
-	protected $extensionId;
-
-	/**
 	 * @var array
 	 */
 	protected $tables;
@@ -62,6 +57,11 @@ class NenoContentElementGroup extends NenoContentElement
 	private $translationMethodUsed;
 
 	/**
+	 * @var array
+	 */
+	private $extensionId;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data Group data
@@ -77,6 +77,7 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->languageWordsSourceHasChanged     = 0;
 		$this->languageWordsTranslated           = 0;
 		$this->translationMethodUsed             = array ();
+		$this->extensionId                       = array ();
 
 		// Only search for the statistics for existing groups
 		if (!$this->isNew())
@@ -361,6 +362,33 @@ class NenoContentElementGroup extends NenoContentElement
 		// Check if the saving process has been completed successfully
 		if ($result)
 		{
+			if (!empty($this->extensionId))
+			{
+				/* @var $db NenoDatabaseDriverMysqlx */
+				$db = JFactory::getDbo();
+
+				/* @var $query NenoDatabaseQueryMysqli */
+				$query = $db->getQuery(true);
+
+				$query
+					->replace('#__neno_content_element_groups_x_extensions')
+					->columns(
+						array (
+							'group_id',
+							'extension_id'
+						)
+					);
+
+				foreach ($this->extensionId as $extensionId)
+				{
+					$query->values($this->getId() . ',' . $extensionId);
+				}
+
+				$db->setQuery($query);
+				$db->execute();
+
+			}
+
 			if (!empty($this->languageStrings))
 			{
 				/* @var $languageString NenoContentElementLangstring */
@@ -639,6 +667,30 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Get Extensions ids
+	 *
+	 * @return array
+	 */
+	public function getExtensionsId()
+	{
+		return $this->extensionId;
+	}
+
+	/**
+	 * Add an extension id to the list
+	 *
+	 * @param   integer $extensionId Extension Id
+	 *
+	 * @return $this
+	 */
+	public function addExtensionId($extensionId)
+	{
+		$this->extensionId[] = (int) $extensionId;
+
+		return $this;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @return NenoContentElementGroup
@@ -651,5 +703,25 @@ class NenoContentElementGroup extends NenoContentElement
 		$data->languageStrings = null;
 
 		return $data;
+	}
+
+	/**
+	 * Load extensions id
+	 *
+	 * @return void
+	 */
+	protected function loadExtensionsIds()
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('extension_id')
+			->from('#__neno_content_element_groups_x_extensions')
+			->where('group_id = ' . $this->getId());
+
+		$db->setQuery($query);
+		$this->extensionId = $db->loadArray();
 	}
 }

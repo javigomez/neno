@@ -467,8 +467,6 @@ class NenoHelper
 	 */
 	public static function discoverExtensions()
 	{
-		ini_set('max_execution_time', 120);
-
 		// Discover Joomla Core extensions
 		self::createJoomlaContentElementGroup();
 
@@ -499,6 +497,7 @@ class NenoHelper
 			$extensionName   = self::getExtensionNameByExtensionId($extension['extension_id']);
 			$languageStrings = array_merge(self::getLanguageStrings($extensionName), $languageStrings);
 			$tables          = array_merge(self::getComponentTables($group, $extensionName), $tables);
+			$group->addExtensionId($extension['extension_id']);
 		}
 
 		$group->setLanguageStrings($languageStrings);
@@ -528,7 +527,7 @@ class NenoHelper
 				array (
 					'e.type IN (' . implode(',', $extensions) . ')',
 					'e.name NOT LIKE \'com_neno\'',
-					'NOT EXISTS (SELECT 1 FROM ' . $db->quoteName(NenoContentElementGroup::getDbTable()) . ' AS ceg WHERE e.extension_id = ceg.extension_id)'
+					'NOT EXISTS (SELECT 1 FROM #__neno_content_element_groups_x_extensions AS ceg WHERE e.extension_id = ceg.extension_id)'
 				)
 			)
 			->order('name');
