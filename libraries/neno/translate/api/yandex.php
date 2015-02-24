@@ -22,14 +22,21 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	protected $methodName;
 
 	/**
-	 * Method to get api method name
+	 * {@inheritdoc}
 	 *
-	 * @return string
+	 * @param JRegistry      $options
+	 * @param JHttpTransport $transport
+	 *
 	 */
-	protected function getMethodName()
+	public function __construct(JRegistry $options = null, JHttpTransport $transport = null)
 	{
+		parent::__construct();
+
+		// Method name for the api
 		$this->methodName = 'Yandex Translate';
-		return $this->methodName;
+
+		// Get the api key
+		$this->apiKey = $this->getApiKey($this->methodName);
 	}
 
 	/**
@@ -43,12 +50,6 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	 */
 	public function translate($text, $source = "en-US", $target = "fr-FR")
 	{
-		// Get the method name for api
-		$this->methodName = $this->getMethodName();
-
-		// Get the api key configured by user
-		$this->apiKey = $this->getApiKey($this->methodName);
-
 		// Convert from JISO to ISO codes
 		$target = $this->convertFromJisoToIso($target);
 
