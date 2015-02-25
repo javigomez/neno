@@ -109,7 +109,7 @@ class NenoJob extends NenoObject
 				'fromLanguage'      => JFactory::getLanguage()->getDefault(),
 				'toLanguage'        => $toLanguage,
 				'state'             => self::JOB_STATE_GENERATED,
-				'createdDate'       => new DateTime,
+				'createdTime'       => new DateTime,
 				'translationMethod' => $translationMethod
 			);
 
@@ -197,11 +197,14 @@ class NenoJob extends NenoObject
 		$config  = JFactory::getConfig();
 		$tmpPath = $config->get('tmp_path');
 
-		file_put_contents($tmpPath . '/' . $filename . 'json', json_encode($jobData));
+		$fileData = array (
+			'name' => $filename . '.json',
+			'data' => json_encode($jobData)
+		);
 
 		/* @var $zipArchiveAdapter JArchiveZip */
 		$zipArchiveAdapter = JArchive::getAdapter('zip');
-		$result            = $zipArchiveAdapter->create($tmpPath . '/' . $filename . 'json.zip', $tmpPath . '/' . $filename . 'json');
+		$result            = $zipArchiveAdapter->create($tmpPath . '/' . $filename . '.json.zip', array ($fileData));
 
 		// If something happens in the process of creating the job file, let's throw an exception
 		if (!$result)
