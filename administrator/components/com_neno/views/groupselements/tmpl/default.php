@@ -129,58 +129,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 <script type="text/javascript">
 
-	function toggleCollapseRow (row) {
-		var rowType = '';
-		if (row.hasClass('row-group')) {
-			rowType = 'group';
-		} else if (row.hasClass('row-table')) {
-			rowType = 'table';
-		}
-		var nextRow = row.next('tr');
-		while (nextRow.length!=0 && !nextRow.hasClass('row-'+rowType)) {
-			if (nextRow.attr('data-level') == parseInt(row.attr('data-level')) + 1) {
-				nextRow.toggleClass('hide');
-				if (nextRow.hasClass('row-table') && row.hasClass('expanded') && nextRow.hasClass('expanded')) {
-					toggleCollapseRow(nextRow);
-				}
-			}
-			nextRow = nextRow.next('tr');
-		}
-		if (row.attr('data-level') != 3) {
-			row.toggleClass('collapsed');
-			row.toggleClass('expanded');
-			row.children('td.cell-expand').first().children('span').first().toggleClass('icon-arrow-right-3');
-			row.children('td.cell-expand').first().children('span').first().toggleClass('icon-arrow-down-3');
-		}
-	}
-
-	function checkDescendant (check) {
-		var state = check.prop('checked'),
-			row = jQuery(check).closest('tr'),
-		    nextRow = row.next('tr');
-		while (nextRow.length!=0 && nextRow.attr('data-level') > row.attr('data-level') ) {
-			nextRow.find('input[type=checkbox]').prop('checked', state);
-			nextRow = nextRow.next('tr');
-		}
-	}
-
-	function uncheckAncestor (check) {
-		// Use function only when checkbox is not checked
-		if (jQuery(check).prop('checked')) {
-			return;
-		}
-		var row = jQuery(check).closest('tr'),
-			targetLevel = row.attr('data-level') - 1,
-			prevRow = row.prev('tr');
-		while (prevRow.length!=0) {
-			if (prevRow.attr('data-level') == targetLevel) {
-				prevRow.find('input[type=checkbox]').prop('checked', false);
-				targetLevel--;
-			}
-			prevRow = prevRow.prev('tr');
-		}
-	}
-
 	function toggleStringStateAjax (radio) {
 		var fieldset = radio.parent();
 		var status = radio.attr('value');
@@ -208,43 +156,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	}
 
 	jQuery(document).ready(function () {
-		/*jQuery('#table-groups-elements input[type="checkbox"]').change(function(e) {
-			var checked = jQuery(this).prop("checked"),
-				row = jQuery(check).closest('tr'),
-				siblings = row.siblings();
 
-			row.find('input[type="checkbox"]').prop({
-				indeterminate: false,
-				checked: checked
-			});
-			function checkRows(el) {
-				var parent = jQuery('tr[data-id=' + el.attr('data-parent') ),
-					all = true,
-					siblings = jQuery('tr[data-parent=' + el.attr('data-parent') );
-
-				siblings.each(function() {
-					return all = ($(this).find('input[type="checkbox"]').prop("checked") === checked);
-				});
-
-				if (all && checked) {
-					parent.children('input[type="checkbox"]').prop({
-						indeterminate: false,
-						checked: checked
-					});
-					checkRows(parent);
-				} else if (all && !checked) {
-					parent.children('input[type="checkbox"]').prop("checked", checked);
-					parent.children('input[type="checkbox"]').prop("indeterminate", (parent.find('input[type="checkbox"]:checked').length > 0));
-					checkRows(parent);
-				} else {
-					el.parents("li").children('input[type="checkbox"]').prop({
-						indeterminate: true,
-						checked: false
-					});
-				}
-			}
-			checkRows(row);
-		});*/
 		jQuery('#table-groups-elements tr.collapsed .cell-expand').click(function (e) {
 			var row = jQuery(this).parent();
 			toggleCollapseRow (row);
@@ -283,11 +195,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 				<th class="table-groups-elements-label translation-methods"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_METHODS'); ?></th>
 				<th class="table-groups-elements-blank"></th>
 			</tr>
-			<?php
-			//Kint::dump($this->items[count($this->items)-1]);
-			//var_dump($this->items[1]->getLanguageStrings());
-			//var_dump($this->items[1]);
-			?>
 			<?php /* @var $group NenoContentElementGroup */ ?>
 			<?php foreach ($this->items as $group):
 

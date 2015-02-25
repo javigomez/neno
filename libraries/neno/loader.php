@@ -42,5 +42,8 @@ class NenoLoader
 
 		// Registering SQL parser Namespace
 		JLoader::registerNamespace('PHPSQL', JPATH_NENO . '/database/sqlparser');
+
+		$document = JFactory::getDocument();
+		$document->addScript(JUri::root() . '/media/neno/js/common.js');
 	}
 }
