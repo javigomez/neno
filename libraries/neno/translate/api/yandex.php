@@ -47,7 +47,7 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	 *
 	 * @return string
 	 */
-	public function translate($text, $source = "en-US", $target = "fr-FR")
+	public function translate($text, $source = 'en-US', $target = 'fr-FR')
 	{
 		// Convert from JISO to ISO codes
 		$target = $this->convertFromJisoToIso($target);
@@ -105,20 +105,20 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	public function convertFromJisoToIso($jiso)
 	{
 		// Split the language code parts using hyphen
-		$jisoParts = (explode("-", $jiso));
-		$iso2Tag   = strtolower($jisoParts[0]);
+		$jisoParts = (explode('-', $jiso));
+		$isoTag   = strtolower($jisoParts[0]);
 
-		switch ($iso2Tag)
+		switch ($isoTag)
 		{
-			case "nb":
-				$iso2 = "no";
+			case 'nb':
+				$iso = 'no';
 				break;
 
 			default:
-				$iso2 = $iso2Tag;
+				$iso = $isoTag;
 				break;
 		}
 
-		return $iso2;
+		return $iso;
 	}
 }

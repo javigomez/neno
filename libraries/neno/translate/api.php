@@ -179,17 +179,17 @@ abstract class NenoTranslateApi extends JHttp
 
 		switch ($methodName)
 		{
-			case "Google Translate":
+			case 'Google Translate':
 			{
-				$paramName  = "googleApiKey";
-				$defaultKey = "AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8";
+				$paramName  = 'googleApiKey';
+				$defaultKey = 'AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8';
 			}
 				break;
 
-			case "Yandex Translate":
+			case 'Yandex Translate':
 			{
-				$paramName  = "yandexApiKey";
-				$defaultKey = "trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0";
+				$paramName  = 'yandexApiKey';
+				$defaultKey = 'trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0';
 			}
 
 				break;
@@ -199,7 +199,7 @@ abstract class NenoTranslateApi extends JHttp
 		/** @noinspection PhpUndefinedMethodInspection */
 		$this->apiKey = JComponentHelper::getParams('com_neno')->get($paramName);
 
-		if ($this->apiKey == "")
+		if ($this->apiKey == '')
 		{
 			// Use default key if not provided
 			$this->apiKey = $defaultKey;
