@@ -76,7 +76,7 @@ abstract class NenoTranslateApi extends JHttp
 		 foreach($langArray as $langPair)
 		 {
 			 // Split the language code parts using hypen
-			 $isoParts = (explode("-",$langPair));
+			 $isoParts = (explode('-',$langPair));
 
 			 // Check if row already exists
 			 $query = $db->getQuery(true);
@@ -127,17 +127,17 @@ abstract class NenoTranslateApi extends JHttp
 
 		switch ($methodName)
 		{
-			case "Google Translate":
+			case 'Google Translate':
 			{
-				$paramName  = "googleApiKey";
-				$defaultKey = "AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8";
+				$paramName  = 'googleApiKey';
+				$defaultKey = 'AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8';
 			}
 				break;
 
-			case "Yandex Translate":
+			case 'Yandex Translate':
 			{
-				$paramName  = "yandexApiKey";
-				$defaultKey = "trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0";
+				$paramName  = 'yandexApiKey';
+				$defaultKey = 'trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0';
 			}
 
 				break;
@@ -147,7 +147,7 @@ abstract class NenoTranslateApi extends JHttp
 		/** @noinspection PhpUndefinedMethodInspection */
 		$this->apiKey = JComponentHelper::getParams('com_neno')->get($paramName);
 
-		if ($this->apiKey == "")
+		if ($this->apiKey == '')
 		{
 			// Use default key if not provided
 			$this->apiKey = $defaultKey;
@@ -159,7 +159,7 @@ abstract class NenoTranslateApi extends JHttp
 	/**
 	 * Method to check if language pair is available or not in translation api
 	 *
-	 * @param   string $isoPair	ISO2 language code pair
+	 * @param   string $isoPair	ISO language code pair
 	 * @param   string $methodName api method name to check
 	 *
 	 * @return boolean
@@ -167,7 +167,7 @@ abstract class NenoTranslateApi extends JHttp
 	public function isTranslationAvailable($isoPair,$methodName)
 	{
 		// Split the language pair using comma
-		$isoParts = (explode(",", $isoPair));
+		$isoParts = (explode(',', $isoPair));
 
 		$available = 1;
 
@@ -195,7 +195,6 @@ abstract class NenoTranslateApi extends JHttp
 
 		return $available;
 	}
-
 
 	/**
 	 * Method to get supported language pairs for translation from our server
@@ -226,4 +225,5 @@ abstract class NenoTranslateApi extends JHttp
 
 		return $text;*/
 	}
+
 }
