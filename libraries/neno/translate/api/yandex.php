@@ -24,9 +24,8 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param JRegistry      $options
-	 * @param JHttpTransport $transport
-	 *
+	 * @param   JRegistry      $options   JHttp client options
+	 * @param   JHttpTransport $transport JHttp client transport
 	 */
 	public function __construct(JRegistry $options = null, JHttpTransport $transport = null)
 	{
@@ -54,8 +53,8 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		$target = $this->convertFromJisoToIso($target);
 
 		// Language parameter for url
-		$source = $this->convertFromJisoToIso($source);
-		$lang   = $source . "-" . $target;
+		$source  = $this->convertFromJisoToIso($source);
+		$lang    = $source . "-" . $target;
 		$isoPair = $source . "," . $target;
 
 		// Check availability of language pair for translation
@@ -94,7 +93,6 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		}
 
 		return $text;
-
 	}
 
 	/**
@@ -123,5 +121,4 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 
 		return $iso2;
 	}
-
 }

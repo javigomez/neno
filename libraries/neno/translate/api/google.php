@@ -24,9 +24,8 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param JRegistry      $options
-	 * @param JHttpTransport $transport
-	 *
+	 * @param   JRegistry      $options   JHttp options
+	 * @param   JHttpTransport $transport JHttp Transport
 	 */
 	public function __construct(JRegistry $options = null, JHttpTransport $transport = null)
 	{
@@ -64,7 +63,8 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 			return null;
 		}
 
-		$url = 'https://www.googleapis.com/language/translate/v2?key=' . $this->apiKey . '&q=' . rawurlencode($text) . '&source=' . $source . '&target=' . $target;
+		$url = 'https://www.googleapis.com/language/translate/v2?key=' . $this->apiKey
+			. '&q=' . rawurlencode($text) . '&source=' . $source . '&target=' . $target;
 
 		// Invoke the GET request.
 		$response = $this->get($url);
@@ -119,5 +119,4 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 
 		return $iso2;
 	}
-
 }

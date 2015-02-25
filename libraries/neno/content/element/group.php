@@ -57,11 +57,6 @@ class NenoContentElementGroup extends NenoContentElement
 	private $translationMethodUsed;
 
 	/**
-	 * @var array
-	 */
-	private $extensionId;
-
-	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data Group data
@@ -126,7 +121,7 @@ class NenoContentElementGroup extends NenoContentElement
 			// Go through all the tables and get their data from cache
 			for ($i = 0; $i < $languageStringsCounter; $i++)
 			{
-				/* @var $table NenoContentElementLangstring */
+				/* @var $languageString NenoContentElementLangstring */
 				$languageString = $languageStrings[$i];
 				$languageString->getContentElementFromCache();
 				$languageStrings[$i] = $languageString;
@@ -210,26 +205,6 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->contentHasChanged();
 
 		return $this;
-	}
-
-	/**
-	 * Get a group from an extension Id
-	 *
-	 * @param   integer $extensionId Extension Id
-	 *
-	 * @return NenoContentElementGroup|null
-	 */
-	public static function getGroupByExtensionId($extensionId)
-	{
-		$groupsData = self::load(array ('extension_id' => $extensionId));
-		$group      = null;
-
-		if (!empty($groupsData))
-		{
-			$group = self::getGroup($groupsData->id);
-		}
-
-		return $group;
 	}
 
 	/**
@@ -354,33 +329,6 @@ class NenoContentElementGroup extends NenoContentElement
 		// Check if the saving process has been completed successfully
 		if ($result)
 		{
-			if (!empty($this->extensionId))
-			{
-				/* @var $db NenoDatabaseDriverMysqlx */
-				$db = JFactory::getDbo();
-
-				/* @var $query NenoDatabaseQueryMysqli */
-				$query = $db->getQuery(true);
-
-				$query
-					->replace('#__neno_content_element_groups_x_extensions')
-					->columns(
-						array (
-							'group_id',
-							'extension_id'
-						)
-					);
-
-				foreach ($this->extensionId as $extensionId)
-				{
-					$query->values($this->getId() . ',' . $extensionId);
-				}
-
-				$db->setQuery($query);
-				$db->execute();
-
-			}
-
 			if (!empty($this->languageStrings))
 			{
 				/* @var $languageString NenoContentElementLangstring */
@@ -410,7 +358,7 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * Create a NenoContentElementGroup based on the extension Id
 	 *
-	 * @param integer $extensionId Extension Id
+	 * @param   integer $extensionId Extension Id
 	 *
 	 * @return NenoContentElementGroup
 	 */
@@ -706,42 +654,6 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * Mark this group as deleted
-	 *
-	 * @return void
-	 */
-	public function markAsDeleted()
-	{
-		$this->extensionId = -1;
-		$this->contentHasChanged();
-		$this->persist();
-	}
-
-	/**
-	 * Get Extensions ids
-	 *
-	 * @return array
-	 */
-	public function getExtensionsId()
-	{
-		return $this->extensionId;
-	}
-
-	/**
-	 * Add an extension id to the list
-	 *
-	 * @param   integer $extensionId Extension Id
-	 *
-	 * @return $this
-	 */
-	public function addExtensionId($extensionId)
-	{
-		$this->extensionId[] = (int) $extensionId;
-
-		return $this;
-	}
-
-	/**
 	 * {@inheritdoc}
 	 *
 	 * @return $this
@@ -771,26 +683,4 @@ class NenoContentElementGroup extends NenoContentElement
 
 		return $data;
 	}
-
-	/**
-	 * Load extensions id
-	 *
-	 * @return void
-	 */
-	protected function loadExtensionsIds()
-	{
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('extension_id')
-			->from('#__neno_content_element_groups_x_extensions')
-			->where('group_id = ' . $this->getId());
-
-		$db->setQuery($query);
-		$this->extensionId = $db->loadArray();
-	}
-
-
 }

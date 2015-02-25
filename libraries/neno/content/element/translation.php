@@ -136,7 +136,6 @@ class NenoContentElementTranslation extends NenoContentElement
 
 		$data = new JObject($data);
 
-
 		if ($data->get('content') !== null)
 		{
 			$this->element = $data->get('content');
@@ -157,7 +156,6 @@ class NenoContentElementTranslation extends NenoContentElement
 				$this->element      = new NenoContentElementField($contentElementData);
 			}
 		}
-
 
 		$this->wordsCounter      = str_word_count($this->getString());
 		$this->charactersCounter = strlen($this->getString());
@@ -543,11 +541,15 @@ class NenoContentElementTranslation extends NenoContentElement
 		return $persistResult;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return null
+	 */
 	public function setContentElementIntoCache()
 	{
 		return null;
 	}
-
 
 	/**
 	 * Get all the data related to the source element

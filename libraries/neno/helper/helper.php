@@ -404,7 +404,7 @@ class NenoHelper
 			$objectData[self::convertDatabaseColumnNameToPropertyName($fieldName)] = $fieldValue;
 		}
 
-		$objectData;
+		return $objectData;
 	}
 
 	/**
@@ -510,7 +510,6 @@ class NenoHelper
 				$extensionName   = self::getExtensionNameByExtensionId($extension['extension_id']);
 				$languageStrings = array_merge(self::getLanguageStrings($extensionName), $languageStrings);
 				$tables          = array_merge(self::getComponentTables($group, $extensionName), $tables);
-				$group->addExtensionId($extension['extension_id']);
 			}
 
 			$group->setLanguageStrings($languageStrings);
@@ -738,7 +737,11 @@ class NenoHelper
 		$extensions = array_map(array ('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
 
 		$query
-			->select('CONCAT(' . $db->quote($language . '.') . ',IF(type = \'plugin\' OR type = \'template\', IF(type = \'plugin\', CONCAT(\'plg_\',folder,\'_\'), IF(type = \'template\', \'tpl_\',\'\')),\'\'),element,\'.ini\') as extension_name')
+			->select(
+				'CONCAT(' . $db->quote($language . '.') .
+				',IF(type = \'plugin\' OR type = \'template\',
+				IF(type = \'plugin\', CONCAT(\'plg_\',folder,\'_\'), IF(type = \'template\', \'tpl_\',\'\')),\'\'),element,\'.ini\') as extension_name'
+			)
 			->from('#__extensions')
 			->where(
 				array (
@@ -763,6 +766,7 @@ class NenoHelper
 	public static function getLanguageStringFromLanguageKey($languageKey)
 	{
 		$info = array ();
+
 		if (empty($languageKey))
 		{
 			return $info;
@@ -821,7 +825,8 @@ class NenoHelper
 	/**
 	 * Get all the tables of the component that matches with the Joomla naming convention.
 	 *
-	 * @param   NenoContentElementGroup $group Component name
+	 * @param   NenoContentElementGroup $group        Component name
+	 * @param   string                  $tablePattern Table Pattern
 	 *
 	 * @return array
 	 */
@@ -967,7 +972,6 @@ class NenoHelper
 			if (!empty($tables) || !empty($languageStrings))
 			{
 				$group
-					->addExtensionId($extension['extension_id'])
 					->setLanguageStrings($languageStrings)
 					->setTables($tables)
 					->persist();
@@ -1161,6 +1165,25 @@ class NenoHelper
 	}
 
 	/**
+	 * Generate random string
+	 *
+	 * @param int $length String length
+	 *
+	 * @return string
+	 */
+	public static function generateRandomString($length = 10)
+	{
+		$result  = null;
+		$replace = array ('/', '+', '=');
+		while (!isset($result[$length - 1]))
+		{
+			$result .= str_replace($replace, null, base64_encode(mcrypt_create_iv($length, MCRYPT_RAND)));
+		}
+
+		return substr($result, 0, $length);
+	}
+
+	/**
 	 * Escape a string
 	 *
 	 * @param   mixed $value Value
@@ -1170,29 +1193,5 @@ class NenoHelper
 	private static function escapeString($value)
 	{
 		return JFactory::getDbo()->quote($value);
-	}
-
-	public function getJoomlaExtensions()
-	{
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$extensions = array_map(array ('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
-
-		$query
-			->select('e.extension_id')
-			->from('`#__extensions` AS e')
-			->where(
-				array (
-					'e.type IN (' . implode(',', $extensions) . ')',
-					'e.name NOT LIKE \'com_neno\'',
-					'NOT EXISTS (SELECT 1 FROM ' . $db->quoteName(NenoContentElementGroup::getDbTable()) . ' AS ceg WHERE e.extension_id = ceg.extension_id)'
-				)
-			)
-			->order('name');
-
-		$db->setQuery($query);
-		$extensions = $db->loadArray();
 	}
 }

@@ -4,37 +4,10 @@
 CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups` (
   `id`           INT          NOT NULL AUTO_INCREMENT,
   `group_name`   VARCHAR(150) NOT NULL,
-  `extension_id` INT          NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `group_name_UNIQUE` (`group_name` ASC),
-  UNIQUE INDEX `extension_idx` (`extension_id` ASC)
+  UNIQUE INDEX `group_name_UNIQUE` (`group_name` ASC)
 )
   ENGINE = InnoDB;
-
--- -----------------------------------------------------
--- Table `#__neno_content_element_groups_x_extensions`
--- -----------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups_x_extensions` (
-  `group_id`     INT(11) NOT NULL,
-  `extension_id` INT(11) NOT NULL,
-  PRIMARY KEY (`group_id`, `extension_id`),
-  UNIQUE KEY `extension_id` (`extension_id`),
-  INDEX `fk_extension_idx` (`extension_id`),
-  INDEX `fk_group_idx` (`group_id`),
-  CONSTRAINT `fk_group_idx1`
-  FOREIGN KEY (`group_id`)
-  REFERENCES `#__neno_content_element_groups` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_extension_idx1`
-  FOREIGN KEY (`extension_id`)
-  REFERENCES `#__extensions` (`extension_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
 
 -- -----------------------------------------------------
 -- Table `#__neno_content_element_langfile`
@@ -8491,7 +8464,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_jobs` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 )
-  ENGINE = InnoDB
+  ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `#__neno_jobs_x_translations`
@@ -8514,4 +8487,4 @@ CREATE TABLE IF NOT EXISTS `#__neno_jobs_x_translations` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 )
-  ENGINE = InnoDB
+  ENGINE = InnoDB;
