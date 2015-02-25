@@ -72,7 +72,6 @@ class NenoContentElementTable extends NenoContentElement
 		if ($tableData === null)
 		{
 			$this->getFields();
-			//$this->setContentElementIntoCache();
 		}
 		else
 		{

@@ -2,37 +2,12 @@
 -- Table `#__neno_content_element_groups`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups` (
-  `id`           INT          NOT NULL AUTO_INCREMENT,
-  `group_name`   VARCHAR(150) NOT NULL,
-  `extension_id` INT          NULL,
+  `id`         INT          NOT NULL AUTO_INCREMENT,
+  `group_name` VARCHAR(150) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `group_name_UNIQUE` (`group_name` ASC),
-  UNIQUE INDEX `extension_idx` (`extension_id` ASC)
+  UNIQUE INDEX `group_name_UNIQUE` (`group_name` ASC)
 )
   ENGINE = InnoDB;
-
--- -----------------------------------------------------
--- Table `#__neno_content_element_groups_x_extensions`
--- -----------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups_x_extensions` (
-  `group_id` int(11) NOT NULL,
-  `extension_id` int(11) NOT NULL,
-  PRIMARY KEY (`group_id`,`extension_id`),
-  UNIQUE KEY `extension_id` (`extension_id`),
-  INDEX `fk_extension_idx` (`extension_id`),
-  INDEX `fk_group_idx` (`group_id`),
-  CONSTRAINT `fk_group_idx1`
-  FOREIGN KEY (`group_id`)
-  REFERENCES `#__neno_content_element_groups` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_extension_idx1`
-  FOREIGN KEY (`extension_id`)
-  REFERENCES `#__extensions` (`extension_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `#__neno_content_element_langfile`
@@ -8467,3 +8442,43 @@ VALUES
   (8188, 1, 'zu', 'yo'),
   (8189, 1, 'zu', 'zh'),
   (8190, 1, 'zu', 'zh-TW');
+
+-- -----------------------------------------------------
+-- Table `#__neno_jobs`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `#__neno_jobs` (
+  `id`                 VARCHAR(45) NOT NULL,
+  `state`              TINYINT     NOT NULL DEFAULT 1,
+  `created_time`        DATETIME    NOT NULL,
+  `sent_time`           DATETIME    NOT NULL,
+  `completed_time`      DATETIME    NOT NULL,
+  `translation_method` VARCHAR(45) NOT NULL,
+  `from_language`      VARCHAR(5)  NOT NULL,
+  `to_language`        VARCHAR(5)  NULL,
+  PRIMARY KEY (`id`)
+)
+  ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `#__neno_jobs_x_translations`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `#__neno_jobs_x_translations` (
+  `job_id`         VARCHAR(45) NOT NULL,
+  `translation_id` INT         NOT NULL,
+  PRIMARY KEY (`job_id`, `translation_id`),
+  INDEX `fk_translation_idx` (`translation_id` ASC),
+  INDEX `fk_job_idx` (`job_id` ASC),
+  CONSTRAINT `fk_job_idx1`
+  FOREIGN KEY (`job_id`)
+  REFERENCES `#__neno_jobs` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_translation_idx1`
+  FOREIGN KEY (`translation_id`)
+  REFERENCES `#__neno_content_element_translations` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+)
+  ENGINE = InnoDB;

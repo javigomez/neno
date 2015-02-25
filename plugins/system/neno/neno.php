@@ -51,13 +51,6 @@ class PlgSystemNeno extends JPlugin
 	 */
 	public function onExtensionBeforeUninstall($extensionId)
 	{
-		$group = NenoContentElementGroup::getGroupByExtensionId($extensionId);
-
-		// If the group exists, let's mark it as deleted
-		if ($group !== null)
-		{
-			$group->markAsDeleted();
-		}
 	}
 
 	/**
@@ -70,16 +63,7 @@ class PlgSystemNeno extends JPlugin
 	 */
 	public function onExtensionAfterInstall($installer, $extensionId)
 	{
-		ini_set('max_execution_time', 1000);
-		$group = NenoContentElementGroup::getGroupByExtensionId($extensionId);
 
-		// If the group doesn't exist, let's create it
-		if ($group === null)
-		{
-			$group = NenoContentElementGroup::createNenoContentElementGroupByExtensionId($extensionId);
-		}
-
-		$group->refresh();
 	}
 
 	/**
@@ -92,7 +76,6 @@ class PlgSystemNeno extends JPlugin
 	 */
 	public function onExtensionAfterUpdate($installer, $extensionId)
 	{
-		$group = NenoContentElementGroup::getGroupByExtensionId($extensionId);
-		$group->refresh();
+
 	}
 }

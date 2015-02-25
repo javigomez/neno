@@ -24,9 +24,8 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param JRegistry      $options
-	 * @param JHttpTransport $transport
-	 *
+	 * @param   JRegistry      $options   JHttp options
+	 * @param   JHttpTransport $transport JHttp Transport
 	 */
 	public function __construct(JRegistry $options = null, JHttpTransport $transport = null)
 	{
@@ -48,13 +47,13 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	 *
 	 * @return string
 	 */
-	public function translate($text, $source = "en-US", $target = "fr-FR")
+	public function translate($text, $source = 'en-US', $target = 'fr-FR')
 	{
 		// Convert from JISO to ISO codes
 		$source = $this->convertFromJisoToIso($source);
 		$target = $this->convertFromJisoToIso($target);
 
-		$isoPair = $source . "," . $target;
+		$isoPair = $source . ',' . $target;
 
 		// Check availability of language pair for translation
 		$isAvailable = $this->isTranslationAvailable($isoPair, $this->methodName);
@@ -64,7 +63,8 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 			return null;
 		}
 
-		$url = 'https://www.googleapis.com/language/translate/v2?key=' . $this->apiKey . '&q=' . rawurlencode($text) . '&source=' . $source . '&target=' . $target;
+		$url = 'https://www.googleapis.com/language/translate/v2?key=' . $this->apiKey
+			. '&q=' . rawurlencode($text) . '&source=' . $source . '&target=' . $target;
 
 		// Invoke the GET request.
 		$response = $this->get($url);
@@ -95,29 +95,28 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	public function convertFromJisoToIso($jiso)
 	{
 		// Split the language code parts using hyphen
-		$jisoParts = (explode("-", $jiso));
-		$iso2Tag   = strtolower($jisoParts[0]);
+		$jisoParts = (explode('-', $jiso));
+		$isoTag   = strtolower($jisoParts[0]);
 
-		switch ($iso2Tag)
+		switch ($isoTag)
 		{
-			case "zh":
-				$iso2 = $jiso;
+			case 'zh':
+				$iso = $jiso;
 				break;
 
-			case "he":
-				$iso2 = "iw";
+			case 'he':
+				$iso = 'iw';
 				break;
 
-			case "nb":
-				$iso2 = "no";
+			case 'nb':
+				$iso = 'no';
 				break;
 
 			default:
-				$iso2 = $iso2Tag;
+				$iso = $isoTag;
 				break;
 		}
 
-		return $iso2;
+		return $iso;
 	}
-
 }

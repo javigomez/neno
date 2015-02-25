@@ -37,12 +37,6 @@ class NenoLoader
 	 */
 	public static function init()
 	{
-		// @todo Detect environment to just include this file on the development ones.
-		if (file_exists(JPATH_ROOT . '/vendor/autoload.php') && getenv('APPLICATION_ENVIRONMENT') === 'dev')
-		{
-			require_once JPATH_ROOT . '/vendor/autoload.php';
-		}
-
 		// Registering Neno libraries prefix
 		JLoader::registerPrefix('Neno', JPATH_NENO);
 

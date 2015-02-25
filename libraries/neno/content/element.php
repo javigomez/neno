@@ -14,85 +14,8 @@ defined('JPATH_NENO') or die;
  *
  * @since  1.0
  */
-abstract class NenoContentElement
+abstract class NenoContentElement extends NenoObject
 {
-	/**
-	 * @var string
-	 */
-	protected static $databaseTableNames = array ();
-
-	/**
-	 * @var integer
-	 */
-	protected $id;
-
-	/**
-	 * @var boolean
-	 */
-	protected $hasChanged;
-
-	/**
-	 * Constructor
-	 *
-	 * @param   mixed $data Content element data
-	 */
-	public function __construct($data)
-	{
-		// Create a JObject object to unify the way to assign the properties
-		$data = $this->sanitizeConstructorData($data);
-
-		// Create a reflection class to use it to dynamic properties loading
-		$classReflection = $this->getClassReflectionObject();
-
-		// Getting all the properties marked as 'protected'
-		$properties = $classReflection->getProperties(ReflectionProperty::IS_PROTECTED);
-
-		// Go through them and assign a value to them if they exist in the argument passed as parameter.
-		foreach ($properties as $property)
-		{
-			if ($data->get($property->getName()) !== null)
-			{
-				$this->{$property->getName()} = $data->get($property->getName());
-			}
-		}
-
-		$this->hasChanged;
-	}
-
-	/**
-	 * Make sure that the data contains CamelCase properties
-	 *
-	 * @param   mixed $data Data to sanitize
-	 *
-	 * @return JObject
-	 */
-	protected function sanitizeConstructorData($data)
-	{
-		$data         = new JObject($data);
-		$properties   = $data->getProperties();
-		$sanitizeData = new JObject;
-
-		foreach ($properties as $property => $value)
-		{
-			$sanitizeData->set(NenoHelper::convertDatabaseColumnNameToPropertyName($property), $value);
-		}
-
-		return $sanitizeData;
-	}
-
-	/**
-	 * Get a ReflectionObject to work with it.
-	 *
-	 * @return ReflectionClass
-	 */
-	public function getClassReflectionObject()
-	{
-		$className       = get_called_class();
-		$classReflection = new ReflectionClass($className);
-
-		return $classReflection;
-	}
-
 	/**
 	 * Loads all the elements using its parent id and the parent Id value
 	 *
@@ -156,7 +79,7 @@ abstract class NenoContentElement
 	 *
 	 * @param   mixed $pk it could be the ID of the element or an array of clauses
 	 *
-	 * @return stdClass
+	 * @return stdClass|array
 	 */
 	public static function load($pk)
 	{
@@ -191,130 +114,55 @@ abstract class NenoContentElement
 			}
 
 			$db->setQuery($query);
-			$data       = $db->loadAssoc();
-			$objectData = null;
+			$objects     = $db->loadAssocList();
+			$objectsData = array ();
 
-			if (!empty($data))
+			if (!empty($objects))
 			{
-				$objectData = new stdClass;
-
-				foreach ($data as $key => $value)
+				foreach ($objects as $object)
 				{
-					$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
+					$objectData = new stdClass;
+
+					foreach ($object as $key => $value)
+					{
+						$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
+					}
+
+					$objectsData[] = $objectData;
 				}
 			}
 
-			NenoCache::setCacheData($cacheId, $objectData);
-			$cachedData = $objectData;
+			if (count($objectsData) == 1)
+			{
+				$objectsData = array_shift($objectsData);
+			}
+
+			NenoCache::setCacheData($cacheId, $objectsData);
+			$cachedData = $objectsData;
 		}
 
 		return $cachedData;
 	}
 
 	/**
-	 * Get the name of the database to persist the object
-	 *
-	 * @return string
-	 */
-	public static function getDbTable()
-	{
-		$className = get_called_class();
-
-		if (empty(self::$databaseTableNames[$className]))
-		{
-			$classNameComponents = NenoHelper::splitCamelCaseString($className);
-			$classNameComponents[count($classNameComponents) - 1] .= 's';
-
-			self::$databaseTableNames[$className] = '#__' . implode('_', $classNameComponents);
-		}
-
-		return self::$databaseTableNames[$className];
-	}
-
-	/**
-	 * Method to persist object in the database
-	 *
-	 * @return boolean
-	 */
-	public function persist()
-	{
-		$result = false;
-
-		if ($this->hasChanged || $this->isNew())
-		{
-			$db   = JFactory::getDbo();
-			$data = $this->toObject();
-
-			if ($this->isNew())
-			{
-				$result   = $db->insertObject(self::getDbTable(), $data, 'id');
-				$this->id = $db->insertid();
-			}
-			else
-			{
-				$result = $db->updateObject(self::getDbTable(), $data, 'id');
-			}
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Check if the object is new
+	 * {@inheritdoc}
 	 *
 	 * @return bool
 	 */
-	public function isNew()
+	public function remove()
 	{
-		return empty($this->id);
-	}
-
-	/**
-	 * Create a JObject using the properties of the class.
-	 *
-	 * @return JObject
-	 */
-	public function toObject()
-	{
-		$data = new JObject;
-
-		// Create a reflection class to use it to dynamic properties loading
-		$classReflection = $this->getClassReflectionObject();
-
-		// Getting all the properties marked as 'protected'
-		$properties = array_diff(
-			$classReflection->getProperties(ReflectionProperty::IS_PROTECTED),
-			$classReflection->getProperties(ReflectionProperty::IS_STATIC)
-		);
-
-		// Go through them and assign a value to them if they exist in the argument passed as parameter.
-		/* @var $property ReflectionProperty */
-		foreach ($properties as $property)
+		if (parent::remove())
 		{
-			if ($property->getName() !== 'hasChanged')
-			{
-				$data->set(NenoHelper::convertPropertyNameToDatabaseColumnName($property->getName()), $this->{$property->getName()});
-			}
+			NenoCache::setCacheData($this->getCacheId(), null);
+
+			return true;
 		}
 
-		return $data;
+		return false;
 	}
 
 	/**
-	 * Save this NenoContentElement in the cache
-	 *
-	 * @return void
-	 */
-	public function setContentElementIntoCache()
-	{
-		if (!$this->isNew())
-		{
-			NenoCache::setCacheData($this->getCacheId(), $this->prepareCacheContent());
-		}
-	}
-
-	/**
-	 *Get Cache Id for a particular
+	 * Get Cache Id for a particular
 	 *
 	 * @return bool|string False if the cacheId doesn't exist
 	 */
@@ -332,13 +180,16 @@ abstract class NenoContentElement
 	}
 
 	/**
-	 * Id getter
+	 * Save this NenoContentElement in the cache
 	 *
-	 * @return integer
+	 * @return void
 	 */
-	public function getId()
+	public function setContentElementIntoCache()
 	{
-		return $this->id;
+		if (!$this->isNew())
+		{
+			NenoCache::setCacheData($this->getCacheId(), $this->prepareCacheContent());
+		}
 	}
 
 	/**
@@ -351,30 +202,6 @@ abstract class NenoContentElement
 		$data = clone $this;
 
 		return $data;
-	}
-
-	/**
-	 * Remove the object from the database
-	 *
-	 * @return bool
-	 */
-	public function remove()
-	{
-		// Only perform this task if the ID is not null or 0.
-		if (!empty($this->id))
-		{
-			/* @var $db NenoDatabaseDriverMysqlx */
-			$db = JFactory::getDbo();
-
-			$result = $db->deleteObject(self::getDbTable(), $this->id);
-
-			if ($result)
-			{
-				NenoCache::setCacheData($this->getCacheId(), null);
-			}
-		}
-
-		return false;
 	}
 
 	/**
@@ -406,5 +233,15 @@ abstract class NenoContentElement
 		}
 
 		return $dataCached;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return null
+	 */
+	public function generateId()
+	{
+		return null;
 	}
 }
