@@ -2,8 +2,8 @@
 -- Table `#__neno_content_element_groups`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups` (
-  `id`           INT          NOT NULL AUTO_INCREMENT,
-  `group_name`   VARCHAR(150) NOT NULL,
+  `id`         INT          NOT NULL AUTO_INCREMENT,
+  `group_name` VARCHAR(150) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `group_name_UNIQUE` (`group_name` ASC)
 )
@@ -8448,21 +8448,15 @@ VALUES
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `#__neno_jobs` (
-  `id`                    VARCHAR(45) NOT NULL,
-  `state`                 TINYINT     NOT NULL DEFAULT 1,
-  `createdTime`           DATETIME    NOT NULL,
-  `sentTime`              DATETIME    NOT NULL,
-  `completedTime`         DATETIME    NOT NULL,
-  `translation_method_id` INT         NOT NULL,
-  `from_language`         VARCHAR(5)  NOT NULL,
-  `to_language`           VARCHAR(5)  NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_translation_method_idx` (`translation_method_id` ASC),
-  CONSTRAINT `fk_translation_method_idx1`
-  FOREIGN KEY (`translation_method_id`)
-  REFERENCES `#__neno_translation_methods` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+  `id`                 VARCHAR(45) NOT NULL,
+  `state`              TINYINT     NOT NULL DEFAULT 1,
+  `created_time`        DATETIME    NOT NULL,
+  `sent_time`           DATETIME    NOT NULL,
+  `completed_time`      DATETIME    NOT NULL,
+  `translation_method` VARCHAR(45) NOT NULL,
+  `from_language`      VARCHAR(5)  NOT NULL,
+  `to_language`        VARCHAR(5)  NULL,
+  PRIMARY KEY (`id`)
 )
   ENGINE = InnoDB;
 
