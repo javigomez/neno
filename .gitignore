@@ -517,3 +517,4 @@ composer.lock
 *hikashop*
 *_redirect
 custom_quantity_tax
+*.txt.dist
