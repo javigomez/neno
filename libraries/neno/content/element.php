@@ -79,7 +79,7 @@ abstract class NenoContentElement extends NenoObject
 	 *
 	 * @param   mixed $pk it could be the ID of the element or an array of clauses
 	 *
-	 * @return stdClass
+	 * @return stdClass|array
 	 */
 	public static function load($pk)
 	{
@@ -114,21 +114,31 @@ abstract class NenoContentElement extends NenoObject
 			}
 
 			$db->setQuery($query);
-			$data       = $db->loadAssoc();
-			$objectData = null;
+			$objects     = $db->loadAssocList();
+			$objectsData = array ();
 
-			if (!empty($data))
+			if (!empty($objects))
 			{
-				$objectData = new stdClass;
-
-				foreach ($data as $key => $value)
+				foreach ($objects as $object)
 				{
-					$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
+					$objectData = new stdClass;
+
+					foreach ($object as $key => $value)
+					{
+						$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
+					}
+
+					$objectsData[] = $objectData;
 				}
 			}
 
-			NenoCache::setCacheData($cacheId, $objectData);
-			$cachedData = $objectData;
+			if (count($objectsData) == 1)
+			{
+				$objectsData = array_shift($objectsData);
+			}
+
+			NenoCache::setCacheData($cacheId, $objectsData);
+			$cachedData = $objectsData;
 		}
 
 		return $cachedData;
