@@ -83,7 +83,7 @@ class NenoJob extends NenoObject
 	public static function createJob($toLanguage, $translationMethod)
 	{
 		// Load all the translations that need to be translated
-		$translations = NenoContentElementTranslation::load(
+		$translationObjects = NenoContentElementTranslation::load(
 			array (
 				'language'           => $toLanguage,
 				'state'              => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
@@ -92,14 +92,18 @@ class NenoJob extends NenoObject
 		);
 
 		// If there is just one translation, let's convert it into an array
-		if (!is_array($translations))
+		if (!is_array($translationObjects))
 		{
-			$translations = array ($translations);
+			$translationObjects = array ($translationObjects);
+		}
+		else
+		{
+			$translationObjects = array (array_shift($translationObjects));
 		}
 
 		$job = null;
 
-		if (!empty($translations))
+		if (!empty($translationObjects))
 		{
 			$jobData = array (
 				'fromLanguage'      => JFactory::getLanguage()->getDefault(),
@@ -109,6 +113,13 @@ class NenoJob extends NenoObject
 				'translationMethod' => $translationMethod
 			);
 
+			$translations = array ();
+
+			foreach ($translationObjects as $translationObject)
+			{
+				$translations[] = new NenoContentElementTranslation($translationObject);
+			}
+
 			$job = new NenoJob($jobData);
 			$job
 				->setTranslations($translations)
@@ -116,6 +127,43 @@ class NenoJob extends NenoObject
 		}
 
 		return $job;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function persist()
+	{
+		// If the job has been persisted properly, let's save the translations
+		if (parent::persist())
+		{
+			$db = JFactory::getDbo();
+			/* @var $query NenoDatabaseQueryMysqli */
+			$query = $db->getQuery(true);
+
+			$query
+				->replace('#__neno_jobs_x_translations')
+				->columns(
+					array (
+						'job_id',
+						'translation_id'
+					)
+				);
+
+			/* @var $translation NenoContentElementTranslation */
+			foreach ($this->translations as $translation)
+			{
+				$query->values($db->quote($this->getId()) . ',' . $translation->getId());
+			}
+
+			$db->setQuery($query);
+
+			return $db->execute() !== false;
+		}
+
+		return false;
 	}
 
 	/**
@@ -172,16 +220,6 @@ class NenoJob extends NenoObject
 	protected function getFileName()
 	{
 		return strtolower($this->fromLanguage) . '-to-' . strtolower($this->toLanguage) . '-' . time() . '-' . JFactory::getUser()->id;
-	}
-
-	/**
-	 * Get the Job Id
-	 *
-	 * @return string
-	 */
-	public function getId()
-	{
-		return $this->id;
 	}
 
 	/**
