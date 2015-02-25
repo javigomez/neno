@@ -211,7 +211,7 @@ class NenoContentElementTranslation extends NenoContentElement
 			$query = $db->getQuery(true);
 
 			$query
-				->select($field->getFieldName())
+				->select($db->quoteName($field->getFieldName()))
 				->from($field->getTable()->getTableName());
 
 			$primaryKeys = $field->getTable()->getPrimaryKey();
