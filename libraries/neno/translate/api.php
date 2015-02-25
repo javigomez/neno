@@ -75,7 +75,7 @@ abstract class NenoTranslateApi extends JHttp
 
 		 foreach($langArray as $langPair)
 		 {
-			 // Split the language code parts using hypen
+			 // Split the language code parts using hyphen
 			 $isoParts = (explode('-',$langPair));
 
 			 // Check if row already exists
