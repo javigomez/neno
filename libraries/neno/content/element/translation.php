@@ -142,18 +142,21 @@ class NenoContentElementTranslation extends NenoContentElement
 		}
 		else
 		{
-			$content_id = $data->get('content_id') === null ? $data->get('contentId') : $data->get('content_id');
+			$contentId = $data->get('content_id') === null ? $data->get('contentId') : $data->get('content_id');
 
-			// If it's a language string, let's create a NenoContentElementLangstring
-			if ($this->contentType == self::LANG_STRING)
+			if (!empty($contentId))
 			{
-				$contentElementData = NenoContentElementLangstring::load($content_id);
-				$this->element      = new NenoContentElementLangstring($contentElementData, false);
-			}
-			else
-			{
-				$contentElementData = NenoContentElementField::load($content_id);
-				$this->element      = new NenoContentElementField($contentElementData);
+				// If it's a language string, let's create a NenoContentElementLangstring
+				if ($this->contentType == self::LANG_STRING)
+				{
+					$contentElementData = NenoContentElementLangstring::load($contentId);
+					$this->element      = new NenoContentElementLangstring($contentElementData, false);
+				}
+				else
+				{
+					$contentElementData = NenoContentElementField::load($contentId);
+					$this->element      = new NenoContentElementField($contentElementData);
+				}
 			}
 		}
 
