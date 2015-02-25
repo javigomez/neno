@@ -149,9 +149,17 @@ abstract class NenoObject
 
 			if ($this->isNew())
 			{
-				$data->set('id', $this->generateId());
-				$result   = $db->insertObject(self::getDbTable(), $data, 'id');
-				$this->id = $db->insertid();
+				$id = $this->generateId();
+				$data->set('id', $id);
+				$result = $db->insertObject(self::getDbTable(), $data, 'id');
+
+				// Just assign an id if it's null
+				if (empty($id))
+				{
+					$data->set('id', $db->insertid());
+				}
+
+				$this->id = $data->get('id');
 			}
 			else
 			{
@@ -167,7 +175,8 @@ abstract class NenoObject
 	 *
 	 * @return bool
 	 */
-	public function isNew()
+	public
+	function isNew()
 	{
 		return empty($this->id);
 	}
@@ -177,7 +186,8 @@ abstract class NenoObject
 	 *
 	 * @return JObject
 	 */
-	public function toObject()
+	public
+	function toObject()
 	{
 		$data = new JObject;
 
@@ -208,7 +218,9 @@ abstract class NenoObject
 	 *
 	 * @return mixed
 	 */
-	public abstract function generateId();
+	public
+
+	abstract function generateId();
 
 	/**
 	 * Get Record Id
