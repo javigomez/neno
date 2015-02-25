@@ -15,7 +15,7 @@ $document = JFactory::getDocument();
 $document->addScript(JUri::root() . '/media/neno/js/multiselect.js');
 $document->addStyleSheet(JUri::root() . '/media/neno/css/multiselect.css');
 
-
+$isOverlay = isset($displayData->isOverlay);
 ?>
 
 <div class="multiselect">
@@ -33,10 +33,11 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/multiselect.css');
 			Action
 			<span class="caret pull-right"></span>
 		</a>
-		<div id="multiselect" class="dro pdown-menu menu-multiselect">
+
+		<div id="multiselect" class="dro pdown-menu menu-multiselect <?php echo ($isOverlay)?(' overlay'):(''); ?>">
 			<table class="table-condensend table-multiselect" id="table-multiselect">
 				<?php /* @var $group NenoContentElementGroup */ ?>
-				<?php foreach ($displayData as $group):
+				<?php foreach ($displayData->groups as $group):
 					$stringsTranslated = $group->getLanguageWordsTranslated();
 					$stringsQueued = $group->getLanguageWordsQueuedToBeTranslated();
 					$stringsChanged = $group->getLanguageWordsSourceHasChanged();
@@ -50,7 +51,7 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/multiselect.css');
 					<tr class="row-group collapsed" data-level="1" data-id="group<?php echo $group->getId(); ?>" data-parent="header">
 						<td <?php echo (count($group->getTables()) || $countLanguageStrings)?(' class="cell-expand"><span class="icon-arrow-right-3"></span>'):('>'); ?></td>
 						<td class="cell-check"><input type="checkbox"/></td>
-						<td colspan="3" title="<?php echo $group->getGroupName(); ?>"><?php echo $group->getGroupName(); ?></td>
+						<td colspan="4" title="<?php echo $group->getGroupName(); ?>"><?php echo $group->getGroupName(); ?></td>
 					</tr>
 					<?php /* @var $table NenoContentElementTable */ ?>
 					<?php foreach ($group->getTables() as $table): ?>
@@ -58,7 +59,7 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/multiselect.css');
 						<td></td>
 						<td <?php echo (count($table->getFields()))?(' class="cell-expand"><span class="icon-arrow-right-3"></span>'):('>'); ?></td>
 						<td class="cell-check"><input type="checkbox"/></td>
-						<td colspan="2" title="<?php echo $table->getTableName(); ?>"><?php echo $table->getTableName(); ?></td>
+						<td colspan="3" title="<?php echo $table->getTableName(); ?>"><?php echo $table->getTableName(); ?></td>
 					</tr>
 					<?php /* @var $field NenoContentElementField */ ?>
 					<?php foreach ($table->getFields() as $field): ?>
@@ -67,6 +68,7 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/multiselect.css');
 							<td></td>
 							<td></td>
 							<td></td>
+							<td class="cell-check"><input type="checkbox"/></td>
 							<td title="<?php echo $field->getFieldName() ?>"><?php echo $field->getFieldName() ?></td>
 						</tr>
 					<?php endforeach; ?>
@@ -76,7 +78,7 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/multiselect.css');
 						<td></td>
 						<td></td>
 						<td class="cell-check"><input type="checkbox"/></td>
-						<td colspan="2" title="<?php echo $stringsFile; ?>"><?php echo $stringsFile; ?></td>
+						<td colspan="3" title="<?php echo $stringsFile; ?>"><?php echo $stringsFile; ?></td>
 					</tr>
 				<?php endif; ?>
 				<?php endforeach; ?>

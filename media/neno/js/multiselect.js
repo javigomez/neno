@@ -4,39 +4,22 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-function toggleCollapseRow (row) {
-    var rowType = '';
-    if (row.hasClass('row-group')) {
-        rowType = 'group';
-    } else if (row.hasClass('row-table')) {
-        rowType = 'table';
-    }
-    var nextRow = row.next('tr');
-    while (nextRow.length!=0 && !nextRow.hasClass('row-'+rowType)) {
-        if (nextRow.attr('data-level') == parseInt(row.attr('data-level')) + 1) {
-            nextRow.toggleClass('hide');
-            if (nextRow.hasClass('row-table') && row.hasClass('expanded') && nextRow.hasClass('expanded')) {
-                toggleCollapseRow(nextRow);
-            }
-        }
-        nextRow = nextRow.next('tr');
-    }
-    if (row.attr('data-level') != 3) {
-        row.toggleClass('collapsed');
-        row.toggleClass('expanded');
-        row.children('td.cell-expand').first().children('span').first().toggleClass('icon-arrow-right-3');
-        row.children('td.cell-expand').first().children('span').first().toggleClass('icon-arrow-down-3');
-    }
-}
+function getMultiSelectValue(table) {
+    var result = [],
+        checked = [],
+        checks = jQuery('#' + table.attr('id') + ' input[type=checkbox]');
 
-function checkDescendant (check) {
-    var state = check.prop('checked'),
-        row = jQuery(check).closest('tr'),
-        nextRow = row.next('tr');
-    while (nextRow.length!=0 && nextRow.attr('data-level') > row.attr('data-level') ) {
-        nextRow.find('input[type=checkbox]').prop('checked', state);
-        nextRow = nextRow.next('tr');
+    for (var i=0; i<checks.length; i++) {
+        if (jQuery(checks[i]).prop('checked')) {
+            var row = jQuery(checks[i]).closest('tr');
+            if (jQuery.inArray(row.attr('data-parent'), checked) === -1) {
+                result.push(row.attr('data-id'));
+            }
+            checked.push(row.attr('data-id'));
+        }
     }
+
+    return result;
 }
 
 jQuery(document).ready(function () {
@@ -44,26 +27,39 @@ jQuery(document).ready(function () {
     jQuery('.multiselect .dropdown-menu, .multiselect .dropdown-menu *').unbind('click');
 
     jQuery('.btn-toggle').click(function(e) {
-        jQuery('#' + jQuery(this).attr('data-toggle')).slideToggle();
+        jQuery('#' + jQuery(this).attr('data-toggle')).slideToggle('fast');
         jQuery(this).toggleClass('open');
         jQuery(this).blur();
     });
 
     jQuery('#table-multiselect tr.collapsed .cell-expand').click(function (e) {
-        e.preventDefault();
         var row = jQuery(this).parent();
         toggleCollapseRow (row);
     });
 
     jQuery('#table-multiselect input[type=checkbox]').click(function (e) {
-        e.preventDefault();
-        checkDescendant(jQuery(this));
-        if (!jQuery(this).prop('checked')) {
-            uncheckAncestor(jQuery(this));
+        var checkbox = jQuery(this);
+        checkDescendant(checkbox);
+        if (!checkbox.prop('checked')) {
+            uncheckAncestor(checkbox);
         }
+        var checked = JSON.stringify(getMultiSelectValue(checkbox.closest('table')));
+        jQuery.ajax({
+            type: "POST",
+            url: "index.php?option=com_neno&task=strings.getStrings",
+            data: {jsonData: checked}
+        })
+            .done(function( ret ) {
+                if (ret) {
+                    /*fieldset.find('#check-toggle-translate-' + field + '-' + status).unbind('click');
+                    fieldset.find('#check-toggle-translate-' + field + '-' + notstatus).click(function (e) {
+                        toggleStringStateAjax(jQuery(this));
+                    });
+                    fieldset.closest('tr').find('.translation-progress-bar').html(ret);*/
+                    jQuery('#elements-wrapper').html(ret);
+                }
+            });
     });
-
-
 
 });
 

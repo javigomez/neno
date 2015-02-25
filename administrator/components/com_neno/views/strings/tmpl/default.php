@@ -21,59 +21,7 @@ if (!empty($this->extra_sidebar))
 {
 	$this->sidebar .= $this->extra_sidebar;
 }
-
-$translationStatesClasses = array();
-$translationStatesClasses[NenoContentElementTranslation::TRANSLATED_STATE] = 'translated icon-checkmark';
-$translationStatesClasses[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = 'queued icon-clock';
-$translationStatesClasses[NenoContentElementTranslation::SOURCE_CHANGED_STATE] = 'changed icon-loop';
-$translationStatesClasses[NenoContentElementTranslation::NOT_TRANSLATED_STATE] = 'not-translated icon-cancel-2';
-
-$translationStatesText = array();
-$translationStatesText[NenoContentElementTranslation::TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_TRANSLATED');
-$translationStatesText[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_QUEUED');
-$translationStatesText[NenoContentElementTranslation::SOURCE_CHANGED_STATE] = JText::_('COM_NENO_STATUS_CHANGED');
-$translationStatesText[NenoContentElementTranslation::NOT_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_NOTTRANSLATED');
 ?>
-
-<style>
-	.table-strings th {
-		color: #2E87CB;
-	}
-	.table-strings .cell-check {
-		width: 18px !important;
-	}
-	.table-strings .cell-check input {
-		margin-top: 0;
-	}
-	.table-strings .cell-status {
-		width: 50px;
-		text-align: center;
-		padding: 5px 0 0 0;
-	}
-	.table-strings .status {
-		height: 22px;
-		width: 22px;
-		border-radius: 50%;
-		font-size: 11px;
-		color: white;
-		line-height: 23px;
-	}
-	.table-strings .status.translated {
-		background-color: #0ba14b;
-	}
-	.table-strings .status.queued {
-		background-color: #1e8ab6;
-	}
-	.table-strings .status.changed {
-		background-color: #f19d1a;
-	}
-	.table-strings .status.not-translated {
-		background-color: #e61e26;
-	}
-	.multiselect-wrapper {
-		width: 200px;
-	}
-</style>
 
 <script type="text/javascript">
 
@@ -112,15 +60,24 @@ echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name
 
 		<?php
 		// Search tools bar
-		echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
+		//echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
+		$extraDisplayData = new stdClass();
+		$extraDisplayData->groups = NenoHelper::getGroups();
+		$extraDisplayData->isOverlay = true;
+		echo JLayoutHelper::render('stringfilters', array('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS);
 		?>
 		<div class="multiselect-wrapper">
 		<?php
-		// Search tools bar
-		$displayData = NenoHelper::getGroups();
-		echo JLayoutHelper::render('multiselect', $displayData, JPATH_NENO_LAYOUTS);
+		$translations = $this->items;
+		//echo JLayoutHelper::render('multiselect', $extraDisplayData, JPATH_NENO_LAYOUTS);
 		?>
 		</div>
+
+		<div id="elements-wrapper">
+		<?php echo JLayoutHelper::render('strings', $this->items, JPATH_NENO_LAYOUTS);	?>
+		</div>
+
+		<!--
 		<table class="table table-striped table-strings" id="table-strings">
 			<thead>
 				<tr>
@@ -168,6 +125,9 @@ echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name
 			<?php endforeach; ?>
 			</tbody>
 		</table>
+		-->
+
+
 	</div>
 </form>
 

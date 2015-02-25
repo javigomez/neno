@@ -1,0 +1,38 @@
+.table-strings th {
+    color: #2E87CB;
+}
+.table-strings .cell-check {
+    width: 18px !important;
+}
+.table-strings .cell-check input {
+    margin-top: 0;
+}
+.table-strings .cell-status {
+    width: 50px;
+    text-align: center;
+    padding: 5px 0 0 0;
+}
+.table-strings .status {
+    height: 22px;
+    width: 22px;
+    border-radius: 50%;
+    font-size: 11px;
+    color: white;
+    line-height: 23px;
+}
+.table-strings .status.translated {
+    background-color: #0ba14b;
+}
+.table-strings .status.queued {
+    background-color: #1e8ab6;
+}
+.table-strings .status.changed {
+    background-color: #f19d1a;
+}
+.table-strings .status.not-translated {
+    background-color: #e61e26;
+}
+.multiselect-wrapper {
+    display: inline-block;
+    width: 200px;
+}

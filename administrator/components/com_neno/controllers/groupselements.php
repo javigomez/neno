@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.controlleradmin');
 
 /**
- * Manifest Tables controller class
+ * Manifest Groups & Elements controller class
  *
  * @since  1.0
  */

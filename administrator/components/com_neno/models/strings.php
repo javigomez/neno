@@ -101,7 +101,9 @@ class NenoModelStrings extends JModelList
 
 		$translations = array();
 
-		for ($i = 0; $i < count($elements); $i++)
+		$countElements = count($elements);
+
+		for ($i = 0; $i < $countElements; $i++)
 		{
 			$translations[] = new NenoContentElementTranslation($elements[$i]);
 
@@ -136,6 +138,12 @@ class NenoModelStrings extends JModelList
 		$query->join('LEFT', '#__neno_content_element_fields AS f ON t.id = f.table_id AND f.translate = 1');
 		$query->join('LEFT', '#__neno_content_element_translations AS tr ON tr.content_id = f.id');
 		$query->where('tr.language = "' . $workingLanguage . '"');
+
+
+		// REMOVE
+		//$query->where('t.group_id = 3562');
+
+
 
 		$group = $this->getState('filter.group_id');
 
