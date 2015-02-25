@@ -20,22 +20,22 @@ class NenoJob extends NenoObject
 	/**
 	 * Status when the job has been generated
 	 */
-	const JOB_STATUS_GENERATED = 1;
+	const JOB_STATE_GENERATED = 1;
 
 	/**
 	 * Status when the job has been sent to the API Server
 	 */
-	const JOB_STATUS_SENT = 2;
+	const JOB_STATE_SENT = 2;
 
 	/**
 	 * Status when the job has been completed
 	 */
-	const JOB_STATUS_COMPLETED = 3;
+	const JOB_STATE_COMPLETED = 3;
 
 	/**
 	 * @var integer
 	 */
-	protected $status;
+	protected $state;
 
 	/**
 	 * @var Datetime
@@ -71,6 +71,52 @@ class NenoJob extends NenoObject
 	 * @var array
 	 */
 	private $translations;
+
+	/**
+	 * Find a job and creates it.
+	 *
+	 * @param   string $toLanguage        JISO Language format
+	 * @param   string $translationMethod Translation Method chosen
+	 *
+	 * @return NenoJob|null It will return a NenoJob object if there are translations pending or null if there aren't any.
+	 */
+	public static function createJob($toLanguage, $translationMethod)
+	{
+		// Load all the translations that need to be translated
+		$translations = NenoContentElementTranslation::load(
+			array (
+				'language'           => $toLanguage,
+				'state'              => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
+				'translation_method' => $translationMethod
+			)
+		);
+
+		// If there is just one translation, let's convert it into an array
+		if (!is_array($translations))
+		{
+			$translations = array ($translations);
+		}
+
+		$job = null;
+
+		if (!empty($translations))
+		{
+			$jobData = array (
+				'fromLanguage'      => JFactory::getLanguage()->getDefault(),
+				'toLanguage'        => $toLanguage,
+				'state'             => self::JOB_STATE_GENERATED,
+				'createdDate'       => new DateTime,
+				'translationMethod' => $translationMethod
+			);
+
+			$job = new NenoJob($jobData);
+			$job
+				->setTranslations($translations)
+				->persist();
+		}
+
+		return $job;
+	}
 
 	/**
 	 * Create a job file
@@ -199,13 +245,27 @@ class NenoJob extends NenoObject
 	}
 
 	/**
+	 * Set translations
+	 *
+	 * @param   array $translations Translations
+	 *
+	 * @return $this
+	 */
+	public function setTranslations(array $translations)
+	{
+		$this->translations = $translations;
+
+		return $this;
+	}
+
+	/**
 	 * Get Job status
 	 *
 	 * @return int
 	 */
 	public function getStatus()
 	{
-		return $this->status;
+		return $this->state;
 	}
 
 	/**
