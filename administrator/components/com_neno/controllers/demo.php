@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package    Neno
  *
@@ -33,11 +32,11 @@ class NenoControllerDemo extends JControllerLegacy
 			// Select the api as per request
 			switch ($api)
 			{
-				case "google":
+				case 'google':
 					$nenoTranslate = new NenoTranslateApiGoogle;
 					break;
 
-				case "yandex":
+				case 'yandex':
 					$nenoTranslate = new NenoTranslateApiYandex;
 					break;
 			}
@@ -46,7 +45,7 @@ class NenoControllerDemo extends JControllerLegacy
 		$result = $nenoTranslate->translate($text);
 		if ($result == null)
 		{
-			$result = "warning";
+			$result = 'warning';
 		}
 		print_r($result);
 
@@ -67,4 +66,5 @@ class NenoControllerDemo extends JControllerLegacy
 		print_r($result);
 		exit;
 	}
+
 }
