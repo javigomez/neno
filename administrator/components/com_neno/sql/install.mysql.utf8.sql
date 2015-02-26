@@ -8487,7 +8487,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_jobs_x_translations` (
 -- Table `#__neno_task_queue`
 -- -----------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `#__neno_task_queue` (
+CREATE TABLE IF NOT EXISTS `#__neno_tasks` (
   `id`                 INT         NOT NULL AUTO_INCREMENT,
   `task`               VARCHAR(45) NOT NULL,
   `time_added`         DATETIME    NOT NULL,
