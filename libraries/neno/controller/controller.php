@@ -1,14 +1,14 @@
 <?php
 /**
- * @package    Neno
+ * @package     Neno
+ * @subpackage  Controller
  *
- * @author     Jensen Technologies S.L. <info@notwebdesign.com>
- * @copyright  Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @author      Jensen Technologies S.L. <info@notwebdesign.com>
+ * @copyright   Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
-
 // No direct access
-defined('_JEXEC') or die;
+defined('JPATH_NENO') or die;
 
 /**
  * Class NenoController
@@ -18,14 +18,24 @@ defined('_JEXEC') or die;
 class NenoController extends JControllerLegacy
 {
 	/**
+	 * Process task queue
+	 *
+	 * @return void
+	 */
+	public function processTaskQueue()
+	{
+		NenoTaskMonitor::runTask();
+	}
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   boolean $cachable  If Joomla should cache the response
-	 * @param   array   $urlparams URL parameters
+	 * @param   array   $urlParams URL parameters
 	 *
 	 * @return JController
 	 */
-	public function display($cachable = false, $urlparams = array())
+	public function display($cachable = false, $urlParams = array ())
 	{
 		$app   = JFactory::getApplication();
 		$input = $app->input;
@@ -34,7 +44,7 @@ class NenoController extends JControllerLegacy
 
 
 		// Ensure that a working language is set for some views
-		$viewsThatRequireWorkingLanguage = array(
+		$viewsThatRequireWorkingLanguage = array (
 			'groupselements'
 		);
 
@@ -56,12 +66,13 @@ class NenoController extends JControllerLegacy
 
 		NenoHelper::setAdminTitle($showLanguagesDropDown);
 
-		parent::display($cachable, $urlparams);
+		parent::display($cachable, $urlParams);
 
 		return $this;
 	}
 
 	/**
+	 * Set working language
 	 *
 	 * @return void
 	 */

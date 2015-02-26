@@ -39,10 +39,16 @@ class NenoTaskMonitor
 		{
 			$iniTime = time();
 			$task    = self::fetchTask();
-			$task->execute();
 
-			NenoLog::add($task->getTask() . ' task has been executed properly');
-			$task->remove();
+			// If there are task to execute, let's run it
+			if (!empty($task))
+			{
+				$task->execute();
+
+				NenoLog::add($task->getTask() . ' task has been executed properly');
+				$task->remove();
+			}
+
 			$timeRemaining -= time() - $iniTime;
 		}
 	}
