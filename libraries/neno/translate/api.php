@@ -17,9 +17,39 @@ defined('JPATH_NENO') or die;
 abstract class NenoTranslateApi extends JHttp
 {
 	/**
+	 * @var array
+	 */
+	private static $adapters = array ();
+
+	/**
 	 * @var string
 	 */
 	protected $apiKey;
+
+	/**
+	 * Get translator API
+	 *
+	 * @param   string $apiName API Name
+	 *
+	 * @return NenoTranslateApi
+	 */
+	public static function getAdapter($apiName)
+	{
+		if (!isset(self::$adapters[$apiName]))
+		{
+			// Try to load the adapter object
+			$class = 'NenoTranslateApi' . ucfirst($apiName);
+
+			if (!class_exists($class))
+			{
+				throw new UnexpectedValueException('Unable to load api', 500);
+			}
+
+			self::$adapters[$apiName] = new $class;
+		}
+
+		return self::$adapters[$apiName];
+	}
 
 	/**
 	 * Method to translate content
