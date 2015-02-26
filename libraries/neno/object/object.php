@@ -20,7 +20,7 @@ abstract class NenoObject
 	/**
 	 * @var string
 	 */
-	protected static $databaseTableNames = array ();
+	private static $databaseTableNames = array ();
 
 	/**
 	 * @var mixed
@@ -175,8 +175,7 @@ abstract class NenoObject
 	 *
 	 * @return bool
 	 */
-	public
-	function isNew()
+	public function isNew()
 	{
 		return empty($this->id);
 	}
@@ -186,8 +185,7 @@ abstract class NenoObject
 	 *
 	 * @return JObject
 	 */
-	public
-	function toObject()
+	public function toObject()
 	{
 		$data = new JObject;
 
@@ -218,9 +216,7 @@ abstract class NenoObject
 	 *
 	 * @return mixed
 	 */
-	public
-
-	abstract function generateId();
+	public abstract function generateId();
 
 	/**
 	 * Get Record Id
