@@ -95,22 +95,71 @@ abstract class NenoObject
 	}
 
 	/**
-	 * Remove the object from the database
+	 * Load element from the database
 	 *
-	 * @return bool
+	 * @param   mixed $pk it could be the ID of the element or an array of clauses
+	 *
+	 * @return stdClass|array
 	 */
-	public function remove()
+	public static function load($pk)
 	{
-		// Only perform this task if the ID is not null or 0.
-		if (!empty($this->id))
+		if (!is_array($pk))
 		{
-			/* @var $db NenoDatabaseDriverMysqlx */
-			$db = JFactory::getDbo();
-
-			return $db->deleteObject(self::getDbTable(), $this->id);
+			$pk = array ('id' => $pk);
 		}
 
-		return false;
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('*')
+			->from(self::getDbTable());
+
+		foreach ($pk as $field => $value)
+		{
+			if (is_array($value))
+			{
+				// If this field has an special condition, let's apply it
+				if (!empty($value['_field']) && !empty($value['_condition']) && !empty($value['_value']))
+				{
+					$query->where(
+						$db->quoteName(NenoHelper::convertPropertyNameToDatabaseColumnName($value['_field'])) .
+						' ' . $value['_condition'] . ' ' .
+						$db->quote($value['_value'])
+					);
+				}
+			}
+			else
+			{
+				$query->where($db->quoteName(NenoHelper::convertPropertyNameToDatabaseColumnName($field)) . ' = ' . $db->quote($value));
+			}
+		}
+
+		$db->setQuery($query);
+		$objects     = $db->loadAssocList();
+		$objectsData = array ();
+
+		if (!empty($objects))
+		{
+			foreach ($objects as $object)
+			{
+				$objectData = new stdClass;
+
+				foreach ($object as $key => $value)
+				{
+					$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
+				}
+
+				$objectsData[] = $objectData;
+			}
+		}
+
+		if (count($objectsData) == 1)
+		{
+			$objectsData = array_shift($objectsData);
+		}
+
+		return $objectsData;
 	}
 
 	/**
@@ -131,6 +180,25 @@ abstract class NenoObject
 		}
 
 		return self::$databaseTableNames[$className];
+	}
+
+	/**
+	 * Remove the object from the database
+	 *
+	 * @return bool
+	 */
+	public function remove()
+	{
+		// Only perform this task if the ID is not null or 0.
+		if (!empty($this->id))
+		{
+			/* @var $db NenoDatabaseDriverMysqlx */
+			$db = JFactory::getDbo();
+
+			return $db->deleteObject(self::getDbTable(), $this->id);
+		}
+
+		return false;
 	}
 
 	/**

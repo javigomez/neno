@@ -96,49 +96,8 @@ abstract class NenoContentElement extends NenoObject
 
 		if ($cachedData === null)
 		{
-			if (!is_array($pk))
-			{
-				$pk = array ('id' => $pk);
-			}
-
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
-
-			$query
-				->select('*')
-				->from(self::getDbTable());
-
-			foreach ($pk as $field => $value)
-			{
-				$query->where($db->quoteName($field) . ' = ' . $db->quote($value));
-			}
-
-			$db->setQuery($query);
-			$objects     = $db->loadAssocList();
-			$objectsData = array ();
-
-			if (!empty($objects))
-			{
-				foreach ($objects as $object)
-				{
-					$objectData = new stdClass;
-
-					foreach ($object as $key => $value)
-					{
-						$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
-					}
-
-					$objectsData[] = $objectData;
-				}
-			}
-
-			if (count($objectsData) == 1)
-			{
-				$objectsData = array_shift($objectsData);
-			}
-
-			NenoCache::setCacheData($cacheId, $objectsData);
-			$cachedData = $objectsData;
+			$cachedData = parent::load($pk);
+			NenoCache::setCacheData($cacheId, $cachedData);
 		}
 
 		return $cachedData;
