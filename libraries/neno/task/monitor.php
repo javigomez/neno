@@ -96,7 +96,9 @@ class NenoTaskMonitor
 	 */
 	protected static function fetchTask()
 	{
+		$task = NenoTask::load(array ());
 
+		return $task;
 	}
 
 	/**

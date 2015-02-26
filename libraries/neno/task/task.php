@@ -41,7 +41,6 @@ class NenoTask extends NenoObject
 	 */
 	protected $taskData;
 
-
 	/**
 	 * Generate an id for a new record
 	 *
