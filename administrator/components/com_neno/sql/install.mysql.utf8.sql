@@ -8450,9 +8450,9 @@ VALUES
 CREATE TABLE IF NOT EXISTS `#__neno_jobs` (
   `id`                 VARCHAR(45) NOT NULL,
   `state`              TINYINT     NOT NULL DEFAULT 1,
-  `created_time`        DATETIME    NOT NULL,
-  `sent_time`           DATETIME    NOT NULL,
-  `completed_time`      DATETIME    NOT NULL,
+  `created_time`       DATETIME    NOT NULL,
+  `sent_time`          DATETIME    NOT NULL,
+  `completed_time`     DATETIME    NOT NULL,
   `translation_method` VARCHAR(45) NOT NULL,
   `from_language`      VARCHAR(5)  NOT NULL,
   `to_language`        VARCHAR(5)  NULL,
@@ -8480,5 +8480,20 @@ CREATE TABLE IF NOT EXISTS `#__neno_jobs_x_translations` (
   REFERENCES `#__neno_content_element_translations` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
+)
+  ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `#__neno_task_queue`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `#__neno_task_queue` (
+  `id`                 INT         NOT NULL AUTO_INCREMENT,
+  `task`               VARCHAR(45) NOT NULL,
+  `time_added`         DATETIME    NOT NULL,
+  `time_started`       DATETIME    NOT NULL,
+  `number_of_attempts` TINYINT(1)  NULL,
+  `task_data`          TEXT        NULL,
+  PRIMARY KEY (`id`)
 )
   ENGINE = InnoDB;
