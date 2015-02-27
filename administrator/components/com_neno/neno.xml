@@ -15,6 +15,25 @@
 
     <scriptfile>script.php</scriptfile>
 
+    <update>
+        <name>Neno</name>
+        <description>The complete translation solution for Joomla</description>
+        <element>com_neno</element>
+        <type>component</type>
+        <version>1.1.0</version>
+        <infourl title="Neno Translator">http://www.neno-translate.com/</infourl>
+        <downloads>
+            <downloadurl type="full" format="zip">http://www.neno-translate.com/download/releases/Neno_1.0.0_to_1.1.0_Package.zip</downloadurl>
+        </downloads>
+        <tags>
+            <tag>stable</tag>
+        </tags>
+        <maintainer>Soren Beck Jensen</maintainer>
+        <maintainerurl>http://www.notwebdesign.com</maintainerurl>
+        <targetplatform name="joomla" version="3.3"/>
+        <php_minimum>5.5</php_minimum>
+    </update>
+
     <install> <!-- Runs on install -->
         <sql>
             <file driver="mysql"
