@@ -15,25 +15,6 @@
 
     <scriptfile>script.php</scriptfile>
 
-    <update>
-        <name>Neno</name>
-        <description>The complete translation solution for Joomla</description>
-        <element>com_neno</element>
-        <type>component</type>
-        <version>1.1.0</version>
-        <infourl title="Neno Translator">http://www.neno-translate.com/</infourl>
-        <downloads>
-            <downloadurl type="full" format="zip">https://github.com/Jensen-Technologies/neno/releases/download/1.1.0/Neno_1.1.0-Stable-Update_Package.zip</downloadurl>
-        </downloads>
-        <tags>
-            <tag>stable</tag>
-        </tags>
-        <maintainer>Soren Beck Jensen</maintainer>
-        <maintainerurl>http://www.notwebdesign.com</maintainerurl>
-        <targetplatform name="joomla" version="3.3"/>
-        <php_minimum>5.5</php_minimum>
-    </update>
-
     <install> <!-- Runs on install -->
         <sql>
             <file driver="mysql"
@@ -48,6 +29,13 @@
             </file>
         </sql>
     </uninstall>
+
+    <update> <!-- Runs on update -->
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+        </schemas>
+    </update>
+
 
     <files folder="site">
         <filename>index.html</filename>
@@ -100,6 +88,10 @@
         <plugin group="search"
                 plugin="neno"/>
     </plugins>
+
+    <updateservers>
+        <server type="extension" priority="1" name="com_neno">https://github.com/Jensen-Technologies/neno/releases/download/1.1.0/Neno_1.1.0-Stable.zip </server>
+    </updateservers>
 
 </extension>
         <!-- Component built by the Joomla Component Creator -->
