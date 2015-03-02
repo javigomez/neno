@@ -320,6 +320,20 @@ class NenoJob extends NenoObject
 	}
 
 	/**
+	 * Set sent time
+	 *
+	 * @param   Datetime $sentTime Time when the job has been sent
+	 *
+	 * @return $this
+	 */
+	public function setSentTime($sentTime)
+	{
+		$this->sentTime = $sentTime;
+
+		return $this;
+	}
+
+	/**
 	 * Get the date when the job was completed
 	 *
 	 * @return Datetime
@@ -327,6 +341,20 @@ class NenoJob extends NenoObject
 	public function getCompletedTime()
 	{
 		return $this->completedTime;
+	}
+
+	/**
+	 * Set completed time
+	 *
+	 * @param   Datetime $completedTime Time when the job has been completed
+	 *
+	 * @return $this
+	 */
+	public function setCompletedTime(Datetime $completedTime)
+	{
+		$this->completedTime = $completedTime;
+
+		return $this;
 	}
 
 	/**
