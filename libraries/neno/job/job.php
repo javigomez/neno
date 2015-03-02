@@ -28,9 +28,14 @@ class NenoJob extends NenoObject
 	const JOB_STATE_SENT = 2;
 
 	/**
-	 * Status when the job has been completed
+	 * Status when the job has been completed by the API server
 	 */
 	const JOB_STATE_COMPLETED = 3;
+
+	/**
+	 * Status when the job has been processed by the component
+	 */
+	const JOB_STATE_PROCESSED = 4;
 
 	/**
 	 * @var integer
@@ -66,6 +71,11 @@ class NenoJob extends NenoObject
 	 * @var string
 	 */
 	protected $toLanguage;
+
+	/**
+	 * @var string
+	 */
+	protected $fileName;
 
 	/**
 	 * @var array
@@ -206,11 +216,15 @@ class NenoJob extends NenoObject
 		$zipArchiveAdapter = JArchive::getAdapter('zip');
 		$result            = $zipArchiveAdapter->create($tmpPath . '/' . $filename . '.json.zip', array ($fileData));
 
+		$this->fileName = $filename;
+
 		// If something happens in the process of creating the job file, let's throw an exception
 		if (!$result)
 		{
 			throw new Exception('Error creating job file');
 		}
+
+		$this->persist();
 
 		return $result;
 	}
@@ -365,5 +379,72 @@ class NenoJob extends NenoObject
 	public function generateId()
 	{
 		return NenoHelper::generateRandomString();
+	}
+
+	/**
+	 * Set State
+	 *
+	 * @param   int $state State
+	 *
+	 * @return $this
+	 */
+	public function setState($state)
+	{
+		$this->state = $state;
+
+		return $this;
+	}
+
+	/**
+	 * Fetch the job file from the server
+	 *
+	 * @return bool|JError True on Success or false|JError if something goes wrong.
+	 */
+	public function fetchJobFromServer()
+	{
+		$config   = JFactory::getConfig();
+		$tmpPath  = $config->get('tmp_path');
+		$filename = $this->getFileName();
+
+		/* @var $zipAdapter JArchiveZip */
+		$zipAdapter = JArchive::getAdapter('zip');
+
+		try
+		{
+			return $zipAdapter->extract('http://localhost/neno-translate/tmp/' . $filename . '.json.zip', $tmpPath . '/' . $filename);
+		}
+		catch (RuntimeException $e)
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Process a file
+	 *
+	 * @return bool True on success, false otherwise
+	 */
+	public function processJobFinished()
+	{
+		$config       = JFactory::getConfig();
+		$tmpPath      = $config->get('tmp_path');
+		$filename     = $this->getFileName();
+		$fileContents = json_decode(file_get_contents($tmpPath . '/' . $filename . '/' . $filename . '.json'), true);
+
+		if ($fileContents !== null)
+		{
+			foreach ($fileContents['strings'] as $translationId => $translationText)
+			{
+				/* @var $translation NenoContentElementTranslation */
+				$translation = NenoContentElementTranslation::load($translationId);
+				$translation
+					->setString($translationText)
+					->persist();
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 }
