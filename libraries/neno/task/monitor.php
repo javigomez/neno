@@ -30,7 +30,6 @@ class NenoTaskMonitor
 		// Calculate execution time
 		self::calculateMaxExecutionTime();
 		$timeRemaining = self::$maxExecutionTime;
-		$task          = self::fetchTask();
 
 		// Clean the queue
 		self::cleanUp();
@@ -64,7 +63,7 @@ class NenoTaskMonitor
 		if (self::$maxExecutionTime === null)
 		{
 			// Setting max_execution_time to 1 hour
-			$result = ini_set('max_execution_time', 3600);
+			$result = set_time_limit(3600);
 
 			$executionTime = 3600;
 
