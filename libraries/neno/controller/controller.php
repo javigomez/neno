@@ -25,6 +25,7 @@ class NenoController extends JControllerLegacy
 	public function processTaskQueue()
 	{
 		NenoTaskMonitor::runTask();
+		JFactory::getApplication()->close();
 	}
 
 	/**
@@ -37,8 +38,7 @@ class NenoController extends JControllerLegacy
 	 */
 	public function display($cachable = false, $urlParams = array ())
 	{
-		$app   = JFactory::getApplication();
-		$input = $app->input;
+		$input = $this->input;
 		$view  = $input->getCmd('view', 'dashboard');
 		$input->set('view', $view);
 
@@ -86,5 +86,32 @@ class NenoController extends JControllerLegacy
 		$url = JRoute::_('index.php?option=com_neno&view=' . $next, false);
 		$this->setRedirect($url);
 		$this->redirect();
+	}
+
+	/**
+	 * Set a translation as ready
+	 *
+	 * @return void
+	 */
+	public function translationReady()
+	{
+		$input = $this->input;
+		$jobId = $input->get->getString('jobId');
+
+		/* @var $job NenoJob */
+		$job = NenoJob::load($jobId);
+
+		if ($job === null)
+		{
+			NenoLog::add('Job not found. Job Id:' . $jobId, NenoLog::PRIORITY_ERROR);
+		}
+		else
+		{
+			// Set the job as completed by the server but the component hasn't processed it yet.
+			$job->setState(NenoJob::JOB_STATE_COMPLETED);
+			$job->persist();
+		}
+
+		JFactory::getApplication()->close();
 	}
 }
