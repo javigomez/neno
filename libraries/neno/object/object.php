@@ -117,25 +117,40 @@ abstract class NenoObject
 
 		foreach ($pk as $field => $value)
 		{
-			if (is_array($value))
+			if (!in_array($field, array ('_order', '_limit', '_offset')))
 			{
-				// If this field has an special condition, let's apply it
-				if (!empty($value['_field']) && !empty($value['_condition']) && !empty($value['_value']))
+				if (is_array($value))
 				{
-					$query->where(
-						$db->quoteName(NenoHelper::convertPropertyNameToDatabaseColumnName($value['_field'])) .
-						' ' . $value['_condition'] . ' ' .
-						$db->quote($value['_value'])
-					);
+					// If this field has an special condition, let's apply it
+					if (!empty($value['_field']) && !empty($value['_condition']) && !empty($value['_value']))
+					{
+						$query->where(
+							$db->quoteName(NenoHelper::convertPropertyNameToDatabaseColumnName($value['_field'])) .
+							' ' . $value['_condition'] . ' ' .
+							$db->quote($value['_value'])
+						);
+					}
 				}
-			}
-			else
-			{
-				$query->where($db->quoteName(NenoHelper::convertPropertyNameToDatabaseColumnName($field)) . ' = ' . $db->quote($value));
+				else
+				{
+					$query->where($db->quoteName(NenoHelper::convertPropertyNameToDatabaseColumnName($field)) . ' = ' . $db->quote($value));
+				}
 			}
 		}
 
-		$db->setQuery($query);
+		// If order clauses have been set, let's process them
+		if (!empty($pk['_order']))
+		{
+			foreach ($pk['_order'] as $orderField => $orderDirection)
+			{
+				$query->order($orderField . ' ' . $orderDirection);
+			}
+		}
+
+		$offset = empty($pk['_offset']) ? 0 : (int) $pk['_offset'];
+		$limit  = empty($pk['_limit']) ? 0 : (int) $pk['_limit'];
+
+		$db->setQuery($query, $offset, $limit);
 		$objects     = $db->loadAssocList();
 		$objectsData = array ();
 
