@@ -90,7 +90,7 @@
     </plugins>
 
     <updateservers>
-        <server type="extension" priority="1" name="com_neno">https://github.com/Jensen-Technologies/neno/releases/tag/v0.1-alpha/neno-update.xml</server>
+        <server type="extension" priority="1" name="com_neno">http://www.neno-translate.com/releases/neno-update.xml</server>
     </updateservers>
 
 </extension>
