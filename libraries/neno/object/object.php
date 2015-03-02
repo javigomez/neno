@@ -154,6 +154,8 @@ abstract class NenoObject
 		$objects     = $db->loadAssocList();
 		$objectsData = array ();
 
+		$className = get_called_class();
+
 		if (!empty($objects))
 		{
 			foreach ($objects as $object)
@@ -165,7 +167,7 @@ abstract class NenoObject
 					$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
 				}
 
-				$objectsData[] = $objectData;
+				$objectsData[] = new $className($objectData);
 			}
 		}
 

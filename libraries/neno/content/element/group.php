@@ -216,7 +216,7 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public static function getGroup($groupId)
 	{
-		$group = new NenoContentElementGroup(self::load($groupId));
+		$group = self::load($groupId);
 
 		return $group;
 	}

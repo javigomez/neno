@@ -107,9 +107,7 @@ class NenoContentElementField extends NenoContentElement
 	 */
 	public static function getFieldById($fieldId)
 	{
-		$field = new NenoContentElementField(self::load($fieldId));
-
-		return $field;
+		return self::load($fieldId);
 	}
 
 	/**
@@ -549,8 +547,7 @@ class NenoContentElementField extends NenoContentElement
 	 */
 	private static function getFieldDataFromDatabase($tableId, $fieldName)
 	{
-		$fieldData = self::load(array ('table_id' => $tableId, 'field_name' => $fieldName));
-		$field     = new NenoContentElementField($fieldData);
+		$field = self::load(array ('table_id' => $tableId, 'field_name' => $fieldName));
 
 		return $field;
 	}

@@ -655,8 +655,7 @@ class NenoHelper
 				// If the string was already discovered, let's get if the it has changed.
 				if (self::isLanguageStringAlreadyDiscovered($sourceLanguageStringData['extension'], $sourceLanguageStringData['constant'], $defaultLanguage))
 				{
-					$languageStringData   = NenoContentElementLangstring::load($sourceLanguageStringData);
-					$sourceLanguageString = new NenoContentElementLangstring($languageStringData);
+					$sourceLanguageString = NenoContentElementLangstring::load($sourceLanguageStringData);
 
 					// If the string has changed, let's update it and mark the translation as out of sync
 					if ($sourceLanguageString->getString() != $languageStringText)
@@ -874,8 +873,7 @@ class NenoHelper
 			}
 			else
 			{
-				$tableData = NenoContentElementTable::load(array ('table_name' => $tableName, 'group_id' => $group->getId()));
-				$table     = new NenoContentElementTable($tableData);
+				$table = NenoContentElementTable::load(array ('table_name' => $tableName, 'group_id' => $group->getId()));
 			}
 
 			$result[] = $table;

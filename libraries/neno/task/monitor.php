@@ -30,6 +30,7 @@ class NenoTaskMonitor
 		// Calculate execution time
 		self::calculateMaxExecutionTime();
 		$timeRemaining = self::$maxExecutionTime;
+		$task          = self::fetchTask();
 
 		// Clean the queue
 		self::cleanUp();
@@ -78,6 +79,32 @@ class NenoTaskMonitor
 	}
 
 	/**
+	 * Load a task from the queue
+	 *
+	 * @return NenoTask
+	 */
+	protected static function fetchTask()
+	{
+		// Load tasks that hasn't started yet and they have less than 4 attempts
+		$task = NenoTask::load(
+			array (
+				'attemps_filter' => array (
+					'_field'     => 'number_of_attempts',
+					'_condition' => '<=',
+					'_value'     => 3
+				),
+				'time_started'   => '0000-00-00 00:00:00',
+				'_order'         => array (
+					'time_added' => 'ASC'
+				),
+				'_limit'         => 1
+			)
+		);
+
+		return $task;
+	}
+
+	/**
 	 * Clean up task queue
 	 *
 	 * @return void
@@ -93,18 +120,6 @@ class NenoTaskMonitor
 
 		$db->setQuery($query);
 		$db->execute();
-	}
-
-	/**
-	 * Load a task from the queue
-	 *
-	 * @return NenoTask
-	 */
-	protected static function fetchTask()
-	{
-		$task = NenoTask::load(array ());
-
-		return $task;
 	}
 
 	/**
