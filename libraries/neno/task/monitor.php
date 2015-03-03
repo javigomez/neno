@@ -34,22 +34,22 @@ class NenoTaskMonitor
 		// Clean the queue
 		self::cleanUp();
 
-		// Execute tasks until we spend all the time
-		while ($timeRemaining > 0)
+		// It means that there's no way to stop this process, let's execute just one task
+		if ($timeRemaining == 0)
 		{
-			$iniTime = time();
-			$task    = self::fetchTask();
-
-			// If there are task to execute, let's run it
-			if (!empty($task))
+			$task = self::fetchTask();
+			self::executeTask($task);
+		}
+		else
+		{
+			// Execute tasks until we spend all the time
+			while ($timeRemaining > 0)
 			{
-				$task->execute();
-
-				NenoLog::add($task->getTask() . ' task has been executed properly');
-				$task->remove();
+				$iniTime = time();
+				$task    = self::fetchTask();
+				self::executeTask($task);
+				$timeRemaining -= time() - $iniTime;
 			}
-
-			$timeRemaining -= time() - $iniTime;
 		}
 	}
 
@@ -75,6 +75,24 @@ class NenoTaskMonitor
 
 			self::$maxExecutionTime = $executionTime * 0.9;
 		}
+	}
+
+	/**
+	 * Clean up task queue
+	 *
+	 * @return void
+	 */
+	private static function cleanUp()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->update('#__neno_tasks')
+			->set('time_started = ' . $db->quote('0000-00-00 00:00:00'));
+
+		$db->setQuery($query);
+		$db->execute();
 	}
 
 	/**
@@ -104,21 +122,26 @@ class NenoTaskMonitor
 	}
 
 	/**
-	 * Clean up task queue
+	 * Execute a particular task given by parameter
 	 *
-	 * @return void
+	 * @param   NenoTask|null $task Task to execute
+	 *
+	 * @return bool True on success, false otherwise
 	 */
-	private static function cleanUp()
+	private static function executeTask($task)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		// If there are task to execute, let's run it
+		if (!empty($task))
+		{
+			$task->execute();
 
-		$query
-			->update('#__neno_tasks')
-			->set('time_started = ' . $db->quote('0000-00-00 00:00:00'));
+			NenoLog::add($task->getTask() . ' task has been executed properly');
+			$task->remove();
 
-		$db->setQuery($query);
-		$db->execute();
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
