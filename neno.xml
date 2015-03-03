@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="package" version="3.0" method="upgrade">
+	<name>Neno</name>
+	<creationDate>XXX_DATE_XXX</creationDate>
+	<version>XXX_VERSION_XXX</version>
+	<author>Jensen Technologies S.L.</author>
+	<authorEmail>info@neno-translate.com</authorEmail>
+	<authorUrl>http://www.neno-translate.com</authorUrl>
+	<copyright>Copyright (C) 2015 Jensen Technologies S.L. All rights reserved.</copyright>
+	<description>The complete translation solution for Joomla</description>
+	<license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
+	<packagename>Neno</packagename>
+	<files folder="packages">
+		<file type="component" id="com_neno">com_neno.zip</file>
+		<file type="plugin" id="neno" group="system">plg_system_neno.zip</file>
+		<file type="library" id="neno">lib_neno.zip</file>
+	</files>
+</extension>
