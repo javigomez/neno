@@ -28,12 +28,11 @@ class NenoModelStrings extends JModelList
 	 * @see        JController
 	 * @since      1.6
 	 */
-	public function __construct($config = array())
+	public function __construct($config = array ())
 	{
 		if (empty($config['filter_fields']))
 		{
-			$config['filter_fields'] = array(
-				/*'id', 'a.id',
+			$config['filter_fields'] = array (/*'id', 'a.id',
 				'string', 'a.string',
 				'constant', 'a.constant',
 				'lang', 'a.lang',
@@ -46,36 +45,6 @@ class NenoModelStrings extends JModelList
 		}
 
 		parent::__construct($config);
-	}
-
-	/**
-	 * Get and set current values of filters
-	 *
-	 * @param
-	 */
-	protected function populateState($ordering = null, $direction = null)
-	{
-		// Initialise variables.
-		$app = JFactory::getApplication('administrator');
-
-
-
-		// Other code goes here
-
-
-
-		$group = $app->getUserStateFromRequest($this->context . 'filter.group_id', 'filter_group_id', '', 'string');
-		$this->setState('filter.group_id', $group);
-
-
-
-		// Other code goes here
-
-
-
-
-		// List state information.
-		parent::populateState('a.id', 'asc');
 	}
 
 	/**
@@ -99,7 +68,7 @@ class NenoModelStrings extends JModelList
 
 		//var_dump($elements);
 
-		$translations = array();
+		$translations = array ();
 
 		$countElements = count($elements);
 
@@ -120,6 +89,31 @@ class NenoModelStrings extends JModelList
 	}
 
 	/**
+	 * Get and set current values of filters
+	 *
+	 * @param
+	 */
+	protected function populateState($ordering = null, $direction = null)
+	{
+		// Initialise variables.
+		$app = JFactory::getApplication('administrator');
+
+
+		// Other code goes here
+
+
+		$group = $app->getUserStateFromRequest($this->context . 'filter.group_id', 'filter_group_id', '', 'string');
+		$this->setState('filter.group_id', $group);
+
+
+		// Other code goes here
+
+
+		// List state information.
+		parent::populateState('a.id', 'asc');
+	}
+
+	/**
 	 * Build an SQL query to load the list data.
 	 *
 	 * @return    JDatabaseQuery
@@ -128,13 +122,12 @@ class NenoModelStrings extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		var_dump($this->getState());
+		$filterJson     = $this->getState('filter.multiselect-value', '[]');
+		$filterArray    = json_decode($filterJson);
+		$filterGroups   = array ();
+		$filterElements = array ();
+		$filterKeys     = array ();
 
-		$filterJson = $this->getState('filter.multiselect-value');
-		$filterArray = json_decode($filterJson);
-		$filterGroups = array();
-		$filterElements = array();
-		$filterKeys = array();
 		foreach ($filterArray as $filterItem)
 		{
 			if (strpos($filterItem, 'group') !== false)
@@ -152,34 +145,36 @@ class NenoModelStrings extends JModelList
 		}
 
 		$workingLanguage = NenoHelper::getWorkingLanguage();
-		$strings = array ();
 
 		// Create a new query object.
 		$query = parent::getListQuery();
 
 		$query->select('tr.*');
 		$query->from('`#__neno_content_element_tables` AS t');
-		$query->join('LEFT', '`#__neno_content_element_fields` AS f ON t.id = f.table_id AND f.translate = 1');
-		$query->join('LEFT', '`#__neno_content_element_translations` AS tr ON tr.content_id = f.id');
+		$query->leftJoin('`#__neno_content_element_fields` AS f ON t.id = f.table_id AND f.translate = 1');
+		$query->leftJoin('`#__neno_content_element_translations` AS tr ON tr.content_id = f.id');
 		$query->where('tr.language = "' . $workingLanguage . '"');
 
-		$queryWhere = array();
+		$queryWhere = array ();
 
 		if (count($filterGroups))
 		{
 			$queryWhere[] = 't.group_id IN (' . implode(', ', $filterGroups) . ')';
 		}
+
 		if (count($filterElements))
 		{
 			$queryWhere[] = 't.id IN (' . implode(', ', $filterElements) . ')';
 		}
+
 		if (count($filterKeys))
 		{
 			$queryWhere[] = 'f.id IN (' . implode(', ', $filterKeys) . ')';
 		}
+
 		if (count($queryWhere))
 		{
-			$query->where('(' . implode(' OR ',$queryWhere) . ')');
+			$query->where('(' . implode(' OR ', $queryWhere) . ')');
 		}
 
 
