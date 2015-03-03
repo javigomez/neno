@@ -44,10 +44,11 @@ jQuery(document).ready(function () {
             uncheckAncestor(checkbox);
         }
         var checked = JSON.stringify(getMultiSelectValue(checkbox.closest('table')));
+        jQuery('#multiselect-value').val(checked);
         jQuery.ajax({
             type: "POST",
             url: "index.php?option=com_neno&task=strings.getStrings",
-            data: {jsonData: checked}
+            data: {jsonData: checked, limitStart: document.adminForm.limitstart.value, limit: document.adminForm.list_limit.value}
         })
             .done(function( ret ) {
                 if (ret) {

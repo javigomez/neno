@@ -16,6 +16,12 @@ $document->addScript(JUri::root() . '/media/neno/js/multiselect.js');
 $document->addStyleSheet(JUri::root() . '/media/neno/css/multiselect.css');
 
 $isOverlay = isset($displayData->isOverlay);
+
+JLoader::import('joomla.application.component.model');
+JModelLegacy::addIncludePath(JPATH_COMPONENT . '/models' );
+$stringsModel = JModelLegacy::getInstance('NenoModelStrings');
+$filterJson = $stringsModel->getState('filter.multiselect-value');
+$filterArray = json_decode($filterJson);
 ?>
 
 <div class="multiselect">
@@ -27,6 +33,7 @@ $isOverlay = isset($displayData->isOverlay);
 		</button>
 	</div>
 	-->
+	<input type="hidden" id="multiselect-value" name="filter[multiselect-value]" value="test"/>
 
 	<div class="bt n-group">
 		<a class="btn btn-toggle" data-toggle="multiselect" href="#">
@@ -50,7 +57,9 @@ $isOverlay = isset($displayData->isOverlay);
 					?>
 					<tr class="row-group collapsed" data-level="1" data-id="group<?php echo $group->getId(); ?>" data-parent="header">
 						<td <?php echo (count($group->getTables()) || $countLanguageStrings)?(' class="cell-expand"><span class="icon-arrow-right-3"></span>'):('>'); ?></td>
-						<td class="cell-check"><input type="checkbox"/></td>
+						<td class="cell-check">
+							<input type="checkbox" <?php echo (in_array('group' . $group->getId(), $filterArray))?(' checked = "checked"'):(''); ?> />
+						</td>
 						<td colspan="4" title="<?php echo $group->getGroupName(); ?>"><?php echo $group->getGroupName(); ?></td>
 					</tr>
 					<?php /* @var $table NenoContentElementTable */ ?>
@@ -58,7 +67,9 @@ $isOverlay = isset($displayData->isOverlay);
 					<tr class="row-table collapsed hide" data-level="2" data-id="table<?php echo $table->getId(); ?>" data-parent="group<?php echo $group->getId(); ?>">
 						<td></td>
 						<td <?php echo (count($table->getFields()))?(' class="cell-expand"><span class="icon-arrow-right-3"></span>'):('>'); ?></td>
-						<td class="cell-check"><input type="checkbox"/></td>
+						<td class="cell-check">
+							<input type="checkbox" <?php echo (in_array('group' . $group->getId(), $filterArray) || in_array('table' . $table->getId(), $filterArray) )?(' checked = "checked"'):(''); ?>/>
+						</td>
 						<td colspan="3" title="<?php echo $table->getTableName(); ?>"><?php echo $table->getTableName(); ?></td>
 					</tr>
 					<?php /* @var $field NenoContentElementField */ ?>
@@ -68,7 +79,9 @@ $isOverlay = isset($displayData->isOverlay);
 							<td></td>
 							<td></td>
 							<td></td>
-							<td class="cell-check"><input type="checkbox"/></td>
+							<td class="cell-check">
+								<input type="checkbox" <?php echo (in_array('group' . $group->getId(), $filterArray) || in_array('table' . $field->getId(), $filterArray) || in_array('field' . $table->getId(), $filterArray) )?(' checked = "checked"'):(''); ?>/>
+							</td>
 							<td title="<?php echo $field->getFieldName() ?>"><?php echo $field->getFieldName() ?></td>
 						</tr>
 					<?php endforeach; ?>

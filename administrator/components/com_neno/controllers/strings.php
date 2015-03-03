@@ -30,6 +30,8 @@ class NenoControllerStrings extends JControllerAdmin
 		$input = JFactory::getApplication()->input;
 
 		$filterJson = $input->getString('jsonData');
+		$filterOffset = $input->getString('limitStart');
+		$filterLimit = $input->getString('limit');
 		$filterArray = json_decode($filterJson);
 		$filterGroups = array();
 		$filterElements = array();
@@ -82,26 +84,8 @@ class NenoControllerStrings extends JControllerAdmin
 			$query->where('(' . implode(' OR ',$queryWhere) . ')');
 		}
 
-		/*
-		$queryString = $query->__toString();
-		var_dump($queryString);
-
-		var_dump($filterArray);
-
-		exit;
-		*/
-
-		// REMOVE
-		//$query->where('t.group_id = 3561');
-		/*$group = $this->getState('filter.group_id');
-
-		if (is_numeric($group))
-		{
-			$query->where('t.group_id = '.(int) $group);
-		}*/
-
 		// Get the options.
-		$db->setQuery($query);
+		$db->setQuery($query, $filterOffset, $filterLimit);
 
 		try
 		{
@@ -113,22 +97,12 @@ class NenoControllerStrings extends JControllerAdmin
 			//JError::raiseWarning(500, $e->getMessage());
 		}
 
-		//$elements = parent::getItems();
-
-		//var_dump($elements);
-
 		$translations = array();
 		$countStrings = count($strings);
 
 		for ($i = 0; $i < $countStrings; $i++)
 		{
 			$translations[] = new NenoContentElementTranslation($strings[$i]);
-
-			/*$element = NenoContentElementField::getFieldById($elements[$i]->id);
-			if (!empty($element)) {
-				$translations[$i] = NenoContentElementTranslation::getTranslations($element);
-
-			}*/
 		}
 
 		echo JLayoutHelper::render('strings', $translations, JPATH_NENO_LAYOUTS);

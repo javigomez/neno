@@ -128,7 +128,62 @@ class NenoModelStrings extends JModelList
 	 */
 	protected function getListQuery()
 	{
+		var_dump($this->getState());
+
+		$filterJson = $this->getState('filter.multiselect-value');
+		$filterArray = json_decode($filterJson);
+		$filterGroups = array();
+		$filterElements = array();
+		$filterKeys = array();
+		foreach ($filterArray as $filterItem)
+		{
+			if (strpos($filterItem, 'group') !== false)
+			{
+				$filterGroups[] = str_replace('group', '', $filterItem);
+			}
+			elseif (strpos($filterItem, 'table') !== false)
+			{
+				$filterElements[] = str_replace('table', '', $filterItem);
+			}
+			elseif (strpos($filterItem, 'field') !== false)
+			{
+				$filterField[] = str_replace('field', '', $filterItem);
+			}
+		}
+
 		$workingLanguage = NenoHelper::getWorkingLanguage();
+		$strings = array ();
+
+		// Create a new query object.
+		$query = parent::getListQuery();
+
+		$query->select('tr.*');
+		$query->from('`#__neno_content_element_tables` AS t');
+		$query->join('LEFT', '`#__neno_content_element_fields` AS f ON t.id = f.table_id AND f.translate = 1');
+		$query->join('LEFT', '`#__neno_content_element_translations` AS tr ON tr.content_id = f.id');
+		$query->where('tr.language = "' . $workingLanguage . '"');
+
+		$queryWhere = array();
+
+		if (count($filterGroups))
+		{
+			$queryWhere[] = 't.group_id IN (' . implode(', ', $filterGroups) . ')';
+		}
+		if (count($filterElements))
+		{
+			$queryWhere[] = 't.id IN (' . implode(', ', $filterElements) . ')';
+		}
+		if (count($filterKeys))
+		{
+			$queryWhere[] = 'f.id IN (' . implode(', ', $filterKeys) . ')';
+		}
+		if (count($queryWhere))
+		{
+			$query->where('(' . implode(' OR ',$queryWhere) . ')');
+		}
+
+
+		/*$workingLanguage = NenoHelper::getWorkingLanguage();
 
 		// Create a new query object.
 		$query = parent::getListQuery();
@@ -139,18 +194,18 @@ class NenoModelStrings extends JModelList
 		$query->join('LEFT', '#__neno_content_element_translations AS tr ON tr.content_id = f.id');
 		$query->where('tr.language = "' . $workingLanguage . '"');
 
-
+		*/
 		// REMOVE
 		//$query->where('t.group_id = 3562');
 
-
-
+		/*
 		$group = $this->getState('filter.group_id');
 
 		if (is_numeric($group))
 		{
 			$query->where('t.group_id = '.(int) $group);
 		}
+		*/
 
 		//Kint::dump($query->__toString());
 

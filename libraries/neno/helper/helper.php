@@ -1192,4 +1192,37 @@ class NenoHelper
 	{
 		return JFactory::getDbo()->quote($value);
 	}
+
+	/**
+	 * Convert HTML code into text with HTML entities
+	 *
+	 * @param   string  $string HTML code
+	 * @param   int     $truncate Maximum length of the output text
+	 *
+	 * @return string
+	 */
+	public static function html2text($string, $truncate = null)
+	{
+		$string = htmlspecialchars($string);
+		$ending = '';
+		if ($truncate) {
+			$parts = preg_split('/([\s\n\r]+)/', $string, null, PREG_SPLIT_DELIM_CAPTURE);
+			$parts_count = count($parts);
+			$length = 0;
+			$last_part = 0;
+
+			for (; $last_part < $parts_count; ++$last_part)
+			{
+				$length += strlen($parts[$last_part]);
+				if ($length - 3 > $truncate)
+				{
+					$ending = '...';
+					break;
+				}
+			}
+
+			$string = implode(array_slice($parts, 0, $last_part)) . $ending;
+		}
+		return $string;
+	}
 }

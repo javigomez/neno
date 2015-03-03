@@ -69,7 +69,7 @@ $translations = $displayData;
 			<td class="cell-status">
 				<span class="status <?php echo $translationStatesClasses[$translation->getState()]; ?>" alt="<?php echo $translationStatesText[$translation->getState()]; ?>" title="<?php echo $translationStatesText[$translation->getState()]; ?>"></span>
 			</td>
-			<td title="<?php echo $translation->getOriginalText(); ?>"><?php echo $translation->getString(); ?></td>
+			<td title="<?php echo NenoHelper::html2text($translation->getOriginalText(), 200); ?>"><?php echo NenoHelper::html2text($translation->getString(), 200); ?></td>
 			<td><?php echo $group; ?></td>
 			<td><?php echo $element; ?></td>
 			<td><?php echo $key; ?></td>
@@ -79,4 +79,11 @@ $translations = $displayData;
 		</tr>
 	<?php endforeach; ?>
 	</tbody>
+	<tfoot>
+	<tr>
+		<td colspan="9">
+			<?php /*echo $this->pagination->getListFooter();*/ ?>
+		</td>
+	</tr>
+	</tfoot>
 </table>

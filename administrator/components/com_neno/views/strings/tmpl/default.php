@@ -21,6 +21,10 @@ if (!empty($this->extra_sidebar))
 {
 	$this->sidebar .= $this->extra_sidebar;
 }
+
+//Kint::dump($this);
+//exit;
+
 ?>
 
 <script type="text/javascript">
@@ -76,6 +80,7 @@ echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name
 		<div id="elements-wrapper">
 		<?php echo JLayoutHelper::render('strings', $this->items, JPATH_NENO_LAYOUTS);	?>
 		</div>
+		<?php echo $this->pagination->getListFooter(); ?>
 
 		<!--
 		<table class="table table-striped table-strings" id="table-strings">
@@ -114,7 +119,7 @@ echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name
 					<td class="cell-status">
 						<span class="status <?php echo $translationStatesClasses[$translation->getState()]; ?>" alt="<?php echo $translationStatesText[$translation->getState()]; ?>" title="<?php echo $translationStatesText[$translation->getState()]; ?>"></span>
 					</td>
-					<td title="<?php echo $translation->getOriginalText(); ?>"><?php echo $translation->getString(); ?></td>
+					<td title="<?php echo NenoHelper::html2text($translation->getOriginalText()); ?>"><?php echo NenoHelper::html2text($translation->getString()); ?></td>
 					<td><?php echo $group; ?></td>
 					<td><?php echo $element; ?></td>
 					<td><?php echo $key; ?></td>
