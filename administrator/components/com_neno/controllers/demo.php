@@ -42,7 +42,7 @@ class NenoControllerDemo extends JControllerLegacy
 			}
 		}
 
-		$result = $nenoTranslate->translate($text);
+		$result = $nenoTranslate->translate($text,'en-US', 'fr-FR');
 		if ($result == null)
 		{
 			$result = 'warning';
