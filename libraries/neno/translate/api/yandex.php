@@ -42,12 +42,12 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	 * Translate text using yandex api
 	 *
 	 * @param   string $text   text to translate
-	 * @param   string $source source language default english
-	 * @param   string $target target language default french
+	 * @param   string $source source language
+	 * @param   string $target target language
 	 *
 	 * @return string
 	 */
-	public function translate($text, $source = 'en-US', $target = 'fr-FR')
+	public function translate($text, $source, $target)
 	{
 		// Convert from JISO to ISO codes
 		$target = $this->convertFromJisoToIso($target);
@@ -55,10 +55,9 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		// Language parameter for url
 		$source  = $this->convertFromJisoToIso($source);
 		$lang    = $source . "-" . $target;
-		$isoPair = $source . "," . $target;
 
 		// Check availability of language pair for translation
-		$isAvailable = $this->isTranslationAvailable($isoPair, $this->methodName);
+		$isAvailable = $this->isTranslationAvailable($source, $target, $this->methodName);
 
 		if (!$isAvailable)
 		{
