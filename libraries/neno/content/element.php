@@ -193,14 +193,4 @@ abstract class NenoContentElement extends NenoObject
 
 		return $dataCached;
 	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return null
-	 */
-	public function generateId()
-	{
-		return null;
-	}
 }

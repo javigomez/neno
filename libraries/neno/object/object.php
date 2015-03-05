@@ -301,7 +301,10 @@ abstract class NenoObject
 	 *
 	 * @return mixed
 	 */
-	public abstract function generateId();
+	public function generateId()
+	{
+		return null;
+	}
 
 	/**
 	 * Get Record Id
