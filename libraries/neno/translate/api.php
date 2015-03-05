@@ -27,6 +27,26 @@ abstract class NenoTranslateApi extends JHttp
 	protected $apiKey;
 
 	/**
+	 * Method to translate content
+	 *
+	 * @param   string $text   text to translate
+	 * @param   string $source source language
+	 * @param   string $target target language
+	 *
+	 * @return string
+	 */
+	abstract public function translate($text, $source, $target);
+
+	/**
+	 * Method to make supplied language codes equivalent to translation api codes
+	 *
+	 * @param   string $jiso Joomla ISO language code
+	 *
+	 * @return string
+	 */
+	abstract public function convertFromJisoToIso($jiso);
+
+	/**
 	 * Get translator API
 	 *
 	 * @param   string $apiName API Name
@@ -52,38 +72,16 @@ abstract class NenoTranslateApi extends JHttp
 	}
 
 	/**
-	 * Method to translate content
-	 *
-	 * @param   string $text   text to translate
-	 * @param   string $source source language
-	 * @param   string $target target language
-	 *
-	 * @return string
-	 */
-	abstract public function translate($text, $source, $target);
-
-	/**
-	 * Method to make supplied language codes equivalent to translation api codes
-	 *
-	 * @param   string $jiso Joomla ISO language code
-	 *
-	 * @return string
-	 */
-	abstract public function convertFromJisoToIso($jiso);
-
-	/**
 	 * Method to check if language pair is available or not in translation api
 	 *
-	 * @param   string $isoPair    ISO2 language code pair
+	 * @param   string $source source language
+	 * @param   string $target target language
 	 * @param   string $methodName api method name to check
 	 *
 	 * @return boolean
 	 */
-	public function isTranslationAvailable($isoPair, $methodName)
+	public function isTranslationAvailable($source, $target, $methodName)
 	{
-		// Split the language pair using comma
-		$isoParts = (explode(',', $isoPair));
-
 		$available = 1;
 
 		$db    = JFactory::getDbo();
@@ -96,8 +94,8 @@ abstract class NenoTranslateApi extends JHttp
 				$db->quoteName('#__neno_translation_methods', 'm') . ' ON (' . $db->quoteName('mlp.translation_method_id') . ' = ' . $db->quoteName('m.id') . ')'
 			)
 			->where($db->quoteName('m.translator_name') . '=' . $db->quote($methodName))
-			->where('mlp.source_language = ' . $db->quote($isoParts[0]))
-			->where('mlp.destination_language = ' . $db->quote($isoParts[1]));
+			->where('mlp.source_language = ' . $db->quote($source))
+			->where('mlp.destination_language = ' . $db->quote($target));
 
 		$db->setQuery($query);
 
@@ -111,6 +109,18 @@ abstract class NenoTranslateApi extends JHttp
 		}
 
 		return $available;
+	}
+
+	/**
+	 * Method to get supported language pairs for translation from our server
+	 *
+	 * @param   string $methodName api method name
+	 *
+	 * @return array
+	 */
+	public static function getSupportedLanguagePairs($methodName)
+	{
+		return array ();
 	}
 
 	/**
@@ -181,18 +191,6 @@ abstract class NenoTranslateApi extends JHttp
 		}
 
 		return $exe;
-	}
-
-	/**
-	 * Method to get supported language pairs for translation from our server
-	 *
-	 * @param   string $methodName api method name
-	 *
-	 * @return array
-	 */
-	public static function getSupportedLanguagePairs($methodName)
-	{
-		return array ();
 	}
 
 	/**
