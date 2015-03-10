@@ -20,9 +20,16 @@ class NenoTaskWorkerJobSender extends NenoTaskWorker
 	 *
 	 * @return bool True on success, false otherwise
 	 */
-	public function run(array $taskData)
+	public function run($taskData)
 	{
-		$jobs = NenoJob::load(array ());
+		$jobs = NenoJob::load(
+			array (
+				'_order' => array (
+					'created_time' => 'ASC'
+				),
+				'_limit' => 1
+			)
+		);
 
 		// If it's not an array, let's convert to that
 		if (!is_array($jobs))
@@ -39,6 +46,26 @@ class NenoTaskWorkerJobSender extends NenoTaskWorker
 				->persist();
 
 			// Send API call to the server to fetch the file
+			$httpClient = JHttpFactory::getHttp();
+			$data       = json_encode(
+				array (
+					'filename'             => $job->getFileName() . '.zip',
+					'words'                => $job->getWordCount(),
+					'translation_method'   => $job->getTranslationMethod(),
+					'source_language'      => $job->getFromLanguage(),
+					'destination_language' => $job->getToLanguage()
+				)
+			);
+
+			$response = json_decode(
+				$httpClient->post('http://localhost/neno-translate/api/v1/job/12547854796521547856932154785961', $data),
+				true
+			);
+
+			if ($response['code'] != 200)
+			{
+				throw Exception($response['message'], $response['code']);
+			}
 		}
 	}
 }

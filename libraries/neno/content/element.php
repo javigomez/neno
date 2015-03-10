@@ -81,7 +81,7 @@ abstract class NenoContentElement extends NenoObject
 	 *
 	 * @return stdClass|array
 	 */
-	public static function load($pk)
+	public static function load($pk, $cache = true)
 	{
 		$arguments = func_get_args();
 
@@ -91,16 +91,26 @@ abstract class NenoContentElement extends NenoObject
 			$arguments = $pk;
 		}
 
-		$cacheId    = NenoCache::getCacheId(__FUNCTION__, $arguments);
-		$cachedData = NenoCache::getCacheData($cacheId);
+		$data = null;
 
-		if ($cachedData === null)
+		if ($cache)
 		{
-			$cachedData = parent::load($pk);
-			NenoCache::setCacheData($cacheId, $cachedData);
+			$cacheId = NenoCache::getCacheId(__FUNCTION__, $arguments);
+			$data    = NenoCache::getCacheData($cacheId);
+
+			if ($cachedData === null)
+			{
+				$data = parent::load($pk);
+				NenoCache::setCacheData($cacheId, $data);
+			}
+		}
+		else
+		{
+			$data = parent::load($pk);
 		}
 
-		return $cachedData;
+
+		return $data;
 	}
 
 	/**

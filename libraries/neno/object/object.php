@@ -112,7 +112,7 @@ abstract class NenoObject
 		$query = $db->getQuery(true);
 
 		$query
-			->select('*')
+			->select(empty($pk['_select']) ? '*' : $pk['_select'])
 			->from(self::getDbTable());
 
 		foreach ($pk as $field => $value)
@@ -154,21 +154,28 @@ abstract class NenoObject
 		$objects     = $db->loadAssocList();
 		$objectsData = array ();
 
-		$className = get_called_class();
-
-		if (!empty($objects))
+		if (empty($pk['_select']))
 		{
-			foreach ($objects as $object)
+			$className = get_called_class();
+
+			if (!empty($objects))
 			{
-				$objectData = new stdClass;
-
-				foreach ($object as $key => $value)
+				foreach ($objects as $object)
 				{
-					$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
-				}
+					$objectData = new stdClass;
 
-				$objectsData[] = new $className($objectData);
+					foreach ($object as $key => $value)
+					{
+						$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
+					}
+
+					$objectsData[] = empty($pk['_select']) ? new $className($objectData) : $objectsData;
+				}
 			}
+		}
+		else
+		{
+			$objectsData = $objects;
 		}
 
 		if (count($objectsData) == 1)

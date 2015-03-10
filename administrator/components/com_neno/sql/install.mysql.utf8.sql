@@ -8448,7 +8448,7 @@ VALUES
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `#__neno_jobs` (
-  `id`                 VARCHAR(45) NOT NULL,
+  `id`                 INT         NOT NULL AUTO_INCREMENT,
   `state`              TINYINT     NOT NULL DEFAULT 1,
   `created_time`       DATETIME    NOT NULL,
   `sent_time`          DATETIME    NOT NULL,
@@ -8465,7 +8465,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_jobs` (
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `#__neno_jobs_x_translations` (
-  `job_id`         VARCHAR(45) NOT NULL,
+  `job_id`         INT NOT NULL,
   `translation_id` INT         NOT NULL,
   PRIMARY KEY (`job_id`, `translation_id`),
   INDEX `fk_translation_idx` (`translation_id` ASC),

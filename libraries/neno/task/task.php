@@ -130,7 +130,7 @@ class NenoTask extends NenoObject
 	protected function getWorker()
 	{
 		// Generate Worker class name
-		$className = 'NenoTaskWorker' . ucfirst($this->task);
+		$className = 'NenoTaskWorker' . ucfirst(NenoHelper::convertDatabaseColumnNameToPropertyName($this->task));
 
 		// Check if the class exists, if it doesn't, let's try to load it.
 		if (class_exists($className))

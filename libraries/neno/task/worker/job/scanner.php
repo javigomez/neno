@@ -23,16 +23,19 @@ class NenoTaskWorkerJobScanner extends NenoTaskWorker
 	 *
 	 * @return bool True on success, false otherwise
 	 */
-	public function run(array $taskData)
+	public function run($taskData)
 	{
 		$languages       = NenoHelper::getLanguages();
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$profiler        = new JProfiler;
 
 		foreach ($languages as $language)
 		{
-			if ($language !== $defaultLanguage)
+			if ($language->lang_code !== $defaultLanguage)
 			{
-				$machineJob = NenoJob::createJob($language, NenoContentElementTranslation::MACHINE_TRANSLATION_METHOD);
+				$profiler->mark('Before create job' . $language->lang_code . ' Method: Machine');
+				$machineJob = NenoJob::createJob($language->lang_code, NenoContentElementTranslation::MACHINE_TRANSLATION_METHOD);
+				$profiler->mark('After create job' . $language->lang_code . ' Method: Machine');
 
 				// If there are translations for this language and for this translation method
 				if ($machineJob !== null)
@@ -40,13 +43,13 @@ class NenoTaskWorkerJobScanner extends NenoTaskWorker
 					NenoLog::add(count($machineJob->getTranslations()) . ' translations have been found to translate through machine translation');
 				}
 
-				$proJob = NenoJob::createJob($language, NenoContentElementTranslation::PROFESSIONAL_TRANSLATION_METHOD);
+				/*$proJob = NenoJob::createJob($language->lang_code, NenoContentElementTranslation::PROFESSIONAL_TRANSLATION_METHOD);
 
 				// If there are translations for this language and for this translation method
 				if ($proJob)
 				{
 					NenoLog::add(count($proJob->getTranslations()) . ' translations have been found to translate through professional translation');
-				}
+				}*/
 			}
 		}
 

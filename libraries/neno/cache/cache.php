@@ -96,6 +96,6 @@ class NenoCache
 	 */
 	public static function getCacheId($functionName, array $arguments)
 	{
-		return $functionName . implode('+', $arguments);
+		return $functionName . json_encode($arguments);
 	}
 }

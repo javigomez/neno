@@ -357,6 +357,36 @@ class NenoHelper
 	}
 
 	/**
+	 * Convert an array of objects to an simple array. If property is not specified, the property selected will be the first one.
+	 *
+	 * @param   array       $objectList   Object list
+	 * @param   string|null $propertyName Property name
+	 *
+	 * @return array
+	 */
+	public static function convertOnePropertyArrayToSingleArray($objectList, $propertyName = null)
+	{
+		$arrayResult = array ();
+
+		if (!empty($objectList))
+		{
+			// If a property wasn't passed as argument, we will get the first one.
+			if ($propertyName === null)
+			{
+				$properties   = array_keys($objectList[0]);
+				$propertyName = $properties[0];
+			}
+
+			foreach ($objectList as $object)
+			{
+				$arrayResult[] = $object[$propertyName];
+			}
+		}
+
+		return $arrayResult;
+	}
+
+	/**
 	 * Convert a camelcase property name to a underscore case database column name
 	 *
 	 * @param   string $propertyName Property name
@@ -1182,22 +1212,10 @@ class NenoHelper
 	}
 
 	/**
-	 * Escape a string
-	 *
-	 * @param   mixed $value Value
-	 *
-	 * @return string
-	 */
-	private static function escapeString($value)
-	{
-		return JFactory::getDbo()->quote($value);
-	}
-
-	/**
 	 * Convert HTML code into text with HTML entities
 	 *
-	 * @param   string  $string HTML code
-	 * @param   int     $truncate Maximum length of the output text
+	 * @param   string $string   HTML code
+	 * @param   int    $truncate Maximum length of the output text
 	 *
 	 * @return string
 	 */
@@ -1205,11 +1223,12 @@ class NenoHelper
 	{
 		$string = htmlspecialchars($string);
 		$ending = '';
-		if ($truncate) {
-			$parts = preg_split('/([\s\n\r]+)/', $string, null, PREG_SPLIT_DELIM_CAPTURE);
+		if ($truncate)
+		{
+			$parts       = preg_split('/([\s\n\r]+)/', $string, null, PREG_SPLIT_DELIM_CAPTURE);
 			$parts_count = count($parts);
-			$length = 0;
-			$last_part = 0;
+			$length      = 0;
+			$last_part   = 0;
 
 			for (; $last_part < $parts_count; ++$last_part)
 			{
@@ -1223,6 +1242,94 @@ class NenoHelper
 
 			$string = implode(array_slice($parts, 0, $last_part)) . $ending;
 		}
+
 		return $string;
+	}
+
+	/**
+	 * Load Original from a translation
+	 *
+	 * @param int $translationId        Translation Id
+	 * @param int $translationType      Translation Type (DB Content or Language String)
+	 * @param int $translationElementId Translation element Id
+	 *
+	 * @return string|null
+	 */
+	public static function getTranslationOriginalText($translationId, $translationType, $translationElementId)
+	{
+		/* @var $db NenoDatabaseDriverMysqlX */
+		$db     = JFactory::getDbo();
+		$query  = $db->getQuery(true);
+		$string = null;
+
+		// If the translation comes from database content, let's load it
+		if ($translationType == NenoContentElementTranslation::DB_STRING)
+		{
+			$query
+				->select(
+					array (
+						'f.field_name',
+						't.table_name'
+					)
+				)
+				->from('`#__neno_content_element_fields` AS f')
+				->innerJoin('`#__neno_content_element_tables` AS t ON f.table_id = t.id')
+				->where('f.id = ' . $translationElementId);
+
+			$db->setQuery($query);
+			list($fieldName, $tableName) = $db->loadRow();
+
+			$query
+				->clear()
+				->select(
+					array (
+						'f.field_name',
+						'ft.value',
+					)
+				)
+				->from('`#__neno_content_element_fields_x_translations` AS ft')
+				->innerJoin('`#__neno_content_element_fields` AS f ON f.id = ft.field_id')
+				->where('ft.translation_id = ' . $translationId);
+
+			$db->setQuery($query);
+			$whereValues = $db->loadAssocList('field_name');
+
+			$query
+				->clear()
+				->select($db->quoteName($fieldName))
+				->from($tableName);
+
+			foreach ($whereValues as $whereField => $where)
+			{
+				$query->where($db->quoteName($whereField) . ' = ' . $db->quote($where['value']));
+			}
+
+			$db->setQuery($query);
+			$string = $db->loadResult();
+		}
+		else
+		{
+			$query
+				->select('string')
+				->from('#__neno_content_element_langstrings')
+				->where('id = ' . $translationElementId);
+
+			$db->setQuery($query);
+			$string = $db->loadResult();
+		}
+
+		return $string;
+	}
+
+	/**
+	 * Escape a string
+	 *
+	 * @param   mixed $value Value
+	 *
+	 * @return string
+	 */
+	private static function escapeString($value)
+	{
+		return JFactory::getDbo()->quote($value);
 	}
 }

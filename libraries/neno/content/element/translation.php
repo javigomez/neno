@@ -198,71 +198,31 @@ class NenoContentElementTranslation extends NenoContentElement
 	 */
 	private function loadOriginalText()
 	{
-		$string = null;
-
-		if ($this->contentType == self::DB_STRING)
-		{
-			/* @var $field NenoContentElementField */
-			$field = $this->getElement();
-
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
-
-			$query
-				->select($db->quoteName($field->getFieldName()))
-				->from($field->getTable()->getTableName());
-
-			$primaryKeys = $field->getTable()->getPrimaryKey();
-
-			foreach ($primaryKeys as $primaryKey)
-			{
-				$primaryKeyField = NenoContentElementField::getFieldByTableAndFieldName($field->getTable(), $primaryKey);
-				$query2          = $db->getQuery(true);
-				$query2
-					->select('value')
-					->from('#__neno_content_element_fields_x_translations')
-					->where(
-						array (
-							'translation_id = ' . $this->getId(),
-							'field_id = ' . $primaryKeyField->getId()
-						)
-					);
-				$query->where($db->quoteName($primaryKey) . ' = (' . (string) $query2 . ')');
-			}
-
-			$db->setQuery($query);
-			$string = (string) $db->loadResult();
-		}
-		else
-		{
-			/* @var $languageString NenoContentElementLangstring */
-			$languageString = $this->getElement();
-			$string         = $languageString->getString();
-		}
+		$string = NenoHelper::getTranslationOriginalText($this->getId(), $this->getContentType(), $this->element->getId());
 
 		return $string;
 	}
 
 	/**
-	 * Get Content element
+	 * Get type of the content to translate
 	 *
-	 * @return NenoContentElement
+	 * @return int
 	 */
-	public function getElement()
+	public function getContentType()
 	{
-		return $this->element;
+		return $this->contentType;
 	}
 
 	/**
-	 * Set content element
+	 * Set content type
 	 *
-	 * @param   NenoContentElement $element Content element
+	 * @param   int $contentType content type
 	 *
 	 * @return NenoContentElement
 	 */
-	public function setElement(NenoContentElement $element)
+	public function setContentType($contentType)
 	{
-		$this->element = $element;
+		$this->contentType = $contentType;
 
 		return $this;
 	}
@@ -313,25 +273,25 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * Get type of the content to translate
-	 *
-	 * @return int
-	 */
-	public function getContentType()
-	{
-		return $this->contentType;
-	}
-
-	/**
-	 * Set content type
-	 *
-	 * @param   int $contentType content type
+	 * Get Content element
 	 *
 	 * @return NenoContentElement
 	 */
-	public function setContentType($contentType)
+	public function getElement()
 	{
-		$this->contentType = $contentType;
+		return $this->element;
+	}
+
+	/**
+	 * Set content element
+	 *
+	 * @param   NenoContentElement $element Content element
+	 *
+	 * @return NenoContentElement
+	 */
+	public function setElement(NenoContentElement $element)
+	{
+		$this->element = $element;
 
 		return $this;
 	}

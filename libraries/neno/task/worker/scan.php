@@ -9,11 +9,9 @@
 defined('JPATH_NENO') or die;
 
 /**
- * Class NenoWorker
- *
- * @since  1.0
+ * Class NenoTaskWorkerScan
  */
-abstract class NenoTaskWorker
+class NenoTaskWorkerScan extends NenoTaskWorker
 {
 	/**
 	 * Execute the task
@@ -22,5 +20,8 @@ abstract class NenoTaskWorker
 	 *
 	 * @return bool True on success, false otherwise
 	 */
-	abstract public function run(array $taskData);
+	public function run(array $taskData)
+	{
+		// TODO: Implement run() method.
+	}
 }
