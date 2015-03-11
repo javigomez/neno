@@ -29,16 +29,6 @@
                 >
             <option value="">COM_NENO_SELECT_TRANSLATORS</option>
         </field>
-        <field
-                name="group_id"
-                type="group"
-                label="COM_NENO_SELECT_GROUPS"
-                extension="com_neno"
-                description="COM_BANNERS_FILTER_GROUP_DESC"
-                onchange="this.form.submit();"
-                >
-            <option value="">COM_NENO_SELECT_GROUPS</option>
-        </field>
     </fields>
     <fields name="list">
         <field

@@ -1,0 +1,57 @@
+/*.table-multiselect .cell-expand,
+.table-multiselect .cell-collapse {
+    padding-top: 4px;
+    cursor: pointer;
+}
+.table-multiselect .cell-check {
+    width: 15px !important;
+}
+.table-multiselect .cell-check input {
+    margin-top: 0;
+    margin-left: 3px;
+}
+.btn-toggle {
+    width: 100% !important;
+    text-align: left !important;
+}
+.btn-toggle.open {
+    border-radius: 4px 4px 0 0 !important;
+    background-color: #e6e6e6;
+    color: #333;
+    text-decoration: none;
+    background-position: 0 -15px;
+    -webkit-transition: background-position .1s linear;
+    -moz-transition: background-position .1s linear;
+    -o-transition: background-position .1s linear;
+    transition: background-position .1s linear;
+    outline: none;
+    outline-offset: -2px;
+}
+.menu-multiselect {
+    display: none;
+    width: 100%;
+    overflow-x: hidden;
+    border: 1px solid #ccc;
+    border-radius: 0 0 4px 4px;
+    border-top: none;
+    padding: 5px 12px;
+    max-height: 300px;
+    overflow-y: scroll;
+}
+.menu-multiselect.overlay {
+    position: absolute;
+    background-color: white;
+    width: 200px;
+    -webkit-box-shadow: 0px 4px 5px 0px rgba(204,204,204,1);
+    -moz-box-shadow: 0px 4px 5px 0px rgba(204,204,204,1);
+    box-shadow: 0px 4px 5px 0px rgba(204,204,204,1);
+}
+*/
+
+.js-stools-field-filter {
+    width: 45%;
+}
+
+.js-stools-field-filter select {
+    width: 100%;
+}
