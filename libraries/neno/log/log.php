@@ -34,14 +34,6 @@ class NenoLog extends JLog
 	const PRIORITY_DEBUG = 3;
 
 	/**
-	 * @var array
-	 */
-	protected $customLoggers = array (
-		'database',
-		'api'
-	);
-
-	/**
 	 * A static method that allows logging of errors and messages
 	 *
 	 * @param   string  $string          The log line that should be saved
@@ -177,12 +169,6 @@ class NenoLog extends JLog
 			{
 				// Prefix for Joomla loggers
 				$prefix = 'JLogLogger';
-
-				// If this logger is a custom one, the prefix would be NenoLog instead of JLogLogger
-				if (in_array($this->configurations[$signature]['logger'], $this->customLoggers))
-				{
-					$prefix = 'NenoLogLogger';
-				}
 
 				$class = $prefix . ucfirst($this->configurations[$signature]['logger']);
 

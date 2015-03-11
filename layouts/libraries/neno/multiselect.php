@@ -30,7 +30,7 @@ $isOverlay = isset($displayData->isOverlay);
 
 	<div class="bt n-group">
 		<a class="btn btn-toggle" data-toggle="multiselect" href="#">
-			Action
+			<?php JText::_('COM_NENO_TITLE_GROUPSELEMENTS'); ?>
 			<span class="caret pull-right"></span>
 		</a>
 

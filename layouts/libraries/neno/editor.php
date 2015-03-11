@@ -37,14 +37,14 @@ $translations = $displayData;
 	<thead>
 	<tr>
 		<th class="cell-check"><input type="checkbox"/></th>
-		<th><?php echo JText::_('COM_NENO_STATUS'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_STRING'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_GROUP'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_ELEMENT'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_KEY'); ?></th>
-		<th><?php echo JText::_('COM_NENO_TRANSLATION_METHODS'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_WORDS'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_CHARS'); ?></th>
+		<th>Status</th>
+		<th>String</th>
+		<th>Group</th>
+		<th>Element</th>
+		<th>Key</th>
+		<th>Translation Methods</th>
+		<th>Words</th>
+		<th>Characters</th>
 	</tr>
 	</thead>
 	<tbody>

@@ -1116,7 +1116,6 @@ class NenoHelper
 		$query = $db->getQuery(true)
 			->select('id AS value, group_name AS text')
 			->from('#__neno_content_element_groups AS n')
-			//->where('a.state = 1')
 			->order('n.group_name');
 
 		// Get the options.

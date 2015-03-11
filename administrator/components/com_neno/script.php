@@ -9,6 +9,7 @@
 
 define('MODIFIED', 1);
 define('NOT_MODIFIED', 2);
+jimport('joomla.neno.log');
 
 /**
  * Updates the database structure of the component
@@ -42,6 +43,8 @@ class com_nenoInstallerScript
 				JText::_('This component is not compatible with installed Joomla version'),
 				'error'
 			);
+
+			NenoLog::log('Component is not compatible with installed Joomla version', 1);
 
 			return false;
 		}
@@ -95,10 +98,14 @@ class com_nenoInstallerScript
 			if (!function_exists('simplexml_load_file'))
 			{
 				$app->enqueueMessage(JText::_('This script needs \'simplexml_load_file\' to update the component'));
+
+				NenoLog::log('Script needs simplexml_load_file to update the component', 1);
 			}
 			else
 			{
 				$app->enqueueMessage(JText::_('Structure file was not found.'));
+
+				NenoLog::log('Structure file was not found.', 1);
 			}
 		}
 	}
@@ -140,6 +147,14 @@ class com_nenoInstallerScript
 									(string) $table['table_name']
 								)
 							);
+
+							NenoLog::log(
+								JText::sprintf(
+									'Table `%s` has been successfully created',
+									(string) $table['table_name']
+								), 1
+							);
+
 							$table_added = true;
 						}
 						catch ( Exception $ex )
@@ -150,6 +165,14 @@ class com_nenoInstallerScript
 									(string) $table['table_name'],
 									$ex->getMessage()
 								), 'error'
+							);
+
+							NenoLog::log(
+								JText::sprintf(
+									'There was an error creating the table `%s`. Error: %s',
+									(string) $table['table_name'],
+									$ex->getMessage()
+								), 1
 							);
 						}
 					}
@@ -169,6 +192,14 @@ class com_nenoInstallerScript
 									$table['new_name']
 								)
 							);
+
+							NenoLog::log(
+								JText::sprintf(
+									'Table `%s` was successfully renamed to `%s`',
+									$table['old_name'],
+									$table['new_name']
+								), 1
+							);
 						}
 						catch ( Exception $ex )
 						{
@@ -178,6 +209,14 @@ class com_nenoInstallerScript
 									$table['old_name'],
 									$ex->getMessage()
 								), 'error'
+							);
+
+							NenoLog::log(
+								JText::sprintf(
+									'There was an error renaming the table `%s`. Error: %s',
+									$table['old_name'],
+									$ex->getMessage()
+							    ), 1
 							);
 						}
 					}
@@ -195,6 +234,12 @@ class com_nenoInstallerScript
 								$app->enqueueMessage(
 									JText::sprintf('Table `%s` has been successfully created', $table['table_name'])
 								);
+
+								NenoLog::log(
+									JText::sprintf('Table `%s` has been successfully created', $table['table_name']
+									), 1
+								);
+
 								$table_added = true;
 							}
 							catch ( Exception $ex )
@@ -205,6 +250,14 @@ class com_nenoInstallerScript
 										$table['table_name'],
 										$ex->getMessage()
 									), 'error'
+								);
+
+								NenoLog::log(
+									JText::sprintf(
+										'There was an error creating the table `%s`. Error: %s',
+										$table['table_name'],
+										$ex->getMessage()
+									), 1
 								);
 							}
 						}
@@ -219,6 +272,10 @@ class com_nenoInstallerScript
 						$app->enqueueMessage(
 							JText::sprintf('Table `%s` was successfully deleted', $table['table_name'])
 						);
+
+						NenoLog::log(
+							JText::sprintf('Table `%s` was successfully deleted', $table['table_name']), 1);
+
 					}
 					catch ( Exception $ex )
 					{
@@ -227,6 +284,14 @@ class com_nenoInstallerScript
 								'There was an error deleting Table `%s`. Error: %s',
 								$table['table_name'], $ex->getMessage()
 							), 'error'
+						);
+
+						NenoLog::log(
+							JText::sprintf(
+								'There was an error deleting Table `%s`. Error: %s',
+								$table['table_name'],
+								$ex->getMessage()
+							), 1
 						);
 					}
 
@@ -421,6 +486,8 @@ class com_nenoInstallerScript
 						$app->enqueueMessage(
 							JText::sprintf('Field `%s` has been successfully added', $field['field_name'])
 						);
+
+						NenoLog::log(JText::sprintf('Field `%s` has been successfully added', $field['field_name']), 1);
 					}
 					else
 					{
@@ -431,6 +498,13 @@ class com_nenoInstallerScript
 									'There was an error adding the field `%s`. Error: %s',
 									$field['field_name'], $result
 								), 'error'
+							);
+
+							NenoLog::log(
+								JText::sprintf(
+									'There was an error adding the field `%s`. Error: %s',
+									$field['field_name'], $result
+								), 1
 							);
 						}
 					}
@@ -455,6 +529,10 @@ class com_nenoInstallerScript
 								$app->enqueueMessage(
 									JText::sprintf('Field `%s` has been successfully modified', $field['old_name'])
 								);
+
+								NenoLog::log(
+									JText::sprintf('Field `%s` has been successfully modified', $field['old_name']), 1
+								);
 							}
 							catch ( Exception $ex )
 							{
@@ -464,6 +542,14 @@ class com_nenoInstallerScript
 										$field['field_name'],
 										$ex->getMessage()
 									), 'error'
+								);
+
+								NenoLog::log(
+									JText::sprintf(
+										'There was an error modifying the field `%s`. Error: %s',
+										$field['field_name'],
+										$ex->getMessage()
+									), 1
 								);
 							}
 						}
@@ -476,6 +562,10 @@ class com_nenoInstallerScript
 								$app->enqueueMessage(
 									JText::sprintf('Field `%s` has been successfully modified', $field['field_name'])
 								);
+
+								NenoLog::log(
+									JText::sprintf('Field `%s` has been successfully modified', $field['field_name']), 1
+								);
 							}
 							else
 							{
@@ -486,6 +576,13 @@ class com_nenoInstallerScript
 											'There was an error modifying the field `%s`. Error: %s',
 											$field['field_name'], $result
 										), 'error'
+									);
+
+									NenoLog::log(
+										JText::sprintf(
+											'There was an error modifying the field `%s`. Error: %s',
+											$field['field_name'], $result
+										), 1
 									);
 								}
 							}
@@ -500,6 +597,10 @@ class com_nenoInstallerScript
 							$app->enqueueMessage(
 								JText::sprintf('Field `%s` has been successfully added', $field['field_name'])
 							);
+
+							NenoLog::log(
+								JText::sprintf('Field `%s` has been successfully added', $field['field_name']), 1
+							);
 						}
 						else
 						{
@@ -510,6 +611,13 @@ class com_nenoInstallerScript
 										'There was an error adding the field `%s`. Error: %s',
 										$field['field_name'], $result
 									), 'error'
+								);
+
+								NenoLog::log(
+									JText::sprintf(
+										'There was an error adding the field `%s`. Error: %s',
+										$field['field_name'], $result
+									), 1
 								);
 							}
 						}
@@ -533,15 +641,27 @@ class com_nenoInstallerScript
 							$app->enqueueMessage(
 								JText::sprintf('Field `%s` has been successfully deleted', $field['field_name'])
 							);
+
+							NenoLog::log(
+								JText::sprintf('Field `%s` has been successfully deleted', $field['field_name']), 1
+							);
 						}
 						catch ( Exception $ex )
 						{
 							$app->enqueueMessage(
 								JText::sprintf(
 									'There was an error deleting the field `%s`. Error: %s',
-								$field['field_name'],
-								$ex->getMessage()
+									$field['field_name'],
+									$ex->getMessage()
 								), 'error'
+							);
+
+							NenoLog::log(
+								JText::sprintf(
+									'There was an error deleting the field `%s`. Error: %s',
+									$field['field_name'],
+									$ex->getMessage()
+								), 1
 							);
 						}
 					}
@@ -558,6 +678,10 @@ class com_nenoInstallerScript
 				$app->enqueueMessage(
 					JText::sprintf('Field `%s` has been successfully added', $field['field_name'])
 				);
+
+				NenoLog::log(
+					JText::sprintf('Field `%s` has been successfully added', $field['field_name']), 1
+				);
 			}
 			else
 			{
@@ -568,6 +692,13 @@ class com_nenoInstallerScript
 							'There was an error adding the field `%s`. Error: %s',
 							$field['field_name'], $result
 						), 'error'
+					);
+
+					NenoLog::log(
+						JText::sprintf(
+							'There was an error adding the field `%s`. Error: %s',
+							$field['field_name'], $result
+						), 1
 					);
 				}
 			}
@@ -735,11 +866,15 @@ class com_nenoInstallerScript
 				if ($result)
 				{
 					$app->enqueueMessage('Plugin ' . $pluginName . ' was installed successfully');
+
+					NenoLog::log('Plugin ' . $pluginName . ' was installed successfully', 1);
 				}
 				else
 				{
 					$app->enqueueMessage('There was an issue installing the plugin ' . $pluginName,
 						'error');
+
+					NenoLog::log('There was an issue installing the plugin ' . $pluginName , 1);
 				}
 
 				$query
@@ -821,11 +956,15 @@ class com_nenoInstallerScript
 					if ($result)
 					{
 						$app->enqueueMessage('Module ' . $moduleName . ' was installed successfully');
+
+						NenoLog::log('Module ' . $moduleName . ' was installed successfully', 1);
 					}
 					else
 					{
 						$app->enqueueMessage('There was an issue installing the module ' . $moduleName,
 							'error');
+
+						NenoLog::log('There was an issue installing the module' . $moduleName, 1);
 					}
 				}
 			}
@@ -902,11 +1041,15 @@ class com_nenoInstallerScript
 					if ($result)
 					{
 						$app->enqueueMessage('Plugin ' . $pluginName . ' was uninstalled successfully');
+
+						NenoLog::log('Plugin ' . $pluginName . ' was uninstalled successfully', 1);
 					}
 					else
 					{
 						$app->enqueueMessage('There was an issue uninstalling the plugin ' . $pluginName,
 							'error');
+
+						NenoLog::log('There was an issue uninstalling the plugin ' . $pluginName, 1);
 					}
 				}
 			}
@@ -957,11 +1100,15 @@ class com_nenoInstallerScript
 						if ($result)
 						{
 							$app->enqueueMessage('Module ' . $moduleName . ' was uninstalled successfully');
+
+							NenoLog::log('Module ' . $moduleName . ' was uninstalled successfully', 1);
 						}
 						else
 						{
 							$app->enqueueMessage('There was an issue uninstalling the module ' . $moduleName,
 								'error');
+
+							NenoLog::log('There was an issue uninstalling the module ' . $moduleName, 1);
 						}
 					}
 				}
