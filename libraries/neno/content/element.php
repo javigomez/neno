@@ -98,7 +98,7 @@ abstract class NenoContentElement extends NenoObject
 			$cacheId = NenoCache::getCacheId(__FUNCTION__, $arguments);
 			$data    = NenoCache::getCacheData($cacheId);
 
-			if ($cachedData === null)
+			if ($data === null)
 			{
 				$data = parent::load($pk);
 				NenoCache::setCacheData($cacheId, $data);
@@ -108,7 +108,6 @@ abstract class NenoContentElement extends NenoObject
 		{
 			$data = parent::load($pk);
 		}
-
 
 		return $data;
 	}
