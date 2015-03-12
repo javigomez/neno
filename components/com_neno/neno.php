@@ -28,6 +28,9 @@ if (!NenoHelper::isTheDatabaseDriverEnable())
 {
 	$app = JFactory::getApplication();
 	$app->enqueueMessage('Please enable the plugin to use Neno', 'error');
+
+	NenoLog::log('Plugin disabled in frontend', 1);
+
 	$app->setUserState('com_plugins.plugins.filter.search', 'neno');
 	$app->redirect('index.php?option=com_plugins');
 }
