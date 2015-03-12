@@ -119,6 +119,8 @@ abstract class NenoContentElement extends NenoObject
 	 */
 	public function remove()
 	{
+		NenoLog::log('Element deleted successfully', 2);
+
 		if (parent::remove())
 		{
 			NenoCache::setCacheData($this->getCacheId(), null);
