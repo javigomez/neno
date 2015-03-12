@@ -48,6 +48,8 @@ class NenoTask extends NenoObject
 	 */
 	public function generateId()
 	{
+		NenoLog::log('New task added', 2);
+
 		return null;
 	}
 
@@ -119,6 +121,9 @@ class NenoTask extends NenoObject
 
 		// Get and execute the task through a worker.
 		$worker = $this->getWorker();
+
+		NenoLog::log('Executing task', 2);
+
 		$worker->run($this->taskData);
 	}
 
@@ -141,6 +146,8 @@ class NenoTask extends NenoObject
 		}
 		else
 		{
+			NenoLog::log('Worker not found for this task', 1);
+
 			throw new UnexpectedValueException('Worker not found for this task');
 		}
 	}
