@@ -27,8 +27,12 @@ class NenoControllerGroupsElements extends JControllerAdmin
 	 */
 	public function discoverExtensions()
 	{
+		NenoLog::log('Method discoverExtension of NenoControllerGroupsElements called',3);
+
 		// Check all the extensions that haven't been discover yet
 		NenoHelper::discoverExtensions();
+
+		NenoLog::log('Redirecting to groupselements view',3);
 
 		$this
 			->setRedirect('index.php?option=com_neno&view=groupselements')
@@ -44,7 +48,11 @@ class NenoControllerGroupsElements extends JControllerAdmin
 	 */
 	public function readContentElementFile()
 	{
+		NenoLog::log('Method readContentElementFile of NenoControllerGroupsElements called', 3);
+
 		jimport('joomla.filesystem.file');
+
+		NenoLog::log('Trying to move content element files', 3);
 
 		$input       = JFactory::getApplication()->input;
 		$fileData    = $input->files->get('content_element');
@@ -54,9 +62,13 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		// If the file has been moved successfully, let's work with it.
 		if (JFile::move($fileData['tmp_name'], $destFile) === true)
 		{
+			NenoLog::log('Content element files moved successfully', 2);
+
 			// If the file is a zip file, let's extract it
 			if ($fileData['type'] == 'application/zip')
 			{
+				NenoLog::log('Extracting zip content element files', 3);
+
 				$adapter = JArchive::getAdapter('zip');
 				$adapter->extract($destFile, $extractPath);
 				$contentElementFiles = JFolder::files($extractPath);
@@ -69,12 +81,18 @@ class NenoControllerGroupsElements extends JControllerAdmin
 			// Add to each content file the path of the extraction location.
 			NenoHelper::concatenateStringToStringArray($extractPath . '/', $contentElementFiles);
 
+			NenoLog::log('Parsing element files for readContentElementFile', 3);
+
 			// Parse element file(s)
 			NenoHelper::parseContentElementFile(JFile::stripExt($fileData['name']), $contentElementFiles);
+
+			NenoLog::log('Cleaning temporal folder for readContentElementFile', 3);
 
 			// Clean temporal folder
 			NenoHelper::cleanFolder(JFactory::getConfig()->get('tmp_path'));
 		}
+
+		NenoLog::log('Redirecting to groupselements view', 3);
 
 		$this
 			->setRedirect('index.php?option=com_neno&view=groupselements')
@@ -88,10 +106,14 @@ class NenoControllerGroupsElements extends JControllerAdmin
 	 */
 	public function enableDisableContentElementTable()
 	{
+		NenoLog::log('Method enableDisableContentElementTable of NenoControllerGroupsElements called', 3);
+
 		$input = JFactory::getApplication()->input;
 
 		$tableId         = $input->getInt('tableId');
 		$translateStatus = $input->getBool('translateStatus');
+
+		NenoLog::log('Call to getTableById of NenoContentElementTable', 3);
 
 		$table  = NenoContentElementTable::getTableById($tableId);
 		$result = 0;
@@ -99,6 +121,8 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		// If the table exists, let's work with it.
 		if ($table !== false)
 		{
+			NenoLog::log('Table exists', 2);
+
 			$table->markAsTranslatable($translateStatus);
 			$table->persist();
 
@@ -114,11 +138,14 @@ class NenoControllerGroupsElements extends JControllerAdmin
 	 */
 	public function enableDisableContentElementField()
 	{
+		NenoLog::log('Method enableDisableContentElementField of NenoControllerGroupsElements called', 3);
+
 		$input = JFactory::getApplication()->input;
 
 		$fieldId         = $input->getInt('fieldId');
 		$translateStatus = $input->getBool('translateStatus');
 
+		NenoLog::log('Call to getFieldById of NenoContentElementField', 3);
 		/* @var $field NenoContentElementField */
 		$field  = NenoContentElementField::getFieldById($fieldId);
 		$result = 0;
@@ -126,6 +153,8 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		// If the table exists, let's work with it.
 		if ($field !== false)
 		{
+			NenoLog::log('Table exists', 2);
+
 			$field->setTranslate($translateStatus);
 			$field->persist();
 
@@ -135,10 +164,15 @@ class NenoControllerGroupsElements extends JControllerAdmin
 			$stringStatus['changed']       = $field->getWordsSourceHasChanged();
 			$stringStatus['notTranslated'] = $field->getWordsNotTranslated();
 
+			NenoLog::log('Call to htmlTranslationBar of NenoHelper', 3);
+
 			$result = NenoHelper::htmlTranslationBar($stringStatus, $translateStatus);
 		}
 
 		echo $result;
 		JFactory::getApplication()->close();
 	}
+
+
+
 }
