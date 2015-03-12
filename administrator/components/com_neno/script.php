@@ -9,7 +9,6 @@
 
 define('MODIFIED', 1);
 define('NOT_MODIFIED', 2);
-jimport('joomla.neno.log');
 
 /**
  * Updates the database structure of the component
@@ -152,7 +151,7 @@ class com_nenoInstallerScript
 								JText::sprintf(
 									'Table `%s` has been successfully created',
 									(string) $table['table_name']
-								), 1
+								), 2
 							);
 
 							$table_added = true;
@@ -198,7 +197,7 @@ class com_nenoInstallerScript
 									'Table `%s` was successfully renamed to `%s`',
 									$table['old_name'],
 									$table['new_name']
-								), 1
+								), 2
 							);
 						}
 						catch ( Exception $ex )
@@ -237,7 +236,7 @@ class com_nenoInstallerScript
 
 								NenoLog::log(
 									JText::sprintf('Table `%s` has been successfully created', $table['table_name']
-									), 1
+									), 2
 								);
 
 								$table_added = true;
@@ -274,7 +273,7 @@ class com_nenoInstallerScript
 						);
 
 						NenoLog::log(
-							JText::sprintf('Table `%s` was successfully deleted', $table['table_name']), 1);
+							JText::sprintf('Table `%s` was successfully deleted', $table['table_name']), 2);
 
 					}
 					catch ( Exception $ex )
@@ -487,7 +486,7 @@ class com_nenoInstallerScript
 							JText::sprintf('Field `%s` has been successfully added', $field['field_name'])
 						);
 
-						NenoLog::log(JText::sprintf('Field `%s` has been successfully added', $field['field_name']), 1);
+						NenoLog::log(JText::sprintf('Field `%s` has been successfully added', $field['field_name']), 2);
 					}
 					else
 					{
@@ -531,7 +530,7 @@ class com_nenoInstallerScript
 								);
 
 								NenoLog::log(
-									JText::sprintf('Field `%s` has been successfully modified', $field['old_name']), 1
+									JText::sprintf('Field `%s` has been successfully modified', $field['old_name']), 2
 								);
 							}
 							catch ( Exception $ex )
@@ -564,7 +563,7 @@ class com_nenoInstallerScript
 								);
 
 								NenoLog::log(
-									JText::sprintf('Field `%s` has been successfully modified', $field['field_name']), 1
+									JText::sprintf('Field `%s` has been successfully modified', $field['field_name']), 2
 								);
 							}
 							else
@@ -599,7 +598,7 @@ class com_nenoInstallerScript
 							);
 
 							NenoLog::log(
-								JText::sprintf('Field `%s` has been successfully added', $field['field_name']), 1
+								JText::sprintf('Field `%s` has been successfully added', $field['field_name']), 2
 							);
 						}
 						else
@@ -643,7 +642,7 @@ class com_nenoInstallerScript
 							);
 
 							NenoLog::log(
-								JText::sprintf('Field `%s` has been successfully deleted', $field['field_name']), 1
+								JText::sprintf('Field `%s` has been successfully deleted', $field['field_name']), 2
 							);
 						}
 						catch ( Exception $ex )
@@ -680,7 +679,7 @@ class com_nenoInstallerScript
 				);
 
 				NenoLog::log(
-					JText::sprintf('Field `%s` has been successfully added', $field['field_name']), 1
+					JText::sprintf('Field `%s` has been successfully added', $field['field_name']), 2
 				);
 			}
 			else
@@ -867,7 +866,7 @@ class com_nenoInstallerScript
 				{
 					$app->enqueueMessage('Plugin ' . $pluginName . ' was installed successfully');
 
-					NenoLog::log('Plugin ' . $pluginName . ' was installed successfully', 1);
+					NenoLog::log('Plugin ' . $pluginName . ' was installed successfully', 2);
 				}
 				else
 				{
@@ -957,7 +956,7 @@ class com_nenoInstallerScript
 					{
 						$app->enqueueMessage('Module ' . $moduleName . ' was installed successfully');
 
-						NenoLog::log('Module ' . $moduleName . ' was installed successfully', 1);
+						NenoLog::log('Module ' . $moduleName . ' was installed successfully', 2);
 					}
 					else
 					{
@@ -1042,7 +1041,7 @@ class com_nenoInstallerScript
 					{
 						$app->enqueueMessage('Plugin ' . $pluginName . ' was uninstalled successfully');
 
-						NenoLog::log('Plugin ' . $pluginName . ' was uninstalled successfully', 1);
+						NenoLog::log('Plugin ' . $pluginName . ' was uninstalled successfully', 2);
 					}
 					else
 					{
@@ -1101,7 +1100,7 @@ class com_nenoInstallerScript
 						{
 							$app->enqueueMessage('Module ' . $moduleName . ' was uninstalled successfully');
 
-							NenoLog::log('Module ' . $moduleName . ' was uninstalled successfully', 1);
+							NenoLog::log('Module ' . $moduleName . ' was uninstalled successfully', 2);
 						}
 						else
 						{
