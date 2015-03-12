@@ -27,6 +27,8 @@ class NenoTaskMonitor
 	 */
 	public static function runTask()
 	{
+		NenoLog::log('Sending translation job to execute', 2);
+
 		// Calculate execution time
 		self::calculateMaxExecutionTime();
 		$timeRemaining = self::$maxExecutionTime;
@@ -130,6 +132,8 @@ class NenoTaskMonitor
 	 */
 	private static function executeTask($task)
 	{
+		NenoLog::log('Received translation job to execute', 2);
+
 		// If there are task to execute, let's run it
 		if (!empty($task))
 		{
@@ -160,6 +164,8 @@ class NenoTaskMonitor
 				'taskData' => $taskData
 			)
 		);
+
+		NenoLog::log('Adding translation job to execute', 2);
 
 		return $task->persist();
 	}
