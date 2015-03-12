@@ -145,6 +145,8 @@ class NenoModelEditor extends JModelList
 
 		$workingLanguage = NenoHelper::getWorkingLanguage();
 
+		NenoLog::log('Querying #__neno_content_element_tables from getListQuery of NenoModelEditor', 3);
+
 		// Create a new query object.
 		$query = parent::getListQuery();
 
