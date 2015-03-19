@@ -67,6 +67,11 @@ class NenoContentElementGroup extends NenoContentElement
 	private $wordCount;
 
 	/**
+	 * @var array
+	 */
+	private $languageFiles;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data Group data
@@ -841,5 +846,34 @@ class NenoContentElementGroup extends NenoContentElement
 		}
 
 		return $this->wordCount;
+	}
+
+	/**
+	 * Get all the language files
+	 *
+	 * @return array
+	 */
+	public function getLanguageFiles()
+	{
+		if ($this->languageFiles === null)
+		{
+			$this->languageFiles = array ();
+			$defaultLanguage     = JFactory::getLanguage()->getDefault();
+			$extensionNames      = NenoContentElementLangstring::load(
+				array (
+					'_select'  => array ('DISTINCT extension'),
+					'group_id' => $this->getId()
+				)
+			);
+
+			$extensionNames = array_unique($extensionNames);
+
+			foreach ($extensionNames as $extensionName)
+			{
+				$this->languageFiles[] = $defaultLanguage . '.' . $extensionName . '.ini';
+			}
+		}
+
+		return $this->languageFiles;
 	}
 }
