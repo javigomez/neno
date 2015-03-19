@@ -108,8 +108,11 @@ class NenoController extends JControllerLegacy
 		else
 		{
 			// Set the job as completed by the server but the component hasn't processed it yet.
-			$job->setState(NenoJob::JOB_STATE_COMPLETED);
-			$job->persist();
+			$job
+				->setState(NenoJob::JOB_STATE_COMPLETED)
+				->persist();
+
+			echo 'ok';
 		}
 
 		JFactory::getApplication()->close();
