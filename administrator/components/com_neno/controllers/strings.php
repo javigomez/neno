@@ -27,6 +27,8 @@ class NenoControllerStrings extends JControllerAdmin
 	 */
 	public static function getStrings()
 	{
+		NenoLog::log('Method getStrings of NenoControllerEditor called', 3);
+
 		$input = JFactory::getApplication()->input;
 
 		$filterJson = $input->getString('jsonData');
@@ -36,6 +38,9 @@ class NenoControllerStrings extends JControllerAdmin
 		$filterGroups = array();
 		$filterElements = array();
 		$filterKeys = array();
+
+		NenoLog::log('Processing filtered json data for getStrings', 3);
+
 		foreach ($filterArray as $filterItem)
 		{
 			if (strpos($filterItem, 'group') !== false)
@@ -52,8 +57,11 @@ class NenoControllerStrings extends JControllerAdmin
 			}
 		}
 
+		NenoLog::log('Call to getWorkingLanguage of NenoHelper', 3);
 		$workingLanguage = NenoHelper::getWorkingLanguage();
 		$strings = array ();
+
+		NenoLog::log('Querying table #__neno_content_element_tables', 3);
 
 		// Create a new query object.
 		$db    = JFactory::getDbo();
@@ -90,11 +98,15 @@ class NenoControllerStrings extends JControllerAdmin
 		try
 		{
 			$strings = $db->loadObjectList();
+
+			NenoLog::log('Database query executed successfully', 2);
 		}
 		catch (RuntimeException $e)
 		{
 			// FIX IT!
 			//JError::raiseWarning(500, $e->getMessage());
+
+			NenoLog::log('Error in database query', 1);
 		}
 
 		$translations = array();

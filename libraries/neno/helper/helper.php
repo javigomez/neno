@@ -529,6 +529,8 @@ class NenoHelper
 
 		if (!empty($extensions))
 		{
+			NenoLog::log('New elements discovered', 2);
+
 			$group = new NenoContentElementGroup(array ('group_name' => 'Joomla Core'));
 			$group->persist();
 

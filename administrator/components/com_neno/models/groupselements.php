@@ -88,6 +88,8 @@ class NenoModelGroupsElements extends JModelList
 		// Create a new query object.
 		$query = parent::getListQuery();
 
+		NenoLog::log('Querying #__neno_content_element_groups from getListQuery of NenoModelGroupsElements', 3);
+
 		$query
 			->select('g.id')
 			->from('`#__neno_content_element_groups` AS g');
