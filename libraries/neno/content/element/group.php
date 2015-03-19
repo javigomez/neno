@@ -57,6 +57,11 @@ class NenoContentElementGroup extends NenoContentElement
 	private $translationMethodUsed;
 
 	/**
+	 * @var int
+	 */
+	private $elementCount;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data Group data
@@ -73,6 +78,7 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->languageWordsTranslated           = null;
 		$this->translationMethodUsed             = array ();
 		$this->extensionId                       = array ();
+		$this->elementCount                      = null;
 
 		// Only search for the statistics for existing groups
 		if (!$this->isNew())
@@ -690,5 +696,27 @@ class NenoContentElementGroup extends NenoContentElement
 		$data->languageStrings = $languageStrings;
 
 		return $data;
+	}
+
+	/**
+	 * Get how many tables this group has
+	 *
+	 * @return int
+	 */
+	public function getElementCount()
+	{
+		if ($this->elementCount === null)
+		{
+			$countData = NenoContentElementTable::load(
+				array (
+					'_select'  => array ('COUNT(*) as counter'),
+					'group_id' => $this->getId()
+				)
+			);
+
+			$this->elementCount = (int) $countData['counter'];
+		}
+
+		return $this->elementCount;
 	}
 }
