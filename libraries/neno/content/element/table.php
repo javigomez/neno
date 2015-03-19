@@ -307,9 +307,9 @@ class NenoContentElementTable extends NenoContentElement
 	 *
 	 * @return JObject
 	 */
-	public function toObject()
+	public function toObject($allFields = false)
 	{
-		$object = parent::toObject();
+		$object = parent::toObject($allFields = false);
 		$object->set('group_id', $this->group->getId());
 
 		// If it's an array, let's json it!

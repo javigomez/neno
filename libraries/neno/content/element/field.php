@@ -324,9 +324,9 @@ class NenoContentElementField extends NenoContentElement
 	 *
 	 * @return JObject
 	 */
-	public function toObject()
+	public function toObject($allFields = false)
 	{
-		$object = parent::toObject();
+		$object = parent::toObject($allFields = false);
 		$object->set('table_id', $this->table->getId());
 
 		return $object;
