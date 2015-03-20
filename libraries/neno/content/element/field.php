@@ -172,7 +172,16 @@ class NenoContentElementField extends NenoContentElement
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
 		$object = parent::toObject($allFields, $recursive, $convertToDatabase);
-		$object->set('table_id', $this->table->getId());
+
+		// If the table property is not null and it's an instance of NenoObject, let's use the getId method
+		if (!empty($this->table) && $this->table instanceof NenoObject)
+		{
+			$object->set('table_id', $this->table->getId());
+		}
+		elseif (!empty($this->table))
+		{
+			$object->set('table_id', $this->table->id);
+		}
 
 		return $object;
 	}
@@ -559,7 +568,9 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
-	 * @param bool $allFields
+	 * {@inheritdoc}
+	 *
+	 * @param   bool $allFields Show all the fields
 	 *
 	 * @return array
 	 */
