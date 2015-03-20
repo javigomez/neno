@@ -41,7 +41,7 @@ if ($displayData === null): ?>
                 <td><?php echo strtoupper($field->field_type) ?></td>
                 <td class="translation-progress-bar">
                     <?php
-                    //echo NenoHelper::printTranslationBar();
+                    echo NenoHelper::printTranslationBar($table->word_count);
                     ?>
                 </td>
                 <td class="toggle-translate">

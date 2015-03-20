@@ -1099,28 +1099,31 @@ class NenoHelper
 	/**
 	 * Output HTML code for translation progress bar
 	 *
-	 * @param array $stringsStatus Strings translated, queued to be translated, out of sync, not translated & total
+	 * @param array $wordCount Strings translated, queued to be translated, out of sync, not translated & total
 	 * @param bool  $enabled
 	 *
 	 * @return string
 	 */
-	public static function printTranslationBar($stringsStatus, $enabled = true)
+	public static function printTranslationBar($wordCount, $enabled = true)
 	{
 		$displayData = null;
+        echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$wordCount = ". print_r($wordCount, true)."\n</pre>";
 
-		if ($enabled && count($stringsStatus) !== 0)
+        
+        
+		if ($enabled && count($wordCount) !== 0)
 		{
 			$displayData = new stdClass;
-			if (!array_key_exists('totalStrings', $stringsStatus) || $stringsStatus['totalStrings'] === null)
+			if (!array_key_exists('totalStrings', $wordCount) || $wordCount['totalStrings'] === null)
 			{
-				$stringsStatus['totalStrings'] = $stringsStatus['translated'] + $stringsStatus['queued'] + $stringsStatus['changed'] + $stringsStatus['notTranslated'];
+				$wordCount['totalStrings'] = $wordCount['translated'] + $wordCount['queued'] + $wordCount['changed'] + $wordCount['notTranslated'];
 			}
 
-			$displayData->stringsStatus      = $stringsStatus;
-			$displayData->widthTranslated    = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['translated'] / $stringsStatus['totalStrings']) : (0);
-			$displayData->widthQueued        = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['queued'] / $stringsStatus['totalStrings']) : (0);
-			$displayData->widthChanged       = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['changed'] / $stringsStatus['totalStrings']) : (0);
-			$displayData->widthNotTranslated = ($stringsStatus['totalStrings']) ? (100 * $stringsStatus['notTranslated'] / $stringsStatus['totalStrings']) : (0);
+			$displayData->stringsStatus      = $wordCount;
+			$displayData->widthTranslated    = ($wordCount['totalStrings']) ? (100 * $wordCount['translated'] / $wordCount['totalStrings']) : (0);
+			$displayData->widthQueued        = ($wordCount['totalStrings']) ? (100 * $wordCount['queued'] / $wordCount['totalStrings']) : (0);
+			$displayData->widthChanged       = ($wordCount['totalStrings']) ? (100 * $wordCount['changed'] / $wordCount['totalStrings']) : (0);
+			$displayData->widthNotTranslated = ($wordCount['totalStrings']) ? (100 * $wordCount['notTranslated'] / $wordCount['totalStrings']) : (0);
 		}
 
 		return JLayoutHelper::render('progressbar', $displayData, JPATH_NENO_LAYOUTS);
