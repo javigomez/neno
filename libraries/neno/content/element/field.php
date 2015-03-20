@@ -25,41 +25,34 @@ class NenoContentElementField extends NenoContentElement
 	, 'mediumtext'
 	, 'longtext'
 	);
-
+	/**
+	 * @var stdClass
+	 */
+	public $wordCount;
+	/**
+	 * @var array
+	 */
+	public $translationMethodUsed;
 	/**
 	 * @var NenoContentElementTable
 	 */
 	protected $table;
-
 	/**
 	 * @var string
 	 */
 	protected $fieldName;
-
 	/**
 	 * @var string
 	 */
 	protected $fieldType;
-
 	/**
 	 * @var boolean
 	 */
 	protected $translate;
-
 	/**
 	 * @var array
 	 */
 	protected $translations;
-
-	/**
-	 * @var stdClass
-	 */
-	protected $wordCount;
-
-	/**
-	 * @var array
-	 */
-	private $translationMethodUsed;
 
 	/**
 	 * {@inheritdoc}
@@ -176,9 +169,9 @@ class NenoContentElementField extends NenoContentElement
 	 *
 	 * @return JObject
 	 */
-	public function toObject($allFields = false)
+	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
-		$object = parent::toObject($allFields = false);
+		$object = parent::toObject($allFields, $recursive, $convertToDatabase);
 		$object->set('table_id', $this->table->getId());
 
 		return $object;
@@ -563,5 +556,34 @@ class NenoContentElementField extends NenoContentElement
 		}
 
 		return $this->wordCount;
+	}
+
+	/**
+	 * @param bool $allFields
+	 *
+	 * @return array
+	 */
+	public function getProperties($allFields = false)
+	{
+		$properties = parent::getProperties($allFields);
+		$found      = false;
+
+		foreach ($properties as $key => $property)
+		{
+			if ($property == 'table')
+			{
+				$found = true;
+				unset($properties[$key]);
+
+				break;
+			}
+		}
+
+		if ($found)
+		{
+			$properties = array_values($properties);
+		}
+
+		return $properties;
 	}
 }

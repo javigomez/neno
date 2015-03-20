@@ -275,38 +275,94 @@ abstract class NenoObject
 	/**
 	 * Create a JObject using the properties of the class.
 	 *
+	 * @param   bool $allFields         To get all the fields
+	 * @param   bool $recursive         Make this method recursive
+	 * @param   bool $convertToDatabase If the variables should be converted to database
+	 *
 	 * @return JObject
 	 */
-	public function toObject($allFields = false)
+	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
 		$data = new JObject;
 
-		// Create a reflection class to use it to dynamic properties loading
+		// Getting all the properties marked as 'protected'
+		$properties = $this->getProperties($allFields);
+
+		// Go through them and assign a value to them if they exist in the argument passed as parameter.
+		foreach ($properties as $property)
+		{
+			if ($property !== 'hasChanged')
+			{
+				$propertyConverted = NenoHelper::convertPropertyNameToDatabaseColumnName($property);
+
+				if ($recursive && $this->{$property} instanceof NenoObject)
+				{
+					$data->set($propertyConverted, $this->{$property}->toObject($allFields, $recursive));
+				}
+				elseif ($recursive && is_array($this->{$property}))
+				{
+					$dataArray = array ();
+
+					foreach ($this->{$property} as $key => $value)
+					{
+						if ($recursive && $value instanceof NenoObject)
+						{
+							$dataArray[$key] = $value->toObject($allFields, $recursive, $convertToDatabase);
+						}
+						else
+						{
+							$dataArray[$key] = $value;
+						}
+					}
+
+					$data->set($propertyConverted, $dataArray);
+				}
+				else
+				{
+					$data->set($propertyConverted, $this->{$property});
+				}
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Get all the properties
+	 *
+	 * @param   bool $allFields All fields
+	 *
+	 * @return array
+	 */
+	public function getProperties($allFields = false)
+	{
 		$classReflection  = $this->getClassReflectionObject();
 		$propertiesFilter = null;
 
 		if (!$allFields)
 		{
-			$propertiesFilter = ReflectionProperty::IS_PROTECTED;
+			$mainProperties = $classReflection->getProperties(ReflectionProperty::IS_PROTECTED);
+		}
+		else
+		{
+			$mainProperties = $classReflection->getProperties();
 		}
 
 		// Getting all the properties marked as 'protected'
 		$properties = array_diff(
-			$classReflection->getProperties($propertiesFilter),
+			$mainProperties,
 			$classReflection->getProperties(ReflectionProperty::IS_STATIC)
 		);
 
-		// Go through them and assign a value to them if they exist in the argument passed as parameter.
+		$propertyNames = array ();
+
 		/* @var $property ReflectionProperty */
 		foreach ($properties as $property)
 		{
-			if ($property->getName() !== 'hasChanged')
-			{
-				$data->set(NenoHelper::convertPropertyNameToDatabaseColumnName($property->getName()), $this->{$property->getName()});
-			}
+			$propertyNames[] = $property->getName();
 		}
 
-		return $data;
+		return $propertyNames;
 	}
 
 	/**
@@ -327,5 +383,15 @@ abstract class NenoObject
 	public function getId()
 	{
 		return $this->id;
+	}
+
+	/**
+	 * Prepare this data to be presented into the view
+	 *
+	 * @return JObject
+	 */
+	public function prepareDataToView()
+	{
+		return $this->toObject(true, true, false);
 	}
 }

@@ -207,9 +207,9 @@ class NenoContentElementLangstring extends NenoContentElement
 	 *
 	 * @return JObject
 	 */
-	public function toObject($allFields = false)
+	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
-		$data = parent::toObject($allFields);
+		$data = parent::toObject($allFields, $recursive, $convertToDatabase);
 		$data->set('group_id', $this->group->getId());
 
 		return $data;

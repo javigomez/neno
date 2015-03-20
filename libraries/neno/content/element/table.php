@@ -16,6 +16,11 @@ defined('JPATH_NENO') or die;
 class NenoContentElementTable extends NenoContentElement
 {
 	/**
+	 * @var stdClass
+	 */
+	public $wordCount;
+
+	/**
 	 * @var NenoContentElementGroup
 	 */
 	protected $group;
@@ -39,11 +44,6 @@ class NenoContentElementTable extends NenoContentElement
 	 * @var array
 	 */
 	protected $fields;
-
-	/**
-	 * @var stdClass
-	 */
-	private $wordCount;
 
 	/**
 	 * {@inheritdoc}
@@ -310,15 +310,22 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
+	 * @param   bool $allFields Show all the fields in the class
+	 * @param   bool $recursive If the method should
+	 *
 	 * @return JObject
 	 */
-	public function toObject($allFields = false)
+	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
-		$object = parent::toObject($allFields = false);
-		$object->set('group_id', $this->group->getId());
+		$object = parent::toObject($allFields, $recursive, $convertToDatabase);
+
+		if (!empty($this->group) && $convertToDatabase)
+		{
+			$object->set('group_id', $this->group->getId());
+		}
 
 		// If it's an array, let's json it!
-		if (is_array($this->primaryKey))
+		if (is_array($this->primaryKey) && $convertToDatabase)
 		{
 			$object->set('primary_key', json_encode($this->primaryKey));
 		}
@@ -465,5 +472,34 @@ class NenoContentElementTable extends NenoContentElement
 		}
 
 		return $this->wordCount;
+	}
+
+	/**
+	 * @param bool $allFields
+	 *
+	 * @return array
+	 */
+	public function getProperties($allFields = false)
+	{
+		$properties = parent::getProperties($allFields);
+		$found      = false;
+
+		foreach ($properties as $key => $property)
+		{
+			if ($property == 'group')
+			{
+				$found = true;
+				unset($properties[$key]);
+
+				break;
+			}
+		}
+
+		if ($found)
+		{
+			$properties = array_values($properties);
+		}
+
+		return $properties;
 	}
 }

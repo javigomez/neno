@@ -298,30 +298,27 @@ class NenoHelper
 
 		return $jObjectList;
 	}
-    
-    
+
+
 	/**
 	 * Transform an array of neno Objects to
 	 *
 	 * @param   array $objectList List of objects
 	 *
 	 * @return array
-	 */    
-    public static function convertNenoObjectListToJObjectList(array $objectList)
-    {
-        $jObjectList = array ();
+	 */
+	public static function convertNenoObjectListToJObjectList(array $objectList)
+	{
+		$jObjectList = array ();
 
 		foreach ($objectList as $object)
 		{
-			$jObjectList[] = $object->toObject(true);
-            echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$jObjectList = ". print_r($jObjectList, true)."\n</pre>";
-            exit;
+			$jObjectList[] = $object->prepareDataToView();
 		}
 
 		return $jObjectList;
-    }
-    
-    
+	}
+
 
 	/**
 	 * Check if a string ends with a particular string

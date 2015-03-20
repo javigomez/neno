@@ -34,42 +34,42 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * @var integer
 	 */
-	private $languageWordsNotTranslated;
+	public $languageWordsNotTranslated;
 
 	/**
 	 * @var integer
 	 */
-	private $languageWordsQueuedToBeTranslated;
+	public $languageWordsQueuedToBeTranslated;
 
 	/**
 	 * @var integer
 	 */
-	private $languageWordsTranslated;
+	public $languageWordsTranslated;
 
 	/**
 	 * @var integer
 	 */
-	private $languageWordsSourceHasChanged;
+	public $languageWordsSourceHasChanged;
 
 	/**
 	 * @var array
 	 */
-	private $translationMethodUsed;
+	public $translationMethodUsed;
 
 	/**
 	 * @var int
 	 */
-	private $elementCount;
+	public $elementCount;
 
 	/**
 	 * @var stdClass
 	 */
-	private $wordCount;
+	public $wordCount;
 
 	/**
 	 * @var array
 	 */
-	private $languageFiles;
+	public $languageFiles;
 
 	/**
 	 * {@inheritdoc}

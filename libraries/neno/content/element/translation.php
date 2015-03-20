@@ -108,22 +108,22 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * @var array
 	 */
-	private $sourceElementData;
+	public $sourceElementData;
 
 	/**
 	 * @var integer
 	 */
-	private $wordsCounter;
+	public $wordsCounter;
 
 	/**
 	 * @var integer
 	 */
-	private $charactersCounter;
+	public $charactersCounter;
 
 	/**
 	 * @var string
 	 */
-	private $originalText;
+	public $originalText;
 
 	/**
 	 * {@inheritdoc}
@@ -445,10 +445,18 @@ class NenoContentElementTranslation extends NenoContentElement
 	 *
 	 * @return JObject
 	 */
-	public function toObject()
+	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
-		$data = parent::toObject();
-		$data->set('content_id', $this->element->getId());
+		$data = parent::toObject($allFields, $recursive, $convertToDatabase);
+
+		if ($this->element instanceof NenoObject)
+		{
+			$data->set('content_id', $this->element->getId());
+		}
+		else
+		{
+			$data->set('content_id', $this->element->id);
+		}
 
 		return $data;
 	}
