@@ -139,6 +139,8 @@ class NenoContentElementField extends NenoContentElement
 						break;
 				}
 			}
+
+			$this->wordCount->total = $this->wordCount->untranslated + $this->wordCount->queued + $this->wordCount->changed + $this->wordCount->translated;
 		}
 
 		return $this->wordCount;
