@@ -473,33 +473,4 @@ class NenoContentElementTable extends NenoContentElement
 
 		return $this->wordCount;
 	}
-
-	/**
-	 * @param bool $allFields
-	 *
-	 * @return array
-	 */
-	public function getProperties($allFields = false)
-	{
-		$properties = parent::getProperties($allFields);
-		$found      = false;
-
-		foreach ($properties as $key => $property)
-		{
-			if ($property == 'group')
-			{
-				$found = true;
-				unset($properties[$key]);
-
-				break;
-			}
-		}
-
-		if ($found)
-		{
-			$properties = array_values($properties);
-		}
-
-		return $properties;
-	}
 }

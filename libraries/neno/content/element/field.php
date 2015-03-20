@@ -174,11 +174,11 @@ class NenoContentElementField extends NenoContentElement
 		$object = parent::toObject($allFields, $recursive, $convertToDatabase);
 
 		// If the table property is not null and it's an instance of NenoObject, let's use the getId method
-		if (!empty($this->table) && $this->table instanceof NenoObject)
+		if (!empty($this->table) && $this->table instanceof NenoObject && $convertToDatabase)
 		{
 			$object->set('table_id', $this->table->getId());
 		}
-		elseif (!empty($this->table))
+		elseif (!empty($this->table) && $convertToDatabase)
 		{
 			$object->set('table_id', $this->table->id);
 		}
@@ -565,36 +565,5 @@ class NenoContentElementField extends NenoContentElement
 		}
 
 		return $this->wordCount;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @param   bool $allFields Show all the fields
-	 *
-	 * @return array
-	 */
-	public function getProperties($allFields = false)
-	{
-		$properties = parent::getProperties($allFields);
-		$found      = false;
-
-		foreach ($properties as $key => $property)
-		{
-			if ($property == 'table')
-			{
-				$found = true;
-				unset($properties[$key]);
-
-				break;
-			}
-		}
-
-		if ($found)
-		{
-			$properties = array_values($properties);
-		}
-
-		return $properties;
 	}
 }

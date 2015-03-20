@@ -295,11 +295,11 @@ abstract class NenoObject
 			{
 				$propertyConverted = NenoHelper::convertPropertyNameToDatabaseColumnName($property);
 
-				if ($recursive && $this->{$property} instanceof NenoObject)
+				if ($this->{$property} instanceof NenoObject)
 				{
-					$data->set($propertyConverted, $this->{$property}->toObject($allFields, $recursive));
+					$data->set($propertyConverted, $this->{$property}->toObject($allFields, false));
 				}
-				elseif ($recursive && is_array($this->{$property}))
+				elseif (is_array($this->{$property}))
 				{
 					$dataArray = array ();
 
@@ -309,7 +309,7 @@ abstract class NenoObject
 						{
 							$dataArray[$key] = $value->toObject($allFields, $recursive, $convertToDatabase);
 						}
-						else
+						elseif(!$value instanceof NenoObject)
 						{
 							$dataArray[$key] = $value;
 						}
@@ -390,7 +390,7 @@ abstract class NenoObject
 	 *
 	 * @return JObject
 	 */
-	public function prepareDataToView()
+	public function prepareDataForView()
 	{
 		return $this->toObject(true, true, false);
 	}
