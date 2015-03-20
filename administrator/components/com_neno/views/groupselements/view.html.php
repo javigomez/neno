@@ -26,11 +26,6 @@ class NenoViewGroupsElements extends JViewLegacy
 	protected $items;
 
 	/**
-	 * @var JPagination
-	 */
-	protected $pagination;
-
-	/**
 	 * @var JRegistry
 	 */
 	protected $state;
@@ -40,12 +35,11 @@ class NenoViewGroupsElements extends JViewLegacy
 	 */
 	protected $sidebar;
 
-	/**
-	 * @var array
-	 */
-	protected $extensionsSaved;
-
-	/**
+    
+    protected $elementCount;
+    protected $wordCount;
+    
+    /**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -58,10 +52,11 @@ class NenoViewGroupsElements extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->state      = $this->get('State');
-		$this->items      = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-
+		$this->state        = $this->get('State');
+		$this->items        = $this->get('Items');
+		$this->elementCount = $this->get('ElementCount', 0);
+		$this->wordCount = $this->get('WordCount', 0);
+        
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
 		{

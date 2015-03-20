@@ -129,58 +129,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 <script type="text/javascript">
 
-	function toggleCollapseRow (row) {
-		var rowType = '';
-		if (row.hasClass('row-group')) {
-			rowType = 'group';
-		} else if (row.hasClass('row-table')) {
-			rowType = 'table';
-		}
-		var nextRow = row.next('tr');
-		while (nextRow.length!=0 && !nextRow.hasClass('row-'+rowType)) {
-			if (nextRow.attr('data-level') == parseInt(row.attr('data-level')) + 1) {
-				nextRow.toggleClass('hide');
-				if (nextRow.hasClass('row-table') && row.hasClass('expanded') && nextRow.hasClass('expanded')) {
-					toggleCollapseRow(nextRow);
-				}
-			}
-			nextRow = nextRow.next('tr');
-		}
-		if (row.attr('data-level') != 3) {
-			row.toggleClass('collapsed');
-			row.toggleClass('expanded');
-			row.children('td.cell-expand').first().children('span').first().toggleClass('icon-arrow-right-3');
-			row.children('td.cell-expand').first().children('span').first().toggleClass('icon-arrow-down-3');
-		}
-	}
-
-	function checkDescendant (check) {
-		var state = check.prop('checked'),
-			row = jQuery(check).closest('tr'),
-		    nextRow = row.next('tr');
-		while (nextRow.length!=0 && nextRow.attr('data-level') > row.attr('data-level') ) {
-			nextRow.find('input[type=checkbox]').prop('checked', state);
-			nextRow = nextRow.next('tr');
-		}
-	}
-
-	function uncheckAncestor (check) {
-		// Use function only when checkbox is not checked
-		if (jQuery(check).prop('checked')) {
-			return;
-		}
-		var row = jQuery(check).closest('tr'),
-			targetLevel = row.attr('data-level') - 1,
-			prevRow = row.prev('tr');
-		while (prevRow.length!=0) {
-			if (prevRow.attr('data-level') == targetLevel) {
-				prevRow.find('input[type=checkbox]').prop('checked', false);
-				targetLevel--;
-			}
-			prevRow = prevRow.prev('tr');
-		}
-	}
-
 	function toggleStringStateAjax (radio) {
 		var fieldset = radio.parent();
 		var status = radio.attr('value');
@@ -208,43 +156,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	}
 
 	jQuery(document).ready(function () {
-		/*jQuery('#table-groups-elements input[type="checkbox"]').change(function(e) {
-			var checked = jQuery(this).prop("checked"),
-				row = jQuery(check).closest('tr'),
-				siblings = row.siblings();
 
-			row.find('input[type="checkbox"]').prop({
-				indeterminate: false,
-				checked: checked
-			});
-			function checkRows(el) {
-				var parent = jQuery('tr[data-id=' + el.attr('data-parent') ),
-					all = true,
-					siblings = jQuery('tr[data-parent=' + el.attr('data-parent') );
-
-				siblings.each(function() {
-					return all = ($(this).find('input[type="checkbox"]').prop("checked") === checked);
-				});
-
-				if (all && checked) {
-					parent.children('input[type="checkbox"]').prop({
-						indeterminate: false,
-						checked: checked
-					});
-					checkRows(parent);
-				} else if (all && !checked) {
-					parent.children('input[type="checkbox"]').prop("checked", checked);
-					parent.children('input[type="checkbox"]').prop("indeterminate", (parent.find('input[type="checkbox"]:checked').length > 0));
-					checkRows(parent);
-				} else {
-					el.parents("li").children('input[type="checkbox"]').prop({
-						indeterminate: true,
-						checked: false
-					});
-				}
-			}
-			checkRows(row);
-		});*/
 		jQuery('#table-groups-elements tr.collapsed .cell-expand').click(function (e) {
 			var row = jQuery(this).parent();
 			toggleCollapseRow (row);
@@ -283,11 +195,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 				<th class="table-groups-elements-label translation-methods"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_METHODS'); ?></th>
 				<th class="table-groups-elements-blank"></th>
 			</tr>
-			<?php
-			Kint::dump($this->items[count($this->items)-1]);
-			//var_dump($this->items[1]->getLanguageStrings());
-			//var_dump($this->items[1]);
-			?>
 			<?php /* @var $group NenoContentElementGroup */ ?>
 			<?php foreach ($this->items as $group):
 
@@ -295,8 +202,10 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 				$fieldsQueued = 0;
 				$fieldsChanged = 0;
 				$fieldsNotTranslated = 0;
-				$countElements = count($group->getTables());
+				$elementCount = count($group->getTables());
 				$groupTables = array();
+                
+                
 				/* @var $table NenoContentElementTable */
 				foreach ($group->getTables() as $table)
 				{
@@ -304,53 +213,37 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					/* @var $field NenoContentElementField */
 					foreach ($table->getFields() as $field)
 					{
-						if (!$field->isTranslate())
+						if ($field->isTranslate())
 						{
-							continue;
+							$groupTables[$table->getId()][$field->getId()] = array();
+							$groupTables[$table->getId()][$field->getId()]['totalStrings'] = 0;
+							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['translated'] = $field->getWordsTranslated());
+							$fieldsTranslated += $field->getWordsTranslated();
+							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['queued'] = $field->getWordsQueuedToBeTranslated());
+							$fieldsQueued += $field->getWordsQueuedToBeTranslated();
+							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['changed'] = $field->getWordsSourceHasChanged());
+							$fieldsChanged += $field->getWordsSourceHasChanged();
+							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['notTranslated'] = $field->getWordsNotTranslated());
+							$fieldsNotTranslated += $field->getWordsNotTranslated();
 						}
-						$groupTables[$table->getId()][$field->getId()] = array();
-<<<<<<< HEAD
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] = 0;
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['translated'] = $field->getStringsTranslated());
-						$fieldsTranslated += $field->getStringsTranslated();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['queued'] = $field->getStringsQueuedToBeTranslated());
-						$fieldsQueued += $field->getStringsQueuedToBeTranslated();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['changed'] = $field->getStringsSourceHasChanged());
-						$fieldsChanged += $field->getStringsSourceHasChanged();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['notTranslated'] = $field->getStringsNotTranslated());
-						$fieldsNotTranslated += $field->getStringsNotTranslated();
-=======
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] = 1;
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['translated'] = $field->getWordsTranslated());
-						$fieldsTranslated += $field->getWordsTranslated();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['queued'] = $field->getWordsQueuedToBeTranslated());
-						$fieldsQueued += $field->getWordsQueuedToBeTranslated();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['changed'] = $field->getWordsSourceHasChanged());
-						$fieldsChanged += $field->getWordsSourceHasChanged();
-						$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['notTranslated'] = $field->getWordsNotTranslated());
-						$fieldsNotTranslated += $field->getWordsNotTranslated();
->>>>>>> origin/master
 					}
 				}
 				$totalFields = $fieldsTranslated + $fieldsQueued + $fieldsChanged + $fieldsNotTranslated;
 
-				$stringsTranslated = $group->getLanguageStringsTranslated();
-				$stringsQueued = $group->getLanguageStringsQueuedToBeTranslated();
-				$stringsChanged = $group->getLanguageStringsSourceHasChanged();
-				$stringsNotTranslated = $group->getLanguageStringsNotTranslated();
-				$countLanguageStrings = $stringsTranslated + $stringsQueued + $stringsChanged + $stringsNotTranslated;
-				if ($countLanguageStrings !== 0)
-				{
-					$stringsFile = NenoHelper::getWorkingLanguage() . '.' . $group->getGroupName() . '.ini';
-					$countElements++;
-				}
-<<<<<<< HEAD
-=======
 				$stringsTranslated = $group->getLanguageWordsTranslated();
 				$stringsQueued = $group->getLanguageWordsQueuedToBeTranslated();
 				$stringsChanged = $group->getLanguageWordsSourceHasChanged();
 				$stringsNotTranslated = $group->getLanguageWordsNotTranslated();
->>>>>>> origin/master
+				$countLanguageStrings = $stringsTranslated + $stringsQueued + $stringsChanged + $stringsNotTranslated;
+				if ($countLanguageStrings !== 0)
+				{
+					$stringsFile = NenoHelper::getWorkingLanguage() . '.' . $group->getGroupName() . '.ini';
+					$elementCount++;
+				}
+				/*$stringsTranslated = $group->getLanguageWordsTranslated();
+				$stringsQueued = $group->getLanguageWordsQueuedToBeTranslated();
+				$stringsChanged = $group->getLanguageWordsSourceHasChanged();
+				$stringsNotTranslated = $group->getLanguageWordsNotTranslated();*/
 
 				?>
 
@@ -358,7 +251,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					<td <?php echo (count($group->getTables()) || $countLanguageStrings)?(' class="cell-expand"><span class="icon-arrow-right-3"></span>'):('>'); ?></td>
 					<td class="cell-check"><input type="checkbox"/></td>
 					<td colspan="3"><?php echo $group->getGroupName(); ?></td>
-					<td<?php echo ($countElements)?(' class="cell-expand"'):(''); ?>><?php echo $countElements ?></td>
+					<td<?php echo ($elementCount)?(' class="cell-expand"'):(''); ?>><?php echo $elementCount ?></td>
 					<td></td>
 					<td></td>
 					<td></td>
@@ -394,7 +287,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 								if (!isset($groupTables[$table->getId()][$field->getId()])) {
 									$groupTables[$table->getId()][$field->getId()] = array();
 								}
-								echo NenoHelper::htmlTranslationBar($groupTables[$table->getId()][$field->getId()], $field->isTranslate());
+								echo NenoHelper::printTranslationBar($groupTables[$table->getId()][$field->getId()], $field->isTranslate());
 								?>
 							</td>
 							<td class="toggle-translate">
@@ -417,13 +310,16 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 						<td colspan="2"><?php echo $stringsFile; ?></td>
 						<td class="type-icon"><span class="icon-file"></span> <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_FILE'); ?></td>
 						<td class="translation-progress-bar">
-							<div class="word-count"><?php echo $countLanguageStrings; ?></div>
-							<div class="bar">
-								<div class="translated" style="width: <?php echo 100*$stringsTranslated/$countLanguageStrings; ?>%" alt="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_TRANSLATED'); ?>" title="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_TRANSLATED') . ': ' . $stringsTranslated; ?>"></div>
-								<div class="queued" style="width: <?php echo 100*$stringsQueued/$countLanguageStrings; ?>%" alt="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_QUEUED'); ?>" title="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_QUEUED') . ': ' . $stringsQueued; ?>"></div>
-								<div class="changed" style="width: <?php echo 100*$stringsChanged/$countLanguageStrings; ?>%" alt="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_CHANGED'); ?>" title="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_CHANGED') . ': ' . $stringsChanged; ?>"></div>
-								<div class="not-translated" style="width: <?php echo 100*$stringsNotTranslated/$countLanguageStrings; ?>%" alt="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_NOTTRANSLATED'); ?>" title="<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_NOTTRANSLATED') . ': ' . $stringsNotTranslated; ?>"></div>
-							</div>
+							<?php
+							$stringsStatus = array(
+								'totalStrings'  => $countLanguageStrings,
+								'translated'    => $stringsTranslated,
+								'queued'  => $stringsQueued,
+								'changed'  => $stringsChanged,
+								'notTranslated'  => $stringsNotTranslated
+							);
+							echo NenoHelper::printTranslationBar($stringsStatus);
+							?>
 						</td>
 						<td></td>
 						<td></td>
