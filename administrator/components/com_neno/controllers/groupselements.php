@@ -181,7 +181,9 @@ class NenoControllerGroupsElements extends JControllerAdmin
         
         /* @var $group NenoContentElementGroup */
         $group = NenoContentElementGroup::load($groupId);
-        $tables = $group->getTables();
+        $tables = NenoHelper::convertNenoObjectListToJObjectList($group->getTables());
+        
+        //$tables = $group->getTables();
         $tablesHTML = JLayoutHelper::render('rowelementtable', $tables, JPATH_NENO_LAYOUTS);
         
         

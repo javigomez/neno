@@ -13,10 +13,11 @@ defined('JPATH_NENO') or die;
 
 if ($displayData === null): ?>
 
-    <tr><td></td></tr>
+    <tr><td>NADA</td></tr>
     
 <?php else: ?>
-
+    
+    
     <?php
     echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$displayData = ". print_r($displayData, true)."\n</pre>";
     ?>
