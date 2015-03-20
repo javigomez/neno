@@ -61,10 +61,11 @@ class NenoContentElementTable extends NenoContentElement
 
 		// Init the field list
 		$this->fields = null;
-		
+
 		if (!$this->isNew())
 		{
 			$this->getWordCount();
+			$this->getFields();
 		}
 
 	}
@@ -131,6 +132,44 @@ class NenoContentElementTable extends NenoContentElement
 		}
 
 		return $this->wordCount;
+	}
+
+	/**
+	 * Get the fields related to this table
+	 *
+	 * @return array
+	 */
+	public function getFields()
+	{
+		if ($this->fields === null)
+		{
+			$this->fields = array ();
+			$fieldsInfo   = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $this->getId(), true);
+
+			for ($i = 0; $i < count($fieldsInfo); $i++)
+			{
+				$fieldInfo        = $fieldsInfo[$i];
+				$fieldInfo->table = $this;
+				$field            = new NenoContentElementField($fieldInfo);
+				$this->fields[]   = $field;
+			}
+		}
+
+		return $this->fields;
+	}
+
+	/**
+	 * Set the fields related to this table
+	 *
+	 * @param   array $fields Table fields
+	 *
+	 * @return $this
+	 */
+	public function setFields(array $fields)
+	{
+		$this->fields = $fields;
+
+		return $this;
 	}
 
 	/**
@@ -361,44 +400,6 @@ class NenoContentElementTable extends NenoContentElement
 		$db->deleteShadowTables($this->getTableName());
 
 		return parent::remove();
-	}
-
-	/**
-	 * Get the fields related to this table
-	 *
-	 * @return array
-	 */
-	public function getFields()
-	{
-		if ($this->fields === null)
-		{
-			$this->fields = array ();
-			$fieldsInfo   = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $this->getId(), true);
-
-			for ($i = 0; $i < count($fieldsInfo); $i++)
-			{
-				$fieldInfo        = $fieldsInfo[$i];
-				$fieldInfo->table = $this;
-				$field            = new NenoContentElementField($fieldInfo);
-				$this->fields[]   = $field;
-			}
-		}
-
-		return $this->fields;
-	}
-
-	/**
-	 * Set the fields related to this table
-	 *
-	 * @param   array $fields Table fields
-	 *
-	 * @return $this
-	 */
-	public function setFields(array $fields)
-	{
-		$this->fields = $fields;
-
-		return $this;
 	}
 
 	/**
