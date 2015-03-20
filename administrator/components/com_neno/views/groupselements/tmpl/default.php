@@ -27,10 +27,16 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 <style>
     
-    .load-elements {
+    .toggler {
         cursor: pointer;
     }
     
+    .loading-row {
+        background-color: #fff !important;
+        background-image: url('../media/neno/images/ajax-loader.gif');  
+        background-position: 40px 8px;
+        background-repeat: no-repeat;
+    }
     
 	.group-container {
 		padding-bottom: 15px;
@@ -138,21 +144,83 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	jQuery(document).ready(function () {
 
         // Bind load elements
-        jQuery('.load-elements').bind('click',toggleElements);
+        jQuery('.toggle-elements').bind('click',toggleElements);
+        
+        // Bind toggle fields
+        jQuery('.toggle-fields').bind('click',toggleFields);
         
 	});
     
-    
-    function toggleElements(e) 
+    /**
+     * Toggle Elements (Tables and language files_
+     * @param {object} e
+     */
+    function toggleElements() 
     {
-        var group_id = jQuery(this).parent('.row-group').attr('data-id');
-		jQuery.get('index.php?option=com_neno&task=groupselements.getElements&group_id='+group_id
-            , function(html) {
-                console.log(html);
-            }
-		);
+        var row = jQuery(this).parent('.row-group');
+        var id_parts = row.attr('data-id').split('-');
+        var id = id_parts[1];
+        console.log(id);
+        //Get the state of the current toggler to see if we need to expand or collapse
+        if (jQuery(this).hasClass('toggler-collapsed')) {
+            
+            // Expand
+            jQuery(this).removeClass('toggler-collapsed').addClass('toggler-expanded').html('<span class="icon-arrow-down-3"></span>');
+            
+            // Show a loader row while loading
+            row.after('<tr id="loader-'+id+'"><td colspan="9" class="loading-row">&nbsp;</td></tr>');
+
+            jQuery.get('index.php?option=com_neno&task=groupselements.getElements&group_id='+id
+                , function(html) {
+                    jQuery('#loader-'+id).replaceWith(html);
+                    
+                    //Attach the toggler
+                    jQuery('.toggle-fields').bind('click',toggleFields);            
         
+                }
+            );
+            
+        } else {
+            
+            //Collapse
+            jQuery(this).removeClass('toggler-expanded').addClass('toggler-collapsed').html('<span class="icon-arrow-right-3"></span>');
+            
+            //Remove children
+            jQuery('[data-parent="'+id+'"]').remove();
+            
+        }
         
+    }
+    
+    
+    function toggleFields() {
+        
+        var row = jQuery(this).parent('.row-table');
+        var id_parts = row.attr('data-id').split('-');
+        var id = id_parts[1];
+        
+        console.log(id);
+        
+        //Get the state of the current toggler to see if we need to expand or collapse
+        if (jQuery(this).hasClass('toggler-collapsed')) {
+            
+            // Expand
+            jQuery(this).removeClass('toggler-collapsed').addClass('toggler-expanded').html('<span class="icon-arrow-down-3"></span>');
+            
+            jQuery('[data-parent="'+id+'"]').show();
+            
+        } else {
+            
+            //Collapse
+            jQuery(this).removeClass('toggler-expanded').addClass('toggler-collapsed').html('<span class="icon-arrow-right-3"></span>');
+            
+            //hide children
+            jQuery('[data-parent="'+id+'"]').hide();
+            
+        }
+        
+        jQuery(this)
+        console.log('Toggling');
         
     }
     
@@ -181,8 +249,9 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
             
 			<?php // @var $group NenoContentElementGroup ?>
 			<?php foreach ($this->items as $group): ?>
-				<tr class="row-group collapsed" data-level="1" data-id="<?php echo $group->getId(); ?>">
-					<td class="load-elements"><span class="icon-arrow-right-3"></span></td>
+            
+				<tr class="row-group" data-id="group-<?php echo $group->getId(); ?>">
+					<td class="toggler toggler-collapsed toggle-elements"><span class="icon-arrow-right-3"></span></td>
 					<td class="cell-check"><input type="checkbox" /></td>
 					<td colspan="3"><?php echo $group->getGroupName(); ?></td>
 					<td<?php echo ($this->elementCount) ? ' class="load-elements"' : ''; ?>><?php echo $this->elementCount ?></td>
@@ -190,6 +259,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					<td></td>
 					<td></td>
 				</tr>
+                
             <?php endforeach; ?>
                 
             
