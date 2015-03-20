@@ -313,7 +313,7 @@ class NenoHelper
 
 		foreach ($objectList as $object)
 		{
-			$jObjectList[] = $object->prepareDataToView();
+			$jObjectList[] = $object->prepareDataForView();
 		}
 
 		return $jObjectList;

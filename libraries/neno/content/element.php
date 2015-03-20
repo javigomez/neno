@@ -81,7 +81,7 @@ abstract class NenoContentElement extends NenoObject
 	 *
 	 * @return stdClass|array
 	 */
-	public static function load($pk, $cache = true)
+	public static function load($pk, $cache = false)
 	{
 		$arguments = func_get_args();
 
@@ -184,24 +184,5 @@ abstract class NenoContentElement extends NenoObject
 		$this->hasChanged = true;
 
 		return $this;
-	}
-
-	/**
-	 * Get the data from the cache
-	 *
-	 * @return NenoContentElement|null An instance of the NenoContentElement or null if it doesn't exist
-	 */
-	public function getContentElementFromCache()
-	{
-		$dataCached = null;
-
-		// The element needs to be saved on the database to be on cache.
-		if (!$this->isNew())
-		{
-			$cacheId    = $this->getClassReflectionObject()->getName() . '.' . $this->getId();
-			$dataCached = NenoCache::getCacheData($cacheId);
-		}
-
-		return $dataCached;
 	}
 }
