@@ -95,83 +95,8 @@ class NenoContentElementGroup extends NenoContentElement
 		if (!$this->isNew())
 		{
 			$this->getWordCount();
+			$this->getElementCount();
 		}
-	}
-
-	/**
-	 * Get all the tables related to this group
-	 *
-	 * @return array
-	 */
-	public function getTables()
-	{
-		if ($this->tables === null)
-		{
-			$this->tables = array ();
-			$tablesInfo   = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $this->id, true);
-
-			foreach ($tablesInfo as $tableInfo)
-			{
-				$table = new NenoContentElementTable($tableInfo);
-				$table->setGroup($this);
-				$this->tables[] = $table;
-			}
-		}
-
-		return $this->tables;
-	}
-
-	/**
-	 * Set all the tables related to this group
-	 *
-	 * @param   array $tables Tables
-	 *
-	 * @return $this
-	 */
-	public function setTables(array $tables)
-	{
-		$this->tables = $tables;
-		$this->contentHasChanged();
-
-		return $this;
-	}
-
-	/**
-	 * Get language strings
-	 *
-	 * @return array
-	 */
-	public function getLanguageStrings()
-	{
-		if ($this->languageStrings === null)
-		{
-			$this->languageStrings = array ();
-			$languageStringsInfo   = self::getElementsByParentId(NenoContentElementLangstring::getDbTable(), 'group_id', $this->id, true);
-
-			foreach ($languageStringsInfo as $languageStringInfo)
-			{
-				$languageString = new NenoContentElementLangstring($languageStringInfo);
-				$languageString->setGroup($this);
-				$this->languageStrings[] = $languageString;
-			}
-		}
-
-		return $this->languageStrings;
-	}
-
-	/**
-	 * Set language strings
-	 *
-	 * @param   array $languageStrings Language strings
-	 *
-	 * @return $this
-	 */
-	public function setLanguageStrings(array $languageStrings)
-	{
-		$this->languageStrings = $languageStrings;
-		$this->contentHasChanged();
-
-		return $this;
 	}
 
 	/**
@@ -292,6 +217,28 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Get how many tables this group has
+	 *
+	 * @return int
+	 */
+	public function getElementCount()
+	{
+		if ($this->elementCount === null)
+		{
+			$countData = NenoContentElementTable::load(
+				array (
+					'_select'  => array ('COUNT(*) as counter'),
+					'group_id' => $this->getId()
+				)
+			);
+
+			$this->elementCount = (int) $countData['counter'];
+		}
+
+		return $this->elementCount;
+	}
+
+	/**
 	 * Get a group object
 	 *
 	 * @param   integer $groupId Group Id
@@ -397,6 +344,44 @@ class NenoContentElementGroup extends NenoContentElement
 	public function addTable(NenoContentElementTable $table)
 	{
 		$this->tables[] = $table;
+
+		return $this;
+	}
+
+	/**
+	 * Get all the tables related to this group
+	 *
+	 * @return array
+	 */
+	public function getTables()
+	{
+		if ($this->tables === null)
+		{
+			$this->tables = array ();
+			$tablesInfo   = self::getElementsByParentId(NenoContentElementTable::getDbTable(), 'group_id', $this->id, true);
+
+			foreach ($tablesInfo as $tableInfo)
+			{
+				$table = new NenoContentElementTable($tableInfo);
+				$table->setGroup($this);
+				$this->tables[] = $table;
+			}
+		}
+
+		return $this->tables;
+	}
+
+	/**
+	 * Set all the tables related to this group
+	 *
+	 * @param   array $tables Tables
+	 *
+	 * @return $this
+	 */
+	public function setTables(array $tables)
+	{
+		$this->tables = $tables;
+		$this->contentHasChanged();
 
 		return $this;
 	}
@@ -746,6 +731,44 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
+	 * Get language strings
+	 *
+	 * @return array
+	 */
+	public function getLanguageStrings()
+	{
+		if ($this->languageStrings === null)
+		{
+			$this->languageStrings = array ();
+			$languageStringsInfo   = self::getElementsByParentId(NenoContentElementLangstring::getDbTable(), 'group_id', $this->id, true);
+
+			foreach ($languageStringsInfo as $languageStringInfo)
+			{
+				$languageString = new NenoContentElementLangstring($languageStringInfo);
+				$languageString->setGroup($this);
+				$this->languageStrings[] = $languageString;
+			}
+		}
+
+		return $this->languageStrings;
+	}
+
+	/**
+	 * Set language strings
+	 *
+	 * @param   array $languageStrings Language strings
+	 *
+	 * @return $this
+	 */
+	public function setLanguageStrings(array $languageStrings)
+	{
+		$this->languageStrings = $languageStrings;
+		$this->contentHasChanged();
+
+		return $this;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @return $this
@@ -774,28 +797,6 @@ class NenoContentElementGroup extends NenoContentElement
 		$data->languageStrings = $languageStrings;
 
 		return $data;
-	}
-
-	/**
-	 * Get how many tables this group has
-	 *
-	 * @return int
-	 */
-	public function getElementCount()
-	{
-		if ($this->elementCount === null)
-		{
-			$countData = NenoContentElementTable::load(
-				array (
-					'_select'  => array ('COUNT(*) as counter'),
-					'group_id' => $this->getId()
-				)
-			);
-
-			$this->elementCount = (int) $countData['counter'];
-		}
-
-		return $this->elementCount;
 	}
 
 	/**
