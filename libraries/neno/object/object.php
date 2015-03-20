@@ -277,16 +277,22 @@ abstract class NenoObject
 	 *
 	 * @return JObject
 	 */
-	public function toObject()
+	public function toObject($allFields = false)
 	{
 		$data = new JObject;
 
 		// Create a reflection class to use it to dynamic properties loading
-		$classReflection = $this->getClassReflectionObject();
+		$classReflection  = $this->getClassReflectionObject();
+		$propertiesFilter = null;
+
+		if (!$allFields)
+		{
+			$propertiesFilter = ReflectionProperty::IS_PROTECTED;
+		}
 
 		// Getting all the properties marked as 'protected'
 		$properties = array_diff(
-			$classReflection->getProperties(ReflectionProperty::IS_PROTECTED),
+			$classReflection->getProperties($propertiesFilter),
 			$classReflection->getProperties(ReflectionProperty::IS_STATIC)
 		);
 
