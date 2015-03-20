@@ -26,12 +26,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 ?>
 
 <style>
-    
-    .load-elements {
-        cursor: pointer;
-    }
-    
-    
 	.group-container {
 		padding-bottom: 15px;
 		margin-bottom: 10px;
@@ -135,28 +129,51 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 <script type="text/javascript">
 
+	function toggleStringStateAjax (radio) {
+		var fieldset = radio.parent();
+		var status = radio.attr('value');
+		var field = fieldset.attr('data-field');
+		var notstatus;
+		if (radio.attr('value') == '0') {
+			notstatus = '1';
+		} else {
+			notstatus = '0';
+		}
+		jQuery.ajax({
+			type: "POST",
+			url: "index.php?option=com_neno&task=groupselements.enableDisableContentElementField",
+			data: { fieldId: field, translateStatus: status }
+		})
+		.done(function( ret ) {
+			if (ret) {
+				fieldset.find('#check-toggle-translate-' + field + '-' + status).unbind('click');
+				fieldset.find('#check-toggle-translate-' + field + '-' + notstatus).click(function (e) {
+					toggleStringStateAjax(jQuery(this));
+				});
+				fieldset.closest('tr').find('.translation-progress-bar').html(ret);
+			}
+		});
+	}
+
 	jQuery(document).ready(function () {
 
-        // Bind load elements
-        jQuery('.load-elements').bind('click',toggleElements);
-        
+		jQuery('#table-groups-elements tr.collapsed .cell-expand').click(function (e) {
+			var row = jQuery(this).parent();
+			toggleCollapseRow (row);
+		});
+
+		jQuery('#table-groups-elements input[type=checkbox]').click(function (e) {
+			checkDescendant(jQuery(this));
+			if (!jQuery(this).prop('checked')) {
+				uncheckAncestor(jQuery(this));
+			}
+		});
+
+		jQuery('#table-groups-elements .check-toggle-translate-radio').not("[checked='checked']").click(function (e) {
+			toggleStringStateAjax(jQuery(this));
+		});
+
 	});
-    
-    
-    function toggleElements(e) 
-    {
-        var group_id = jQuery(this).parent('.row-group').attr('data-id');
-		jQuery.get('index.php?option=com_neno&task=groupselements.getElements&group_id='+group_id
-            , function(html) {
-                console.log(html);
-            }
-		);
-        
-        
-        
-    }
-    
-    
 
 </script>
 
@@ -178,38 +195,22 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 				<th class="table-groups-elements-label translation-methods"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_METHODS'); ?></th>
 				<th class="table-groups-elements-blank"></th>
 			</tr>
-            
-			<?php // @var $group NenoContentElementGroup ?>
-			<?php foreach ($this->items as $group): ?>
-				<tr class="row-group collapsed" data-level="1" data-id="<?php echo $group->getId(); ?>">
-					<td class="load-elements"><span class="icon-arrow-right-3"></span></td>
-					<td class="cell-check"><input type="checkbox" /></td>
-					<td colspan="3"><?php echo $group->getGroupName(); ?></td>
-					<td<?php echo ($this->elementCount) ? ' class="load-elements"' : ''; ?>><?php echo $this->elementCount ?></td>
-					<td><?php echo $this->elementCount ?></td>
-					<td></td>
-					<td></td>
-				</tr>
-            <?php endforeach; ?>
-                
-            
-                <?php
-                
-                /**
+			<?php /* @var $group NenoContentElementGroup */ ?>
+			<?php foreach ($this->items as $group):
+
 				$fieldsTranslated = 0;
 				$fieldsQueued = 0;
 				$fieldsChanged = 0;
 				$fieldsNotTranslated = 0;
-				
+				$elementCount = count($group->getTables());
 				$groupTables = array();
                 
                 
-				// @var $table NenoContentElementTable
+				/* @var $table NenoContentElementTable */
 				foreach ($group->getTables() as $table)
 				{
 					$groupTables[$table->getId()] = array();
-
-                 	// @var $field NenoContentElementField 
+					/* @var $field NenoContentElementField */
 					foreach ($table->getFields() as $field)
 					{
 						if ($field->isTranslate())
@@ -237,19 +238,25 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 				if ($countLanguageStrings !== 0)
 				{
 					$stringsFile = NenoHelper::getWorkingLanguage() . '.' . $group->getGroupName() . '.ini';
-					$countElements++;
+					$elementCount++;
 				}
+				/*$stringsTranslated = $group->getLanguageWordsTranslated();
+				$stringsQueued = $group->getLanguageWordsQueuedToBeTranslated();
+				$stringsChanged = $group->getLanguageWordsSourceHasChanged();
+				$stringsNotTranslated = $group->getLanguageWordsNotTranslated();*/
+
+				?>
 
 				<tr class="row-group collapsed" data-level="1" data-id="group<?php echo $group->getId(); ?>" data-parent="header">
 					<td <?php echo (count($group->getTables()) || $countLanguageStrings)?(' class="cell-expand"><span class="icon-arrow-right-3"></span>'):('>'); ?></td>
 					<td class="cell-check"><input type="checkbox"/></td>
 					<td colspan="3"><?php echo $group->getGroupName(); ?></td>
-					<td<?php echo ($countElements)?(' class="cell-expand"'):(''); ?>><?php echo $countElements ?></td>
+					<td<?php echo ($elementCount)?(' class="cell-expand"'):(''); ?>><?php echo $elementCount ?></td>
 					<td></td>
 					<td></td>
 					<td></td>
 				</tr>
-				<?php // @var $table NenoContentElementTable ?>
+				<?php /* @var $table NenoContentElementTable */ ?>
 				<?php foreach ($group->getTables() as $table): ?>
 
 					<tr class="row-table collapsed hide" data-level="2" data-id="table<?php echo $table->getId(); ?>" data-parent="group<?php echo $group->getId(); ?>">
@@ -262,7 +269,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 						<td></td>
 						<td></td>
 					</tr>
-					<?php // @var $field NenoContentElementField ?>
+					<?php /* @var $field NenoContentElementField */ ?>
 					<?php foreach ($table->getFields() as $field):
 						if (isset($groupTables[$table->getId()][$field->getId()])) {
 							$fieldTotalStrings = $groupTables[$table->getId()][$field->getId()]['totalStrings'];
@@ -318,11 +325,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 						<td></td>
 					</tr>
 				<?php endif; ?>
-                 * 
-                 */
-                ?>
-                
-                
+			<?php endforeach; ?>
 		</table>
 	</div>
 </div>

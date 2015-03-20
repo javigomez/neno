@@ -173,6 +173,28 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		JFactory::getApplication()->close();
 	}
 
-
+    
+    public function getElements() {
+        
+        $input = JFactory::getApplication()->input;
+        $groupId = $input->getInt('group_id');
+        
+        /* @var $group NenoContentElementGroup */
+        $group = NenoContentElementGroup::load($groupId);
+        $tables = $group->getTables();
+        $tablesHTML = JLayoutHelper::render('rowelementtable', $tables, JPATH_NENO_LAYOUTS);
+        
+        
+        
+        //$files = $group->getLanguageFiles();
+        
+        echo $tablesHTML;
+        
+        JFactory::getApplication()->close();
+        
+        
+    }
+    
+    
 
 }
