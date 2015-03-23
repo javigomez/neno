@@ -27,7 +27,6 @@
                 description="COM_BANNERS_FILTER_TRANSLATOR_DESC"
                 onchange="this.form.submit();"
                 >
-            <option value="">COM_NENO_SELECT_TRANSLATORS</option>
         </field>
     </fields>
     </form>

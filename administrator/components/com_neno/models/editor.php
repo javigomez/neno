@@ -66,8 +66,6 @@ class NenoModelEditor extends JModelList
 	{
 		$elements = parent::getItems();
 
-		//var_dump($elements);
-
 		$translations = array ();
 
 		$countElements = count($elements);
@@ -75,12 +73,6 @@ class NenoModelEditor extends JModelList
 		for ($i = 0; $i < $countElements; $i++)
 		{
 			$translations[] = new NenoContentElementTranslation($elements[$i]);
-
-			/*$element = NenoContentElementField::getFieldById($elements[$i]->id);
-			if (!empty($element)) {
-				$translations[$i] = NenoContentElementTranslation::getTranslations($element);
-
-			}*/
 		}
 
 		//var_dump($elements);
@@ -155,6 +147,8 @@ class NenoModelEditor extends JModelList
 		$query->leftJoin('`#__neno_content_element_fields` AS f ON t.id = f.table_id AND f.translate = 1');
 		$query->leftJoin('`#__neno_content_element_translations` AS tr ON tr.content_id = f.id');
 		$query->where('tr.language = "' . $workingLanguage . '"');
+		// REMOVE THIS LIMIT /////////////////////////////////////////////////////////////////////////////////////////
+		//$query->order('tr.id LIMIT 20');
 
 		$queryWhere = array ();
 

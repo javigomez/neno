@@ -35,6 +35,7 @@ $filters = $data['view']->filterForm->getGroup('filter');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet(JUri::root() . '/media/neno/css/editorfilters.css');
+$document->addScript(JUri::root() . '/media/neno/js/editorfilters.js');
 ?>
 
 <div class="js-stools clearfix">

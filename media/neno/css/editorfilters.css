@@ -54,4 +54,5 @@
 
 .js-stools-field-filter select {
     width: 100%;
+    font-size: 12px !important;
 }

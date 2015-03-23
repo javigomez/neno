@@ -65,6 +65,7 @@ class NenoModelStrings extends JModelList
 	public function getItems()
 	{
 		$elements = parent::getItems();
+		var_dump(count($elements));
 
 		//var_dump($elements);
 
