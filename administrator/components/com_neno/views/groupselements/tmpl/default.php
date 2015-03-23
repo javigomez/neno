@@ -253,7 +253,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					<td class="toggler toggler-collapsed toggle-elements"><span class="icon-arrow-right-3"></span></td>
 					<td class="cell-check"><input type="checkbox" /></td>
 					<td colspan="3"><?php echo $group->getGroupName(); ?></td>
-					<td<?php echo ($this->elementCount) ? ' class="load-elements"' : ''; ?>><?php echo $this->elementCount; ?></td>
+					<td<?php echo ($group->elementCount) ? ' class="load-elements"' : ''; ?>><?php echo $group->elementCount; ?></td>
 					<td><?php echo $group->wordCount->total; ?>
                     </td>
 					<td></td>

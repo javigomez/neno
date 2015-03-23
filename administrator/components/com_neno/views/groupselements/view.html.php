@@ -54,8 +54,6 @@ class NenoViewGroupsElements extends JViewLegacy
 	{
 		$this->state        = $this->get('State');
 		$this->items        = $this->get('Items');
-		$this->elementCount = $this->get('ElementCount', 0);
-		$this->wordCount = $this->get('WordCount', 0);
         
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
