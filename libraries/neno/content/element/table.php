@@ -98,7 +98,7 @@ class NenoContentElementTable extends NenoContentElement
 					)
 				)
 				->from($db->quoteName(NenoContentElementField::getDbTable(), 'f'))
-				->leftJoin(
+				->innerJoin(
 					$db->quoteName(NenoContentElementTranslation::getDbTable(), 'tr') .
 					' ON tr.content_id = f.id AND tr.content_type = ' .
 					$db->quote('db_string') .

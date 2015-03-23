@@ -134,7 +134,7 @@ class NenoContentElementGroup extends NenoContentElement
 						)
 					)
 					->from($db->quoteName(NenoContentElementLangstring::getDbTable()) . ' AS l')
-					->leftJoin(
+					->innerJoin(
 						$db->quoteName(NenoContentElementTranslation::getDbTable()) .
 						' AS t ON t.content_id = l.id AND t.content_type = ' .
 						$db->quote('lang_string') .
@@ -176,11 +176,11 @@ class NenoContentElementGroup extends NenoContentElement
 					)
 				)
 				->from($db->quoteName(NenoContentElementTable::getDbTable(), 't'))
-				->leftJoin(
+				->innerJoin(
 					$db->quoteName(NenoContentElementField::getDbTable(), 'f') .
 					' ON f.table_id = t.id'
 				)
-				->leftJoin(
+				->innerJoin(
 					$db->quoteName(NenoContentElementTranslation::getDbTable(), 'tr') .
 					' ON tr.content_id = f.id AND tr.content_type = ' .
 					$db->quote('db_string') .
