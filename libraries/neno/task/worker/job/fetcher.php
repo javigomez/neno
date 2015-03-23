@@ -17,11 +17,11 @@ class NenoTaskWorkerJobFetcher extends NenoTaskWorker
 	/**
 	 * Execute the task
 	 *
-	 * @param   array $taskData Task data
+	 * @param   array|null $taskData Task data
 	 *
 	 * @return bool True on success, false otherwise
 	 */
-	public function run(array $taskData)
+	public function run($taskData)
 	{
 		$jobs = NenoJob::load(array ('state' => NenoJob::JOB_STATE_COMPLETED));
 
