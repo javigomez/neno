@@ -128,7 +128,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	.table-groups-elements .translation-progress-bar .not-translated {
 		background-color: #DB3F35;
 	}
-	.table-groups-elements .translation-progress-bar .bar-disabled {
+	.table-groups-elements .translation-progress-bar .bar-disabled div {
 		background-color: #CACACA;
 		/*width: 100px;*/
 	}
@@ -140,27 +140,27 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 </style>
 
 <script type="text/javascript">
-
+    
+    //Bind
 	jQuery(document).ready(function () {
 
         // Bind load elements
         jQuery('.toggle-elements').bind('click',toggleElements);
         
         // Bind toggle fields
-        jQuery('.toggle-fields').bind('click',toggleFields);
+        jQuery('.toggle-fields').bind('click',toggleFieldVisibility);
         
 	});
     
     /**
      * Toggle Elements (Tables and language files_
-     * @param {object} e
      */
     function toggleElements() 
     {
         var row = jQuery(this).parent('.row-group');
         var id_parts = row.attr('data-id').split('-');
         var id = id_parts[1];
-        console.log(id);
+        
         //Get the state of the current toggler to see if we need to expand or collapse
         if (jQuery(this).hasClass('toggler-collapsed')) {
             
@@ -174,8 +174,11 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
                 , function(html) {
                     jQuery('#loader-'+id).replaceWith(html);
                     
-                    //Attach the toggler
-                    jQuery('.toggle-fields').bind('click',toggleFields);            
+                    //Attach the visibility toggler
+                    jQuery('.toggle-fields').bind('click',toggleFieldVisibility);            
+                    
+                    //Attach the translate state toggler
+                    jQuery('.check-toggle-translate-radio').bind('click', changeFieldTranslateState);
         
                 }
             );
@@ -192,8 +195,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
         
     }
     
-    
-    function toggleFields() {
+    function toggleFieldVisibility() {
         
         var row = jQuery(this).parent('.row-table');
         var id_parts = row.attr('data-id').split('-');
@@ -224,6 +226,26 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
         
     }
     
+    
+    
+    function changeFieldTranslateState() {
+        
+        var id = jQuery(this).parent('fieldset').attr('data-field');
+        var status = jQuery(this).val();
+        
+        if (status == 1) {
+            jQuery(this).parents('.row-field').find('.bar').removeClass('bar-disabled');
+            jQuery('[for="check-toggle-translate-'+id+'-1"]').addClass('active btn-success');
+            jQuery('[for="check-toggle-translate-'+id+'-0"]').removeClass('active btn-danger');
+        } else {
+            jQuery(this).parents('.row-field').find('.bar').addClass('bar-disabled');
+            jQuery('[for="check-toggle-translate-'+id+'-0"]').addClass('active btn-danger');
+            jQuery('[for="check-toggle-translate-'+id+'-1"]').removeClass('active btn-success');
+        }
+        
+        jQuery.get('index.php?option=com_neno&task=groupselements.toggleContentElementField&fieldId='+id+'&translateStatus='+status);        
+        
+    }
     
 
 </script>
@@ -350,7 +372,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 								if (!isset($groupTables[$table->getId()][$field->getId()])) {
 									$groupTables[$table->getId()][$field->getId()] = array();
 								}
-								echo NenoHelper::printTranslationBar($groupTables[$table->getId()][$field->getId()], $field->isTranslate());
+								echo NenoHelper::printWordCountProgressBar($groupTables[$table->getId()][$field->getId()], $field->isTranslate());
 								?>
 							</td>
 							<td class="toggle-translate">
@@ -381,7 +403,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 								'changed'  => $stringsChanged,
 								'notTranslated'  => $stringsNotTranslated
 							);
-							echo NenoHelper::printTranslationBar($stringsStatus);
+							echo NenoHelper::printWordCountProgressBar($stringsStatus);
 							?>
 						</td>
 						<td></td>

@@ -287,7 +287,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 								if (!isset($groupTables[$table->getId()][$field->getId()])) {
 									$groupTables[$table->getId()][$field->getId()] = array();
 								}
-								echo NenoHelper::printTranslationBar($groupTables[$table->getId()][$field->getId()], $field->isTranslate());
+								echo NenoHelper::printWordCountProgressBar($groupTables[$table->getId()][$field->getId()], $field->isTranslate());
 								?>
 							</td>
 							<td class="toggle-translate">
@@ -318,7 +318,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 								'changed'  => $stringsChanged,
 								'notTranslated'  => $stringsNotTranslated
 							);
-							echo NenoHelper::printTranslationBar($stringsStatus);
+							echo NenoHelper::printWordCountProgressBar($stringsStatus);
 							?>
 						</td>
 						<td></td>

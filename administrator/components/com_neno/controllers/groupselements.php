@@ -136,40 +136,30 @@ class NenoControllerGroupsElements extends JControllerAdmin
 	/**
 	 *
 	 */
-	public function enableDisableContentElementField()
+	public function toggleContentElementField()
 	{
-		NenoLog::log('Method enableDisableContentElementField of NenoControllerGroupsElements called', 3);
+		NenoLog::log('Method toggleContentElementField of NenoControllerGroupsElements called', 3);
 
 		$input = JFactory::getApplication()->input;
 
 		$fieldId         = $input->getInt('fieldId');
 		$translateStatus = $input->getBool('translateStatus');
 
-		NenoLog::log('Call to getFieldById of NenoContentElementField', 3);
 		/* @var $field NenoContentElementField */
 		$field  = NenoContentElementField::getFieldById($fieldId);
-		$result = 0;
 
 		// If the table exists, let's work with it.
 		if ($field !== false)
 		{
-			NenoLog::log('Table exists', 2);
 
 			$field->setTranslate($translateStatus);
-			$field->persist();
+			if ($field->persist() === false) 
+            {
+                echo "Error saving new state!";
+            }
 
-			$stringStatus                  = array();
-			$stringStatus['translated']    = $field->getWordsTranslated();
-			$stringStatus['queued']        = $field->getWordsQueuedToBeTranslated();
-			$stringStatus['changed']       = $field->getWordsSourceHasChanged();
-			$stringStatus['notTranslated'] = $field->getWordsNotTranslated();
-
-			NenoLog::log('Call to htmlTranslationBar of NenoHelper', 3);
-
-			$result = NenoHelper::htmlTranslationBar($stringStatus, $translateStatus);
 		}
 
-		echo $result;
 		JFactory::getApplication()->close();
 	}
 

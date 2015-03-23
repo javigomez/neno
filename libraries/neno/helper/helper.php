@@ -1104,29 +1104,24 @@ class NenoHelper
 	 *
 	 * @return string
 	 */
-	public static function printTranslationBar($wordCount, $enabled = true)
+	public static function printWordCountProgressBar($wordCount, $enabled=1)
 	{
-		$displayData = null;
-        echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$wordCount = ". print_r($wordCount, true)."\n</pre>";
-
         
-        
-		if ($enabled && count($wordCount) !== 0)
-		{
-			$displayData = new stdClass;
-			if (!array_key_exists('totalStrings', $wordCount) || $wordCount['totalStrings'] === null)
-			{
-				$wordCount['totalStrings'] = $wordCount['translated'] + $wordCount['queued'] + $wordCount['changed'] + $wordCount['notTranslated'];
-			}
+        $displayData = new stdClass;
+        $displayData->enabled = $enabled;
+        $displayData->wordCount      = $wordCount;
+        $displayData->widthTranslated    = ($wordCount->total) ? (100 * $wordCount->translated / $wordCount->total) : (0);
+        $displayData->widthQueued        = ($wordCount->total) ? (100 * $wordCount->queued / $wordCount->total) : (0);
+        $displayData->widthChanged       = ($wordCount->total) ? (100 * $wordCount->changed / $wordCount->total) : (0);
+        $displayData->widthNotTranslated = ($wordCount->total) ? (100 * $wordCount->untranslated / $wordCount->total) : (0);
 
-			$displayData->stringsStatus      = $wordCount;
-			$displayData->widthTranslated    = ($wordCount['totalStrings']) ? (100 * $wordCount['translated'] / $wordCount['totalStrings']) : (0);
-			$displayData->widthQueued        = ($wordCount['totalStrings']) ? (100 * $wordCount['queued'] / $wordCount['totalStrings']) : (0);
-			$displayData->widthChanged       = ($wordCount['totalStrings']) ? (100 * $wordCount['changed'] / $wordCount['totalStrings']) : (0);
-			$displayData->widthNotTranslated = ($wordCount['totalStrings']) ? (100 * $wordCount['notTranslated'] / $wordCount['totalStrings']) : (0);
-		}
-
-		return JLayoutHelper::render('progressbar', $displayData, JPATH_NENO_LAYOUTS);
+        //If total is 0 (there is no content to translate) then mark everything as translated
+        if ($wordCount->total == 0) {
+            $displayData->widthTranslated    = 100;
+        }
+            
+        return JLayoutHelper::render('wordcountprogressbar', $displayData, JPATH_NENO_LAYOUTS);
+		
 	}
 
 	/**

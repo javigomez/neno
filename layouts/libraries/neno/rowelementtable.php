@@ -40,16 +40,14 @@ if ($displayData === null): ?>
                 <td><?php echo $field->field_name ?></td>
                 <td><?php echo strtoupper($field->field_type) ?></td>
                 <td class="translation-progress-bar">
-                    <?php
-                    echo NenoHelper::printTranslationBar($table->word_count);
-                    ?>
+                    <?php echo NenoHelper::printWordCountProgressBar($table->word_count, $field->translate); ?>
                 </td>
                 <td class="toggle-translate">
                     <fieldset id="check-toggle-translate-<?php echo $field->id;?>" class="radio btn-group btn-group-yesno" data-field="<?php echo $field->id; ?>">
-                        <input class="check-toggle-translate-radio" type="radio" id="check-toggle-translate-<?php echo $field->id;?>-1" name="jform[check-toggle-translate]" value="1" <?php echo ($field->translate)?('checked="checked"'):(''); ?>>
-                        <label for="check-toggle-translate-<?php echo $field->id;?>-1" class="btn">Translate</label>
-                        <input class="check-toggle-translate-radio" type="radio" id="check-toggle-translate-<?php echo $field->id;?>-0" name="jform[check-toggle-translate]" value="0" <?php echo (!$field->translate)?('checked="checked"'):(''); ?>>
-                        <label for="check-toggle-translate-<?php echo $field->id;?>-0" class="btn">Don't translate</label>
+                        <input class="check-toggle-translate-radio" type="radio" id="check-toggle-translate-<?php echo $field->id;?>-1" name="jform[check-toggle-translate]" value="1" <?php echo ($field->translate) ? 'checked="checked"' : ''; ?>>
+                        <label for="check-toggle-translate-<?php echo $field->id;?>-1" class="btn <?php echo ($field->translate) ? 'active btn-success' : ''; ?>">Translate</label>
+                        <input class="check-toggle-translate-radio" type="radio" id="check-toggle-translate-<?php echo $field->id;?>-0" name="jform[check-toggle-translate]" value="0" <?php echo (!$field->translate) ? 'checked="checked"' : ''; ?>>
+                        <label for="check-toggle-translate-<?php echo $field->id;?>-0" class="btn <?php echo (!$field->translate) ? 'active btn-danger' : ''; ?>">Don't translate</label>
                     </fieldset>
                 </td>
                 <td></td>
