@@ -232,44 +232,29 @@ abstract class NenoObject
 	 */
 	public function persist()
 	{
-		$result = false;
+		$db   = JFactory::getDbo();
+		$data = $this->toObject();
 
-		if ($this->hasChanged || $this->isNew())
+		if ($this->isNew())
 		{
-			$db   = JFactory::getDbo();
-			$data = $this->toObject();
+			$id = $this->generateId();
+			$data->set('id', $id);
+			$result = $db->insertObject(self::getDbTable(), $data, 'id');
 
-			if ($this->isNew())
+			// Just assign an id if it's null
+			if (empty($id))
 			{
-				$id = $this->generateId();
-				$data->set('id', $id);
-				$result = $db->insertObject(self::getDbTable(), $data, 'id');
-
-				// Just assign an id if it's null
-				if (empty($id))
-				{
-					$data->set('id', $db->insertid());
-				}
-
-				$this->id = $data->get('id');
+				$data->set('id', $db->insertid());
 			}
-			else
-			{
-				$result = $db->updateObject(self::getDbTable(), $data, 'id');
-			}
+
+			$this->id = $data->get('id');
+		}
+		else
+		{
+			$result = $db->updateObject(self::getDbTable(), $data, 'id');
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Check if a record is new or not.
-	 *
-	 * @return bool
-	 */
-	public function isNew()
-	{
-		return empty($this->id);
 	}
 
 	/**
@@ -309,7 +294,7 @@ abstract class NenoObject
 						{
 							$dataArray[$key] = $value->toObject($allFields, $recursive, $convertToDatabase);
 						}
-						elseif(!$value instanceof NenoObject)
+						elseif (!$value instanceof NenoObject)
 						{
 							$dataArray[$key] = $value;
 						}
@@ -363,6 +348,16 @@ abstract class NenoObject
 		}
 
 		return $propertyNames;
+	}
+
+	/**
+	 * Check if a record is new or not.
+	 *
+	 * @return bool
+	 */
+	public function isNew()
+	{
+		return empty($this->id);
 	}
 
 	/**
