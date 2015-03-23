@@ -105,12 +105,15 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	}
 	.table-groups-elements .translation-progress-bar .word-count {
 		float: left;
+        text-align: right;
+        width: 40px;
+        padding-right: 4px;
 	}
 	.table-groups-elements .translation-progress-bar .bar {
 		width: 120px;
-		height: 10px;
-		margin-left: 30px;
-		margin-top: 3px;
+		height: 14px;
+		margin-left: 44px;
+		margin-top: 2px;
 	}
 	.table-groups-elements .translation-progress-bar .bar div {
 		height: 100%;
@@ -145,7 +148,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	jQuery(document).ready(function () {
 
         // Bind load elements
-        jQuery('.toggle-elements').bind('click',toggleElements);
+        jQuery('.toggle-elements').bind('click',toggleElementVisibility);
         
         // Bind toggle fields
         jQuery('.toggle-fields').bind('click',toggleFieldVisibility);
@@ -155,7 +158,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
     /**
      * Toggle Elements (Tables and language files_
      */
-    function toggleElements() 
+    function toggleElementVisibility() 
     {
         var row = jQuery(this).parent('.row-group');
         var id_parts = row.attr('data-id').split('-');
@@ -190,6 +193,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
             
             //Remove children
             jQuery('[data-parent="'+id+'"]').remove();
+            jQuery('[data-grandparent="'+id+'"]').remove();
             
         }
         
@@ -276,8 +280,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					<td class="cell-check"><input type="checkbox" /></td>
 					<td colspan="3"><?php echo $group->getGroupName(); ?></td>
 					<td<?php echo ($group->elementCount) ? ' class="load-elements"' : ''; ?>><?php echo $group->elementCount; ?></td>
-					<td><?php echo $group->wordCount->total; ?>
-                    </td>
+					<td class="translation-progress-bar"><?php echo NenoHelper::printWordCountProgressBar($group->wordCount, 1); ?></td>
 					<td></td>
 					<td></td>
 				</tr>
