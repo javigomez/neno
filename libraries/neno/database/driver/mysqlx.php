@@ -235,7 +235,6 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	{
 		try
 		{
-			/** @noinspection PhpUndefinedClassInspection */
 			$result = parent::execute();
 
 			return $result;
