@@ -59,6 +59,16 @@ class NenoContentElementTable extends NenoContentElement
 
 		$this->primaryKey = is_array($this->primaryKey) ? json_encode($this->primaryKey) : json_decode($this->primaryKey);
 
+		if (!is_array($data))
+		{
+			$data = get_object_vars($data);
+		}
+
+		if ($data['groupId'])
+		{
+			$this->group = NenoContentElementGroup::load($data['groupId']);
+		}
+
 		// Init the field list
 		$this->fields = null;
 
@@ -183,35 +193,9 @@ class NenoContentElementTable extends NenoContentElement
 	 */
 	public static function getTableById($tableId)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$table = self::load($tableId);
 
-		$query
-			->select('*')
-			->from(self::getDbTable())
-			->where('id = ' . intval($tableId));
-
-		$db->setQuery($query);
-		$tableData = $db->loadAssoc();
-
-		if ($tableData)
-		{
-			$tableInfo = array ();
-
-			foreach ($tableData as $property => $value)
-			{
-				$tableInfo[NenoHelper::convertDatabaseColumnNameToPropertyName($property)] = $value;
-			}
-
-			$table = new NenoContentElementTable($tableInfo);
-
-			$group = NenoContentElementGroup::getGroup($tableInfo['groupId'], false);
-			$table->setGroup($group);
-
-			return $table;
-		}
-
-		return false;
+		return $table;
 	}
 
 	/**

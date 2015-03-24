@@ -1104,23 +1104,24 @@ class NenoHelper
 	 *
 	 * @return string
 	 */
-	public static function printWordCountProgressBar($wordCount, $enabled=1)
+	public static function printWordCountProgressBar($wordCount, $enabled = 1)
 	{
-        
-        $displayData = new stdClass;
-        $displayData->enabled = $enabled;
-        $displayData->wordCount      = $wordCount;
-        $displayData->widthTranslated    = ($wordCount->total) ? (100 * $wordCount->translated / $wordCount->total) : (0);
-        $displayData->widthQueued        = ($wordCount->total) ? (100 * $wordCount->queued / $wordCount->total) : (0);
-        $displayData->widthChanged       = ($wordCount->total) ? (100 * $wordCount->changed / $wordCount->total) : (0);
-        $displayData->widthNotTranslated = ($wordCount->total) ? (100 * $wordCount->untranslated / $wordCount->total) : (0);
 
-        //If total is 0 (there is no content to translate) then mark everything as translated
-        if ($wordCount->total == 0) {
-            $displayData->widthTranslated    = 100;
-        }
-            
-        return JLayoutHelper::render('wordcountprogressbar', $displayData, JPATH_NENO_LAYOUTS);
+		$displayData                     = new stdClass;
+		$displayData->enabled            = $enabled;
+		$displayData->wordCount          = $wordCount;
+		$displayData->widthTranslated    = ($wordCount->total) ? (100 * $wordCount->translated / $wordCount->total) : (0);
+		$displayData->widthQueued        = ($wordCount->total) ? (100 * $wordCount->queued / $wordCount->total) : (0);
+		$displayData->widthChanged       = ($wordCount->total) ? (100 * $wordCount->changed / $wordCount->total) : (0);
+		$displayData->widthNotTranslated = ($wordCount->total) ? (100 * $wordCount->untranslated / $wordCount->total) : (0);
+
+		//If total is 0 (there is no content to translate) then mark everything as translated
+		if ($wordCount->total == 0)
+		{
+			$displayData->widthTranslated = 100;
+		}
+
+		return JLayoutHelper::render('wordcountprogressbar', $displayData, JPATH_NENO_LAYOUTS);
 		
 	}
 
@@ -1184,32 +1185,38 @@ class NenoHelper
 	/**
 	 * Return all groups.
 	 *
-	 * @return  string  The component to access.
-	 *
-	 * @since   1.5
+	 * @return  array
 	 */
 	public static function getGroups()
 	{
-		// Create a new query object.
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$cacheId = NenoCache::getCacheId(__FUNCTION__, array (1));
+		$cacheData = NenoCache::getCacheData($cacheId);
 
-		$query
-			->select('g.id')
-			->from('`#__neno_content_element_groups` AS g');
-
-		$db->setQuery($query);
-		$db->execute();
-
-		$groups = $db->loadObjectList();
-
-		$countGroups = count($groups);
-		for ($i = 0; $i < $countGroups; $i++)
+		if ($cacheData === null)
 		{
-			$groups[$i] = NenoContentElementGroup::getGroup($groups[$i]->id);
+			// Create a new query object.
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query
+				->select('g.id')
+				->from('`#__neno_content_element_groups` AS g');
+
+			$db->setQuery($query);
+			$groups = $db->loadObjectList();
+
+			$countGroups = count($groups);
+			for ($i = 0; $i < $countGroups; $i++)
+			{
+				$groups[$i] = NenoContentElementGroup::getGroup($groups[$i]->id);
+			}
+
+			NenoCache::setCacheData($cacheId, $groups);
+			$cacheData = $groups;
 		}
 
-		return $groups;
+
+		return $cacheData;
 	}
 
 	/**
@@ -1277,68 +1284,88 @@ class NenoHelper
 	 */
 	public static function getTranslationOriginalText($translationId, $translationType, $translationElementId)
 	{
-		/* @var $db NenoDatabaseDriverMysqlX */
-		$db     = JFactory::getDbo();
-		$query  = $db->getQuery(true);
-		$string = null;
+		$cacheId    = NenoCache::getCacheId(__FUNCTION__, func_get_args());
+		$cachedData = NenoCache::getCacheData($cacheId);
 
-		// If the translation comes from database content, let's load it
-		if ($translationType == NenoContentElementTranslation::DB_STRING)
+		if ($cachedData === null)
 		{
-			$query
-				->select(
-					array (
-						'f.field_name',
-						't.table_name'
-					)
-				)
-				->from('`#__neno_content_element_fields` AS f')
-				->innerJoin('`#__neno_content_element_tables` AS t ON f.table_id = t.id')
-				->where('f.id = ' . $translationElementId);
+			/* @var $db NenoDatabaseDriverMysqlX */
+			$db     = JFactory::getDbo();
+			$query  = $db->getQuery(true);
+			$string = null;
 
-			$db->setQuery($query);
-			list($fieldName, $tableName) = $db->loadRow();
-
-			$query
-				->clear()
-				->select(
-					array (
-						'f.field_name',
-						'ft.value',
-					)
-				)
-				->from('`#__neno_content_element_fields_x_translations` AS ft')
-				->innerJoin('`#__neno_content_element_fields` AS f ON f.id = ft.field_id')
-				->where('ft.translation_id = ' . $translationId);
-
-			$db->setQuery($query);
-			$whereValues = $db->loadAssocList('field_name');
-
-			$query
-				->clear()
-				->select($db->quoteName($fieldName))
-				->from($tableName);
-
-			foreach ($whereValues as $whereField => $where)
+			// If the translation comes from database content, let's load it
+			if ($translationType == NenoContentElementTranslation::DB_STRING)
 			{
-				$query->where($db->quoteName($whereField) . ' = ' . $db->quote($where['value']));
+				$queryCacheId   = NenoCache::getCacheId('originalTextQuery', array ($translationElementId));
+				$queryCacheData = NenoCache::getCacheData($queryCacheId);
+
+				if ($queryCacheData === null)
+				{
+					$query
+						->select(
+							array (
+								'f.field_name',
+								't.table_name'
+							)
+						)
+						->from('`#__neno_content_element_fields` AS f')
+						->innerJoin('`#__neno_content_element_tables` AS t ON f.table_id = t.id')
+						->where('f.id = ' . $translationElementId);
+
+					$db->setQuery($query);
+					$row = $db->loadRow();
+					NenoCache::setCacheData($queryCacheId, $row);
+					$queryCacheData = $row;
+				}
+
+				list($fieldName, $tableName) = $queryCacheData;
+
+
+				$query
+					->clear()
+					->select(
+						array (
+							'f.field_name',
+							'ft.value',
+						)
+					)
+					->from('`#__neno_content_element_fields_x_translations` AS ft')
+					->innerJoin('`#__neno_content_element_fields` AS f ON f.id = ft.field_id')
+					->where('ft.translation_id = ' . $translationId);
+
+				$db->setQuery($query);
+				$whereValues = $db->loadAssocList('field_name');
+
+				$query
+					->clear()
+					->select($db->quoteName($fieldName))
+					->from($tableName);
+
+				foreach ($whereValues as $whereField => $where)
+				{
+					$query->where($db->quoteName($whereField) . ' = ' . $db->quote($where['value']));
+				}
+
+				$db->setQuery($query);
+				$string = $db->loadResult();
+			}
+			else
+			{
+				$query
+					->select('string')
+					->from('#__neno_content_element_langstrings')
+					->where('id = ' . $translationElementId);
+
+				$db->setQuery($query);
+				$string = $db->loadResult();
 			}
 
-			$db->setQuery($query);
-			$string = $db->loadResult();
-		}
-		else
-		{
-			$query
-				->select('string')
-				->from('#__neno_content_element_langstrings')
-				->where('id = ' . $translationElementId);
-
-			$db->setQuery($query);
-			$string = $db->loadResult();
+			NenoCache::setCacheData($cacheId, $string);
+			$cachedData = $string;
 		}
 
-		return $string;
+		return $cachedData;
 	}
 
 	/**

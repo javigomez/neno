@@ -19,11 +19,6 @@ defined('JPATH_NENO') or die;
 class NenoCache
 {
 	/**
-	 * @var JCache
-	 */
-	protected static $cache = null;
-
-	/**
 	 * Get data from the Application cache
 	 *
 	 * @param   string $cacheId Cache Identifier
@@ -33,34 +28,10 @@ class NenoCache
 	 */
 	public static function getCacheData($cacheId, $default = null)
 	{
-		self::initCache();
-		$data = self::$cache->get($cacheId);
-
-		// If the data is not in the cache, let's return the default value
-		if ($data === false)
-		{
-			$data = $default;
-		}
-		else
-		{
-			$data = unserialize($data);
-		}
+		$app  = JFactory::getApplication();
+		$data = $app->get($cacheId, $default);
 
 		return $data;
-	}
-
-	/**
-	 * Init cache
-	 *
-	 * @return void
-	 */
-	protected static function initCache()
-	{
-		// If cache hasn't been initialise, let's do it
-		if (self::$cache === null)
-		{
-			self::$cache = new JCache(array ('caching' => true, 'checkTime' >= false, 'defaultgroup' => 'neno'));
-		}
 	}
 
 	/**
@@ -73,17 +44,8 @@ class NenoCache
 	 */
 	public static function setCacheData($cacheId, $data)
 	{
-		self::initCache();
-
-		// If the data is null, let's delete that cache file.
-		if ($data === null)
-		{
-			self::$cache->remove($cacheId);
-		}
-		else
-		{
-			self::$cache->store(serialize($data), $cacheId);
-		}
+		$app = JFactory::getApplication();
+		$app->set($cacheId, $data);
 	}
 
 	/**
@@ -96,6 +58,6 @@ class NenoCache
 	 */
 	public static function getCacheId($functionName, array $arguments)
 	{
-		return $functionName . json_encode($arguments);
+		return $functionName . md5(json_encode($arguments));
 	}
 }
