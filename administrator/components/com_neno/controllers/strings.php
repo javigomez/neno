@@ -39,17 +39,17 @@ class NenoControllerStrings extends JControllerAdmin
 
 		foreach ($filterArray as $filterItem)
 		{
-			if (strpos($filterItem, 'group') !== false)
+			if (NenoHelper::startsWith($filterItem, 'group-') !== false)
 			{
-				$filterGroups[] = str_replace('group', '', $filterItem);
+				$filterGroups[] = str_replace('group-', '', $filterItem);
 			}
-			elseif (strpos($filterItem, 'table') !== false)
+			elseif (NenoHelper::startsWith($filterItem, 'table-') !== false)
 			{
-				$filterElements[] = str_replace('table', '', $filterItem);
+				$filterElements[] = str_replace('table-', '', $filterItem);
 			}
-			elseif (strpos($filterItem, 'field') !== false)
+			elseif (NenoHelper::startsWith($filterItem, 'field-') !== false)
 			{
-				$filterField[] = str_replace('field', '', $filterItem);
+				$filterField[] = str_replace('field-', '', $filterItem);
 			}
 		}
 
@@ -65,6 +65,35 @@ class NenoControllerStrings extends JControllerAdmin
 		$translations = $stringsModel->getItems();
 
 		echo JLayoutHelper::render('strings', $translations, JPATH_NENO_LAYOUTS);
+
+		JFactory::getApplication()->close();
+	}
+
+	/**
+	 * Load elements using AJAX
+	 *
+	 * @return void
+	 *
+	 * @throws Exception
+	 */
+	public function getElements()
+	{
+		$input   = JFactory::getApplication()->input;
+		$groupId = $input->getInt('group_id');
+
+		if (!empty($groupId))
+		{
+			/* @var $group NenoContentElementGroup */
+			$group  = NenoContentElementGroup::load($groupId);
+			$tables = $group->getTables();
+			$files  = $group->getLanguageFiles();
+
+			$displayData           = array ();
+			$displayData['tables'] = NenoHelper::convertNenoObjectListToJObjectList($tables);
+			$displayData['files']  = $files;
+			$tablesHTML            = JLayoutHelper::render('multiselecttables', $displayData, JPATH_NENO_LAYOUTS);
+			echo $tablesHTML;
+		}
 
 		JFactory::getApplication()->close();
 	}

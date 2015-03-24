@@ -21,6 +21,21 @@ jimport('joomla.application.component.view');
 class NenoViewStrings extends JViewLegacy
 {
 	/**
+	 * @var JForm
+	 */
+	public $filterForm;
+
+	/**
+	 * @var JForm
+	 */
+	public $activeFilters;
+
+	/**
+	 * @var array
+	 */
+	public $groups;
+
+	/**
 	 * @var array
 	 */
 	protected $items;
@@ -31,7 +46,7 @@ class NenoViewStrings extends JViewLegacy
 	protected $pagination;
 
 	/**
-	 * @var JRegistry
+	 * @var Joomla\Registry\Registry
 	 */
 	protected $state;
 
@@ -39,11 +54,6 @@ class NenoViewStrings extends JViewLegacy
 	 * @var string
 	 */
 	protected $sidebar;
-
-	/**
-	 * @var array
-	 */
-	protected $extensionsSaved;
 
 	/**
 	 * Display the view
@@ -58,12 +68,13 @@ class NenoViewStrings extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->state           = $this->get('State');
-		$this->items           = $this->get('Items');
-		$this->pagination      = $this->get('Pagination');
-		$this->extensionsSaved = $this->get('ExtensionsMarkedAsTranslatable');
+		$this->state         = $this->get('State');
+		$this->items         = $this->get('Items');
+		$this->pagination    = $this->get('Pagination');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
+		$this->getGroupData();
+
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -72,13 +83,29 @@ class NenoViewStrings extends JViewLegacy
 		}
 
 		NenoHelper::addSubmenu('strings');
-
 		$this->addToolbar();
-		require_once JPATH_COMPONENT . '/models/fields/group.php';
 
 		$this->sidebar = JHtmlSidebar::render();
 
 		parent::display($tpl);
+	}
+
+	/**
+	 * Load group data
+	 *
+	 * @return void
+	 */
+	protected function getGroupData()
+	{
+		$groups = NenoHelper::getGroups();
+
+		/* @var $group NenoContentElementGroup */
+		foreach ($groups as $key => $group)
+		{
+			$groups[$key] = $group->prepareDataForView();
+		}
+
+		$this->groups = $groups;
 	}
 
 	/**
@@ -112,7 +139,7 @@ class NenoViewStrings extends JViewLegacy
 	 */
 	protected function getSortFields()
 	{
-		return array(
+		return array (
 			'a.id'           => JText::_('JGRID_HEADING_ID'),
 			'a.string'       => JText::_('COM_NENO_SOURCES_STRING'),
 			'a.constant'     => JText::_('COM_NENO_SOURCES_CONSTANT'),

@@ -9,15 +9,13 @@
 
 defined('JPATH_BASE') or die;
 
-//exit();
-
 $data = $displayData;
 
 // Receive overridable options
-$data['options'] = !empty($data['options']) ? $data['options'] : array();
+$data['options'] = !empty($data['options']) ? $data['options'] : array ();
 
 // Set some basic options
-$customOptions = array(
+$customOptions = array (
 	'filtersHidden'       => isset($data['options']['filtersHidden']) ? $data['options']['filtersHidden'] : empty($data['view']->activeFilters),
 	'defaultLimit'        => isset($data['options']['defaultLimit']) ? $data['options']['defaultLimit'] : JFactory::getApplication()->get('list_limit', 20),
 	'searchFieldSelector' => '#filter_search',
@@ -45,7 +43,7 @@ JHtml::_('searchtools.form', $formSelector, $data['options']);
 	<div class="js-stools-container-filters hidden-phone clearfix">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default.filters', $data); ?>
 		<div class="multiselect-wrapper">
-			<?php echo JLayoutHelper::render('multiselect', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
+			<?php echo JLayoutHelper::render('multiselectgroup', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
 		</div>
 	</div>
 </div>

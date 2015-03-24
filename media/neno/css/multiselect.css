@@ -1,5 +1,5 @@
-.table-multiselect .cell-expand,
-.table-multiselect .cell-collapse {
+.table-multiselect .expand,
+.table-multiselect .collapse {
     /*width: 15px;*/
     padding-top: 4px;
     cursor: pointer;

@@ -111,7 +111,7 @@ class NenoModelStrings extends JModelList
 		}
 
 		// Field(s) filtering
-		$fields = $app->getUserState($this->context . '.element', array ());
+		$fields = $app->getUserState($this->context . '.field', array ());
 
 		if (!empty($fields))
 		{
