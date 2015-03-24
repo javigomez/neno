@@ -118,60 +118,52 @@ class NenoContentElementGroup extends NenoContentElement
 			$db              = JFactory::getDbo();
 			$query           = $db->getQuery(true);
 			$workingLanguage = NenoHelper::getWorkingLanguage();
+			$query
+				->select(
+					array (
+						'SUM(word_count) AS counter',
+						't.state'
+					)
+				)
+				->from($db->quoteName(NenoContentElementLangstring::getDbTable()) . ' AS l')
+				->innerJoin(
+					$db->quoteName(NenoContentElementTranslation::getDbTable()) .
+					' AS t ON t.content_id = l.id AND t.content_type = ' .
+					$db->quote('lang_string') .
+					' AND t.language LIKE ' . $db->quote($workingLanguage)
+				)
+				->where('l.group_id = ' . $this->getId())
+				->group('t.state');
 
-			if ($this->languageWordsNotTranslated === null
-				|| $this->languageWordsQueuedToBeTranslated === null
-				|| $this->languageWordsQueuedToBeTranslated === null
-				|| $this->languageWordsSourceHasChanged === null
-				|| $this->languageWordsTranslated === null
-			)
+			$db->setQuery($query);
+			$statistics = $db->loadAssocList('state');
+
+			// Assign the statistics
+			foreach ($statistics as $state => $data)
 			{
-				$query
-					->select(
-						array (
-							'SUM((LENGTH(l.string) - LENGTH(replace(l.string,\' \',\'\'))+1)) AS counter',
-							't.state'
-						)
-					)
-					->from($db->quoteName(NenoContentElementLangstring::getDbTable()) . ' AS l')
-					->innerJoin(
-						$db->quoteName(NenoContentElementTranslation::getDbTable()) .
-						' AS t ON t.content_id = l.id AND t.content_type = ' .
-						$db->quote('lang_string') .
-						' AND t.language LIKE ' . $db->quote($workingLanguage)
-					)
-					->where('l.group_id = ' . $this->getId())
-					->group('t.state');
-
-				$db->setQuery($query);
-				$statistics = $db->loadAssocList('state');
-
-				// Assign the statistics
-				foreach ($statistics as $state => $data)
+				switch ($state)
 				{
-					switch ($state)
-					{
-						case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
-							$this->languageWordsNotTranslated = (int) $data['counter'];
-							break;
-						case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
-							$this->languageWordsQueuedToBeTranslated = (int) $data['counter'];
-							break;
-						case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
-							$this->languageWordsSourceHasChanged = (int) $data['counter'];
-							break;
-						case NenoContentElementTranslation::TRANSLATED_STATE:
-							$this->languageWordsTranslated = (int) $data['counter'];
-							break;
-					}
+					case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
+						$this->wordCount->untranslated = (int) $data['counter'];
+						break;
+					case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
+						$this->wordCount->queued = (int) $data['counter'];
+						break;
+					case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
+						$this->wordCount->changed = (int) $data['counter'];
+						break;
+					case NenoContentElementTranslation::TRANSLATED_STATE:
+						$this->wordCount->translated = (int) $data['counter'];
+						break;
 				}
 			}
+
 
 			$query
 				->clear()
 				->select(
 					array (
-						'SUM((LENGTH(tr.string) - LENGTH(replace(tr.string,\' \',\'\'))+1)) AS counter',
+						'SUM(word_count) AS counter',
 						'tr.state'
 					)
 				)
@@ -198,16 +190,16 @@ class NenoContentElementGroup extends NenoContentElement
 				switch ($state)
 				{
 					case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
-						$this->wordCount->untranslated = (int) $data['counter'] + $this->languageWordsNotTranslated;
+						$this->wordCount->untranslated = (int) $data['counter'] + $this->wordCount->untranslated;
 						break;
 					case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
-						$this->wordCount->queued = (int) $data['counter'] + $this->languageWordsQueuedToBeTranslated;
+						$this->wordCount->queued = (int) $data['counter'] + $this->wordCount->queued;
 						break;
 					case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
-						$this->wordCount->changed = (int) $data['counter'] + $this->languageWordsSourceHasChanged;
+						$this->wordCount->changed = (int) $data['counter'] + $this->wordCount->changed;
 						break;
 					case NenoContentElementTranslation::TRANSLATED_STATE:
-						$this->wordCount->translated = (int) $data['counter'] + $this->languageWordsTranslated;
+						$this->wordCount->translated = (int) $data['counter'] + $this->wordCount->translated;
 						break;
 				}
 			}
@@ -234,10 +226,41 @@ class NenoContentElementGroup extends NenoContentElement
 				)
 			);
 
-			$this->elementCount = (int) $countData['counter'];
+			$this->elementCount = (int) $countData['counter'] + count($this->getLanguageFiles());
+
+
 		}
 
 		return $this->elementCount;
+	}
+
+	/**
+	 * Get all the language files
+	 *
+	 * @return array
+	 */
+	public function getLanguageFiles()
+	{
+		if ($this->languageFiles === null)
+		{
+			$this->languageFiles = array ();
+			$defaultLanguage     = JFactory::getLanguage()->getDefault();
+			$extensionNames      = NenoContentElementLangstring::load(
+				array (
+					'_select'  => array ('DISTINCT extension'),
+					'group_id' => $this->getId()
+				)
+			);
+
+			$extensionNames = array_unique($extensionNames);
+
+			foreach ($extensionNames as $extensionName)
+			{
+				$this->languageFiles[] = $defaultLanguage . '.' . $extensionName . '.ini';
+			}
+		}
+
+		return $this->languageFiles;
 	}
 
 	/**
@@ -799,34 +822,5 @@ class NenoContentElementGroup extends NenoContentElement
 		$data->languageStrings = $languageStrings;
 
 		return $data;
-	}
-
-	/**
-	 * Get all the language files
-	 *
-	 * @return array
-	 */
-	public function getLanguageFiles()
-	{
-		if ($this->languageFiles === null)
-		{
-			$this->languageFiles = array ();
-			$defaultLanguage     = JFactory::getLanguage()->getDefault();
-			$extensionNames      = NenoContentElementLangstring::load(
-				array (
-					'_select'  => array ('DISTINCT extension'),
-					'group_id' => $this->getId()
-				)
-			);
-
-			$extensionNames = array_unique($extensionNames);
-
-			foreach ($extensionNames as $extensionName)
-			{
-				$this->languageFiles[] = $defaultLanguage . '.' . $extensionName . '.ini';
-			}
-		}
-
-		return $this->languageFiles;
 	}
 }
