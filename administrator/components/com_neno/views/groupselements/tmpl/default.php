@@ -155,13 +155,16 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
     function bindEvents() {
 
         // Bind load elements
-        jQuery('.toggle-elements').bind('click',toggleElementVisibility);
+        jQuery('.toggle-elements').off().on('click',toggleElementVisibility);
         
         // Bind toggle fields
-        jQuery('.toggle-fields').bind('click',toggleFieldVisibility);
+        jQuery('.toggle-fields').off().on('click',toggleFieldVisibility);
         
         //Bind checking and unchecking checkboxes
-		jQuery('#table-groups-elements input[type=checkbox]').bind('click', checkUncheckFamilyCheckboxes);        
+		jQuery('#table-groups-elements input[type=checkbox]').off().on('click', checkUncheckFamilyCheckboxes);        
+        
+        //Attach the translate state toggler
+        jQuery('.check-toggle-translate-radio').off().on('click', changeFieldTranslateState);
         
     }
     
@@ -175,6 +178,8 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
         var row = jQuery(this).parent('.row-group');
         var id_parts = row.attr('data-id').split('-');
         var id = id_parts[1];
+        
+        console.log(jQuery(this).hasClass('toggler-collapsed'));
         
         //Get the state of the current toggler to see if we need to expand or collapse
         if (jQuery(this).hasClass('toggler-collapsed')) {
@@ -214,8 +219,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
         var id_parts = row.attr('data-id').split('-');
         var id = id_parts[1];
         
-        console.log(id);
-        
         //Get the state of the current toggler to see if we need to expand or collapse
         if (jQuery(this).hasClass('toggler-collapsed')) {
             
@@ -233,9 +236,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
             jQuery('[data-parent="'+id+'"]').hide();
             
         }
-        
-        jQuery(this)
-        console.log('Toggling');
         
     }
     
@@ -282,11 +282,17 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
                 jQuery('[data-id="group-'+parent_id+'"]').find('input[type=checkbox]').prop('checked', false);    
             }
         }
+        
+        // Make available to Joomla if a checkbox is checked to prevent submitting without a checked item
+        Joomla.isChecked(state);        
     }
 
 
 
 </script>
+
+<form action="<?php echo JRoute::_('index.php?option=com_neno&view=groupselements'); ?>" method="post" name="adminForm" id="adminForm">
+
 <?php if (!empty($this->sidebar)): ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
@@ -298,7 +304,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 		<table class="table table-striped table-groups-elements" id="table-groups-elements">
 			<tr class="row-header" data-level="0" data-id="header">
 				<th></th>
-				<th class="cell-check"><input type="checkbox" /></th>
+				<th class="cell-check"></th>
 				<th colspan="3" class="group-label"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_GROUPS'); ?></th>
 				<th class="table-groups-elements-label"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ELEMENTS'); ?></th>
 				<th class="table-groups-elements-label"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_COUNT'); ?></th>
@@ -311,7 +317,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
                 
 				<tr class="row-group" data-id="group-<?php echo $group->id; ?>">
 					<td class="toggler toggler-collapsed toggle-elements"><span class="icon-arrow-right-3"></span></td>
-					<td class="cell-check"><input type="checkbox" /></td>
+					<td class="cell-check"><input type="checkbox" name="groups[]" value="<?php echo $group->id; ?>" /></td>
 					<td colspan="3"><?php echo $group->group_name; ?></td>
 					<td<?php echo ($group->element_count) ? ' class="load-elements"' : ''; ?>><?php echo $group->element_count; ?></td>
 					<td class="translation-progress-bar"><?php echo NenoHelper::printWordCountProgressBar($group->word_count, 1); ?></td>
@@ -322,142 +328,15 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
             <?php endforeach; ?>
                 
             
-                <?php
-                
-                /**
-				$fieldsTranslated = 0;
-				$fieldsQueued = 0;
-				$fieldsChanged = 0;
-				$fieldsNotTranslated = 0;
-				
-				$groupTables = array();
-                
-                
-				// @var $table NenoContentElementTable
-				foreach ($group->getTables() as $table)
-				{
-					$groupTables[$table->getId()] = array();
-
-                 	// @var $field NenoContentElementField 
-					foreach ($table->getFields() as $field)
-					{
-						if ($field->isTranslate())
-						{
-							$groupTables[$table->getId()][$field->getId()] = array();
-							$groupTables[$table->getId()][$field->getId()]['totalStrings'] = 0;
-							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['translated'] = $field->getWordsTranslated());
-							$fieldsTranslated += $field->getWordsTranslated();
-							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['queued'] = $field->getWordsQueuedToBeTranslated());
-							$fieldsQueued += $field->getWordsQueuedToBeTranslated();
-							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['changed'] = $field->getWordsSourceHasChanged());
-							$fieldsChanged += $field->getWordsSourceHasChanged();
-							$groupTables[$table->getId()][$field->getId()]['totalStrings'] += ($groupTables[$table->getId()][$field->getId()]['notTranslated'] = $field->getWordsNotTranslated());
-							$fieldsNotTranslated += $field->getWordsNotTranslated();
-						}
-					}
-				}
-				$totalFields = $fieldsTranslated + $fieldsQueued + $fieldsChanged + $fieldsNotTranslated;
-
-				$stringsTranslated = $group->getLanguageWordsTranslated();
-				$stringsQueued = $group->getLanguageWordsQueuedToBeTranslated();
-				$stringsChanged = $group->getLanguageWordsSourceHasChanged();
-				$stringsNotTranslated = $group->getLanguageWordsNotTranslated();
-				$countLanguageStrings = $stringsTranslated + $stringsQueued + $stringsChanged + $stringsNotTranslated;
-				if ($countLanguageStrings !== 0)
-				{
-					$stringsFile = NenoHelper::getWorkingLanguage() . '.' . $group->getGroupName() . '.ini';
-					$countElements++;
-				}
-
-				<tr class="row-group collapsed" data-level="1" data-id="group<?php echo $group->getId(); ?>" data-parent="header">
-					<td <?php echo (count($group->getTables()) || $countLanguageStrings)?(' class="cell-expand"><span class="icon-arrow-right-3"></span>'):('>'); ?></td>
-					<td class="cell-check"><input type="checkbox"/></td>
-					<td colspan="3"><?php echo $group->getGroupName(); ?></td>
-					<td<?php echo ($countElements)?(' class="cell-expand"'):(''); ?>><?php echo $countElements ?></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<?php // @var $table NenoContentElementTable ?>
-				<?php foreach ($group->getTables() as $table): ?>
-
-					<tr class="row-table collapsed hide" data-level="2" data-id="table<?php echo $table->getId(); ?>" data-parent="group<?php echo $group->getId(); ?>">
-						<td></td>
-						<td <?php echo (count($table->getFields()))?(' class="cell-expand"><span class="icon-arrow-right-3"></span>'):('>'); ?></td>
-						<td class="cell-check"><input type="checkbox"/></td>
-						<td colspan="2"><?php echo $table->getTableName(); ?></td>
-						<td class="type-icon"><span class="icon-grid-view-2"></span> <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_TABLE'); ?></td>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-					<?php // @var $field NenoContentElementField ?>
-					<?php foreach ($table->getFields() as $field):
-						if (isset($groupTables[$table->getId()][$field->getId()])) {
-							$fieldTotalStrings = $groupTables[$table->getId()][$field->getId()]['totalStrings'];
-						}
-						?>
-						<tr class="row-field hide" data-level="3" data-id="field<?php echo $field->getId(); ?>" data-parent="table<?php echo $table->getId(); ?>">
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td><?php echo $field->getFieldName() ?></td>
-							<td><?php echo strtoupper($field->getFieldType()) ?></td>
-							<td class="translation-progress-bar">
-								<?php
-								if (!isset($groupTables[$table->getId()][$field->getId()])) {
-									$groupTables[$table->getId()][$field->getId()] = array();
-								}
-								echo NenoHelper::printWordCountProgressBar($groupTables[$table->getId()][$field->getId()], $field->isTranslate());
-								?>
-							</td>
-							<td class="toggle-translate">
-								<fieldset id="check-toggle-translate-<?php echo $field->getId();?>" class="radio btn-group btn-group-yesno" data-field="<?php echo $field->getId(); ?>">
-									<input class="check-toggle-translate-radio" type="radio" id="check-toggle-translate-<?php echo $field->getId();?>-1" name="jform[check-toggle-translate]" value="1" <?php echo ($field->isTranslate())?('checked="checked"'):(''); ?>>
-									<label for="check-toggle-translate-<?php echo $field->getId();?>-1" class="btn">Translate</label>
-									<input class="check-toggle-translate-radio" type="radio" id="check-toggle-translate-<?php echo $field->getId();?>-0" name="jform[check-toggle-translate]" value="0" <?php echo (!$field->isTranslate())?('checked="checked"'):(''); ?>>
-									<label for="check-toggle-translate-<?php echo $field->getId();?>-0" class="btn">Don't translate</label>
-								</fieldset>
-							</td>
-							<td></td>
-						</tr>
-					<?php endforeach; ?>
-				<?php endforeach; ?>
-				<?php if($countLanguageStrings !== 0): ?>
-					<tr class="row-file collapsed hide" data-level="2" data-id="file<?php echo ''; ?>" data-parent="group<?php echo $group->getId(); ?>">
-						<td></td>
-						<td></td>
-						<td class="cell-check"><input type="checkbox"/></td>
-						<td colspan="2"><?php echo $stringsFile; ?></td>
-						<td class="type-icon"><span class="icon-file"></span> <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_FILE'); ?></td>
-						<td class="translation-progress-bar">
-							<?php
-							$stringsStatus = array(
-								'totalStrings'  => $countLanguageStrings,
-								'translated'    => $stringsTranslated,
-								'queued'  => $stringsQueued,
-								'changed'  => $stringsChanged,
-								'notTranslated'  => $stringsNotTranslated
-							);
-							echo NenoHelper::printWordCountProgressBar($stringsStatus);
-							?>
-						</td>
-						<td></td>
-						<td></td>
-					</tr>
-				<?php endif; ?>
-                 * 
-                 */
-                ?>
-                
                 
 		</table>
+        
+		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="boxchecked" value="0" />
+		<?php echo JHtml::_('form.token'); ?>
+        
 	</div>
-</div>
+
+</form>
 
 
-</div>
-
-
-</div>

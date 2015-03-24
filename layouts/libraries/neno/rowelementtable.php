@@ -23,7 +23,7 @@ if ($displayData === null): ?>
             <tr class="row-table" data-id="table-<?php echo $table->id; ?>" data-parent="<?php echo $table->group->id; ?>">
                 <td></td>
                 <td class="toggler toggler-collapsed toggle-fields"><span class="icon-arrow-right-3"></span></td>
-                <td class="cell-check"><input type="checkbox"/></td>
+                <td class="cell-check"><input type="checkbox" name="tables[]" value="<?php echo $table->id; ?>" /></td>
                 <td colspan="2"><?php echo $table->table_name; ?></td>
                 <td class="type-icon"><span class="icon-grid-view-2"></span> <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_TABLE'); ?></td>
                 <td class="translation-progress-bar">
@@ -72,7 +72,7 @@ if ($displayData === null): ?>
             <tr class="row-table" data-id="row-<?php echo $file->filename; ?>" data-parent="<?php echo $displayData['group']->getId(); ?>">
                 <td></td>
                 <td class="toggler toggler-collapsed toggle-fields"><span class="icon-arrow-right-3"></span></td>
-                <td class="cell-check"><input type="checkbox"/></td>
+                <td class="cell-check"><input type="checkbox" name="files[]" value="<?php echo $file->filename; ?>" /></td>
                 <td colspan="2" style="white-space: nowrap;"><?php echo $file->filename; ?></td>
                 <td class="type-icon"><span class="icon-file-2"></span> <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_FILE'); ?></td>
                 <td class="translation-progress-bar">

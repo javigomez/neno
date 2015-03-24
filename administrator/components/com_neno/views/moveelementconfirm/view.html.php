@@ -18,23 +18,11 @@ jimport('joomla.application.component.view');
  *
  * @since  1.0
  */
-class NenoViewGroupsElements extends JViewLegacy
+class NenoViewMoveElementConfirm extends JViewLegacy
 {
-	/**
-	 * @var array
-	 */
-	protected $items;
-
-	/**
-	 * @var JRegistry
-	 */
-	protected $state;
-
-	/**
-	 * @var string
-	 */
-	protected $sidebar;
     
+    var $tables = null;
+    var $files = null;
     
     /**
 	 * Display the view
@@ -49,20 +37,11 @@ class NenoViewGroupsElements extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->state        = $this->get('State');
-		$this->items        = NenoHelper::convertNenoObjectListToJObjectList($this->get('Items'));
+		
+        echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$this = ". print_r($this, true)."\n</pre>";
+
         
-		// Check for errors.
-		if (count($errors = $this->get('Errors')))
-		{
-			throw new Exception(implode("\n", $errors));
-		}
-
-		NenoHelper::addSubmenu('groupselements');
-
 		$this->addToolbar();
-
-		$this->sidebar = JHtmlSidebar::render();
 
 		parent::display($tpl);
 	}
@@ -78,6 +57,8 @@ class NenoViewGroupsElements extends JViewLegacy
 	{
 		$canDo = NenoHelper::getActions();
         
+        JToolbarHelper::save('moveelementconfirm.save');
+        JToolbarHelper::cancel('moveelementconfirm.cancel');
         JToolbarHelper::custom('moveelementconfirm.show', 'move', 'move', JText::_('COM_NENO_VIEW_GROUPSELEMENTS_BTN_MOVE_ELEMENTS'), TRUE);
         
 		if ($canDo->get('core.admin'))
