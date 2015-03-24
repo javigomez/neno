@@ -414,6 +414,11 @@ class NenoContentElementGroup extends NenoContentElement
 		if ($this->tables === null)
 		{
 			$this->tables = NenoContentElementTable::load(array ('group_id' => $this->getId()));
+
+			foreach ($this->tables as $key => $table)
+			{
+				$this->tables[$key]->setGroup($this);
+			}
 		}
 
 		return $this->tables;
@@ -683,6 +688,11 @@ class NenoContentElementGroup extends NenoContentElement
 		if ($this->languageStrings === null)
 		{
 			$this->languageStrings = NenoContentElementLangstring::load(array ('group_id' => $this->getId()));
+
+			foreach ($this->languageStrings as $key => $languageString)
+			{
+				$this->languageStrings[$key]->setGroup($this);
+			}
 		}
 
 		return $this->languageStrings;
