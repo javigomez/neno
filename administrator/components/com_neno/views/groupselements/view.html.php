@@ -34,10 +34,7 @@ class NenoViewGroupsElements extends JViewLegacy
 	 * @var string
 	 */
 	protected $sidebar;
-
     
-    protected $elementCount;
-    protected $wordCount;
     
     /**
 	 * Display the view
@@ -53,7 +50,7 @@ class NenoViewGroupsElements extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$this->state        = $this->get('State');
-		$this->items        = $this->get('Items');
+		$this->items        = NenoHelper::convertNenoObjectListToJObjectList($this->get('Items'));
         
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))

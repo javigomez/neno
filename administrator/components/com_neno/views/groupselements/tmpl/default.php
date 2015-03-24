@@ -274,13 +274,16 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
             
 			<?php // @var $group NenoContentElementGroup ?>
 			<?php foreach ($this->items as $group): ?>
+                
+                <?php //echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$group = ". print_r($group, true)."\n</pre>"; ?>
+
             
-				<tr class="row-group" data-id="group-<?php echo $group->getId(); ?>">
+				<tr class="row-group" data-id="group-<?php echo $group->id; ?>">
 					<td class="toggler toggler-collapsed toggle-elements"><span class="icon-arrow-right-3"></span></td>
 					<td class="cell-check"><input type="checkbox" /></td>
-					<td colspan="3"><?php echo $group->getGroupName(); ?></td>
-					<td<?php echo ($group->elementCount) ? ' class="load-elements"' : ''; ?>><?php echo $group->elementCount; ?></td>
-					<td class="translation-progress-bar"><?php echo NenoHelper::printWordCountProgressBar($group->wordCount, 1); ?></td>
+					<td colspan="3"><?php echo $group->group_name; ?></td>
+					<td<?php echo ($group->element_count) ? ' class="load-elements"' : ''; ?>><?php echo $group->element_count; ?></td>
+					<td class="translation-progress-bar"><?php echo NenoHelper::printWordCountProgressBar($group->word_count, 1); ?></td>
 					<td></td>
 					<td></td>
 				</tr>
