@@ -12,22 +12,19 @@
 defined('JPATH_NENO') or die;
 
 $document = JFactory::getDocument();
-//$document->addScript(JUri::root() . '/media/neno/js/strings.js');
 $document->addStyleSheet(JUri::root() . '/media/neno/css/strings.css');
 
-//$isOverlay = isset($displayData->isOverlay);
-
-$translationStatesClasses = array();
-$translationStatesClasses[NenoContentElementTranslation::TRANSLATED_STATE] = 'translated icon-checkmark';
+$translationStatesClasses                                                                   = array ();
+$translationStatesClasses[NenoContentElementTranslation::TRANSLATED_STATE]                  = 'translated icon-checkmark';
 $translationStatesClasses[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = 'queued icon-clock';
-$translationStatesClasses[NenoContentElementTranslation::SOURCE_CHANGED_STATE] = 'changed icon-loop';
-$translationStatesClasses[NenoContentElementTranslation::NOT_TRANSLATED_STATE] = 'not-translated icon-cancel-2';
+$translationStatesClasses[NenoContentElementTranslation::SOURCE_CHANGED_STATE]              = 'changed icon-loop';
+$translationStatesClasses[NenoContentElementTranslation::NOT_TRANSLATED_STATE]              = 'not-translated icon-cancel-2';
 
-$translationStatesText = array();
-$translationStatesText[NenoContentElementTranslation::TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_TRANSLATED');
+$translationStatesText                                                                   = array ();
+$translationStatesText[NenoContentElementTranslation::TRANSLATED_STATE]                  = JText::_('COM_NENO_STATUS_TRANSLATED');
 $translationStatesText[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_QUEUED');
-$translationStatesText[NenoContentElementTranslation::SOURCE_CHANGED_STATE] = JText::_('COM_NENO_STATUS_CHANGED');
-$translationStatesText[NenoContentElementTranslation::NOT_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_NOTTRANSLATED');
+$translationStatesText[NenoContentElementTranslation::SOURCE_CHANGED_STATE]              = JText::_('COM_NENO_STATUS_CHANGED');
+$translationStatesText[NenoContentElementTranslation::NOT_TRANSLATED_STATE]              = JText::_('COM_NENO_STATUS_NOTTRANSLATED');
 
 $translations = $displayData;
 
@@ -48,17 +45,19 @@ $translations = $displayData;
 	</tr>
 	</thead>
 	<tbody>
-	<?php /* @var $translation NenoContentElementTranslation */ ?>
+	<?php /* @var $translation JObject */ ?>
 	<?php foreach ($translations as $translation):
-		$elementObject = $translation->getElement();
-		//Kint::dump($elementObject);
-		if (is_a($elementObject,'NenoContentElementField')) {
-			$group = $elementObject->getTable()->getGroup()->getGroupName();
-			$element = $elementObject->getTable()->getTableName();
-			$key = $elementObject->getFieldName();
+		$elementObject = $translation->element;
 
-
-		} elseif (is_a($elementObject,'NenoContentElementLangstring')) {
+		// If the source element is a field
+		if ($translation->content_type == NenoContentElementTranslation::DB_STRING)
+		{
+			$group   = $elementObject->table->group->group_name;
+			$element = $elementObject->table->table_name;
+			$key     = $elementObject->field_name;
+		}
+		else
+		{
 
 		}
 
@@ -67,15 +66,17 @@ $translations = $displayData;
 		<tr class="row-string">
 			<td class="cell-check"><input type="checkbox"/></td>
 			<td class="cell-status">
-				<span class="status <?php echo $translationStatesClasses[$translation->getState()]; ?>" alt="<?php echo $translationStatesText[$translation->getState()]; ?>" title="<?php echo $translationStatesText[$translation->getState()]; ?>"></span>
+				<span class="status <?php echo $translationStatesClasses[$translation->state]; ?>"
+				      alt="<?php echo $translationStatesText[$translation->state]; ?>"
+				      title="<?php echo $translationStatesText[$translation->state]; ?>"></span>
 			</td>
-			<td title="<?php echo NenoHelper::html2text($translation->getOriginalText(), 200); ?>"><?php echo NenoHelper::html2text($translation->getString(), 200); ?></td>
+			<td title="<?php echo NenoHelper::html2text($translation->original_text, 200); ?>"><?php echo NenoHelper::html2text($translation->string, 200); ?></td>
 			<td><?php echo $group; ?></td>
 			<td><?php echo $element; ?></td>
 			<td><?php echo $key; ?></td>
-			<td><?php echo JText::_('COM_NENO_TRANSLATION_METHODS_' . strtoupper($translation->getTranslationMethod())); ?></td>
-			<td><?php echo $translation->getWordsCounter(); ?></td>
-			<td><?php echo $translation->getCharactersCounter(); ?></td>
+			<td><?php echo JText::_('COM_NENO_TRANSLATION_METHODS_' . strtoupper($translation->translation_method)); ?></td>
+			<td><?php echo $translation->word_counter; ?></td>
+			<td><?php echo $translation->characters_counter; ?></td>
 		</tr>
 	<?php endforeach; ?>
 	</tbody>
