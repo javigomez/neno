@@ -64,14 +64,12 @@ if ($displayData === null): ?>
     <?php if(!empty($displayData['files'])): ?>
         <?php foreach ($displayData['files'] as $file): ?>
             
-            <?php echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$file = ". print_r($file, true)."\n</pre>"; ?>
-            
-            <tr class="row-table" data-id="table-<?php echo $file->id; ?>" data-parent="<?php echo $file->group->id; ?>">
+            <tr class="row-table" data-id="table-<?php //echo $file->id; ?>" data-parent="<?php //echo $file->group->id; ?>">
                 <td></td>
                 <td class="toggler toggler-collapsed toggle-fields"><span class="icon-arrow-right-3"></span></td>
                 <td class="cell-check"><input type="checkbox"/></td>
-                <td colspan="2"><?php echo $file->file_name; ?></td>
-                <td class="type-icon"><span class="icon-grid-view-2"></span> <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_TABLE'); ?></td>
+                <td colspan="2"><?php echo $file->name; ?></td>
+                <td class="type-icon"><span class="icon-file-2"></span> <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_FILE'); ?></td>
                 <td class="translation-progress-bar">
                     <?php echo NenoHelper::printWordCountProgressBar($file->word_count, 1); ?>
                 </td>
