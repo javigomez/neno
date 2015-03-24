@@ -144,8 +144,15 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 <script type="text/javascript">
     
-    //Bind
 	jQuery(document).ready(function () {
+        
+        //Bind
+        bindEvents();
+        
+	});
+    
+    
+    function bindEvents() {
 
         // Bind load elements
         jQuery('.toggle-elements').bind('click',toggleElementVisibility);
@@ -153,7 +160,12 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
         // Bind toggle fields
         jQuery('.toggle-fields').bind('click',toggleFieldVisibility);
         
-	});
+        //Bind checking and unchecking checkboxes
+		jQuery('#table-groups-elements input[type=checkbox]').bind('click', checkUncheckFamilyCheckboxes);        
+        
+    }
+    
+    
     
     /**
      * Toggle Elements (Tables and language files_
@@ -177,11 +189,8 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
                 , function(html) {
                     jQuery('#loader-'+id).replaceWith(html);
                     
-                    //Attach the visibility toggler
-                    jQuery('.toggle-fields').bind('click',toggleFieldVisibility);            
-                    
-                    //Attach the translate state toggler
-                    jQuery('.check-toggle-translate-radio').bind('click', changeFieldTranslateState);
+                    //Bind events to new fields
+                    bindEvents();
         
                 }
             );
@@ -231,7 +240,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
     }
     
     
-    
     function changeFieldTranslateState() {
         
         var id = jQuery(this).parent('fieldset').attr('data-field');
@@ -251,6 +259,32 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
         
     }
     
+    /**
+    * Check and uncheck checkboxes 
+    *  - Parent click: check/uncheck all children
+    *  - Child click: uncheck parent if unchecked
+    */
+    function checkUncheckFamilyCheckboxes() {
+        
+        //Set some vars
+        var state = jQuery(this).prop('checked');
+        var this_data_id = jQuery(this).closest('tr').attr('data-id');
+        var this_parts = this_data_id.split('-');
+        var this_id = this_parts[1];
+
+        //Check uncheck all children
+        jQuery('[data-parent="'+this_id+'"]').find('input[type=checkbox]').prop('checked', state);
+
+        //Uncheck parents
+        if (state === false) {
+            var parent_id = jQuery('[data-id="'+this_data_id+'"').attr('data-parent');
+            if (parent_id) {
+                jQuery('[data-id="group-'+parent_id+'"]').find('input[type=checkbox]').prop('checked', false);    
+            }
+        }
+    }
+
+
 
 </script>
 <?php if (!empty($this->sidebar)): ?>
@@ -264,7 +298,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 		<table class="table table-striped table-groups-elements" id="table-groups-elements">
 			<tr class="row-header" data-level="0" data-id="header">
 				<th></th>
-				<th class="cell-check"><input type="checkbox"/></th>
+				<th class="cell-check"><input type="checkbox" /></th>
 				<th colspan="3" class="group-label"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_GROUPS'); ?></th>
 				<th class="table-groups-elements-label"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ELEMENTS'); ?></th>
 				<th class="table-groups-elements-label"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_COUNT'); ?></th>
@@ -275,9 +309,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 			<?php // @var $group NenoContentElementGroup ?>
 			<?php foreach ($this->items as $group): ?>
                 
-                <?php //echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$group = ". print_r($group, true)."\n</pre>"; ?>
-
-            
 				<tr class="row-group" data-id="group-<?php echo $group->id; ?>">
 					<td class="toggler toggler-collapsed toggle-elements"><span class="icon-arrow-right-3"></span></td>
 					<td class="cell-check"><input type="checkbox" /></td>
