@@ -61,6 +61,21 @@ class NenoContentElementTranslation extends NenoContentElement
 	const NOT_TRANSLATED_STATE = 4;
 
 	/**
+	 * @var array
+	 */
+	public $sourceElementData;
+
+	/**
+	 * @var integer
+	 */
+	public $charactersCounter;
+
+	/**
+	 * @var string
+	 */
+	public $originalText;
+
+	/**
 	 * @var integer
 	 */
 	protected $contentType;
@@ -106,24 +121,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	protected $translationMethod;
 
 	/**
-	 * @var array
+	 * @var int
 	 */
-	public $sourceElementData;
-
-	/**
-	 * @var integer
-	 */
-	public $wordsCounter;
-
-	/**
-	 * @var integer
-	 */
-	public $charactersCounter;
-
-	/**
-	 * @var string
-	 */
-	public $originalText;
+	protected $wordCounter;
 
 	/**
 	 * {@inheritdoc}
@@ -158,7 +158,6 @@ class NenoContentElementTranslation extends NenoContentElement
 			}
 		}
 
-		$this->wordsCounter      = str_word_count($this->getString());
 		$this->charactersCounter = strlen($this->getString());
 
 		if (!$this->isNew())
@@ -468,11 +467,14 @@ class NenoContentElementTranslation extends NenoContentElement
 	 */
 	public function persist()
 	{
-		$isNew         = $this->isNew();
-		$persistResult = parent::persist();
+		// Update word counter
+		$this->wordCounter = str_word_count($this->getString());
+
+		// Check if this record is new
+		$isNew = $this->isNew();
 
 		// Only execute this task when the translation is new and there are no records about how to find it.
-		if ($persistResult)
+		if (parent::persist())
 		{
 			if ($isNew && $this->contentType == self::DB_STRING)
 			{
@@ -504,9 +506,11 @@ class NenoContentElementTranslation extends NenoContentElement
 					$db->execute();
 				}
 			}
+
+			return true;
 		}
 
-		return $persistResult;
+		return false;
 	}
 
 	/**
@@ -548,9 +552,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	 *
 	 * @return int
 	 */
-	public function getWordsCounter()
+	public function getWordCounter()
 	{
-		return $this->wordsCounter;
+		return $this->wordCounter;
 	}
 
 	/**
