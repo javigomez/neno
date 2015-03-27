@@ -77,7 +77,8 @@ abstract class NenoContentElement extends NenoObject
 	/**
 	 * Load element from the database
 	 *
-	 * @param   mixed $pk it could be the ID of the element or an array of clauses
+	 * @param   mixed $pk    it could be the ID of the element or an array of clauses
+	 * @param   bool  $cache Allows to cache the result
 	 *
 	 * @return stdClass|array
 	 */

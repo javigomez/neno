@@ -77,7 +77,6 @@ class NenoContentElementTable extends NenoContentElement
 			$this->getWordCount();
 			$this->getFields();
 		}
-
 	}
 
 	/**
@@ -335,8 +334,9 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param   bool $allFields Show all the fields in the class
-	 * @param   bool $recursive If the method should
+	 * @param   bool $allFields         Allows to show all the fields
+	 * @param   bool $recursive         Convert this method in recursive
+	 * @param   bool $convertToDatabase Convert property names to database
 	 *
 	 * @return JObject
 	 */

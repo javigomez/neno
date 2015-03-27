@@ -101,7 +101,7 @@ class NenoContentElementGroup extends NenoContentElement
 						't.state'
 					)
 				)
-				->from($db->quoteName(NenoContentElementLangstring::getDbTable()) . ' AS l')
+				->from($db->quoteName(NenoContentElementLanguageString::getDbTable()) . ' AS l')
 				->innerJoin(
 					$db->quoteName(NenoContentElementTranslation::getDbTable()) .
 					' AS t ON t.content_id = l.id AND t.content_type = ' .
@@ -133,7 +133,6 @@ class NenoContentElementGroup extends NenoContentElement
 						break;
 				}
 			}
-
 
 			$query
 				->clear()
@@ -203,8 +202,6 @@ class NenoContentElementGroup extends NenoContentElement
 			);
 
 			$this->elementCount = (int) $countData['counter'] + count($this->getLanguageFiles());
-
-
 		}
 
 		return $this->elementCount;
@@ -220,16 +217,8 @@ class NenoContentElementGroup extends NenoContentElement
 		if ($this->languageFiles === null)
 		{
 			$this->languageFiles = array ();
-
-			$extensionNames = NenoContentElementLangstring::load(
-				array (
-					'_select'  => array ('DISTINCT extension'),
-					'group_id' => $this->getId()
-				)
-			);
-
-			$extensionNames  = array_unique($extensionNames);
-			$workingLanguage = NenoHelper::getWorkingLanguage();
+			$extensionNames      = NenoContentElementLanguageFile::load(array ('group_id' => $this->getId()));
+			$workingLanguage     = NenoHelper::getWorkingLanguage();
 
 			foreach ($extensionNames as $extensionName)
 			{
@@ -455,7 +444,7 @@ class NenoContentElementGroup extends NenoContentElement
 
 			if (!empty($this->languageStrings))
 			{
-				/* @var $languageString NenoContentElementLangstring */
+				/* @var $languageString NenoContentElementLanguageString */
 				foreach ($this->languageStrings as $languageString)
 				{
 					$languageString->setGroup($this);
@@ -636,7 +625,6 @@ class NenoContentElementGroup extends NenoContentElement
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db              = JFactory::getDbo();
 		$query           = $db->getQuery(true);
-		$workingLanguage = NenoHelper::getWorkingLanguage();
 
 		$query
 			->select('DISTINCT translation_method')
@@ -667,7 +655,7 @@ class NenoContentElementGroup extends NenoContentElement
 		// Get language strings
 		$languageStrings = $this->getLanguageStrings();
 
-		/* @var $languageString NenoContentElementLangstring */
+		/* @var $languageString NenoContentElementLanguageString */
 		foreach ($languageStrings as $languageString)
 		{
 			$languageString->remove();
@@ -687,7 +675,7 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		if ($this->languageStrings === null)
 		{
-			$this->languageStrings = NenoContentElementLangstring::load(array ('group_id' => $this->getId()));
+			$this->languageStrings = NenoContentElementLanguageString::load(array ('group_id' => $this->getId()));
 
 			foreach ($this->languageStrings as $key => $languageString)
 			{
@@ -732,7 +720,7 @@ class NenoContentElementGroup extends NenoContentElement
 			$tables[] = $table->prepareCacheContent();
 		}
 
-		/* @var $languageString NenoContentElementLangstring */
+		/* @var $languageString NenoContentElementLanguageString */
 		foreach ($data->getLanguageStrings() as $languageString)
 		{
 			$languageStrings [] = $languageString->prepareCacheContent();

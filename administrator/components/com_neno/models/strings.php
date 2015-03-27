@@ -148,9 +148,14 @@ class NenoModelStrings extends JModelList
 
 		$queryWhere = array ();
 
-		$groups  = $this->getState('filter.group_id', array ());
+		/* @var $groups array */
+		$groups = $this->getState('filter.group_id', array ());
+
+		/* @var $element array */
 		$element = $this->getState('filter.element', array ());
-		$field   = $this->getState('filter.field', array ());
+
+		/* @var $field array */
+		$field = $this->getState('filter.field', array ());
 
 		if (!is_array($groups))
 		{

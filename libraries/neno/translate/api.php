@@ -27,26 +27,6 @@ abstract class NenoTranslateApi extends JHttp
 	protected $apiKey;
 
 	/**
-	 * Method to translate content
-	 *
-	 * @param   string $text   text to translate
-	 * @param   string $source source language
-	 * @param   string $target target language
-	 *
-	 * @return string
-	 */
-	abstract public function translate($text, $source, $target);
-
-	/**
-	 * Method to make supplied language codes equivalent to translation api codes
-	 *
-	 * @param   string $jiso Joomla ISO language code
-	 *
-	 * @return string
-	 */
-	abstract public function convertFromJisoToIso($jiso);
-
-	/**
 	 * Get translator API
 	 *
 	 * @param   string $apiName API Name
@@ -72,11 +52,31 @@ abstract class NenoTranslateApi extends JHttp
 	}
 
 	/**
-	 * Method to check if language pair is available or not in translation api
+	 * Method to translate content
 	 *
+	 * @param   string $text   text to translate
 	 * @param   string $source source language
 	 * @param   string $target target language
-	 * @param   string $methodName api method name to check
+	 *
+	 * @return string
+	 */
+	abstract public function translate($text, $source, $target);
+
+	/**
+	 * Method to make supplied language codes equivalent to translation api codes
+	 *
+	 * @param   string $jiso Joomla ISO language code
+	 *
+	 * @return string
+	 */
+	abstract public function convertFromJisoToIso($jiso);
+
+	/**
+	 * Method to check if language pair is available or not in translation api
+	 *
+	 * @param   string $source     Source language
+	 * @param   string $target     Target language
+	 * @param   string $methodName Api method name to check
 	 *
 	 * @return boolean
 	 */
@@ -109,18 +109,6 @@ abstract class NenoTranslateApi extends JHttp
 		}
 
 		return $available;
-	}
-
-	/**
-	 * Method to get supported language pairs for translation from our server
-	 *
-	 * @param   string $methodName api method name
-	 *
-	 * @return array
-	 */
-	public static function getSupportedLanguagePairs($methodName)
-	{
-		return array ();
 	}
 
 	/**
@@ -191,6 +179,18 @@ abstract class NenoTranslateApi extends JHttp
 		}
 
 		return $exe;
+	}
+
+	/**
+	 * Method to get supported language pairs for translation from our server
+	 *
+	 * @param   string $methodName api method name
+	 *
+	 * @return array
+	 */
+	public static function getSupportedLanguagePairs($methodName)
+	{
+		return array ();
 	}
 
 	/**

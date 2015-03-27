@@ -43,15 +43,14 @@ class NenoTaskWorkerJobScanner extends NenoTaskWorker
 					NenoLog::add(count($machineJob->getTranslations()) . ' translations have been found to translate through machine translation');
 				}
 
-				/*$proJob = NenoJob::createJob($language->lang_code, NenoContentElementTranslation::PROFESSIONAL_TRANSLATION_METHOD);
+				$proJob = NenoJob::createJob($language->lang_code, NenoContentElementTranslation::PROFESSIONAL_TRANSLATION_METHOD);
 
 				// If there are translations for this language and for this translation method
 				if ($proJob)
 				{
 					NenoLog::add(count($proJob->getTranslations()) . ' translations have been found to translate through professional translation');
-				}*/
+				}
 			}
 		}
-
 	}
 }

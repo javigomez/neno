@@ -31,7 +31,7 @@ class NenoViewEditor extends JViewLegacy
 	protected $pagination;
 
 	/**
-	 * @var JRegistry
+	 * @var Joomla\Registry\Registry
 	 */
 	protected $state;
 
@@ -44,6 +44,16 @@ class NenoViewEditor extends JViewLegacy
 	 * @var array
 	 */
 	protected $extensionsSaved;
+
+	/**
+	 * @var JForm
+	 */
+	public $filterForm;
+
+	/**
+	 * @var JForm
+	 */
+	public $activeFilters;
 
 	/**
 	 * Display the view

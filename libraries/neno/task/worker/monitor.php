@@ -23,7 +23,7 @@ class NenoTaskWorkMonitor extends NenoTaskWorker
 	 *
 	 * @return bool True on success, false otherwise
 	 */
-	public function run(array $taskData)
+	public function run($taskData)
 	{
 		$tasksNeedToBeCleanUp = NenoTask::load(
 			array (

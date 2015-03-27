@@ -20,40 +20,34 @@ jimport('joomla.application.component.controlleradmin');
  */
 class NenoControllerMoveElementConfirm extends JControllerAdmin
 {
-    
-    /**
-     * Show confirmation before moving anything
-     */
-    public function show() {
-        
-        $input = JFactory::getApplication()->input;
-        
-        //Overwrite the view
-        $input->set('view', 'moveelementconfirm');
-        
-        //We can ignore groups as they should have all their children checked if they are checked
-        $tables = $input->get('tables', array(), 'array');
-        $files = $input->get('files', array(), 'files');
-        
-        //Load table info
-        if (!empty($tables)) 
-        {
-            foreach ($tables as $key => $table)
-            {
-                $tables[$key] = NenoContentElementTable::getTableById($table);
-            }
-        }
-        
-        //Show output
-        $view   = $this->getView('MoveElementConfirm', 'html'); //get the view
-        $view->assignRef('tables', $tables); // assign data from the model
-        $view->display(); // display the view
-        
-    }
-    
-    
-    
 
-    
+	/**
+	 * Show confirmation before moving anything
+	 */
+	public function show()
+	{
+		$input = JFactory::getApplication()->input;
 
+		// Overwrite the view
+		$input->set('view', 'moveelementconfirm');
+
+		// We can ignore groups as they should have all their children checked if they are checked
+		$tables = $input->get('tables', array (), 'array');
+		$files  = $input->get('files', array (), 'files');
+
+		// Load table info
+		if (!empty($tables))
+		{
+			foreach ($tables as $key => $table)
+			{
+				$tables[$key] = NenoContentElementTable::getTableById($table);
+			}
+		}
+
+		// Show output
+		// Get the view
+		$view         = $this->getView('MoveElementConfirm', 'html');
+		$view->tables = $tables; // assign data from the model
+		$view->display(); // display the view
+	}
 }

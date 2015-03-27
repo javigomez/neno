@@ -252,6 +252,10 @@ class NenoContentElementField extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
+	 * @param   bool $allFields         Allows to show all the fields
+	 * @param   bool $recursive         Convert this method in recursive
+	 * @param   bool $convertToDatabase Convert property names to database
+	 *
 	 * @return JObject
 	 */
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)

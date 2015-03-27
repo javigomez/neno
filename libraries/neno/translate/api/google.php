@@ -24,10 +24,10 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param   JRegistry      $options   JHttp options
-	 * @param   JHttpTransport $transport JHttp Transport
+	 * @param   Joomla\Registry\Registry $options   JHttp options
+	 * @param   JHttpTransport           $transport JHttp Transport
 	 */
-	public function __construct(JRegistry $options = null, JHttpTransport $transport = null)
+	public function __construct(Joomla\Registry\Registry $options = null, JHttpTransport $transport = null)
 	{
 		parent::__construct();
 
@@ -94,7 +94,7 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 	{
 		// Split the language code parts using hyphen
 		$jisoParts = (explode('-', $jiso));
-		$isoTag   = strtolower($jisoParts[0]);
+		$isoTag    = strtolower($jisoParts[0]);
 
 		switch ($isoTag)
 		{

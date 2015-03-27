@@ -70,16 +70,13 @@ class JFormFieldForeignKey extends JFormField
 		// The column that the field shows in the input
 		$this->valueField = $this->getAttribute('value_field');
 
-		// Initialize variables.
-		$html = '';
-
 		// Load all the field options
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query
 			->select(
-				array(
+				array (
 					$this->keyField,
 					$this->valueField
 				)
@@ -96,7 +93,7 @@ class JFormFieldForeignKey extends JFormField
 		{
 			case 'list':
 			default:
-				$options = array();
+				$options = array ();
 
 				// Iterate through all the results
 				foreach ($results as $result)
@@ -109,7 +106,7 @@ class JFormFieldForeignKey extends JFormField
 				// If the value is a string -> Only one result
 				if (is_string($value))
 				{
-					$value = array( $value );
+					$value = array ($value);
 				}
 				else
 				{
@@ -140,8 +137,8 @@ class JFormFieldForeignKey extends JFormField
 	/**
 	 * Wrapper method for getting attributes from the form element
 	 *
-	 * @param   string  $attr_name  Attribute name
-	 * @param   mixed   $default    Optional value to return if attribute not found
+	 * @param   string $attr_name Attribute name
+	 * @param   mixed  $default   Optional value to return if attribute not found
 	 *
 	 * @return mixed The value of the attribute if it exists, null otherwise
 	 */

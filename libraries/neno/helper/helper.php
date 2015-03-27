@@ -299,7 +299,6 @@ class NenoHelper
 		return $jObjectList;
 	}
 
-
 	/**
 	 * Transform an array of neno Objects to
 	 *
@@ -311,6 +310,7 @@ class NenoHelper
 	{
 		$jObjectList = array ();
 
+		/* @var $object NenoObject */
 		foreach ($objectList as $object)
 		{
 			$jObjectList[] = $object->prepareDataForView();
@@ -318,7 +318,6 @@ class NenoHelper
 
 		return $jObjectList;
 	}
-
 
 	/**
 	 * Check if a string ends with a particular string
@@ -708,7 +707,8 @@ class NenoHelper
 				// If the string was already discovered, let's get if the it has changed.
 				if (self::isLanguageStringAlreadyDiscovered($sourceLanguageStringData['extension'], $sourceLanguageStringData['constant'], $defaultLanguage))
 				{
-					$sourceLanguageString = NenoContentElementLangstring::load($sourceLanguageStringData);
+					/* @var $sourceLanguageString NenoContentElementLanguageString */
+					$sourceLanguageString = NenoContentElementLanguageString::load($sourceLanguageStringData);
 
 					// If the string has changed, let's update it and mark the translation as out of sync
 					if ($sourceLanguageString->getString() != $languageStringText)
@@ -721,7 +721,7 @@ class NenoHelper
 				else
 				{
 					$sourceLanguageStringData['string'] = $languageStringText;
-					$sourceLanguageString               = new NenoContentElementLangstring($sourceLanguageStringData);
+					$sourceLanguageString               = new NenoContentElementLanguageString($sourceLanguageStringData);
 				}
 
 				$sourceLanguageStrings[] = $sourceLanguageString;
@@ -859,7 +859,7 @@ class NenoHelper
 
 		$query
 			->select('1')
-			->from(NenoContentElementLangstring::getDbTable())
+			->from(NenoContentElementLanguageString::getDbTable())
 			->where(
 				array (
 					'extension = ' . $db->quote($extensionName),
@@ -1099,12 +1099,12 @@ class NenoHelper
 	/**
 	 * Output HTML code for translation progress bar
 	 *
-	 * @param array $wordCount Strings translated, queued to be translated, out of sync, not translated & total
-	 * @param bool  $enabled
+	 * @param stdClass $wordCount Strings translated, queued to be translated, out of sync, not translated & total
+	 * @param bool     $enabled
 	 *
 	 * @return string
 	 */
-	public static function printWordCountProgressBar($wordCount, $enabled = 1)
+	public static function printWordCountProgressBar($wordCount, $enabled = true)
 	{
 
 		$displayData                     = new stdClass;
@@ -1189,7 +1189,7 @@ class NenoHelper
 	 */
 	public static function getGroups()
 	{
-		$cacheId = NenoCache::getCacheId(__FUNCTION__, array (1));
+		$cacheId   = NenoCache::getCacheId(__FUNCTION__, array (1));
 		$cacheData = NenoCache::getCacheData($cacheId);
 
 		if ($cacheData === null)

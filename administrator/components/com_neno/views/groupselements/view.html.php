@@ -26,7 +26,7 @@ class NenoViewGroupsElements extends JViewLegacy
 	protected $items;
 
 	/**
-	 * @var JRegistry
+	 * @var Joomla\Registry\Registry
 	 */
 	protected $state;
 

@@ -14,7 +14,7 @@ defined('JPATH_NENO') or die;
  *
  * @since  1.0
  */
-class NenoContentElementLangstring extends NenoContentElement
+class NenoContentElementLanguageString extends NenoContentElement
 {
 	/**
 	 * @var String
@@ -52,9 +52,9 @@ class NenoContentElementLangstring extends NenoContentElement
 	protected $timeChanged;
 
 	/**
-	 * @var NenoContentElementGroup
+	 * @var NenoContentElementLanguageFile
 	 */
-	protected $group;
+	protected $languageFile;
 
 	/**
 	 * @var array
@@ -97,7 +97,7 @@ class NenoContentElementLangstring extends NenoContentElement
 	 *
 	 * @param   string $extension Extension name
 	 *
-	 * @return NenoContentElementLangstring
+	 * @return $this
 	 */
 	public function setExtension($extension)
 	{
@@ -121,7 +121,7 @@ class NenoContentElementLangstring extends NenoContentElement
 	 *
 	 * @param   string $constant Constant
 	 *
-	 * @return NenoContentElementLangstring
+	 * @return $this
 	 */
 	public function setConstant($constant)
 	{
@@ -135,21 +135,21 @@ class NenoContentElementLangstring extends NenoContentElement
 	 *
 	 * @return NenoContentElementGroup
 	 */
-	public function getGroup()
+	public function getLanguageFile()
 	{
-		return $this->group;
+		return $this->languageFile;
 	}
 
 	/**
 	 * Set group
 	 *
-	 * @param   NenoContentElementGroup $group Group
+	 * @param   NenoContentElementGroup $languageFile Group
 	 *
 	 * @return $this
 	 */
-	public function setGroup(NenoContentElementGroup $group)
+	public function setLanguageFile(NenoContentElementGroup $languageFile)
 	{
-		$this->group = $group;
+		$this->languageFile = $languageFile;
 
 		return $this;
 	}
@@ -169,7 +169,7 @@ class NenoContentElementLangstring extends NenoContentElement
 	 *
 	 * @param   DateTime $timeAdded Discover time
 	 *
-	 * @return NenoContentElementLangstring
+	 * @return $this
 	 */
 	public function setTimeAdded($timeAdded)
 	{
@@ -193,7 +193,7 @@ class NenoContentElementLangstring extends NenoContentElement
 	 *
 	 * @param   DateTime $timeChanged When the string has changed
 	 *
-	 * @return NenoContentElementLangstring
+	 * @return $this
 	 */
 	public function setTimeChanged($timeChanged)
 	{
@@ -205,12 +205,16 @@ class NenoContentElementLangstring extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
+	 * @param   bool $allFields         Allows to show all the fields
+	 * @param   bool $recursive         Convert this method in recursive
+	 * @param   bool $convertToDatabase Convert property names to database
+	 *
 	 * @return JObject
 	 */
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
 		$data = parent::toObject($allFields, $recursive, $convertToDatabase);
-		$data->set('group_id', $this->group->getId());
+		$data->set('group_id', $this->languageFile->getId());
 
 		return $data;
 	}
@@ -423,7 +427,7 @@ class NenoContentElementLangstring extends NenoContentElement
 		/* @var $data $this */
 		$data               = parent::prepareCacheContent();
 		$data->translations = null;
-		$data->group        = null;
+		$data->languageFile        = null;
 
 		return $data;
 	}

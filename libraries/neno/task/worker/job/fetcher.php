@@ -11,6 +11,8 @@ defined('JPATH_NENO') or die;
 
 /**
  * Class NenoTaskWorkerJobFetcher
+ *
+ * @since  1.0
  */
 class NenoTaskWorkerJobFetcher extends NenoTaskWorker
 {
