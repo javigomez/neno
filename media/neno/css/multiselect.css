@@ -1,6 +1,5 @@
 .table-multiselect .expand,
 .table-multiselect .collapse {
-    /*width: 15px;*/
     padding-top: 4px;
     cursor: pointer;
 }
@@ -25,7 +24,6 @@
     -moz-transition: background-position .1s linear;
     -o-transition: background-position .1s linear;
     transition: background-position .1s linear;
-    /*outline: 5px auto -webkit-focus-ring-color;*/
     outline: none;
     outline-offset: -2px;
 }
@@ -47,4 +45,16 @@
     -webkit-box-shadow: 0px 4px 5px 0px rgba(204,204,204,1);
     -moz-box-shadow: 0px 4px 5px 0px rgba(204,204,204,1);
     box-shadow: 0px 4px 5px 0px rgba(204,204,204,1);
+}
+.loading .first-cell {
+    background: url('../images/loading_mini.gif') center left no-repeat;
+}
+
+.toggle-arrow {
+    cursor: pointer;
+}
+
+.loading .toggle-arrow {
+    display: none;
+    cursor: default;
 }

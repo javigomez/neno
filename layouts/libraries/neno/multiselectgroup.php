@@ -19,22 +19,22 @@ $isOverlay = isset($displayData->isOverlay);
 ?>
 
 <div class="multiselect">
-	<div class="bt n-group">
+	<div>
 		<a class="btn btn-toggle" data-toggle="multiselect" href="#">
 			<?php JText::_('COM_NENO_TITLE_GROUPSELEMENTS'); ?>
 			<span class="caret pull-right"></span>
 		</a>
 
-		<div id="multiselect" class="dro pdown-menu menu-multiselect <?php echo ($isOverlay) ? (' overlay') : (''); ?>">
+		<div id="multiselect" class="dropdown-select menu-multiselect <?php echo ($isOverlay) ? (' overlay') : (''); ?>">
 			<table class="table-condensend table-multiselect" id="table-multiselect">
 				<?php foreach ($displayData->groups as $group): ?>
 					<?php $elementCount = $group->element_count; ?>
 					<?php $class = $elementCount ? 'cell-expand' : ''; ?>
 					<tr class="row-group element-row collapsed" data-level="1" data-id="group-<?php echo $group->id; ?>"
 					    data-parent="header">
-						<td class="<?php echo $class; ?>">
+						<td class="first-cell <?php echo $class; ?>">
 							<?php if ($elementCount): ?>
-								<span class="icon-arrow-right-3"></span>
+								<span class="toggle-arrow icon-arrow-right-3"></span>
 							<?php endif; ?>
 						</td>
 						<td class="cell-check"><input type="checkbox"/></td>
