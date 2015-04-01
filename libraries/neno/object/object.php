@@ -197,10 +197,23 @@ abstract class NenoObject
 
 		if (empty(self::$databaseTableNames[$className]))
 		{
-			$classNameComponents = NenoHelper::splitCamelCaseString($className);
-			$classNameComponents[count($classNameComponents) - 1] .= 's';
+			// #__neno_content_element_langfiles and #__neno_content_element_langstrings
+			// don't comply table naming convention
+			if ($className == 'NenoContentElementLanguageFile')
+			{
+				self::$databaseTableNames[$className] = '#__neno_content_element_langfiles';
+			}
+			else if ($className == 'NenoContentElementLanguageString')
+			{
+				self::$databaseTableNames[$className] = '#__neno_content_element_langstrings';
+			}
+			else
+			{
+				$classNameComponents = NenoHelper::splitCamelCaseString($className);
+				$classNameComponents[count($classNameComponents) - 1] .= 's';
 
-			self::$databaseTableNames[$className] = '#__' . implode('_', $classNameComponents);
+				self::$databaseTableNames[$className] = '#__' . implode('_', $classNameComponents);
+			}
 		}
 
 		return self::$databaseTableNames[$className];
