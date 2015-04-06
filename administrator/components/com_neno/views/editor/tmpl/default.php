@@ -14,17 +14,12 @@ defined('_JEXEC') or die;
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
-//JHtml::_('searchtools.form', $formSelector, $data['options']);
 
 // Joomla Component Creator code to allow adding non select list filters
 if (!empty($this->extra_sidebar))
 {
 	$this->sidebar .= $this->extra_sidebar;
 }
-
-//Kint::dump($this);
-//exit;
-
 ?>
 
 <script type="text/javascript">
@@ -33,9 +28,6 @@ if (!empty($this->extra_sidebar))
 
 	});
 </script>
-
-
-
 
 <?php if (!empty($this->sidebar) && 0): ?>
 	<div id="j-sidebar-container" class="span2">
@@ -46,17 +38,13 @@ echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name
 <div id="j-main-container" class="span10">
 	<?php else : ?>
 
-
-
-
-
 	<div id="j-sidebar-container" class="span2">
 		<form action="<?php echo JRoute::_('index.php?option=com_neno&view=editor'); ?>" method="post" name="adminForm" id="adminForm">
 		<?php
 		// Search tools bar
 		//echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
 		$extraDisplayData = new stdClass();
-		$extraDisplayData->groups = NenoHelper::getGroups();
+		$extraDisplayData->groups = $this->groups;
 		echo JLayoutHelper::render('editorfilters', array('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS);
 		?>
 		</form>

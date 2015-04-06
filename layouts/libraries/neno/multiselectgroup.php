@@ -21,7 +21,7 @@ $isOverlay = isset($displayData->isOverlay);
 <div class="multiselect">
 	<div>
 		<a class="btn btn-toggle" data-toggle="multiselect" href="#">
-			<?php JText::_('COM_NENO_TITLE_GROUPSELEMENTS'); ?>
+			<?php echo JText::_('COM_NENO_TITLE_GROUPSELEMENTS'); ?>
 			<span class="caret pull-right"></span>
 		</a>
 

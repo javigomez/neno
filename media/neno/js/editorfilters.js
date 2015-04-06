@@ -7,7 +7,9 @@
 
 jQuery(document).ready(function () {
 
-    jQuery('.js-stools-field-filter select').addClass('btn btn-small dropdown-toggle');
-    //jQuery('.js-stools-field-filter select').removeClass('active');
+    jQuery('.js-stools-field-filter select').addClass('btn btn-mini dropdown-toggle');
+    setTimeout(function(){
+        jQuery('#filter_translator_type').removeClass('active');
+    },100);
 
 });

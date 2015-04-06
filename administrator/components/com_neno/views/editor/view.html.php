@@ -74,6 +74,7 @@ class NenoViewEditor extends JViewLegacy
 		$this->extensionsSaved = $this->get('ExtensionsMarkedAsTranslatable');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
+		$this->getGroupData();
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -89,6 +90,24 @@ class NenoViewEditor extends JViewLegacy
 		$this->sidebar = JHtmlSidebar::render();
 
 		parent::display($tpl);
+	}
+
+	/**
+	 * Load group data
+	 *
+	 * @return void
+	 */
+	protected function getGroupData()
+	{
+		$groups = NenoHelper::getGroups();
+
+		/* @var $group NenoContentElementGroup */
+		foreach ($groups as $key => $group)
+		{
+			$groups[$key] = $group->prepareDataForView();
+		}
+
+		$this->groups = $groups;
 	}
 
 	/**

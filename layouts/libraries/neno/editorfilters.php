@@ -60,7 +60,7 @@ $document->addScript(JUri::root() . '/media/neno/js/editorfilters.js');
 	<div class="js-stools-container-filters hidden-phone clearfix">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default.filters', $data); ?>
 		<div class="multiselect-wrapper">
-			<?php echo JLayoutHelper::render('multiselect', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
+			<?php echo JLayoutHelper::render('multiselectgroup', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
 		</div>
 	</div>
 </div>
