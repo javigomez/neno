@@ -15,7 +15,7 @@ JFormHelper::loadFieldClass('list');
 
 /**
  */
-class JFormFieldTranslationMethod extends JFormFieldList
+class JFormFieldTranslationStatus extends JFormFieldList
 {
 	/**
 	 * The form field type.
@@ -23,7 +23,7 @@ class JFormFieldTranslationMethod extends JFormFieldList
 	 * @var		string
 	 * @since   1.6
 	 */
-	protected $type = 'TranslationMethod';
+	protected $type = 'TranslationStatus';
 
 	/**
 	 * Method to get the translation method options.
@@ -36,8 +36,10 @@ class JFormFieldTranslationMethod extends JFormFieldList
 	{
 		$options = array();
 
-		$options[] = JHtml::_('select.option', 'machine', JText::_('COM_NENO_TRANSLATION_METHODS_MACHINE'));
-		$options[] = JHtml::_('select.option', 'professional', JText::_('COM_NENO_TRANSLATION_METHODS_PROFESSIONAL'));
+		$options[] = JHtml::_('select.option', NenoContentElementTranslation::TRANSLATED_STATE, JText::_('COM_NENO_STATUS_TRANSLATED'));
+		$options[] = JHtml::_('select.option', NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE, JText::_('COM_NENO_STATUS_QUEUED'));
+		$options[] = JHtml::_('select.option', NenoContentElementTranslation::SOURCE_CHANGED_STATE, JText::_('COM_NENO_STATUS_CHANGED'));
+		$options[] = JHtml::_('select.option', NenoContentElementTranslation::NOT_TRANSLATED_STATE, JText::_('COM_NENO_STATUS_NOTTRANSLATED'));
 
 		return array_merge(parent::getOptions(), $options);
 	}

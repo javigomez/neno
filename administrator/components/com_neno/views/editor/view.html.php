@@ -128,6 +128,9 @@ class NenoViewEditor extends JViewLegacy
 			JToolBarHelper::preferences('com_neno');
 		}
 
+		$bar = JToolbar::getInstance('toolbar');
+		$bar->appendButton('Link', 'home', JText::_('COM_NENO_BACK_TO_DASHBOARD'), 'index.php?option=com_neno');
+
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=editor');
 

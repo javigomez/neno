@@ -75,8 +75,9 @@ function loadStrings() {
         url: "index.php?option=com_neno&task=strings.getStrings",
         data: {
             jsonData: checked,
-            limitStart: document.adminForm.limitstart.value,
-            limit: document.adminForm.list_limit.value
+            limitStart: 0, //document.adminForm.limitstart.value,
+            limit: 20, //document.adminForm.list_limit.value,
+            outputLayout: document.adminForm.outputLayout.value
         }
     })
         .done(function (ret) {

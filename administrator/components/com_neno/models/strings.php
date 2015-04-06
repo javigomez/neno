@@ -183,6 +183,17 @@ class NenoModelStrings extends JModelList
 			$query->where('(' . implode(' OR ', $queryWhere) . ')');
 		}
 
+		$method = $this->getState('filter.translator_type', '');
+		if ($method) {
+			$query->where('translation_method = "' . $method . '"');
+		}
+
+
+		$status = $this->getState('filter.translation_status', '');
+		if ($status) {
+			$query->where('tr.state =' . $status);
+		}
+
 		return $query;
 	}
 }

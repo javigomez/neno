@@ -11,6 +11,9 @@
 // No direct access
 defined('_JEXEC') or die;
 
+$document = JFactory::getDocument();
+$document->addStyleSheet(JUri::root() . '/media/neno/css/editorstrings.css');
+
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
@@ -21,13 +24,6 @@ if (!empty($this->extra_sidebar))
 	$this->sidebar .= $this->extra_sidebar;
 }
 ?>
-
-<script type="text/javascript">
-
-	jQuery(document).ready(function () {
-
-	});
-</script>
 
 <?php if (!empty($this->sidebar) && 0): ?>
 	<div id="j-sidebar-container" class="span2">
@@ -48,6 +44,8 @@ echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name
 		echo JLayoutHelper::render('editorfilters', array('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS);
 		?>
 		</form>
+		<div id="conditions-wrapper"></div>
+		<div id="elements-wrapper"></div>
 	</div>
 
 
@@ -70,14 +68,7 @@ echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name
 		//Kint::dump($this->items[0]->getSourceElementData());
 		?>
 
-		<div class="multiselect-wrapper">
-		<?php
-		$translations = $this->items;
-		//echo JLayoutHelper::render('multiselect', $extraDisplayData, JPATH_NENO_LAYOUTS);
-		?>
-		</div>
-
-		<div id="elements-wrapper">
+		<div id="editor-wrapper">
 		<!-- <?php //echo JLayoutHelper::render('strings', $this->items, JPATH_NENO_LAYOUTS);	?> -->
 		</div>
 

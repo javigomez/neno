@@ -46,4 +46,5 @@ JHtml::_('searchtools.form', $formSelector, $data['options']);
 			<?php echo JLayoutHelper::render('multiselectgroup', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
 		</div>
 	</div>
+	<input type="hidden" id="outputLayout" name="outputLayout" value="strings">
 </div>
