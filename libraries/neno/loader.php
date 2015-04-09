@@ -39,10 +39,7 @@ class NenoLoader
 	{
 		// Registering Neno libraries prefix
 		JLoader::registerPrefix('Neno', JPATH_NENO);
-
-		// Registering SQL parser Namespace
-		JLoader::registerNamespace('PHPSQL', JPATH_NENO . '/database/sqlparser');
-
+		
 		$document = JFactory::getDocument();
 		$document->addScript(JUri::root() . '/media/neno/js/common.js');
 	}

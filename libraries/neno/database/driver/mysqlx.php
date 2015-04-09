@@ -18,6 +18,36 @@ defined('JPATH_NENO') or die;
 class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 {
 	/**
+	 * Select query constant
+	 */
+	const SELECT_QUERY = 1;
+
+	/**
+	 * Insert query constant
+	 */
+	const INSERT_QUERY = 2;
+
+	/**
+	 * Update query constant
+	 */
+	const UPDATE_QUERY = 3;
+
+	/**
+	 * Replace query constant
+	 */
+	const REPLACE_QUERY = 4;
+
+	/**
+	 * Delete query constant
+	 */
+	const DELETE_QUERY = 5;
+
+	/**
+	 * Other query constant, such as SHOW TABLES, etc...
+	 */
+	const OTHER_QUERY = 6;
+
+	/**
 	 * Tables configured to be translatable
 	 *
 	 * @var array
@@ -113,20 +143,14 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		if ($this->languageHasChanged() && $this->hasToBeParsed($sql))
 		{
 			// Get query type
-			$queryType = NenoDatabaseParser::getQueryType($sql);
-
-			// Get table name
-			$tableName = NenoDatabaseParser::getSourceTableName($sql);
+			$queryType = $this->getQueryType($sql);
 
 			// If the query is a select statement let's get the sql query using its shadow table name
-			if ($queryType === NenoDatabaseParser::SELECT_QUERY && $this->isTranslatable($tableName))
+			if ($queryType === self::SELECT_QUERY)
 			{
-				$sql = NenoDatabaseParser::getSqlQueryUsingShadowTable($sql);
+				$sql = $this->replaceTableNameStatements($sql);
 			}
 		}
-
-		// Call to the parent replacePrefix
-		/** @noinspection PhpUndefinedClassInspection */
 
 		return parent::replacePrefix($sql, $prefix);
 	}
@@ -177,6 +201,97 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	}
 
 	/**
+	 * Get the type of the SQL query
+	 *
+	 * @param    string $sql SQL Query
+	 *
+	 * @return int
+	 *
+	 * @see constants
+	 */
+	protected function getQueryType($sql)
+	{
+		$sql       = trim(strtolower($sql));
+		$queryType = self::OTHER_QUERY;
+
+		if (NenoHelper::startsWith($sql, 'insert'))
+		{
+			$queryType = self::INSERT_QUERY;
+		}
+		elseif (NenoHelper::startsWith($sql, 'delete'))
+		{
+			$queryType = self::DELETE_QUERY;
+		}
+		elseif (NenoHelper::startsWith($sql, 'replace'))
+		{
+			$queryType = self::REPLACE_QUERY;
+		}
+		elseif (NenoHelper::startsWith($sql, 'update'))
+		{
+			$queryType = self::UPDATE_QUERY;
+		}
+		elseif (NenoHelper::startsWith($sql, 'select'))
+		{
+			$queryType = self::SELECT_QUERY;
+		}
+
+		return $queryType;
+	}
+
+	/**
+	 * Replace all the table names with shadow tables names
+	 *
+	 * @param   string $sql SQL Query
+	 *
+	 * @return string
+	 */
+	protected function replaceTableNameStatements($sql)
+	{
+		/* @var $config Joomla\Registry\Registry */
+		$config              = JFactory::getConfig();
+		$databasePrefix      = $config->get('dbprefix');
+		$pattern             = '/(#__|' . preg_quote($databasePrefix) . ')(\w+)/';
+		$matches             = null;
+		$languageTagSelected = $this->getLanguageTagSelected();
+
+		if (preg_match_all($pattern, $sql, $matches))
+		{
+			foreach ($matches[0] as $match)
+			{
+				if ($this->isTranslatable($match))
+				{
+					$sql = str_replace($match, $this->generateShadowTableName($match, $languageTagSelected), $sql);
+				}
+			}
+		}
+
+		return $sql;
+	}
+
+	/**
+	 * Get language tag to add at the end of the table name
+	 *
+	 * @return string
+	 */
+	protected function getLanguageTagSelected()
+	{
+		$currentLanguage    = JFactory::getLanguage();
+		$currentLanguageTag = $currentLanguage->getTag();
+		$defaultLanguageTag = NenoSettings::get('source_language', 'en-GB');
+
+		$languageTag = '';
+
+		// If it is not the default language, let's get the language tag
+		if ($currentLanguageTag !== $defaultLanguageTag)
+		{
+			// Clean language tag
+			$languageTag = $currentLanguageTag;
+		}
+
+		return $languageTag;
+	}
+
+	/**
 	 * Check if a table is translatable
 	 *
 	 * @param   string $tableName Table name
@@ -186,6 +301,46 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	public function isTranslatable($tableName)
 	{
 		return in_array($tableName, $this->manifestTables);
+	}
+
+	/**
+	 * Generate shadow table name
+	 *
+	 * @param   string $tableName   Table name
+	 * @param   string $languageTag Clean language tag
+	 *
+	 * @return string shadow table name.
+	 */
+	public function generateShadowTableName($tableName, $languageTag)
+	{
+		return '#__neno_sh_' . $this->cleanLanguageTag($languageTag) . '_' . $this->cleanTableName($tableName);
+	}
+
+	/**
+	 * Clean language tag
+	 *
+	 * @param   string $languageTag Language Tag
+	 *
+	 * @return string language tag cleaned
+	 */
+	protected function cleanLanguageTag($languageTag)
+	{
+		return strtolower(str_replace(array ('-'), array (''), $languageTag));
+	}
+
+	/**
+	 * Get table name without Joomla prefixes
+	 *
+	 * @param   string $tableName Table name
+	 *
+	 * @return string clean table name
+	 */
+	protected function cleanTableName($tableName)
+	{
+		$config         = JFactory::getConfig();
+		$databasePrefix = $config->get('dbprefix');
+
+		return str_replace(array ('#__', $databasePrefix), '', $tableName);
 	}
 
 	/**
@@ -287,7 +442,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		{
 			if ($knownLanguage->lang_code !== $defaultLanguage)
 			{
-				$shadowTableName = NenoDatabaseParser::generateShadowTableName($tableName, $knownLanguage->lang_code);
+				$shadowTableName = $this->generateShadowTableName($tableName, $knownLanguage->lang_code);
 				$this->dropTable($shadowTableName);
 			}
 		}
@@ -309,7 +464,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		{
 			if ($knownLanguage->lang_code !== $defaultLanguage)
 			{
-				$shadowTableName            = NenoDatabaseParser::generateShadowTableName($tableName, $knownLanguage->lang_code);
+				$shadowTableName            = $this->generateShadowTableName($tableName, $knownLanguage->lang_code);
 				$shadowTableCreateStatement = 'CREATE TABLE IF NOT EXISTS ' . $this->quoteName($shadowTableName) . ' LIKE ' . $tableName;
 				$this->executeQuery($shadowTableCreateStatement);
 				$this->copyContentElementsFromSourceTableToShadowTables($tableName, $shadowTableName);
