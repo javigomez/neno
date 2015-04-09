@@ -49,7 +49,7 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * @var
 	 */
-	private $extensions;
+	public $extensions;
 
 	/**
 	 * {@inheritdoc}

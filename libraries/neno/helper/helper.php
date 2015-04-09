@@ -678,7 +678,7 @@ class NenoHelper
 	{
 		jimport('joomla.filesystem.folder');
 		$defaultLanguage     = JFactory::getLanguage()->getDefault();
-		$languageFilePattern = preg_quote($defaultLanguage) . '\.' . $extensionName . '\.((\w)*\.)?ini';
+		$languageFilePattern = preg_quote($defaultLanguage) . '\.' . $extensionName . '\.(((\w)*\.)^sys)?ini';
 		$languageFilesPath   = JFolder::files(JPATH_ROOT . "/language/$defaultLanguage/", $languageFilePattern);
 		$languageFiles       = array ();
 
@@ -813,18 +813,11 @@ class NenoHelper
 				// Create ContentElement object
 				$table = new NenoContentElementTable($tableData);
 
-				$usingLanguageField = false;
-
 				// Get all the columns a table contains
 				$fields = $db->getTableColumns($table->getTableName());
 
 				foreach ($fields as $fieldName => $fieldType)
 				{
-					if ($fieldName == 'language')
-					{
-						$usingLanguageField = true;
-					}
-
 					$fieldData = array (
 						'fieldName' => $fieldName,
 						'fieldType' => $fieldType,
@@ -835,8 +828,6 @@ class NenoHelper
 					$field = new NenoContentElementField($fieldData);
 					$table->addField($field);
 				}
-
-				$table->setUseJoomlaLang($usingLanguageField);
 			}
 			else
 			{

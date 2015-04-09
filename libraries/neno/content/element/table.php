@@ -38,11 +38,6 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * @var boolean
 	 */
-	protected $useJoomlaLang;
-
-	/**
-	 * @var boolean
-	 */
 	protected $translate;
 
 	/**
@@ -227,30 +222,6 @@ class NenoContentElementTable extends NenoContentElement
 	}
 
 	/**
-	 * Check if this table uses Joomla 'lang' field
-	 *
-	 * @return boolean
-	 */
-	public function isUseJoomlaLang()
-	{
-		return $this->useJoomlaLang;
-	}
-
-	/**
-	 * Mark this table whether or not it uses Joomla 'lang' field.
-	 *
-	 * @param   boolean $useJoomlaLang Status
-	 *
-	 * @return $this
-	 */
-	public function setUseJoomlaLang($useJoomlaLang)
-	{
-		$this->useJoomlaLang = $useJoomlaLang;
-
-		return $this;
-	}
-
-	/**
 	 * Get the group that contains this table
 	 *
 	 * @return NenoContentElementGroup
@@ -358,15 +329,8 @@ class NenoContentElementTable extends NenoContentElement
 			// If the table has been marked as translated
 			if ($this->translate)
 			{
-				if ($this->useJoomlaLang)
-				{
-					$db->copyContentElementsUsingJoomlaLanguageField($this->tableName);
-				}
-				else
-				{
-					// Creates shadow tables and copy the content on it
-					$db->createShadowTables($this->tableName);
-				}
+				// Creates shadow tables and copy the content on it
+				$db->createShadowTables($this->tableName);
 			}
 
 			/* @var $field NenoContentElementField */
