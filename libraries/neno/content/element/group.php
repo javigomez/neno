@@ -35,21 +35,18 @@ class NenoContentElementGroup extends NenoContentElement
 	 * @var array
 	 */
 	public $languageFiles;
-
-	/**
-	 * @var string
-	 */
-	protected $groupName;
-
-	/**
-	 * @var array
-	 */
-	protected $tables;
-
 	/**
 	 * @var
 	 */
 	public $extensions;
+	/**
+	 * @var string
+	 */
+	protected $groupName;
+	/**
+	 * @var array
+	 */
+	protected $tables;
 
 	/**
 	 * {@inheritdoc}
@@ -241,98 +238,6 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * Get all the language files
-	 *
-	 * @return array
-	 */
-	public function getLanguageFiles()
-	{
-		if ($this->languageFiles === null)
-		{
-			$this->languageFiles = array ();
-			$extensionNames      = NenoContentElementLanguageFile::load(array ('group_id' => $this->getId()));
-			$workingLanguage     = NenoHelper::getWorkingLanguage();
-
-			foreach ($extensionNames as $extensionName)
-			{
-				$languageFileData           = new stdClass;
-				$languageFileData->filename = $workingLanguage . '.' . $extensionName . '.ini';
-				$db                         = JFactory::getDbo();
-				$query                      = $db->getQuery(true);
-
-				$query
-					->select(
-						array (
-							'SUM(word_counter) AS counter',
-							'tr.state'
-						)
-					)
-					->from('#__neno_content_element_translations as tr')
-					->innerJoin('#__neno_content_element_language_strings AS ls ON tr.content_id = ls.id')
-					->innerJoin('#__neno_content_element_language_files AS lf ON lf.id = ls.languagefile_id')
-					->where(
-						array (
-							'content_type = ' . $db->quote('lang_string'),
-							'ls.group_id = ' . $db->quote($this->getId()),
-							'tr.language = ' . $db->quote($workingLanguage)
-						)
-					)
-					->group('tr.state');
-
-				$db->setQuery($query);
-				$statistics = $db->loadAssocList('state');
-
-				$wordCount               = new stdClass;
-				$wordCount->untranslated = 0;
-				$wordCount->queued       = 0;
-				$wordCount->changed      = 0;
-				$wordCount->translated   = 0;
-
-				// Assign the statistics
-				foreach ($statistics as $state => $data)
-				{
-					switch ($state)
-					{
-						case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
-							$wordCount->untranslated = (int) $data['counter'];
-							break;
-						case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
-							$wordCount->queued = (int) $data['counter'];
-							break;
-						case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
-							$wordCount->changed = (int) $data['counter'];
-							break;
-						case NenoContentElementTranslation::TRANSLATED_STATE:
-							$wordCount->translated = (int) $data['counter'];
-							break;
-					}
-				}
-
-				$wordCount->total            = $wordCount->untranslated + $wordCount->queued + $wordCount->changed + $wordCount->translated;
-				$languageFileData->wordCount = $wordCount;
-				$this->languageFiles[]       = $languageFileData;
-			}
-		}
-
-		return $this->languageFiles;
-	}
-
-	/**
-	 * Set language strings
-	 *
-	 * @param   array $languageStrings Language strings
-	 *
-	 * @return $this
-	 */
-	public function setLanguageFiles(array $languageStrings)
-	{
-		$this->languageFiles = $languageStrings;
-		$this->contentHasChanged();
-
-		return $this;
-	}
-
-	/**
 	 * Get a group object
 	 *
 	 * @param   integer $groupId Group Id
@@ -452,6 +357,12 @@ class NenoContentElementGroup extends NenoContentElement
 		if ($this->tables === null)
 		{
 			$this->tables = NenoContentElementTable::load(array ('group_id' => $this->getId()));
+
+			// If there's only one table
+			if ($this->tables instanceof NenoContentElementTable)
+			{
+				$this->tables = array ($this->tables);
+			}
 
 			foreach ($this->tables as $key => $table)
 			{
@@ -744,6 +655,98 @@ class NenoContentElementGroup extends NenoContentElement
 		NenoLog::log('Group deleted successfully', 2);
 
 		return parent::remove();
+	}
+
+	/**
+	 * Get all the language files
+	 *
+	 * @return array
+	 */
+	public function getLanguageFiles()
+	{
+		if ($this->languageFiles === null)
+		{
+			$this->languageFiles = array ();
+			$extensionNames      = NenoContentElementLanguageFile::load(array ('group_id' => $this->getId()));
+			$workingLanguage     = NenoHelper::getWorkingLanguage();
+
+			foreach ($extensionNames as $extensionName)
+			{
+				$languageFileData           = new stdClass;
+				$languageFileData->filename = $workingLanguage . '.' . $extensionName . '.ini';
+				$db                         = JFactory::getDbo();
+				$query                      = $db->getQuery(true);
+
+				$query
+					->select(
+						array (
+							'SUM(word_counter) AS counter',
+							'tr.state'
+						)
+					)
+					->from('#__neno_content_element_translations as tr')
+					->innerJoin('#__neno_content_element_language_strings AS ls ON tr.content_id = ls.id')
+					->innerJoin('#__neno_content_element_language_files AS lf ON lf.id = ls.languagefile_id')
+					->where(
+						array (
+							'content_type = ' . $db->quote('lang_string'),
+							'ls.group_id = ' . $db->quote($this->getId()),
+							'tr.language = ' . $db->quote($workingLanguage)
+						)
+					)
+					->group('tr.state');
+
+				$db->setQuery($query);
+				$statistics = $db->loadAssocList('state');
+
+				$wordCount               = new stdClass;
+				$wordCount->untranslated = 0;
+				$wordCount->queued       = 0;
+				$wordCount->changed      = 0;
+				$wordCount->translated   = 0;
+
+				// Assign the statistics
+				foreach ($statistics as $state => $data)
+				{
+					switch ($state)
+					{
+						case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
+							$wordCount->untranslated = (int) $data['counter'];
+							break;
+						case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
+							$wordCount->queued = (int) $data['counter'];
+							break;
+						case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
+							$wordCount->changed = (int) $data['counter'];
+							break;
+						case NenoContentElementTranslation::TRANSLATED_STATE:
+							$wordCount->translated = (int) $data['counter'];
+							break;
+					}
+				}
+
+				$wordCount->total            = $wordCount->untranslated + $wordCount->queued + $wordCount->changed + $wordCount->translated;
+				$languageFileData->wordCount = $wordCount;
+				$this->languageFiles[]       = $languageFileData;
+			}
+		}
+
+		return $this->languageFiles;
+	}
+
+	/**
+	 * Set language strings
+	 *
+	 * @param   array $languageStrings Language strings
+	 *
+	 * @return $this
+	 */
+	public function setLanguageFiles(array $languageStrings)
+	{
+		$this->languageFiles = $languageStrings;
+		$this->contentHasChanged();
+
+		return $this;
 	}
 
 	/**
