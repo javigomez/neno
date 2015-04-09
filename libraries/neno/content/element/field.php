@@ -77,7 +77,11 @@ class NenoContentElementField extends NenoContentElement
 			? NenoContentElementTable::getTableById($data->get('tableId'))
 			: $data->get('table');
 		$this->translations = null;
-		$this->getWordCount();
+
+		if (!$this->isNew())
+		{
+			$this->getWordCount();
+		}
 	}
 
 	/**
@@ -108,7 +112,7 @@ class NenoContentElementField extends NenoContentElement
 				$query
 					->select(
 						array (
-							'SUM(word_count) AS counter',
+							'SUM(word_counter) AS counter',
 							'tr.state'
 						)
 					)
@@ -525,7 +529,7 @@ class NenoContentElementField extends NenoContentElement
 		$query
 			->select('DISTINCT translation_method')
 			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
-			->leftJoin($db->quoteName('#__neno_content_element_langstrings', 'l') . ' ON t.content_id = l.id')
+			->leftJoin($db->quoteName(NenoContentElementLanguageString::getDbTable(), 'l') . ' ON t.content_id = l.id')
 			->where('content_type = ' . $db->quote(NenoContentElementTranslation::LANG_STRING));
 
 		$db->setQuery($query);

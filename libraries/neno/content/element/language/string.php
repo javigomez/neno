@@ -17,19 +17,9 @@ defined('JPATH_NENO') or die;
 class NenoContentElementLanguageString extends NenoContentElement
 {
 	/**
-	 * @var String
+	 * @var NenoContentElementLanguageFile
 	 */
-	protected $string;
-
-	/**
-	 * @var string
-	 */
-	protected $language;
-
-	/**
-	 * @var DateTime
-	 */
-	protected $timeDeleted;
+	protected $languageFile;
 
 	/**
 	 * @var string
@@ -37,9 +27,9 @@ class NenoContentElementLanguageString extends NenoContentElement
 	protected $constant;
 
 	/**
-	 * @var string
+	 * @var String
 	 */
-	protected $extension;
+	protected $string;
 
 	/**
 	 * @var DateTime
@@ -52,9 +42,9 @@ class NenoContentElementLanguageString extends NenoContentElement
 	protected $timeChanged;
 
 	/**
-	 * @var NenoContentElementLanguageFile
+	 * @var DateTime
 	 */
-	protected $languageFile;
+	protected $timeDeleted;
 
 	/**
 	 * @var array
@@ -70,40 +60,18 @@ class NenoContentElementLanguageString extends NenoContentElement
 	{
 		parent::__construct($data);
 		$this->translations = null;
-	}
 
-	/**
-	 * Generate the language key based on its data
-	 *
-	 * @return string
-	 */
-	public function generateKey()
-	{
-		return $this->getExtension() . '.ini:' . $this->getConstant();
-	}
-
-	/**
-	 * Get the name of the extension that owns this string
-	 *
-	 * @return string
-	 */
-	public function getExtension()
-	{
-		return $this->extension;
-	}
-
-	/**
-	 * Set the name of the extension that owns this string
-	 *
-	 * @param   string $extension Extension name
-	 *
-	 * @return $this
-	 */
-	public function setExtension($extension)
-	{
-		$this->extension = $extension;
-
-		return $this;
+		if ($this->isNew())
+		{
+			$this->timeAdded = new DateTime;
+		}
+		else
+		{
+			if (!$this->timeAdded instanceof DateTime)
+			{
+				$this->timeAdded = new DateTime($this->timeAdded);
+			}
+		}
 	}
 
 	/**
@@ -143,11 +111,11 @@ class NenoContentElementLanguageString extends NenoContentElement
 	/**
 	 * Set group
 	 *
-	 * @param   NenoContentElementGroup $languageFile Group
+	 * @param   NenoContentElementLanguageFile $languageFile Language file
 	 *
 	 * @return $this
 	 */
-	public function setLanguageFile(NenoContentElementGroup $languageFile)
+	public function setLanguageFile(NenoContentElementLanguageFile $languageFile)
 	{
 		$this->languageFile = $languageFile;
 
@@ -214,34 +182,20 @@ class NenoContentElementLanguageString extends NenoContentElement
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
 		$data = parent::toObject($allFields, $recursive, $convertToDatabase);
-		$data->set('group_id', $this->languageFile->getId());
+
+		if (!empty($this->languageFile))
+		{
+			$data->set('languagefile_id', $this->languageFile->getId());
+		}
+
+		if ($this->timeAdded instanceof DateTime)
+		{
+			$this->timeAdded = $this->timeAdded->format('Y-m-d H:i:s');
+		}
 
 		return $data;
 	}
 
-	/**
-	 * Get Language
-	 *
-	 * @return string
-	 */
-	public function getLanguage()
-	{
-		return $this->language;
-	}
-
-	/**
-	 * Set Language
-	 *
-	 * @param   string $language Language JISO
-	 *
-	 * @return $this
-	 */
-	public function setLanguage($language)
-	{
-		$this->language = $language;
-
-		return $this;
-	}
 
 	/**
 	 * Get the time when the string
@@ -427,7 +381,7 @@ class NenoContentElementLanguageString extends NenoContentElement
 		/* @var $data $this */
 		$data               = parent::prepareCacheContent();
 		$data->translations = null;
-		$data->languageFile        = null;
+		$data->languageFile = null;
 
 		return $data;
 	}

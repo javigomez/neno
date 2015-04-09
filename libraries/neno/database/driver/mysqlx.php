@@ -333,6 +333,53 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	}
 
 	/**
+	 * Copy the content to a table that uses Joomla language field
+	 *
+	 * @param   string $tableName Table name
+	 *
+	 * @return void
+	 */
+	public function copyContentElementsUsingJoomlaLanguageField($tableName)
+	{
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$knownLanguages  = NenoHelper::getLanguages();
+		$columns         = array_keys($this->getTableColumns($tableName));
+
+		foreach ($columns as $key => $column)
+		{
+			if ($column == 'id')
+			{
+				unset($columns[$key]);
+				break;
+			}
+		}
+
+		foreach ($knownLanguages as $knownLanguage)
+		{
+			if ($knownLanguage->lang_code !== $defaultLanguage)
+			{
+				$selectColumns = $columns;
+
+				foreach ($selectColumns as $key => $selectColumn)
+				{
+					if ($selectColumn == 'language')
+					{
+						$selectColumns[$key] = $this->quote($knownLanguage->lang_code);
+					}
+					else
+					{
+						$selectColumns[$key] = $this->quoteName($selectColumn);
+					}
+				}
+
+				$query = 'INSERT INTO ' . $tableName . ' (' . implode(',', $this->quoteName($columns)) . ') SELECT ' . implode(',', $selectColumns) . ' FROM ' . $tableName . ' WHERE language=' . $this->quote($defaultLanguage);
+				$this->setQuery($query);
+				$this->execute();
+			}
+		}
+	}
+
+	/**
 	 * Get primary key of a table
 	 *
 	 * @param   string $tableName Table name
