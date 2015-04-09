@@ -220,14 +220,21 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		if ($this->elementCount === null)
 		{
-			$countData = NenoContentElementTable::load(
+			$tableCounter = NenoContentElementTable::load(
 				array (
 					'_select'  => array ('COUNT(*) as counter'),
 					'group_id' => $this->getId()
 				)
 			);
 
-			$this->elementCount = (int) $countData['counter'] + count($this->getLanguageFiles());
+			$languageFileCounter = NenoContentElementLanguageFile::load(
+				array (
+					'_select'  => array ('COUNT(*) as counter'),
+					'group_id' => $this->getId()
+				)
+			);
+
+			$this->elementCount = (int) $tableCounter['counter'] + (int) $languageFileCounter['counter'];
 		}
 
 		return $this->elementCount;
@@ -256,7 +263,7 @@ class NenoContentElementGroup extends NenoContentElement
 				$query
 					->select(
 						array (
-							'SUM(word_count) AS counter',
+							'SUM(word_counter) AS counter',
 							'tr.state'
 						)
 					)
