@@ -50,7 +50,7 @@ class NenoContentElementTable extends NenoContentElement
 	 *
 	 * @param   mixed $data Table data
 	 */
-	public function __construct($data)
+	public function __construct($data, $loadExtraData = true)
 	{
 		parent::__construct($data);
 
@@ -66,7 +66,7 @@ class NenoContentElementTable extends NenoContentElement
 
 		if (!empty($data['groupId']))
 		{
-			$this->group = NenoContentElementGroup::load($data['groupId']);
+			$this->group = NenoContentElementGroup::load($data['groupId'], $loadExtraData);
 		}
 
 		// Init the field list
@@ -74,9 +74,51 @@ class NenoContentElementTable extends NenoContentElement
 
 		if (!$this->isNew())
 		{
-			$this->getWordCount();
-			$this->getFields();
+			$this->getFields($loadExtraData);
+
+			if ($loadExtraData)
+			{
+				$this->getWordCount();
+			}
 		}
+	}
+
+	/**
+	 * Get the fields related to this table
+	 *
+	 * @return array
+	 */
+	public function getFields($loadExtraData)
+	{
+		if ($this->fields === null)
+		{
+			$this->fields = array ();
+			$fieldsInfo   = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $this->getId(), true);
+
+			for ($i = 0; $i < count($fieldsInfo); $i++)
+			{
+				$fieldInfo        = $fieldsInfo[$i];
+				$fieldInfo->table = $this;
+				$field            = new NenoContentElementField($fieldInfo, $loadExtraData);
+				$this->fields[]   = $field;
+			}
+		}
+
+		return $this->fields;
+	}
+
+	/**
+	 * Set the fields related to this table
+	 *
+	 * @param   array $fields Table fields
+	 *
+	 * @return $this
+	 */
+	public function setFields(array $fields)
+	{
+		$this->fields = $fields;
+
+		return $this;
 	}
 
 	/**
@@ -143,44 +185,6 @@ class NenoContentElementTable extends NenoContentElement
 		}
 
 		return $this->wordCount;
-	}
-
-	/**
-	 * Get the fields related to this table
-	 *
-	 * @return array
-	 */
-	public function getFields()
-	{
-		if ($this->fields === null)
-		{
-			$this->fields = array ();
-			$fieldsInfo   = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $this->getId(), true);
-
-			for ($i = 0; $i < count($fieldsInfo); $i++)
-			{
-				$fieldInfo        = $fieldsInfo[$i];
-				$fieldInfo->table = $this;
-				$field            = new NenoContentElementField($fieldInfo);
-				$this->fields[]   = $field;
-			}
-		}
-
-		return $this->fields;
-	}
-
-	/**
-	 * Set the fields related to this table
-	 *
-	 * @param   array $fields Table fields
-	 *
-	 * @return $this
-	 */
-	public function setFields(array $fields)
-	{
-		$this->fields = $fields;
-
-		return $this;
 	}
 
 	/**

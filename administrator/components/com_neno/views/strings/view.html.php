@@ -97,7 +97,7 @@ class NenoViewStrings extends JViewLegacy
 	 */
 	protected function getGroupData()
 	{
-		$groups = NenoHelper::getGroups();
+		$groups = NenoHelper::getGroups(false);
 
 		/* @var $group NenoContentElementGroup */
 		foreach ($groups as $key => $group)

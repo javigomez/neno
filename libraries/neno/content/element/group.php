@@ -53,7 +53,7 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @param   mixed $data Group data
 	 */
-	public function __construct($data, $loadStatistics = true)
+	public function __construct($data, $loadExtraData = true)
 	{
 		parent::__construct($data);
 
@@ -69,7 +69,7 @@ class NenoContentElementGroup extends NenoContentElement
 		{
 			$this->getExtensionIdList();
 
-			if ($loadStatistics)
+			if ($loadExtraData)
 			{
 				$this->getWordCount();
 				$this->getElementCount();
@@ -244,9 +244,9 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return NenoContentElementGroup
 	 */
-	public static function getGroup($groupId)
+	public static function getGroup($groupId, $loadExtraData = true)
 	{
-		$group = self::load($groupId);
+		$group = self::load($groupId, $loadExtraData);
 
 		return $group;
 	}

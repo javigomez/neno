@@ -1245,7 +1245,7 @@ class NenoHelper
 	 *
 	 * @return  array
 	 */
-	public static function getGroups()
+	public static function getGroups($loadExtraData = true)
 	{
 		$cacheId   = NenoCache::getCacheId(__FUNCTION__, array (1));
 		$cacheData = NenoCache::getCacheData($cacheId);
@@ -1266,7 +1266,7 @@ class NenoHelper
 			$countGroups = count($groups);
 			for ($i = 0; $i < $countGroups; $i++)
 			{
-				$groups[$i] = NenoContentElementGroup::getGroup($groups[$i]->id);
+				$groups[$i] = NenoContentElementGroup::getGroup($groups[$i]->id, $loadExtraData);
 			}
 
 			NenoCache::setCacheData($cacheId, $groups);

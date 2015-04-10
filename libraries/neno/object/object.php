@@ -35,9 +35,10 @@ abstract class NenoObject
 	/**
 	 * Constructor
 	 *
-	 * @param   mixed $data Content element data
+	 * @param   mixed   $data          Content element data
+	 * @param   boolean $loadExtraData LoadExtraData
 	 */
-	public function __construct($data)
+	public function __construct($data, $loadExtraData = true)
 	{
 		// Create a JObject object to unify the way to assign the properties
 		$data = $this->sanitizeConstructorData($data);
@@ -97,11 +98,12 @@ abstract class NenoObject
 	/**
 	 * Load element from the database
 	 *
-	 * @param   mixed $pk it could be the ID of the element or an array of clauses
+	 * @param   mixed   $pk            could be the ID of the element or an array of clauses
+	 * @param   boolean $loadExtraData Load extra data once the object has been created
 	 *
 	 * @return stdClass|array
 	 */
-	public static function load($pk)
+	public static function load($pk, $loadExtraData = true)
 	{
 		if (!is_array($pk))
 		{
@@ -169,7 +171,7 @@ abstract class NenoObject
 						$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
 					}
 
-					$objectsData[] = empty($pk['_select']) ? new $className($objectData) : $objectsData;
+					$objectsData[] = empty($pk['_select']) ? new $className($objectData, $loadExtraData) : $objectsData;
 				}
 			}
 		}

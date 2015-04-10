@@ -69,7 +69,7 @@ class NenoModelStrings extends JModelList
 
 		foreach ($elements as $element)
 		{
-			$translation    = new NenoContentElementTranslation($element);
+			$translation    = new NenoContentElementTranslation($element, false);
 			$translations[] = $translation->prepareDataForView();
 		}
 
@@ -184,13 +184,17 @@ class NenoModelStrings extends JModelList
 		}
 
 		$method = $this->getState('filter.translator_type', '');
-		if ($method) {
+
+		if ($method)
+		{
 			$query->where('translation_method = "' . $method . '"');
 		}
 
 
 		$status = $this->getState('filter.translation_status', '');
-		if ($status) {
+
+		if ($status)
+		{
 			$query->where('tr.state =' . $status);
 		}
 

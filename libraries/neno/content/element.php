@@ -77,12 +77,13 @@ abstract class NenoContentElement extends NenoObject
 	/**
 	 * Load element from the database
 	 *
-	 * @param   mixed $pk    it could be the ID of the element or an array of clauses
-	 * @param   bool  $cache Allows to cache the result
+	 * @param   mixed $pk            it could be the ID of the element or an array of clauses
+	 * @param   bool  $loadExtraData Load extra data
+	 * @param   bool  $cache         Allows to cache the result
 	 *
 	 * @return stdClass|array
 	 */
-	public static function load($pk, $cache = true)
+	public static function load($pk, $loadExtraData = true, $loadParent = false, $cache = true)
 	{
 		$arguments = func_get_args();
 
@@ -101,13 +102,13 @@ abstract class NenoContentElement extends NenoObject
 
 			if ($data === null)
 			{
-				$data = parent::load($pk);
+				$data = parent::load($pk, $loadExtraData, $loadParent);
 				NenoCache::setCacheData($cacheId, $data);
 			}
 		}
 		else
 		{
-			$data = parent::load($pk);
+			$data = parent::load($pk, $loadExtraData, $loadParent);
 		}
 
 		return $data;
