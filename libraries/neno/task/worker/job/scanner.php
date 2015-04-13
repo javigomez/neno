@@ -46,9 +46,14 @@ class NenoTaskWorkerJobScanner extends NenoTaskWorker
 				$proJob = NenoJob::createJob($language->lang_code, NenoContentElementTranslation::PROFESSIONAL_TRANSLATION_METHOD);
 
 				// If there are translations for this language and for this translation method
-				if ($proJob)
+				if ($proJob !== null)
 				{
 					NenoLog::add(count($proJob->getTranslations()) . ' translations have been found to translate through professional translation');
+				}
+
+				if ($machineJob !== null || $proJob !== null)
+				{
+					NenoTaskMonitor::addTask('job_sender');
 				}
 			}
 		}

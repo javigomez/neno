@@ -68,11 +68,11 @@ class NenoContentElementGroup extends NenoContentElement
 		if (!$this->isNew())
 		{
 			$this->getExtensionIdList();
+			$this->getElementCount();
 
 			if ($loadExtraData)
 			{
 				$this->getWordCount();
-				$this->getElementCount();
 			}
 		}
 	}
@@ -95,6 +95,35 @@ class NenoContentElementGroup extends NenoContentElement
 
 		$db->setQuery($query);
 		$this->extensions = $db->loadArray();
+	}
+
+	/**
+	 * Get how many tables this group has
+	 *
+	 * @return int
+	 */
+	public function getElementCount()
+	{
+		if ($this->elementCount === null)
+		{
+			$tableCounter = NenoContentElementTable::load(
+				array (
+					'_select'  => array ('COUNT(*) as counter'),
+					'group_id' => $this->getId()
+				)
+			);
+
+			$languageFileCounter = NenoContentElementLanguageFile::load(
+				array (
+					'_select'  => array ('COUNT(*) as counter'),
+					'group_id' => $this->getId()
+				)
+			);
+
+			$this->elementCount = (int) $tableCounter['counter'] + (int) $languageFileCounter['counter'];
+		}
+
+		return $this->elementCount;
 	}
 
 	/**
@@ -206,35 +235,6 @@ class NenoContentElementGroup extends NenoContentElement
 		}
 
 		return $this->wordCount;
-	}
-
-	/**
-	 * Get how many tables this group has
-	 *
-	 * @return int
-	 */
-	public function getElementCount()
-	{
-		if ($this->elementCount === null)
-		{
-			$tableCounter = NenoContentElementTable::load(
-				array (
-					'_select'  => array ('COUNT(*) as counter'),
-					'group_id' => $this->getId()
-				)
-			);
-
-			$languageFileCounter = NenoContentElementLanguageFile::load(
-				array (
-					'_select'  => array ('COUNT(*) as counter'),
-					'group_id' => $this->getId()
-				)
-			);
-
-			$this->elementCount = (int) $tableCounter['counter'] + (int) $languageFileCounter['counter'];
-		}
-
-		return $this->elementCount;
 	}
 
 	/**
@@ -690,7 +690,7 @@ class NenoContentElementGroup extends NenoContentElement
 					->where(
 						array (
 							'content_type = ' . $db->quote('lang_string'),
-							'ls.group_id = ' . $db->quote($this->getId()),
+							'lf.group_id = ' . $db->quote($this->getId()),
 							'tr.language = ' . $db->quote($workingLanguage)
 						)
 					)
