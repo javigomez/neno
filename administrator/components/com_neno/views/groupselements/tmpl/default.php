@@ -11,9 +11,11 @@
 // No direct access
 defined('_JEXEC') or die;
 
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
+
+//Include the CSS file
+JHtml::stylesheet('media/neno/css/admin.css');
 
 // Joomla Component Creator code to allow adding non select list filters
 if (!empty($this->extra_sidebar))
@@ -73,7 +75,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	.table-groups-elements .row-group > td,
 	.table-groups-elements .row-table > td {
 		background-color: #ffffff !important;
-		color: #2E87CB;
 	}
 	.table-groups-elements .row-file > td {
 		background-color: #ffffff !important;
@@ -103,38 +104,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	.table-groups-elements .row-field {
 		background-color: white;
 	}
-	.table-groups-elements .translation-progress-bar .word-count {
-		float: left;
-        text-align: right;
-        width: 40px;
-        padding-right: 4px;
-	}
-	.table-groups-elements .translation-progress-bar .bar {
-		width: 120px;
-		height: 14px;
-		margin-left: 44px;
-		margin-top: 2px;
-	}
-	.table-groups-elements .translation-progress-bar .bar div {
-		height: 100%;
-		float: left;
-	}
-	.table-groups-elements .translation-progress-bar .translated {
-		background-color: #6BC366;
-	}
-	.table-groups-elements .translation-progress-bar .queued {
-		background-color: #368AB6;
-	}
-	.table-groups-elements .translation-progress-bar .changed {
-		background-color: #FAC819;
-	}
-	.table-groups-elements .translation-progress-bar .not-translated {
-		background-color: #DB3F35;
-	}
-	.table-groups-elements .translation-progress-bar .bar-disabled div {
-		background-color: #CACACA;
-		/*width: 100px;*/
-	}
+
 	.toggle-translate .btn-group > .btn {
 		font-size: 11px;
 		line-height: 8px;
@@ -192,6 +162,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
             jQuery.get('index.php?option=com_neno&task=groupselements.getElements&group_id='+id
                 , function(html) {
+                    
                     jQuery('#loader-'+id).replaceWith(html);
                     
                     //Bind events to new fields
@@ -320,8 +291,13 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					<td class="cell-check"><input type="checkbox" name="groups[]" value="<?php echo $group->id; ?>" /></td>
 					<td colspan="3"><?php echo $group->group_name; ?></td>
 					<td<?php echo ($group->element_count) ? ' class="load-elements"' : ''; ?>><?php echo $group->element_count; ?></td>
-					<td class="translation-progress-bar"><?php echo NenoHelper::printWordCountProgressBar($group->word_count, 1); ?></td>
-					<td></td>
+					<td><?php echo NenoHelper::printWordCountProgressBar($group->word_count, 1); ?></td>
+                    <td>
+                        <?php if (empty($group->translationMethodUsed)): ?>
+                            <a href="#"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ADD_TRANSLATION_METHOD'); ?></a>
+                        <?php endif; ?>
+                        
+                    </td>
 					<td></td>
 				</tr>
                 

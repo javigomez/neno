@@ -24,7 +24,7 @@ if ($displayData === null): ?>
                 <td></td>
                 <td class="toggler toggler-collapsed toggle-fields"><span class="icon-arrow-right-3"></span></td>
                 <td class="cell-check"><input type="checkbox" name="tables[]" value="<?php echo $table->id; ?>" /></td>
-                <td colspan="2"><?php echo $table->table_name; ?></td>
+                <td colspan="2"><a href="#"><?php echo $table->table_name; ?></a></td>
                 <td class="type-icon"><span class="icon-grid-view-2"></span> <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_TABLE'); ?></td>
                 <td class="translation-progress-bar">
                     <?php echo NenoHelper::printWordCountProgressBar($table->word_count, 1); ?>
