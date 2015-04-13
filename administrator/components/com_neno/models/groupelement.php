@@ -72,6 +72,13 @@ class NenoModelGroupElement extends JModelAdmin
 		return $data;
 	}
 
+	/**
+	 * Load item
+	 *
+	 * @param null|mixed $pk Pk data
+	 *
+	 * @return JObject
+	 */
 	public function getItem($pk = null)
 	{
 		$item = parent::getItem();
