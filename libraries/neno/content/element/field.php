@@ -447,12 +447,12 @@ class NenoContentElementField extends NenoContentElement
 	public static function getFieldByTableAndFieldName(NenoContentElementTable $table, $fieldName)
 	{
 		// Get fields related to this table
-		$fields = $table->getFields();
+		$fields = $table->getFields(false);
 		$field  = null;
 
 		if (!empty($fields))
 		{
-			$fields = $table->getFields();
+			$fields = $table->getFields(false);
 			$found  = false;
 
 			for ($i = 0; $i < count($fields) && !$found; $i++)

@@ -85,7 +85,7 @@ class NenoControllerStrings extends JControllerAdmin
 		{
 			/* @var $group NenoContentElementGroup */
 			$group  = NenoContentElementGroup::load($groupId);
-			$tables = $group->getTables();
+			$tables = $group->getTables(false);
 			$files  = $group->getLanguageFiles();
 
 			$displayData           = array ();
