@@ -87,6 +87,11 @@ class NenoJob extends NenoObject
 	 */
 	private $translations;
 
+	/**
+	 * Constructor
+	 *
+	 * @param   mixed $data Data
+	 */
 	public function __construct($data)
 	{
 		parent::__construct($data);
@@ -129,7 +134,6 @@ class NenoJob extends NenoObject
 			}
 		}
 	}
-
 
 	/**
 	 * Find a job and creates it.

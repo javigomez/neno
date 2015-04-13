@@ -10,6 +10,8 @@ defined('JPATH_NENO') or die;
 
 /**
  * Class NenoTaskWorkerScan
+ *
+ * @since  1.0
  */
 class NenoTaskWorkerScan extends NenoTaskWorker
 {
@@ -20,7 +22,7 @@ class NenoTaskWorkerScan extends NenoTaskWorker
 	 *
 	 * @return bool True on success, false otherwise
 	 */
-	public function run(array $taskData)
+	public function run($taskData)
 	{
 		// TODO: Implement run() method.
 	}

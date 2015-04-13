@@ -37,7 +37,7 @@ $translations = $displayData;
 	<thead>
 	<tr>
 		<th class="cell-check"><input type="checkbox"/></th>
-		<th>Status</th>
+		<th>Statuuus</th>
 		<th>String</th>
 		<th>Group</th>
 		<th>Element</th>

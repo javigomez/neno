@@ -24,10 +24,10 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param   JRegistry      $options   JHttp client options
+	 * @param   Joomla\Registry\Registry      $options   JHttp client options
 	 * @param   JHttpTransport $transport JHttp client transport
 	 */
-	public function __construct(JRegistry $options = null, JHttpTransport $transport = null)
+	public function __construct(Joomla\Registry\Registry $options = null, JHttpTransport $transport = null)
 	{
 		parent::__construct();
 

@@ -130,7 +130,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	 *
 	 * @param   mixed $data Element data
 	 */
-	public function __construct($data)
+	public function __construct($data, $loadExtraData = true)
 	{
 		parent::__construct($data);
 
@@ -149,11 +149,11 @@ class NenoContentElementTranslation extends NenoContentElement
 				// If it's a language string, let's create a NenoContentElementLangstring
 				if ($this->contentType == self::LANG_STRING)
 				{
-					$this->element = NenoContentElementLangstring::load($contentId);
+					$this->element = NenoContentElementLanguageString::load($contentId, $loadExtraData);
 				}
 				else
 				{
-					$this->element = NenoContentElementField::load($contentId);
+					$this->element = NenoContentElementField::load($contentId, $loadExtraData);
 				}
 			}
 		}
@@ -441,6 +441,10 @@ class NenoContentElementTranslation extends NenoContentElement
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param   bool $allFields         Allows to show all the fields
+	 * @param   bool $recursive         Convert this method in recursive
+	 * @param   bool $convertToDatabase Convert property names to database
 	 *
 	 * @return JObject
 	 */

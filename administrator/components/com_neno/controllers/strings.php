@@ -64,7 +64,7 @@ class NenoControllerStrings extends JControllerAdmin
 		$stringsModel = $this->getModel('Strings', 'NenoModel');
 		$translations = $stringsModel->getItems();
 
-		echo JLayoutHelper::render('strings', $translations, JPATH_NENO_LAYOUTS);
+		echo JLayoutHelper::render($input->getString('outputLayout'), $translations, JPATH_NENO_LAYOUTS);
 
 		JFactory::getApplication()->close();
 	}

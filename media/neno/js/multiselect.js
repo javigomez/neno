@@ -9,7 +9,7 @@ jQuery(document).ready(function () {
 });
 
 function bindEvents() {
-    jQuery('.multiselect .dropdown-menu, .multiselect .dropdown-menu *').unbind('click');
+    jQuery('.multiselect *').unbind('click');
 
     jQuery('.btn-toggle').click(function (e) {
         jQuery('#' + jQuery(this).attr('data-toggle')).slideToggle('fast');
@@ -17,13 +17,13 @@ function bindEvents() {
         jQuery(this).blur();
     });
 
-    jQuery('#table-multiselect tr.collapsed .cell-expand').click(toggleElementVisibility);
+    jQuery('#table-multiselect .cell-expand').click(toggleElementVisibility);
 
     jQuery('#table-multiselect input[type=checkbox]').click(loadStrings);
 }
 
 /**
- * Toggle Elements (Tables and language files_
+ * Toggle Elements (Tables and language files)
  */
 function toggleElementVisibility() {
     var row = jQuery(this).parent('.element-row');
@@ -35,16 +35,17 @@ function toggleElementVisibility() {
 
         // Expand
         row.removeClass('collapsed').addClass('expanded');
-        jQuery(this).html('<span class="icon-arrow-down-3"></span>');
+        jQuery(this).html('<span class="toggle-arrow icon-arrow-down-3"></span>');
 
         if (row.data('level') == 1) {
             if (!row.data('loaded')) {
+                row.addClass('loading');
                 jQuery.get('index.php?option=com_neno&task=strings.getElements&group_id=' + id
                     , function (html) {
                         row.after(html);
                         row.data('loaded', true);
-
                         bindEvents();
+                        row.removeClass('loading');
                     }
                 );
             }
@@ -59,7 +60,7 @@ function toggleElementVisibility() {
 
         //Collapse
         row.removeClass('expanded').addClass('collapsed');
-        jQuery(this).html('<span class="icon-arrow-right-3"></span>');
+        jQuery(this).html('<span class="toggle-arrow icon-arrow-right-3"></span>');
         jQuery('[data-parent="' + data_id + '"]').removeClass('expanded').addClass('collapsed').addClass('hide');
     }
 }
@@ -74,8 +75,9 @@ function loadStrings() {
         url: "index.php?option=com_neno&task=strings.getStrings",
         data: {
             jsonData: checked,
-            limitStart: document.adminForm.limitstart.value,
-            limit: document.adminForm.list_limit.value
+            limitStart: 0, //document.adminForm.limitstart.value,
+            limit: 20, //document.adminForm.list_limit.value,
+            outputLayout: document.adminForm.outputLayout.value
         }
     })
         .done(function (ret) {
@@ -111,7 +113,7 @@ function getMultiSelectValue(table) {
 /**
  * Check and uncheck checkboxes
  *  - Parent click: check/uncheck all children
- *  - Child click: uncheck parent if unchecked
+ *  - Child click: uncheck parent if checked
  */
 function checkUncheckFamilyCheckboxes(checkbox) {
 

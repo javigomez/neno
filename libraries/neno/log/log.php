@@ -57,7 +57,7 @@ class NenoLog extends JLog
 		self::setLogMethod($level);
 
 		// Check if log entry should be made
-		if(self::checkAddLog($level))
+		if (self::checkAddLog($level))
 		{
 			// Add the log entry
 			self::add($string, $priority, 'com_neno');
@@ -98,30 +98,6 @@ class NenoLog extends JLog
 	}
 
 	/**
-	 * Method to check if log entry should be made
-	 *
-	 * @param   integer $level 1,2 or 3
-	 *
-	 * @return boolean
-	 */
-	private static function checkAddLog($level)
-	{
-		$debugMode = 1;
-
-		// Check if priority is debug
-		if($level == self::PRIORITY_DEBUG)
-		{
-			// Check if debug mode is on
-			if(!JDEBUG)
-			{
-				$debugMode = 0;
-			}
-	    }
-
-		return $debugMode;
-	}
-
-	/**
 	 * Set Log method
 	 *
 	 * @param   integer $level Level of the log entry
@@ -146,6 +122,30 @@ class NenoLog extends JLog
 			self::ALL,
 			array ('com_neno')
 		);
+	}
+
+	/**
+	 * Method to check if log entry should be made
+	 *
+	 * @param   integer $level 1,2 or 3
+	 *
+	 * @return boolean
+	 */
+	private static function checkAddLog($level)
+	{
+		$debugMode = 1;
+
+		// Check if priority is debug
+		if ($level == self::PRIORITY_DEBUG)
+		{
+			// Check if debug mode is on
+			if (!JDEBUG)
+			{
+				$debugMode = 0;
+			}
+		}
+
+		return $debugMode;
 	}
 
 	/**

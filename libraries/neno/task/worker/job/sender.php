@@ -10,6 +10,8 @@ defined('JPATH_NENO') or die;
 
 /**
  * Class NenoTaskWorkerJobSender
+ *
+ * @since  1.0
  */
 class NenoTaskWorkerJobSender extends NenoTaskWorker
 {
@@ -19,6 +21,8 @@ class NenoTaskWorkerJobSender extends NenoTaskWorker
 	 * @param   array $taskData Task data
 	 *
 	 * @return bool True on success, false otherwise
+	 *
+	 * @throws Exception
 	 */
 	public function run($taskData)
 	{
@@ -64,7 +68,7 @@ class NenoTaskWorkerJobSender extends NenoTaskWorker
 
 			if ($response['code'] != 200)
 			{
-				throw Exception($response['message'], $response['code']);
+				throw new Exception($response['message'], $response['code']);
 			}
 		}
 	}

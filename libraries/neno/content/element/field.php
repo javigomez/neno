@@ -67,17 +67,21 @@ class NenoContentElementField extends NenoContentElement
 	 * @param   mixed   $data              Field data
 	 * @param   boolean $fetchTranslations If the translation have to be loaded
 	 */
-	public function __construct($data, $fetchTranslations = false)
+	public function __construct($data, $loadExtraData = true, $fetchTranslations = false)
 	{
 		parent::__construct($data);
 
 		$data = new JObject($data);
 
 		$this->table        = $data->get('table') == null
-			? NenoContentElementTable::getTableById($data->get('tableId'))
+			? NenoContentElementTable::load($data->get('tableId'), $loadExtraData)
 			: $data->get('table');
 		$this->translations = null;
-		$this->getWordCount();
+
+		if (!$this->isNew() && $loadExtraData)
+		{
+			$this->getWordCount();
+		}
 	}
 
 	/**
@@ -108,7 +112,7 @@ class NenoContentElementField extends NenoContentElement
 				$query
 					->select(
 						array (
-							'SUM(word_count) AS counter',
+							'SUM(word_counter) AS counter',
 							'tr.state'
 						)
 					)
@@ -251,6 +255,10 @@ class NenoContentElementField extends NenoContentElement
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param   bool $allFields         Allows to show all the fields
+	 * @param   bool $recursive         Convert this method in recursive
+	 * @param   bool $convertToDatabase Convert property names to database
 	 *
 	 * @return JObject
 	 */
@@ -521,7 +529,7 @@ class NenoContentElementField extends NenoContentElement
 		$query
 			->select('DISTINCT translation_method')
 			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
-			->leftJoin($db->quoteName('#__neno_content_element_langstrings', 'l') . ' ON t.content_id = l.id')
+			->leftJoin($db->quoteName(NenoContentElementLanguageString::getDbTable(), 'l') . ' ON t.content_id = l.id')
 			->where('content_type = ' . $db->quote(NenoContentElementTranslation::LANG_STRING));
 
 		$db->setQuery($query);

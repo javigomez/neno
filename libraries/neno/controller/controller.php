@@ -42,7 +42,6 @@ class NenoController extends JControllerLegacy
 		$view  = $input->getCmd('view', 'dashboard');
 		$input->set('view', $view);
 
-
 		// Ensure that a working language is set for some views
 		$viewsThatRequireWorkingLanguage = array (
 			'groupselements'

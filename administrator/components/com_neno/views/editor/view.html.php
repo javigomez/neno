@@ -31,7 +31,7 @@ class NenoViewEditor extends JViewLegacy
 	protected $pagination;
 
 	/**
-	 * @var JRegistry
+	 * @var Joomla\Registry\Registry
 	 */
 	protected $state;
 
@@ -44,6 +44,16 @@ class NenoViewEditor extends JViewLegacy
 	 * @var array
 	 */
 	protected $extensionsSaved;
+
+	/**
+	 * @var JForm
+	 */
+	public $filterForm;
+
+	/**
+	 * @var JForm
+	 */
+	public $activeFilters;
 
 	/**
 	 * Display the view
@@ -64,6 +74,7 @@ class NenoViewEditor extends JViewLegacy
 		$this->extensionsSaved = $this->get('ExtensionsMarkedAsTranslatable');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
+		$this->getGroupData();
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -79,6 +90,24 @@ class NenoViewEditor extends JViewLegacy
 		$this->sidebar = JHtmlSidebar::render();
 
 		parent::display($tpl);
+	}
+
+	/**
+	 * Load group data
+	 *
+	 * @return void
+	 */
+	protected function getGroupData()
+	{
+		$groups = NenoHelper::getGroups();
+
+		/* @var $group NenoContentElementGroup */
+		foreach ($groups as $key => $group)
+		{
+			$groups[$key] = $group->prepareDataForView();
+		}
+
+		$this->groups = $groups;
 	}
 
 	/**
@@ -98,6 +127,9 @@ class NenoViewEditor extends JViewLegacy
 		{
 			JToolBarHelper::preferences('com_neno');
 		}
+
+		$bar = JToolbar::getInstance('toolbar');
+		$bar->appendButton('Link', 'home', JText::_('COM_NENO_BACK_TO_DASHBOARD'), 'index.php?option=com_neno');
 
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=editor');

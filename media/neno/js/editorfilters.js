@@ -7,7 +7,6 @@
 
 jQuery(document).ready(function () {
 
-    jQuery('.js-stools-field-filter select').addClass('btn btn-small dropdown-toggle');
-    //jQuery('.js-stools-field-filter select').removeClass('active');
+    jQuery('.js-stools-field-filter select').addClass('btn dropdown-toggle');
 
 });

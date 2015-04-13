@@ -69,7 +69,7 @@ class NenoModelStrings extends JModelList
 
 		foreach ($elements as $element)
 		{
-			$translation    = new NenoContentElementTranslation($element);
+			$translation    = new NenoContentElementTranslation($element, false);
 			$translations[] = $translation->prepareDataForView();
 		}
 
@@ -148,9 +148,14 @@ class NenoModelStrings extends JModelList
 
 		$queryWhere = array ();
 
-		$groups  = $this->getState('filter.group_id', array ());
+		/* @var $groups array */
+		$groups = $this->getState('filter.group_id', array ());
+
+		/* @var $element array */
 		$element = $this->getState('filter.element', array ());
-		$field   = $this->getState('filter.field', array ());
+
+		/* @var $field array */
+		$field = $this->getState('filter.field', array ());
 
 		if (!is_array($groups))
 		{
@@ -176,6 +181,21 @@ class NenoModelStrings extends JModelList
 		if (count($queryWhere))
 		{
 			$query->where('(' . implode(' OR ', $queryWhere) . ')');
+		}
+
+		$method = $this->getState('filter.translator_type', '');
+
+		if ($method)
+		{
+			$query->where('translation_method = "' . $method . '"');
+		}
+
+
+		$status = $this->getState('filter.translation_status', '');
+
+		if ($status)
+		{
+			$query->where('tr.state =' . $status);
 		}
 
 		return $query;

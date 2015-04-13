@@ -41,7 +41,6 @@ $document->addScript(JUri::root() . '/media/neno/js/editorfilters.js');
 <div class="js-stools clearfix">
 	<div class="clearfix">
 		<div class="js-stools-container-bar">
-			<?php //echo JLayoutHelper::render('joomla.searchtools.default.bar', $data); ?>
 			<label for="filter_search" class="element-invisible">
 				<?php echo JText::_('JSEARCH_FILTER'); ?>
 			</label>
@@ -60,7 +59,8 @@ $document->addScript(JUri::root() . '/media/neno/js/editorfilters.js');
 	<div class="js-stools-container-filters hidden-phone clearfix">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default.filters', $data); ?>
 		<div class="multiselect-wrapper">
-			<?php echo JLayoutHelper::render('multiselect', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
+			<?php echo JLayoutHelper::render('multiselectgroup', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
 		</div>
 	</div>
+	<input type="hidden" id="outputLayout" name="outputLayout" value="editorStrings">
 </div>

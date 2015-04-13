@@ -35,44 +35,66 @@ class NenoContentElementGroup extends NenoContentElement
 	 * @var array
 	 */
 	public $languageFiles;
-
+	/**
+	 * @var
+	 */
+	public $extensions;
 	/**
 	 * @var string
 	 */
 	protected $groupName;
-
 	/**
 	 * @var array
 	 */
 	protected $tables;
 
 	/**
-	 * @var array
-	 */
-	protected $languageStrings;
-
-	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data Group data
 	 */
-	public function __construct($data)
+	public function __construct($data, $loadExtraData = true)
 	{
 		parent::__construct($data);
 
 		$this->tables                = null;
-		$this->languageStrings       = null;
+		$this->languageFiles         = null;
 		$this->translationMethodUsed = array ();
-		$this->extensionId           = array ();
+		$this->extensions            = array ();
 		$this->elementCount          = null;
 		$this->wordCount             = null;
 
 		// Only search for the statistics for existing groups
 		if (!$this->isNew())
 		{
-			$this->getWordCount();
-			$this->getElementCount();
+			$this->getExtensionIdList();
+
+			if ($loadExtraData)
+			{
+				$this->getWordCount();
+				$this->getElementCount();
+			}
 		}
+	}
+
+	/**
+	 * Get extension list
+	 *
+	 * @return void
+	 */
+	protected function getExtensionIdList()
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('extension_id')
+			->from('#__neno_content_element_groups_x_extensions')
+			->where('group_id = ' . $this->id);
+
+		$db->setQuery($query);
+		$this->extensions = $db->loadArray();
 	}
 
 	/**
@@ -97,18 +119,19 @@ class NenoContentElementGroup extends NenoContentElement
 			$query
 				->select(
 					array (
-						'SUM(word_count) AS counter',
+						'SUM(word_counter) AS counter',
 						't.state'
 					)
 				)
-				->from($db->quoteName(NenoContentElementLangstring::getDbTable()) . ' AS l')
+				->from($db->quoteName(NenoContentElementLanguageString::getDbTable()) . ' AS ls')
+				->innerJoin($db->quoteName(NenoContentElementLanguageFile::getDbTable()) . ' AS lf ON ls.languagefile_id = lf.id')
 				->innerJoin(
 					$db->quoteName(NenoContentElementTranslation::getDbTable()) .
-					' AS t ON t.content_id = l.id AND t.content_type = ' .
+					' AS t ON t.content_id = ls.id AND t.content_type = ' .
 					$db->quote('lang_string') .
 					' AND t.language LIKE ' . $db->quote($workingLanguage)
 				)
-				->where('l.group_id = ' . $this->getId())
+				->where('lf.group_id = ' . $this->getId())
 				->group('t.state');
 
 			$db->setQuery($query);
@@ -134,12 +157,11 @@ class NenoContentElementGroup extends NenoContentElement
 				}
 			}
 
-
 			$query
 				->clear()
 				->select(
 					array (
-						'SUM(word_count) AS counter',
+						'SUM(word_counter) AS counter',
 						'tr.state'
 					)
 				)
@@ -195,103 +217,24 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		if ($this->elementCount === null)
 		{
-			$countData = NenoContentElementTable::load(
+			$tableCounter = NenoContentElementTable::load(
 				array (
 					'_select'  => array ('COUNT(*) as counter'),
 					'group_id' => $this->getId()
 				)
 			);
 
-			$this->elementCount = (int) $countData['counter'] + count($this->getLanguageFiles());
-
-
-		}
-
-		return $this->elementCount;
-	}
-
-	/**
-	 * Get all the language files
-	 *
-	 * @return array
-	 */
-	public function getLanguageFiles()
-	{
-		if ($this->languageFiles === null)
-		{
-			$this->languageFiles = array ();
-
-			$extensionNames = NenoContentElementLangstring::load(
+			$languageFileCounter = NenoContentElementLanguageFile::load(
 				array (
-					'_select'  => array ('DISTINCT extension'),
+					'_select'  => array ('COUNT(*) as counter'),
 					'group_id' => $this->getId()
 				)
 			);
 
-			$extensionNames  = array_unique($extensionNames);
-			$workingLanguage = NenoHelper::getWorkingLanguage();
-
-			foreach ($extensionNames as $extensionName)
-			{
-				$languageFileData           = new stdClass;
-				$languageFileData->filename = $workingLanguage . '.' . $extensionName . '.ini';
-				$db                         = JFactory::getDbo();
-				$query                      = $db->getQuery(true);
-
-				$query
-					->select(
-						array (
-							'SUM(word_count) AS counter',
-							'tr.state'
-						)
-					)
-					->from('#__neno_content_element_translations as tr')
-					->innerJoin('#__neno_content_element_langstrings AS l ON tr.content_id = l.id')
-					->where(
-						array (
-							'content_type = ' . $db->quote('lang_string'),
-							'l.extension = ' . $db->quote($extensionName),
-							'tr.language = ' . $db->quote($workingLanguage)
-						)
-					)
-					->group('tr.state');
-
-				$db->setQuery($query);
-				$statistics = $db->loadAssocList('state');
-
-				$wordCount               = new stdClass;
-				$wordCount->untranslated = 0;
-				$wordCount->queued       = 0;
-				$wordCount->changed      = 0;
-				$wordCount->translated   = 0;
-
-				// Assign the statistics
-				foreach ($statistics as $state => $data)
-				{
-					switch ($state)
-					{
-						case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
-							$wordCount->untranslated = (int) $data['counter'];
-							break;
-						case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
-							$wordCount->queued = (int) $data['counter'];
-							break;
-						case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
-							$wordCount->changed = (int) $data['counter'];
-							break;
-						case NenoContentElementTranslation::TRANSLATED_STATE:
-							$wordCount->translated = (int) $data['counter'];
-							break;
-					}
-				}
-
-				$wordCount->total            = $wordCount->untranslated + $wordCount->queued + $wordCount->changed + $wordCount->translated;
-				$languageFileData->wordCount = $wordCount;
-				$this->languageFiles[]       = $languageFileData;
-			}
+			$this->elementCount = (int) $tableCounter['counter'] + (int) $languageFileCounter['counter'];
 		}
 
-		return $this->languageFiles;
+		return $this->elementCount;
 	}
 
 	/**
@@ -301,9 +244,9 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return NenoContentElementGroup
 	 */
-	public static function getGroup($groupId)
+	public static function getGroup($groupId, $loadExtraData = true)
 	{
-		$group = self::load($groupId);
+		$group = self::load($groupId, $loadExtraData);
 
 		return $group;
 	}
@@ -415,6 +358,12 @@ class NenoContentElementGroup extends NenoContentElement
 		{
 			$this->tables = NenoContentElementTable::load(array ('group_id' => $this->getId()));
 
+			// If there's only one table
+			if ($this->tables instanceof NenoContentElementTable)
+			{
+				$this->tables = array ($this->tables);
+			}
+
 			foreach ($this->tables as $key => $table)
 			{
 				$this->tables[$key]->setGroup($this);
@@ -453,13 +402,44 @@ class NenoContentElementGroup extends NenoContentElement
 		{
 			NenoLog::log('Group data added or modified successfully', 2);
 
-			if (!empty($this->languageStrings))
+			if (!empty($this->extensions))
 			{
-				/* @var $languageString NenoContentElementLangstring */
-				foreach ($this->languageStrings as $languageString)
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$query
+					->delete('#__neno_content_element_groups_x_extensions')
+					->where('group_id = ' . $this->getId());
+
+				$db->setQuery($query);
+				$db->execute();
+
+				$query
+					->clear()
+					->insert('#__neno_content_element_groups_x_extensions')
+					->columns(
+						array (
+							'extension_id',
+							'group_id'
+						)
+					);
+
+				foreach ($this->extensions as $extension)
 				{
-					$languageString->setGroup($this);
-					$languageString->persist();
+					$query->values((int) $extension . ',' . $this->getId());
+				}
+
+				$db->setQuery($query);
+				$db->execute();
+			}
+
+			if (!empty($this->languageFiles))
+			{
+				/* @var $languageFile NenoContentElementLanguageFile */
+				foreach ($this->languageFiles as $languageFile)
+				{
+					$languageFile->setGroup($this);
+					$languageFile->persist();
 				}
 			}
 
@@ -523,8 +503,8 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function refresh()
 	{
-		$tables          = NenoHelper::getComponentTables($this);
-		$languageStrings = NenoHelper::getLanguageStrings($this->getGroupName());
+		$tables        = NenoHelper::getComponentTables($this);
+		$languageFiles = NenoHelper::getLanguageFiles($this->getGroupName());
 
 		// If there are tables, let's assign to the group
 		if (!empty($tables))
@@ -533,13 +513,13 @@ class NenoContentElementGroup extends NenoContentElement
 		}
 
 		// If there are language strings, let's assign to the group
-		if (!empty($languageStrings))
+		if (!empty($languageFiles))
 		{
-			$this->setLanguageStrings($languageStrings);
+			$this->setLanguageFiles($languageFiles);
 		}
 
 		// If there are tables or language strings assigned, save the group
-		if (!empty($tables) || !empty($languageStrings))
+		if (!empty($tables) || !empty($languageFiles))
 		{
 			$this->persist();
 		}
@@ -634,14 +614,13 @@ class NenoContentElementGroup extends NenoContentElement
 		$this->translationMethodUsed = array ();
 
 		/* @var $db NenoDatabaseDriverMysqlx */
-		$db              = JFactory::getDbo();
-		$query           = $db->getQuery(true);
-		$workingLanguage = NenoHelper::getWorkingLanguage();
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
 		$query
 			->select('DISTINCT translation_method')
 			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
-			->leftJoin($db->quoteName('#__neno_content_element_langstrings', 'l') . ' ON t.content_id = l.id')
+			->leftJoin($db->quoteName(NenoContentElementLanguageString::getDbTable(), 'l') . ' ON t.content_id = l.id')
 			->where('content_type = ' . $db->quote(NenoContentElementTranslation::LANG_STRING));
 
 		$db->setQuery($query);
@@ -665,9 +644,9 @@ class NenoContentElementGroup extends NenoContentElement
 		}
 
 		// Get language strings
-		$languageStrings = $this->getLanguageStrings();
+		$languageStrings = $this->getLanguageFiles();
 
-		/* @var $languageString NenoContentElementLangstring */
+		/* @var $languageString NenoContentElementLanguageString */
 		foreach ($languageStrings as $languageString)
 		{
 			$languageString->remove();
@@ -679,23 +658,80 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * Get language strings
+	 * Get all the language files
 	 *
 	 * @return array
 	 */
-	public function getLanguageStrings()
+	public function getLanguageFiles()
 	{
-		if ($this->languageStrings === null)
+		if ($this->languageFiles === null)
 		{
-			$this->languageStrings = NenoContentElementLangstring::load(array ('group_id' => $this->getId()));
+			$this->languageFiles = array ();
+			$extensionNames      = NenoContentElementLanguageFile::load(array ('group_id' => $this->getId()));
+			$workingLanguage     = NenoHelper::getWorkingLanguage();
 
-			foreach ($this->languageStrings as $key => $languageString)
+			foreach ($extensionNames as $extensionName)
 			{
-				$this->languageStrings[$key]->setGroup($this);
+				$languageFileData           = new stdClass;
+				$languageFileData->filename = $workingLanguage . '.' . $extensionName . '.ini';
+				$db                         = JFactory::getDbo();
+				$query                      = $db->getQuery(true);
+
+				$query
+					->select(
+						array (
+							'SUM(word_counter) AS counter',
+							'tr.state'
+						)
+					)
+					->from('#__neno_content_element_translations as tr')
+					->innerJoin('#__neno_content_element_language_strings AS ls ON tr.content_id = ls.id')
+					->innerJoin('#__neno_content_element_language_files AS lf ON lf.id = ls.languagefile_id')
+					->where(
+						array (
+							'content_type = ' . $db->quote('lang_string'),
+							'ls.group_id = ' . $db->quote($this->getId()),
+							'tr.language = ' . $db->quote($workingLanguage)
+						)
+					)
+					->group('tr.state');
+
+				$db->setQuery($query);
+				$statistics = $db->loadAssocList('state');
+
+				$wordCount               = new stdClass;
+				$wordCount->untranslated = 0;
+				$wordCount->queued       = 0;
+				$wordCount->changed      = 0;
+				$wordCount->translated   = 0;
+
+				// Assign the statistics
+				foreach ($statistics as $state => $data)
+				{
+					switch ($state)
+					{
+						case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
+							$wordCount->untranslated = (int) $data['counter'];
+							break;
+						case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
+							$wordCount->queued = (int) $data['counter'];
+							break;
+						case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
+							$wordCount->changed = (int) $data['counter'];
+							break;
+						case NenoContentElementTranslation::TRANSLATED_STATE:
+							$wordCount->translated = (int) $data['counter'];
+							break;
+					}
+				}
+
+				$wordCount->total            = $wordCount->untranslated + $wordCount->queued + $wordCount->changed + $wordCount->translated;
+				$languageFileData->wordCount = $wordCount;
+				$this->languageFiles[]       = $languageFileData;
 			}
 		}
 
-		return $this->languageStrings;
+		return $this->languageFiles;
 	}
 
 	/**
@@ -705,9 +741,9 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return $this
 	 */
-	public function setLanguageStrings(array $languageStrings)
+	public function setLanguageFiles(array $languageStrings)
 	{
-		$this->languageStrings = $languageStrings;
+		$this->languageFiles = $languageStrings;
 		$this->contentHasChanged();
 
 		return $this;
@@ -732,15 +768,54 @@ class NenoContentElementGroup extends NenoContentElement
 			$tables[] = $table->prepareCacheContent();
 		}
 
-		/* @var $languageString NenoContentElementLangstring */
-		foreach ($data->getLanguageStrings() as $languageString)
+		/* @var $languageString NenoContentElementLanguageString */
+		foreach ($data->getLanguageFiles() as $languageString)
 		{
 			$languageStrings [] = $languageString->prepareCacheContent();
 		}
 
-		$data->tables          = $tables;
-		$data->languageStrings = $languageStrings;
+		$data->tables        = $tables;
+		$data->languageFiles = $languageStrings;
 
 		return $data;
+	}
+
+	/**
+	 * Get a list of extensions linked to this group
+	 *
+	 * @return array
+	 */
+	public function getExtensions()
+	{
+		return $this->extensions;
+	}
+
+	/**
+	 * Set a list of extensions linked to this group
+	 *
+	 * @param   array $extensions Extension list
+	 *
+	 * @return $this
+	 */
+	public function setExtensions(array $extensions)
+	{
+		$this->extensions = $extensions;
+
+		return $this;
+	}
+
+	/**
+	 * Add an extension id to the list
+	 *
+	 * @param   int $extensionId Extension id
+	 *
+	 * @return $this
+	 */
+	public function addExtension($extensionId)
+	{
+		$this->extensions[] = $extensionId;
+		$this->extensions   = array_unique($this->extensions);
+
+		return $this;
 	}
 }
