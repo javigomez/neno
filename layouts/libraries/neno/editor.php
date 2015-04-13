@@ -11,79 +11,74 @@
 // No direct access
 defined('JPATH_NENO') or die;
 
-$document = JFactory::getDocument();
-//$document->addScript(JUri::root() . '/media/neno/js/strings.js');
-$document->addStyleSheet(JUri::root() . '/media/neno/css/strings.css');
-
-//$isOverlay = isset($displayData->isOverlay);
-
-$translationStatesClasses = array();
-$translationStatesClasses[NenoContentElementTranslation::TRANSLATED_STATE] = 'translated icon-checkmark';
-$translationStatesClasses[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = 'queued icon-clock';
-$translationStatesClasses[NenoContentElementTranslation::SOURCE_CHANGED_STATE] = 'changed icon-loop';
-$translationStatesClasses[NenoContentElementTranslation::NOT_TRANSLATED_STATE] = 'not-translated icon-cancel-2';
-
-$translationStatesText = array();
-$translationStatesText[NenoContentElementTranslation::TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_TRANSLATED');
-$translationStatesText[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_QUEUED');
-$translationStatesText[NenoContentElementTranslation::SOURCE_CHANGED_STATE] = JText::_('COM_NENO_STATUS_CHANGED');
-$translationStatesText[NenoContentElementTranslation::NOT_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_NOTTRANSLATED');
-
-$translations = $displayData;
+$document    = JFactory::getDocument();
+$translation = $displayData;
 
 ?>
+<script>
+	jQuery(document).ready(function () {
+		jQuery('.copy-btn').on('click', function () {
+			jQuery('.translate-content').val(jQuery('.original-text').html().trim());
+		});
 
-<table class="table table-striped table-strings" id="table-strings">
-	<thead>
-	<tr>
-		<th class="cell-check"><input type="checkbox"/></th>
-		<th>Statuuus</th>
-		<th>String</th>
-		<th>Group</th>
-		<th>Element</th>
-		<th>Key</th>
-		<th>Translation Methods</th>
-		<th>Words</th>
-		<th>Characters</th>
-	</tr>
-	</thead>
-	<tbody>
-	<?php /* @var $translation NenoContentElementTranslation */ ?>
-	<?php foreach ($translations as $translation):
-		$elementObject = $translation->getElement();
-		//Kint::dump($elementObject);
-		if (is_a($elementObject,'NenoContentElementField')) {
-			$group = $elementObject->getTable()->getGroup()->getGroupName();
-			$element = $elementObject->getTable()->getTableName();
-			$key = $elementObject->getFieldName();
+		jQuery('.translate-btn').on('click', function () {
+			var text = jQuery('.original-text').html().trim();
+			jQuery.post(
+				'index.php?option=com_neno&task=editor.translate',
+				{text: text}
+				, function (data) {
+					jQuery('.translate-content').val(data);
+				}
+			);
+		});
+	});
+</script>
+<div class="row">
+	<div class="span12">
+		<div class="span6">
+			<?php echo empty($translation) ? '' : implode(' > ', $translation->breadcrumbs); ?>
+		</div>
+		<div class="span6 pull-right">
+			<div class="pull-right">
+				<button class="btn skip-button" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+					<span class="icon-next"></span><?php echo JText::_('COM_NENO_EDITOR_SKIP_BUTTON'); ?>
+				</button>
+				<button class="btn draft-button" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+								<span
+									class="icon-file"></span><?php echo JText::_('COM_NENO_EDITOR_SAVE_AS_DRAFT_BUTTON'); ?>
+				</button>
+				<button class="btn btn-success" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+							<span
+								class="icon-checkmark"></span><?php echo JText::_('COM_NENO_EDITOR_SAVE_AND_NEXT_BUTTON'); ?>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div>
+		<div class="span5">
+			<div class="uneditable-input full-width original-text">
+				<?php echo empty($translation) ? '' : $translation->original_text; ?>
+			</div>
+		</div>
+		<div class="span2 full-width">
+			<div class="span12">
+				<button class="btn copy-btn" type="button">
+					<span class="icon-copy"></span><?php echo JText::_('COM_NENO_EDITOR_COPY_BUTTON'); ?>
+				</button>
+			</div>
+			<div class="span12">
+				<button class="btn translate-btn" type="button">
+					<span
+						class="icon-screen"></span><?php echo JText::_('COM_NENO_EDITOR_COPY_AND_TRANSLATE_BUTTON'); ?>
+				</button>
+			</div>
 
-
-		} elseif (is_a($elementObject,'NenoContentElementLangstring')) {
-
-		}
-
-
-		?>
-		<tr class="row-string">
-			<td class="cell-check"><input type="checkbox"/></td>
-			<td class="cell-status">
-				<span class="status <?php echo $translationStatesClasses[$translation->getState()]; ?>" alt="<?php echo $translationStatesText[$translation->getState()]; ?>" title="<?php echo $translationStatesText[$translation->getState()]; ?>"></span>
-			</td>
-			<td title="<?php echo NenoHelper::html2text($translation->getOriginalText(), 200); ?>"><?php echo NenoHelper::html2text($translation->getString(), 200); ?></td>
-			<td><?php echo $group; ?></td>
-			<td><?php echo $element; ?></td>
-			<td><?php echo $key; ?></td>
-			<td><?php echo JText::_('COM_NENO_TRANSLATION_METHODS_' . strtoupper($translation->getTranslationMethod())); ?></td>
-			<td><?php echo $translation->getWordsCounter(); ?></td>
-			<td><?php echo $translation->getCharactersCounter(); ?></td>
-		</tr>
-	<?php endforeach; ?>
-	</tbody>
-	<tfoot>
-	<tr>
-		<td colspan="9">
-			<?php /*echo $this->pagination->getListFooter();*/ ?>
-		</td>
-	</tr>
-	</tfoot>
-</table>
+		</div>
+		<div class="span5">
+			<textarea
+				class="full-width translate-content"><?php echo empty($translation) ? '' : $translation->string; ?></textarea>
+		</div>
+	</div>
+</div>

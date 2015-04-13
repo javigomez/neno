@@ -107,4 +107,23 @@ class NenoControllerEditor extends JControllerAdmin
 
 		$app->close();
 	}
+
+	/**
+	 * Get a translations
+	 *
+	 * @return void
+	 */
+	public function getTranslation()
+	{
+		$input         = $this->input;
+		$translationId = $input->getInt('id');
+
+		if (!empty($translationId))
+		{
+			$translation = NenoContentElementTranslation::getTranslation($translationId);
+			echo JLayoutHelper::render('editor', $translation->prepareDataForView(true), JPATH_NENO_LAYOUTS);
+		}
+
+		JFactory::getApplication()->close();
+	}
 }

@@ -140,23 +140,6 @@ class NenoContentElementTranslation extends NenoContentElement
 		{
 			$this->element = $data->get('content');
 		}
-		else
-		{
-			$contentId = $data->get('content_id') === null ? $data->get('contentId') : $data->get('content_id');
-
-			if (!empty($contentId))
-			{
-				// If it's a language string, let's create a NenoContentElementLangstring
-				if ($this->contentType == self::LANG_STRING)
-				{
-					$this->element = NenoContentElementLanguageString::load($contentId, $loadExtraData);
-				}
-				else
-				{
-					$this->element = NenoContentElementField::load($contentId, $loadExtraData);
-				}
-			}
-		}
 
 		$this->charactersCounter = strlen($this->getString());
 
@@ -197,7 +180,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	 */
 	private function loadOriginalText()
 	{
-		$string = NenoHelper::getTranslationOriginalText($this->getId(), $this->getContentType(), $this->element->getId());
+		$string = NenoHelper::getTranslationOriginalText($this->getId(), $this->getContentType());
 
 		return $string;
 	}
@@ -456,7 +439,7 @@ class NenoContentElementTranslation extends NenoContentElement
 		{
 			$data->set('content_id', $this->element->getId());
 		}
-		else
+		elseif (!empty($this->element))
 		{
 			$data->set('content_id', $this->element->id);
 		}
@@ -611,6 +594,60 @@ class NenoContentElementTranslation extends NenoContentElement
 		/* @var $data $this */
 		$data          = parent::prepareCacheContent();
 		$data->element = null;
+
+		return $data;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return JObject
+	 */
+	public function prepareDataForView($breadcrumb = false)
+	{
+		$data = parent::prepareDataForView();
+
+		if ($breadcrumb)
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			if ($this->contentType === self::DB_STRING)
+			{
+				$query
+					->select(
+						array (
+							'g.group_name',
+							't.table_name',
+							'f.field_name'
+						)
+					)
+					->from('#__neno_content_element_translations AS tr')
+					->innerJoin('#__neno_content_element_fields AS f ON tr.content_id = f.id')
+					->innerJoin('#__neno_content_element_tables AS t ON f.table_id = t.id')
+					->innerJoin('#__neno_content_element_groups AS g ON t.group_id = g.id')
+					->where('tr.id = ' . $this->id);
+			}
+			else
+			{
+				$query
+					->select(
+						array (
+							'g.group_name',
+							'lf.filename',
+							'ls.constant'
+						)
+					)
+					->from('#__neno_content_element_translations AS tr')
+					->innerJoin('#__neno_content_element_language_strings AS ls ON tr.content_id = ls.id')
+					->innerJoin('neno_content_element_language_files AS lf ON ls.languagefile_id = lf.id')
+					->innerJoin('#__neno_content_element_groups AS g ON lf.group_id = g.id')
+					->where('tr.id = ' . $this->id);
+			}
+
+			$db->setQuery($query);
+			$data->breadcrumbs = $db->loadRow();
+		}
+
 
 		return $data;
 	}
