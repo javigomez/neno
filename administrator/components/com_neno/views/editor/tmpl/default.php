@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die;
 
-$document = JFactory::getDocument();
-$document->addStyleSheet(JUri::root() . '/media/neno/css/editorstrings.css');
+/*$document = JFactory::getDocument();
+$document->addStyleSheet(JUri::root() . '/media/neno/css/editorstrings.css');*/
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('bootstrap.tooltip');
@@ -44,8 +44,11 @@ echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name
 		echo JLayoutHelper::render('editorfilters', array('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS);
 		?>
 		</form>
-		<div id="conditions-wrapper"></div>
-		<div id="elements-wrapper"></div>
+		<div id="filter-tags-wrapper"></div>
+		<div id="elements-wrapper">
+			<?php echo JLayoutHelper::render('editorStrings', $this->items, JPATH_NENO_LAYOUTS); ?>
+		</div>
+		<?php echo $this->pagination->getListFooter(); ?>
 	</div>
 
 

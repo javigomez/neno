@@ -28,11 +28,11 @@ class NenoModelEditor extends JModelList
 	 * @see        JController
 	 * @since      1.6
 	 */
-	public function __construct($config = array ())
+	public function __construct($config = array())
 	{
 		if (empty($config['filter_fields']))
 		{
-			$config['filter_fields'] = array (/*'id', 'a.id',
+			$config['filter_fields'] = array(/*'id', 'a.id',
 				'string', 'a.string',
 				'constant', 'a.constant',
 				'lang', 'a.lang',
@@ -64,18 +64,15 @@ class NenoModelEditor extends JModelList
 
 	public function getItems()
 	{
-		$elements = parent::getItems();
+		$elements     = parent::getItems();
+		$translations = array();
 
-		$translations = array ();
-
-		$countElements = count($elements);
-
-		for ($i = 0; $i < $countElements; $i++)
+		foreach ($elements as $element)
 		{
-			$translations[] = new NenoContentElementTranslation($elements[$i]);
+			$translation    = new NenoContentElementTranslation($element);
+			$translations[] = $translation->prepareDataForView();
 		}
 
-		//var_dump($elements);
 		return $translations;
 	}
 
@@ -87,18 +84,39 @@ class NenoModelEditor extends JModelList
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// Initialise variables.
-		$app = JFactory::getApplication('administrator');
+		$app = JFactory::getApplication();
 
 
-		// Other code goes here
-
-
+		// Group(s) filtering
 		$group = $app->getUserStateFromRequest($this->context . 'filter.group_id', 'filter_group_id', '', 'string');
-		$this->setState('filter.group_id', $group);
 
+		if (!empty($group))
+		{
+			$this->setState('filter.group_id', $group);
+		}
 
-		// Other code goes here
+		$groups = $app->getUserState($this->context . '.group', array());
 
+		if (!empty($groups))
+		{
+			$this->setState('filter.group_id', $groups);
+		}
+
+		// Element(s) filtering
+		$elements = $app->getUserState($this->context . '.element', array());
+
+		if (!empty($elements))
+		{
+			$this->setState('filter.element', $elements);
+		}
+
+		// Field(s) filtering
+		$fields = $app->getUserState($this->context . '.field', array());
+
+		if (!empty($fields))
+		{
+			$this->setState('filter.field', $fields);
+		}
 
 		// List state information.
 		parent::populateState('a.id', 'asc');
@@ -113,63 +131,68 @@ class NenoModelEditor extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$filterJson     = $this->getState('filter.multiselect-value', '[]');
-		$filterArray    = json_decode($filterJson);
-		$filterGroups   = array ();
-		$filterElements = array ();
-		$filterKeys     = array ();
-
-		foreach ($filterArray as $filterItem)
-		{
-			if (strpos($filterItem, 'group') !== false)
-			{
-				$filterGroups[] = str_replace('group', '', $filterItem);
-			}
-			elseif (strpos($filterItem, 'table') !== false)
-			{
-				$filterElements[] = str_replace('table', '', $filterItem);
-			}
-			elseif (strpos($filterItem, 'field') !== false)
-			{
-				$filterField[] = str_replace('field', '', $filterItem);
-			}
-		}
-
+		$db              = JFactory::getDbo();
 		$workingLanguage = NenoHelper::getWorkingLanguage();
 
-		NenoLog::log('Querying #__neno_content_element_tables from getListQuery of NenoModelEditor', 3);
+		NenoLog::log('Querying #__neno_content_element_tables from getListQuery of NenoModelStrings', 3);
 
 		// Create a new query object.
 		$query = parent::getListQuery();
 
-		$query->select('tr.*');
-		$query->from('`#__neno_content_element_tables` AS t');
-		$query->leftJoin('`#__neno_content_element_fields` AS f ON t.id = f.table_id AND f.translate = 1');
-		$query->leftJoin('`#__neno_content_element_translations` AS tr ON tr.content_id = f.id');
-		$query->where('tr.language = "' . $workingLanguage . '"');
-		// REMOVE THIS LIMIT /////////////////////////////////////////////////////////////////////////////////////////
-		//$query->order('tr.id LIMIT 20');
+		$query
+			->select('tr.*')
+			->from('`#__neno_content_element_tables` AS t')
+			->leftJoin('`#__neno_content_element_fields` AS f ON t.id = f.table_id AND f.translate = 1')
+			->leftJoin('`#__neno_content_element_translations` AS tr ON tr.content_id = f.id')
+			->where('tr.language = ' . $db->quote($workingLanguage));
 
-		$queryWhere = array ();
+		$queryWhere = array();
 
-		if (count($filterGroups))
+		/* @var $groups array */
+		$groups = $this->getState('filter.group_id', array());
+
+		/* @var $element array */
+		$element = $this->getState('filter.element', array());
+
+		/* @var $field array */
+		$field = $this->getState('filter.field', array());
+
+		if (!is_array($groups))
 		{
-			$queryWhere[] = 't.group_id IN (' . implode(', ', $filterGroups) . ')';
+			$groups = array($groups);
 		}
 
-		if (count($filterElements))
+		if (!empty($groups))
 		{
-			$queryWhere[] = 't.id IN (' . implode(', ', $filterElements) . ')';
+			$queryWhere[] = 't.group_id IN (' . implode(', ', $groups) . ')';
 		}
 
-		if (count($filterKeys))
+
+		if (!empty($element))
 		{
-			$queryWhere[] = 'f.id IN (' . implode(', ', $filterKeys) . ')';
+			$queryWhere[] = 't.id IN (' . implode(', ', $element) . ')';
+		}
+
+		if (!empty($field))
+		{
+			$queryWhere[] = 'f.id IN (' . implode(', ', $field) . ')';
 		}
 
 		if (count($queryWhere))
 		{
 			$query->where('(' . implode(' OR ', $queryWhere) . ')');
+		}
+
+		$method = $this->getState('filter.translator_type', '');
+		if ($method)
+		{
+			$query->where('translation_method = "' . $method . '"');
+		}
+
+		$status = $this->getState('filter.translation_status', '');
+		if ($status)
+		{
+			$query->where('tr.state =' . $status);
 		}
 
 		return $query;

@@ -190,7 +190,6 @@ class NenoModelStrings extends JModelList
 			$query->where('translation_method = "' . $method . '"');
 		}
 
-
 		$status = $this->getState('filter.translation_status', '');
 
 		if ($status)

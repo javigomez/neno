@@ -50,22 +50,15 @@
 .loading .first-cell {
     background: url('../images/loading_mini.gif') center left no-repeat;
 }
-
 .toggle-arrow {
     cursor: pointer;
 }
-
 .loading .toggle-arrow {
     display: none;
     cursor: default;
 }
-
 .multiselect-wrapper {
     width: 86%;
     display: inline-block;
     margin: 5px 5px 0 0;
-}
-
-#j-sidebar-container {
-    padding-left: 10px;
 }

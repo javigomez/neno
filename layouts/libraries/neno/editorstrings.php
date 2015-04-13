@@ -57,8 +57,8 @@ $translations = $displayData;
 			     title="<?php echo $translationStatesText[$translation->state]; ?>">
 			</div>
 			<div class="string-text"
-			     title="<?php echo NenoHelper::html2text($translation->original_text, 200); ?>">
-				<?php echo NenoHelper::html2text($translation->string, 50); ?>
+			     title="<?php echo NenoHelper::html2text($translation->original_text, 300); ?>">
+				<?php echo NenoHelper::html2text($translation->string, 300); ?>
 			</div>
 		</div>
 		<div class="clearfix"></div>
