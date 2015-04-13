@@ -91,44 +91,5 @@ class NenoViewGroupsElements extends JViewLegacy
 		$this->extra_sidebar = '';
 	}
 
-	/**
-	 * Get an array of fields to sort by
-	 *
-	 * @return array
-	 */
-	protected function getSortFields()
-	{
-		return array (
-			'a.id'           => JText::_('JGRID_HEADING_ID'),
-			'a.string'       => JText::_('COM_NENO_SOURCES_STRING'),
-			'a.constant'     => JText::_('COM_NENO_SOURCES_CONSTANT'),
-			'a.lang'         => JText::_('COM_NENO_SOURCES_LANG'),
-			'a.extension'    => JText::_('COM_NENO_SOURCES_EXTENSION'),
-			'a.time_added'   => JText::_('COM_NENO_SOURCES_TIME_ADDED'),
-			'a.time_changed' => JText::_('COM_NENO_SOURCES_TIME_CHANGED'),
-			'a.time_deleted' => JText::_('COM_NENO_SOURCES_TIME_DELETED'),
-			'a.version'      => JText::_('COM_NENO_SOURCES_VERSION')
-		);
-	}
 
-	/**
-	 * Check if a field has been imported already
-	 *
-	 * @param   string $fieldName Field name to check
-	 * @param   array  $fieldList List of fields that have been imported.
-	 *
-	 * @return bool
-	 */
-	protected function isAlreadyChecked($fieldName, array $fieldList)
-	{
-		foreach ($fieldList as $field)
-		{
-			if ($field->field === $fieldName)
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
 }
