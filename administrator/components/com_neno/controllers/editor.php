@@ -31,13 +31,13 @@ class NenoControllerEditor extends JControllerAdmin
 
 		$input = JFactory::getApplication()->input;
 
-		$filterJson = $input->getString('jsonData');
-		$filterOffset = $input->getString('limitStart');
-		$filterLimit = $input->getString('limit');
-		$filterArray = json_decode($filterJson);
-		$filterGroups = array();
-		$filterElements = array();
-		$filterKeys = array();
+		$filterJson     = $input->getString('jsonData');
+		$filterOffset   = $input->getString('limitStart');
+		$filterLimit    = $input->getString('limit');
+		$filterArray    = json_decode($filterJson);
+		$filterGroups   = array ();
+		$filterElements = array ();
+		$filterKeys     = array ();
 
 		NenoLog::log('Processing filtered json data for getStrings', 3);
 
@@ -65,13 +65,46 @@ class NenoControllerEditor extends JControllerAdmin
 		$app->setUserState('com_neno.editor.field', $filterField);
 
 		/* @var $stringsModel NenoModelEditor */
-		$editorModel = $this->getModel('Editor', 'NenoModel');
+		$editorModel  = $this->getModel('Editor', 'NenoModel');
 		$translations = $editorModel->getItems();
 
 		//echo JLayoutHelper::render('strings', $translations, JPATH_NENO_LAYOUTS);
 
 		JFactory::getApplication()->close();
-
 	}
 
+	/**
+	 * Method to handle ajax call for google translation
+	 *
+	 * @return string
+	 */
+	public function translate()
+	{
+		$app             = JFactory::getApplication();
+		$input           = $app->input;
+		$text            = $input->getString('text');
+		$workingLanguage = NenoHelper::getWorkingLanguage();
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$translator      = NenoSettings::get('translator');
+
+		try
+		{
+			/* @var $nenoTranslate NenoTranslateApi */
+			$nenoTranslate = NenoTranslateApi::getAdapter($translator);
+			$result        = $nenoTranslate->translate($text, $defaultLanguage, $workingLanguage);
+
+			if ($result == null)
+			{
+				$result = $text;
+			}
+		}
+		catch (UnexpectedValueException $e)
+		{
+			$result = $text;
+		}
+
+		echo $result;
+
+		$app->close();
+	}
 }

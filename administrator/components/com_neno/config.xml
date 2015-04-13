@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--suppress ALL -->
 <config>
-	<fieldset label="COM_NENO"
-	          name="neno">
+    <fieldset label="COM_NENO"
+              name="neno">
+        <field
+                name="translator" type="sql" default="google"
+                query="SELECT LOWER(translator_name) as translator_name, translator_name FROM #__neno_translation_methods"
+                key_field="translator_name" value_field="translator_name"
+                label="COM_NENO_CONFIG_TRANSLATOR_LBL"
+                description="COM_NENO_CONFIG_TRANSLATOR_DESC"
+                />
 
-	</fieldset>
-	<fieldset
-			name="permissions"
-			description="JCONFIG_PERMISSIONS_DESC"
-			label="JCONFIG_PERMISSIONS_LABEL">
+        <field
+                type="text" name="api_key"
+                label="COM_NENO_CONFIG_API_KEY_LBL"
+                description="COM_NENO_CONFIG_API_KEY_DESC"
+                />
+    </fieldset>
+    <fieldset
+            name="permissions"
+            description="JCONFIG_PERMISSIONS_DESC"
+            label="JCONFIG_PERMISSIONS_LABEL">
 
-		<field
-				name="rules"
-				type="rules"
-				component="com_neno"
-				class="inputbox"
-				filter="rules"
-				validate="rules"
-				label="JCONFIG_PERMISSIONS_LABEL"
-				section="component"/>
-	</fieldset>
+        <field
+                name="rules"
+                type="rules"
+                component="com_neno"
+                class="inputbox"
+                filter="rules"
+                validate="rules"
+                label="JCONFIG_PERMISSIONS_LABEL"
+                section="component"/>
+    </fieldset>
 </config>

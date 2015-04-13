@@ -17,25 +17,17 @@ jimport('joomla.application.component.helper');
 class NenoTranslateApiYandex extends NenoTranslateApi
 {
 	/**
-	 * @var string
-	 */
-	protected $methodName;
-
-	/**
 	 * {@inheritdoc}
 	 *
-	 * @param   Joomla\Registry\Registry      $options   JHttp client options
-	 * @param   JHttpTransport $transport JHttp client transport
+	 * @param   Joomla\Registry\Registry $options   JHttp client options
+	 * @param   JHttpTransport           $transport JHttp client transport
 	 */
 	public function __construct(Joomla\Registry\Registry $options = null, JHttpTransport $transport = null)
 	{
 		parent::__construct();
 
-		// Method name for the api
-		$this->methodName = 'Yandex Translate';
-
 		// Get the api key
-		$this->apiKey = $this->getApiKey($this->methodName);
+		$this->apiKey = NenoSettings::get('api_key');
 	}
 
 	/**
@@ -53,16 +45,10 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		$target = $this->convertFromJisoToIso($target);
 
 		// Language parameter for url
-		$source  = $this->convertFromJisoToIso($source);
-		$lang    = $source . "-" . $target;
+		$source = $this->convertFromJisoToIso($source);
+		$lang   = $source . "-" . $target;
 
-		// Check availability of language pair for translation
-		$isAvailable = $this->isTranslationAvailable($source, $target, $this->methodName);
-
-		if (!$isAvailable)
-		{
-			return null;
-		}
+		$apiKey = NenoSettings::get('api_key');
 
 		// For POST requests, the maximum size of the text being passed is 10000 characters.
 		$textString  = str_split($text, 10000);
@@ -73,7 +59,7 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 			$textStrings .= '&text=' . rawurlencode($str);
 		}
 
-		$url = 'https://translate.yandex.net/api/v1.5/tr.json/translate?key=' . $this->apiKey . '&lang=' . $lang . $textStrings;
+		$url = 'https://translate.yandex.net/api/v1.5/tr.json/translate?key=' . $apiKey . '&lang=' . $lang . $textStrings;
 
 		// Invoke the GET request.
 		$response = $this->get($url);
@@ -105,7 +91,7 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	{
 		// Split the language code parts using hyphen
 		$jisoParts = (explode('-', $jiso));
-		$isoTag   = strtolower($jisoParts[0]);
+		$isoTag    = strtolower($jisoParts[0]);
 
 		switch ($isoTag)
 		{
