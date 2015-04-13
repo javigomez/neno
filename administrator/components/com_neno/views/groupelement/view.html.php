@@ -103,7 +103,7 @@ class NenoViewGroupElement extends JViewLegacy
 		}
 		else
 		{
-			JToolBarHelper::cancel('test.cancel', 'JTOOLBAR_CLOSE');
+			JToolBarHelper::cancel('groupelement.cancel', 'JTOOLBAR_CLOSE');
 		}
 	}
 }

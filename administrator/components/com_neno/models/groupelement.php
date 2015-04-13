@@ -71,4 +71,19 @@ class NenoModelGroupElement extends JModelAdmin
 
 		return $data;
 	}
+
+	public function getItem($pk = null)
+	{
+		$item = parent::getItem();
+
+		if (!empty($item->id))
+		{
+			/* @var $group NenoContentElementGroup */
+			$group = NenoContentElementGroup::load($item->id);
+
+			$item = $group->prepareDataForView();
+		}
+
+		return $item;
+	}
 }
