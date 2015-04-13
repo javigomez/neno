@@ -690,7 +690,7 @@ class NenoContentElementGroup extends NenoContentElement
 					->where(
 						array (
 							'content_type = ' . $db->quote('lang_string'),
-							'ls.group_id = ' . $db->quote($this->getId()),
+							'lf.group_id = ' . $db->quote($this->getId()),
 							'tr.language = ' . $db->quote($workingLanguage)
 						)
 					)
