@@ -171,7 +171,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
     
     
     /**
-     * Toggle Elements (Tables and language files_
+     * Toggle Elements (Tables and language files)
      */
     function toggleElementVisibility() 
     {
