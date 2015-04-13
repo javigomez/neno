@@ -156,7 +156,7 @@ class NenoTaskMonitor
 	 *
 	 * @return bool
 	 */
-	public static function addTask($task, array $taskData)
+	public static function addTask($task, array $taskData = array ())
 	{
 		$task = new NenoTask(
 			array (
