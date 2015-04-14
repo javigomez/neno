@@ -67,7 +67,31 @@ $translation = $displayData;
 		});
 	});
 </script>
-<div class="row">
+<style>
+	.full-width {
+		width: 100%;
+		max-width: 100%;
+	}
+	.original-text,
+	.translated-content {
+		min-height: 500px;
+	}
+	.original-text {
+		overflow: auto;
+		white-space: normal;
+	}
+	.small-text {
+		display: block;
+		clear: both;
+		font-size: 0.75em;
+		font-style: italic;
+		text-align: left;
+		padding-left: 2em;
+		line-height: 0.75em;
+	}
+</style>
+
+<div>
 	<div class="span12">
 		<div class="span6">
 			<?php echo empty($translation) ? '' : implode(' > ', $translation->breadcrumbs); ?>
@@ -81,7 +105,8 @@ $translation = $displayData;
 				<button class="btn draft-button" type="button"
 				        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
 								<span
-									class="icon-file"></span><?php echo JText::_('COM_NENO_EDITOR_SAVE_AS_DRAFT_BUTTON'); ?>
+									class="icon-briefcase"></span><?php echo JText::_('COM_NENO_EDITOR_SAVE_AS_DRAFT_BUTTON'); ?>
+									<span class="small-text">Ctrl+S</span>
 				</button>
 				<button class="btn btn-success save-next-button" type="button"
 				        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
@@ -92,34 +117,38 @@ $translation = $displayData;
 		</div>
 	</div>
 </div>
-<div class="row">
+<div>
 	<div>
 		<div class="span5">
 			<div class="uneditable-input full-width original-text">
-				<?php echo empty($translation) ? '' : $translation->original_text; ?>
+				<?php echo empty($translation) ? '' : NenoHelper::html2text($translation->original_text); ?>
 			</div>
+			<div class="clearfix"></div>
 			<div class="pull-right">
 				<?php echo empty($translation) ? '' : JText::sprintf('COM_NENO_EDITOR_LAST_MODIFIED', $translation->time_added) ?>
 			</div>
 		</div>
-		<div class="span2 full-width">
-			<div class="span12">
+		<div class="span2 full-width container">
+			<div class="pull-left">
 				<button class="btn copy-btn" type="button">
-					<span class="icon-copy"></span><?php echo JText::_('COM_NENO_EDITOR_COPY_BUTTON'); ?>
+					<span class="icon-copy"></span>
+					<?php echo JText::_('COM_NENO_EDITOR_COPY_BUTTON'); ?>
 				</button>
 			</div>
-			<div class="span12">
+			<div class="clearfix"></div>
+			<div class="pull-left">
 				<button class="btn translate-btn" type="button">
-					<span
-						class="icon-screen"></span><?php echo JText::_('COM_NENO_EDITOR_COPY_AND_TRANSLATE_BUTTON'); ?>
+					<span class="icon-screen"></span>
+					<?php echo JText::_('COM_NENO_EDITOR_COPY_AND_TRANSLATE_BUTTON'); ?>
 				</button>
 			</div>
 
 		</div>
 		<div class="span5">
 			<textarea
-				class="full-width translate-content"><?php echo empty($translation) ? '' : $translation->string; ?></textarea>
-
+				class="full-width translated-content"><?php echo empty($translation) ? '' : $translation->string; ?>
+			</textarea>
+			<div class="clearfix"></div>
 			<div class="pull-right">
 				<?php echo empty($translation) ? '' : JText::sprintf('COM_NENO_EDITOR_LAST_MODIFIED', $translation->time_changed) ?>
 			</div>
