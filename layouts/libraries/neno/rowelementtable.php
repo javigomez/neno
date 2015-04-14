@@ -30,7 +30,7 @@ if ($displayData === null): ?>
                     <?php echo NenoHelper::printWordCountProgressBar($table->word_count, 1); ?>
                 </td>
                 <td>
-                    <?php echo implode(', ', $displayData['group']->translation_method_used); ?>
+                    <?php echo implode(', ', $displayData['group']->assigned_translation_methods); ?>
                 </td>
                 <td></td>
             </tr>
