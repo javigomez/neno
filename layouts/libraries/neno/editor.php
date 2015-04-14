@@ -74,14 +74,17 @@ $translation = $displayData;
 		</div>
 		<div class="span6 pull-right">
 			<div class="pull-right">
-				<button class="btn skip-button" type="button" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+				<button class="btn skip-button" type="button"
+				        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
 					<span class="icon-next"></span><?php echo JText::_('COM_NENO_EDITOR_SKIP_BUTTON'); ?>
 				</button>
-				<button class="btn draft-button" type="button" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+				<button class="btn draft-button" type="button"
+				        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
 								<span
 									class="icon-file"></span><?php echo JText::_('COM_NENO_EDITOR_SAVE_AS_DRAFT_BUTTON'); ?>
 				</button>
-				<button class="btn btn-success save-next-button" type="button" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+				<button class="btn btn-success save-next-button" type="button"
+				        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
 							<span
 								class="icon-checkmark"></span><?php echo JText::_('COM_NENO_EDITOR_SAVE_AND_NEXT_BUTTON'); ?>
 				</button>
@@ -94,6 +97,9 @@ $translation = $displayData;
 		<div class="span5">
 			<div class="uneditable-input full-width original-text">
 				<?php echo empty($translation) ? '' : $translation->original_text; ?>
+			</div>
+			<div class="pull-right">
+				<?php echo empty($translation) ? '' : JText::sprintf('COM_NENO_EDITOR_LAST_MODIFIED', $translation->time_added) ?>
 			</div>
 		</div>
 		<div class="span2 full-width">
@@ -113,6 +119,10 @@ $translation = $displayData;
 		<div class="span5">
 			<textarea
 				class="full-width translate-content"><?php echo empty($translation) ? '' : $translation->string; ?></textarea>
+
+			<div class="pull-right">
+				<?php echo empty($translation) ? '' : JText::sprintf('COM_NENO_EDITOR_LAST_MODIFIED', $translation->time_changed) ?>
+			</div>
 		</div>
 	</div>
 </div>
