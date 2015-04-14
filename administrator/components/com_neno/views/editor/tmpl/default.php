@@ -70,21 +70,10 @@ echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name
 				<button class="btn hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
 				<button class="btn hasTooltip" type="button" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
 			</div>
+			<?php echo $this->pagination->getListFooter(); ?>
 		</div>
-		-->
-		<?php endif;
-		//Kint::dump(count($this->items));
-		//Kint::dump($this->items[0]);
-		//Kint::dump($this->items[0]->getSourceElementData());
-		?>
-
 		<div id="editor-wrapper">
-		<!-- <?php //echo JLayoutHelper::render('strings', $this->items, JPATH_NENO_LAYOUTS);	?> -->
+			<?php echo JLayoutHelper::render('editor', null, JPATH_NENO_LAYOUTS); ?>
 		</div>
-
 	</div>
-
-
-</div>
-
-
+</form>
