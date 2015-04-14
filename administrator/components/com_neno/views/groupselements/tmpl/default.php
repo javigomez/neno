@@ -31,7 +31,17 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
     
     .toggler {
         cursor: pointer;
+        width: 18px;
+        border: 0px;
+        padding: 10px 0px 0px 0px !important;
+        
     }
+    
+	.toggler .icon-arrow-right-3,
+	.toggler .icon-arrow-down-3 {
+		color: #08c;
+        font-size: 21px;
+	}
     
     .loading-row {
         background-color: #fff !important;
@@ -79,28 +89,15 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	.table-groups-elements .row-file > td {
 		background-color: #ffffff !important;
 	}
-	.table-groups-elements .type-icon {
-		color: #333 !important;
-	}
+
 	.table-groups-elements th {
 		border-top: none;
 	}
-	.table-groups-elements .icon-arrow-right-3,
-	.table-groups-elements .icon-arrow-down-3 {
-		color: #A7A7A7;
-	}
-	.table-groups-elements .group-label {
-		width: 500px;
-	}
-	.table-groups-elements .table-groups-elements-label {
-		width: 220px;
-	}
-	/*.table-groups-elements .table-groups-elements-label.translation-methods {
-		width: 200px;
-	}*/
-	.table-groups-elements .table-groups-elements-blank {
-		width: 15%;
-	}
+    
+	.type-icon {
+		color: #7a7a7a !important;
+	}    
+
 	.table-groups-elements .row-field {
 		background-color: white;
 	}
@@ -136,6 +133,9 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
         //Attach the translate state toggler
         jQuery('.check-toggle-translate-radio').off().on('click', changeFieldTranslateState);
         
+        //Bind modal clicks
+        jQuery('.modalgroupform').off().on('click', showModalGroupForm);
+        
     }
     
     
@@ -145,11 +145,9 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
      */
     function toggleElementVisibility() 
     {
-        var row = jQuery(this).parent('.row-group');
-        var id_parts = row.attr('data-id').split('-');
-        var id = id_parts[1];
         
-        console.log(jQuery(this).hasClass('toggler-collapsed'));
+        var row = jQuery(this).parents('.row-group');
+        var id = getGroupIdFromChildElement(jQuery(this));
         
         //Get the state of the current toggler to see if we need to expand or collapse
         if (jQuery(this).hasClass('toggler-collapsed')) {
@@ -258,9 +256,64 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
         Joomla.isChecked(state);        
     }
 
+    
+    function showModalGroupForm() {
 
+        var id = getGroupIdFromChildElement(jQuery(this));
+        
+        //Load group form html
+        jQuery.get('index.php?option=com_neno&view=groupelement&id='+id+'&format=raw'
+            , function(html) {
+                
+                console.log(html);
+                
+                //Inject in the modal
+                jQuery('#nenomodal').find('.modal-body').html(html);
+                jQuery('#nenomodal').modal('show');
+                
+
+            }
+        );
+        
+        
+        
+    }
+    
+    
+    /**
+    * Helpers
+    */
+    function getGroupIdFromChildElement(e) {
+
+        var row = e.parents('.row-group');
+        var id_parts = row.attr('data-id').split('-');
+        return id_parts[1];
+
+    }
+    
 
 </script>
+
+<!-- Empty hidden modal -->
+<div class="modal fade" id="nenomodal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="nenomodaltitle"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_MODAL_GROUPFORM_TITLE'); ?></h4>
+      </div>
+      <div class="modal-body">
+          asdasdasd
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 
 <form action="<?php echo JRoute::_('index.php?option=com_neno&view=groupselements'); ?>" method="post" name="adminForm" id="adminForm">
 
@@ -279,7 +332,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 				<th colspan="3" class="group-label"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_GROUPS'); ?></th>
 				<th class="table-groups-elements-label"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ELEMENTS'); ?></th>
 				<th class="table-groups-elements-label"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_COUNT'); ?></th>
-				<th class="table-groups-elements-label translation-methods"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_METHODS'); ?></th>
+                <th class="table-groups-elements-label translation-methods"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_METHODS'); ?></th>
 				<th class="table-groups-elements-blank"></th>
 			</tr>
             
@@ -294,7 +347,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					<td><?php echo NenoHelper::printWordCountProgressBar($group->word_count, 1); ?></td>
                     <td>
                         <?php if (empty($group->translationMethodUsed)): ?>
-                            <a href="#"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ADD_TRANSLATION_METHOD'); ?></a>
+                            <a href="#" class="modalgroupform"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ADD_TRANSLATION_METHOD'); ?></a>
                         <?php endif; ?>
                         
                     </td>
