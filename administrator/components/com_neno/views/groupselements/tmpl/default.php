@@ -350,11 +350,11 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					<td><?php echo NenoHelper::renderWordCountProgressBar($group->word_count, 1); ?></td>
                     <td>
                         <a href="#" class="modalgroupform">
-                        <?php if (empty($group->assigned_translation_methods)): ?>
-                            <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ADD_TRANSLATION_METHOD'); ?>
-                        <?php else: ?>
-                            <?php echo implode(', ', $group->assigned_translation_methods); ?>
-                        <?php endif; ?>
+                            <?php if (empty($group->assigned_translation_methods)): ?>
+                                <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ADD_TRANSLATION_METHOD'); ?>
+                            <?php else: ?>
+                                <?php echo NenoHelper::renderTranslationMethodsAsCSV($group->assigned_translation_methods); ?>
+                            <?php endif; ?>
                         </a>
                     </td>
 					<td></td>
