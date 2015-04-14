@@ -73,6 +73,7 @@ class NenoContentElementGroup extends NenoContentElement
 			if ($loadExtraData)
 			{
 				$this->getWordCount();
+				$this->calculateExtraData();
 			}
 		}
 	}
@@ -235,6 +236,29 @@ class NenoContentElementGroup extends NenoContentElement
 		}
 
 		return $this->wordCount;
+	}
+
+	/**
+	 * Calculate language string statistics
+	 *
+	 * @return void
+	 */
+	public function calculateExtraData()
+	{
+		$this->translationMethodUsed = array ();
+
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('DISTINCT translation_method')
+			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
+			->leftJoin($db->quoteName(NenoContentElementLanguageString::getDbTable(), 'l') . ' ON t.content_id = l.id')
+			->where('content_type = ' . $db->quote(NenoContentElementTranslation::LANG_STRING));
+
+		$db->setQuery($query);
+		$this->translationMethodUsed = $db->loadArray();
 	}
 
 	/**
@@ -552,30 +576,6 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * Get Extension Id
-	 *
-	 * @return int|null
-	 */
-	public function getExtensionId()
-	{
-		return $this->extensionId;
-	}
-
-	/**
-	 * Set Extension Id
-	 *
-	 * @param   integer $extensionId Extension Id
-	 *
-	 * @return NenoContentElementGroup
-	 */
-	public function setExtensionId($extensionId)
-	{
-		$this->extensionId = $extensionId;
-
-		return $this;
-	}
-
-	/**
 	 * Get Translation methods used.
 	 *
 	 * @return array
@@ -604,29 +604,6 @@ class NenoContentElementGroup extends NenoContentElement
 		NenoLog::log('Translation method of group changed successfully', 2);
 
 		return $this;
-	}
-
-	/**
-	 * Calculate language string statistics
-	 *
-	 * @return void
-	 */
-	public function calculateExtraData()
-	{
-		$this->translationMethodUsed = array ();
-
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('DISTINCT translation_method')
-			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
-			->leftJoin($db->quoteName(NenoContentElementLanguageString::getDbTable(), 'l') . ' ON t.content_id = l.id')
-			->where('content_type = ' . $db->quote(NenoContentElementTranslation::LANG_STRING));
-
-		$db->setQuery($query);
-		$this->translationMethodUsed = $db->loadArray();
 	}
 
 	/**
