@@ -178,9 +178,9 @@ class NenoControllerGroupsElements extends JControllerAdmin
 
         
         $displayData = array();
-        $displayData['group'] = $group;
+        $displayData['group'] = $group->prepareDataForView();
         $displayData['tables'] = NenoHelper::convertNenoObjectListToJObjectList($tables);
-        $displayData['files'] = $files;
+        $displayData['files'] = NenoHelper::convertNenoObjectListToJObjectList($files);
         //$files = NenoHelper::convertNenoObjectListToJObjectList($group->getLanguageFiles());
         
         //echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$displayData = ". print_r($displayData, true)."\n</pre>";
