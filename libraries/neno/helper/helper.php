@@ -1184,6 +1184,23 @@ class NenoHelper
 	}
     
     
+    /**
+     * Take an array of strings (enoms) and parse them though JText and get the correct name
+     * Then return as comma separated list
+     * @param array $methods
+     * @return string
+     */
+    public static function renderTranslationMethodsAsCSV($methods=array())
+    {
+        if (!empty($methods))
+        {
+            foreach ($methods as $key => $method) 
+            {
+                $methods[$key] = JText::_('COM_NENO_TRANSLATION_METHOD_'.strtoupper($method));
+            }
+        }
+        return implode(', ', $methods);
+    }
     
     
 
