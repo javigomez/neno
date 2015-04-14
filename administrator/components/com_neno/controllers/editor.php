@@ -147,9 +147,9 @@ class NenoControllerEditor extends JControllerAdmin
 	/**
 	 * Save translation into the database
 	 *
-	 * @param   int      $translationId   Translation ID
-	 * @param   string   $translationText Translation Text
-	 * @param   bool|int $changeState     False if the state shouldn't be changed, an integer otherwise
+	 * @param   int    $translationId   Translation ID
+	 * @param   string $translationText Translation Text
+	 * @param   int    $changeState     Translation status
 	 *
 	 * @return bool
 	 */
@@ -159,19 +159,24 @@ class NenoControllerEditor extends JControllerAdmin
 		$translation = NenoContentElementTranslation::load($translationId, false, true);
 
 		$translation
-			->setString($translationText);
+			->setString($translationText)
+			->setState($changeState);
 
-		if ($changeState !== false)
+		if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
 		{
-			$translation->setState($changeState);
-
-			if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
-			{
-				$translation->setTimeCompleted(new DateTime);
-			}
+			$translation->setTimeCompleted(new DateTime);
 		}
 
-		return $translation->persist();
+		$result = $translation->persist();
+
+		if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
+		{
+			// Move translation to the shadow table
+			$workingLanguage = NenoHelper::getWorkingLanguage();
+			$translation->moveTranslationToShadowTable($workingLanguage);
+		}
+
+		return $result;
 	}
 
 	/**

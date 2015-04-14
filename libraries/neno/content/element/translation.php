@@ -154,11 +154,11 @@ class NenoContentElementTranslation extends NenoContentElement
 				// If it's a language string, let's create a NenoContentElementLangstring
 				if ($this->contentType == self::LANG_STRING)
 				{
-					$this->element = NenoContentElementLanguageString::load($contentId, $loadExtraData);
+					$this->element = NenoContentElementLanguageString::load($contentId, $loadExtraData, $loadParent);
 				}
 				else
 				{
-					$this->element = NenoContentElementField::load($contentId, $loadExtraData);
+					$this->element = NenoContentElementField::load($contentId, $loadExtraData, $loadParent);
 				}
 			}
 		}
@@ -703,5 +703,72 @@ class NenoContentElementTranslation extends NenoContentElement
 		$this->timeChanged = $timeChanged;
 
 		return $this;
+	}
+
+	/**
+	 * Move the translation to its place in the shadow table
+	 *
+	 * @param   string $language Language of the shadow table
+	 *
+	 * @return bool
+	 */
+	public function moveTranslationToShadowTable($language)
+	{
+		// If the translation comes from database content, let's load it
+		if ($this->contentType == self::DB_STRING)
+		{
+			/* @var $db NenoDatabaseDriverMysqlx */
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query
+				->clear()
+				->select(
+					array (
+						'f.field_name',
+						't.table_name'
+					)
+				)
+				->from('`#__neno_content_element_fields` AS f')
+				->innerJoin('`#__neno_content_element_tables` AS t ON f.table_id = t.id')
+				->where('f.id = ' . $this->element->id);
+
+			$db->setQuery($query);
+			$row = $db->loadRow();
+
+			list($fieldName, $tableName) = $row;
+
+
+			$query
+				->clear()
+				->select(
+					array (
+						'f.field_name',
+						'ft.value',
+					)
+				)
+				->from('`#__neno_content_element_fields_x_translations` AS ft')
+				->innerJoin('`#__neno_content_element_fields` AS f ON f.id = ft.field_id')
+				->where('ft.translation_id = ' . $this->id);
+
+			$db->setQuery($query);
+			$whereValues = $db->loadAssocList('field_name');
+
+			$shadowTableName = $db->generateShadowTableName($tableName, $language);
+
+			$query
+				->clear()
+				->update($shadowTableName)
+				->set($db->quoteName($fieldName) . ' = ' . $db->quote($this->string));
+
+			foreach ($whereValues as $whereField => $where)
+			{
+				$query->where($db->quoteName($whereField) . ' = ' . $db->quote($where['value']));
+			}
+
+			$db->setQuery($query);
+			$db->execute();
+
+			return true;
+		}
 	}
 }
