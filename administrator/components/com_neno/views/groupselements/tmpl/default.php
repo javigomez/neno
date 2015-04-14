@@ -347,10 +347,10 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					<td class="cell-check"><input type="checkbox" name="groups[]" value="<?php echo $group->id; ?>" /></td>
                     <td colspan="3"><a href="#" class="modalgroupform"><?php echo $group->group_name; ?></a></td>
 					<td<?php echo ($group->element_count) ? ' class="load-elements"' : ''; ?>><?php echo $group->element_count; ?></td>
-					<td><?php echo NenoHelper::printWordCountProgressBar($group->word_count, 1); ?></td>
+					<td><?php echo NenoHelper::renderWordCountProgressBar($group->word_count, 1); ?></td>
                     <td>
                         <a href="#" class="modalgroupform">
-                        <?php if (empty($group->translation_method_used)): ?>
+                        <?php if (empty($group->assigned_translation_methods)): ?>
                             <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ADD_TRANSLATION_METHOD'); ?>
                         <?php else: ?>
                             <?php echo implode(', ', $group->assigned_translation_methods); ?>

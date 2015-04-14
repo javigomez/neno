@@ -1162,7 +1162,7 @@ class NenoHelper
 	 *
 	 * @return string
 	 */
-	public static function printWordCountProgressBar($wordCount, $enabled = true)
+	public static function renderWordCountProgressBar($wordCount, $enabled = true)
 	{
 
 		$displayData                     = new stdClass;
@@ -1182,6 +1182,10 @@ class NenoHelper
 		return JLayoutHelper::render('wordcountprogressbar', $displayData, JPATH_NENO_LAYOUTS);
 
 	}
+    
+    
+    
+    
 
 	/**
 	 * Get client list in text/value format for a select field

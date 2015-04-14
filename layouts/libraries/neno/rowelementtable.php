@@ -27,10 +27,12 @@ if ($displayData === null): ?>
                 <td colspan="2"><?php echo $table->table_name; ?></td>
                 <td class="type-icon"><span class="icon-grid-view-2"></span> <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_TABLE'); ?></td>
                 <td class="translation-progress-bar">
-                    <?php echo NenoHelper::printWordCountProgressBar($table->word_count, 1); ?>
+                    <?php echo NenoHelper::renderWordCountProgressBar($table->word_count, 1); ?>
                 </td>
                 <td>
-                    <?php echo implode(', ', $displayData['group']->assigned_translation_methods); ?>
+                    <?php if (!empty($displayData['group']->assigned_translation_methods)): ?>
+                        <?php echo implode(', ', $displayData['group']->assigned_translation_methods); ?>
+                    <?php endif; ?>
                 </td>
                 <td></td>
             </tr>
@@ -46,7 +48,7 @@ if ($displayData === null): ?>
                         <td><?php echo $field->field_name ?></td>
                         <td><?php echo strtoupper($field->field_type) ?></td>
                         <td class="translation-progress-bar">
-                            <?php echo NenoHelper::printWordCountProgressBar($field->word_count, $field->translate); ?>
+                            <?php echo NenoHelper::renderWordCountProgressBar($field->word_count, $field->translate); ?>
                         </td>
                         <td class="toggle-translate">
                             <fieldset id="check-toggle-translate-<?php echo $field->id;?>" class="radio btn-group btn-group-yesno" data-field="<?php echo $field->id; ?>">
@@ -78,7 +80,7 @@ if ($displayData === null): ?>
                 <td colspan="2" style="white-space: nowrap;"><?php echo $file->filename; ?></td>
                 <td class="type-icon"><span class="icon-file-2"></span> <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_FILE'); ?></td>
                 <td class="translation-progress-bar">
-                    <?php echo NenoHelper::printWordCountProgressBar($file->word_count, 1); ?>
+                    <?php echo NenoHelper::renderWordCountProgressBar($file->word_count, 1); ?>
                 </td>
                 <td></td>
                 <td></td>
