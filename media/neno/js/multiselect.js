@@ -19,7 +19,11 @@ function bindEvents() {
 
     jQuery('#table-multiselect .cell-expand').click(toggleElementVisibility);
 
-    jQuery('#table-multiselect input[type=checkbox]').click(loadStrings);
+    jQuery('#table-multiselect input[type=checkbox]').click(function() {
+        document.adminForm.limitstart.value = 0;
+        jQuery('#elements-wrapper').html('');
+        loadStrings(jQuery(this));
+    });
 }
 
 /**
@@ -65,9 +69,11 @@ function toggleElementVisibility() {
     }
 }
 
-function loadStrings() {
-    var checkbox = jQuery(this);
-    checkUncheckFamilyCheckboxes(checkbox);
+function loadStrings(checkbox) {
+    //var checkbox = jQuery(this);
+    if (document.adminForm.outputLayout.value != 'editorStrings') {
+        checkUncheckFamilyCheckboxes(checkbox);
+    }
     var checked = JSON.stringify(getMultiSelectValue(checkbox.closest('table')));
     jQuery('#multiselect-value').val(checked);
     jQuery.ajax({
@@ -75,8 +81,8 @@ function loadStrings() {
         url: "index.php?option=com_neno&task=strings.getStrings",
         data: {
             jsonData: checked,
-            limitStart: 0, //document.adminForm.limitstart.value,
-            limit: 20, //document.adminForm.list_limit.value,
+            limitStart: document.adminForm.limitstart.value,
+            limit: document.adminForm.list_limit.value,
             status: document.adminForm.filter_translation_status.value,
             method: document.adminForm.filter_translator_type.value,
             outputLayout: document.adminForm.outputLayout.value
@@ -92,7 +98,7 @@ function loadStrings() {
                 if (document.adminForm.outputLayout.value == 'editorStrings') {
                     setFilterTags(document.adminForm);
                 }
-                jQuery('#elements-wrapper').html(ret);
+                jQuery('#elements-wrapper').html(jQuery('#elements-wrapper').html() + ret);
             }
         });
 }

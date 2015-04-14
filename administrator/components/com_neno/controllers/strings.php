@@ -60,8 +60,11 @@ class NenoControllerStrings extends JControllerAdmin
 		$app->setUserState('com_neno.strings.element', $filterElements);
 		$app->setUserState('com_neno.strings.field', $filterField);
 
-		$app->setUserState('com_neno.strings.translator_type', $input->getString('method'));
-		$app->setUserState('com_neno.strings.translation_status', $input->getString('status'));
+		$app->setUserState('com_neno.strings.translator_type', $input->getString('method', ''));
+		$app->setUserState('com_neno.strings.translation_status', $input->getString('status', ''));
+
+		$app->setUserState('limit', $input->getInt('limit', 20));
+		$app->setUserState('limitStart', $input->getInt('limitStart', 0));
 
 		/* @var $stringsModel NenoModelStrings */
 		$stringsModel = $this->getModel('Strings', 'NenoModel');

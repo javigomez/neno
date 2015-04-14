@@ -12,4 +12,12 @@ jQuery(document).ready(function () {
         jQuery('.js-stools-field-filter .dropdown-toggle').removeClass('active');
     }, 100);
 
+    jQuery('#elements-wrapper').scroll(function(){
+        var wrapper = jQuery(this);
+        if(wrapper.scrollTop() + wrapper.innerHeight()>=wrapper[0].scrollHeight && wrapper.innerHeight() > 10) {
+            document.adminForm.limitstart.value = parseInt(document.adminForm.limitstart.value) + 20;
+            loadStrings(jQuery('.multiselect input[type=checkbox]').first());
+        }
+    });
+
 });

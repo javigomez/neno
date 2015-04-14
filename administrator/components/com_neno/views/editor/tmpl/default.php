@@ -43,10 +43,17 @@ echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name
 		$extraDisplayData->groups = $this->groups;
 		echo JLayoutHelper::render('editorfilters', array('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS);
 		?>
+			<input type="hidden" name="limitstart" id="limitstart" value="0" />
+			<input type="hidden" name="list_limit" id="list_limit" value="20" />
 		</form>
 		<div id="filter-tags-wrapper"></div>
-		<div id="elements-wrapper">
-			<?php echo JLayoutHelper::render('editorStrings', $this->items, JPATH_NENO_LAYOUTS); ?>
+		<div id="results-wrapper">
+			<span id="editor-strings-title">
+				Search results:
+			</span>
+			<div id="elements-wrapper">
+				<?php echo JLayoutHelper::render('editorStrings', $this->items, JPATH_NENO_LAYOUTS); ?>
+			</div>
 		</div>
 		<?php echo $this->pagination->getListFooter(); ?>
 	</div>

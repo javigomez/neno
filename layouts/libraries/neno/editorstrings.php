@@ -30,39 +30,34 @@ $translations = $displayData;
 
 ?>
 
-<span id="editor-strings-title">
-	Search results:
-</span>
-<div id="editor-strings-wrapper">
-	<?php /* @var $translation JObject */ ?>
-	<?php foreach ($translations as $translation):
-		//$elementObject = $translation->element;
+<?php /* @var $translation JObject */ ?>
+<?php foreach ($translations as $translation):
+	//$elementObject = $translation->element;
 
-		// If the source element is a field
-		if ($translation->content_type == NenoContentElementTranslation::DB_STRING)
-		{
-			//$group   = $elementObject->table->group->group_name;
-			//$element = $elementObject->table->table_name;
-			//$key     = $elementObject->field_name;
-		}
-		else
-		{
+	// If the source element is a field
+	if ($translation->content_type == NenoContentElementTranslation::DB_STRING)
+	{
+		//$group   = $elementObject->table->group->group_name;
+		//$element = $elementObject->table->table_name;
+		//$key     = $elementObject->field_name;
+	}
+	else
+	{
 
-		}
+	}
 
-		?>
-		<div class="string">
-			<div class="status <?php echo $translationStatesClasses[$translation->state]; ?>"
-			     alt="<?php echo $translationStatesText[$translation->state]; ?>"
-			     title="<?php echo $translationStatesText[$translation->state]; ?>">
-			</div>
-			<div class="string-text"
-			     title="<?php echo NenoHelper::html2text($translation->original_text, 300); ?>">
-				<?php echo NenoHelper::html2text($translation->string, 300); ?>
-			</div>
+	?>
+	<div class="string">
+		<div class="status <?php echo $translationStatesClasses[$translation->state]; ?>"
+		     alt="<?php echo $translationStatesText[$translation->state]; ?>"
+		     title="<?php echo $translationStatesText[$translation->state]; ?>">
 		</div>
-		<div class="clearfix"></div>
-	<?php endforeach; ?>
-</div>
+		<div class="string-text"
+		     title="<?php echo NenoHelper::html2text($translation->original_text, 300); ?>">
+			<?php echo NenoHelper::html2text($translation->string, 45); ?>
+		</div>
+	</div>
+	<div class="clearfix"></div>
+<?php endforeach; ?>
 
 
