@@ -21,6 +21,16 @@ jimport('joomla.application.component.view');
 class NenoViewEditor extends JViewLegacy
 {
 	/**
+	 * @var JForm
+	 */
+	public $filterForm;
+
+	/**
+	 * @var JForm
+	 */
+	public $activeFilters;
+
+	/**
 	 * @var array
 	 */
 	protected $items;
@@ -46,14 +56,9 @@ class NenoViewEditor extends JViewLegacy
 	protected $extensionsSaved;
 
 	/**
-	 * @var JForm
+	 * @var array
 	 */
-	public $filterForm;
-
-	/**
-	 * @var JForm
-	 */
-	public $activeFilters;
+	protected $groups;
 
 	/**
 	 * Display the view
@@ -72,8 +77,8 @@ class NenoViewEditor extends JViewLegacy
 		$this->items           = $this->get('Items');
 		$this->pagination      = $this->get('Pagination');
 		$this->extensionsSaved = $this->get('ExtensionsMarkedAsTranslatable');
-		$this->filterForm    = $this->get('FilterForm');
-		$this->activeFilters = $this->get('ActiveFilters');
+		$this->filterForm      = $this->get('FilterForm');
+		$this->activeFilters   = $this->get('ActiveFilters');
 		$this->getGroupData();
 
 		// Check for errors.
@@ -83,9 +88,7 @@ class NenoViewEditor extends JViewLegacy
 		}
 
 		NenoHelper::addSubmenu('editor');
-
 		$this->addToolbar();
-		//require_once JPATH_COMPONENT . '/models/fields/group.php';
 
 		$this->sidebar = JHtmlSidebar::render();
 
@@ -99,7 +102,7 @@ class NenoViewEditor extends JViewLegacy
 	 */
 	protected function getGroupData()
 	{
-		$groups = NenoHelper::getGroups();
+		$groups = NenoHelper::getGroups(false);
 
 		/* @var $group NenoContentElementGroup */
 		foreach ($groups as $key => $group)
@@ -144,7 +147,7 @@ class NenoViewEditor extends JViewLegacy
 	 */
 	protected function getSortFields()
 	{
-		return array(
+		return array (
 			'a.id'           => JText::_('JGRID_HEADING_ID'),
 			'a.string'       => JText::_('COM_NENO_SOURCES_STRING'),
 			'a.constant'     => JText::_('COM_NENO_SOURCES_CONSTANT'),

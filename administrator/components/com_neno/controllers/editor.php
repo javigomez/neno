@@ -31,13 +31,13 @@ class NenoControllerEditor extends JControllerAdmin
 
 		$input = JFactory::getApplication()->input;
 
-		$filterJson = $input->getString('jsonData');
-		$filterOffset = $input->getString('limitStart');
-		$filterLimit = $input->getString('limit');
-		$filterArray = json_decode($filterJson);
-		$filterGroups = array();
-		$filterElements = array();
-		$filterKeys = array();
+		$filterJson     = $input->getString('jsonData');
+		$filterOffset   = $input->getString('limitStart');
+		$filterLimit    = $input->getString('limit');
+		$filterArray    = json_decode($filterJson);
+		$filterGroups   = array ();
+		$filterElements = array ();
+		$filterKeys     = array ();
 
 		NenoLog::log('Processing filtered json data for getStrings', 3);
 
@@ -65,13 +65,134 @@ class NenoControllerEditor extends JControllerAdmin
 		$app->setUserState('com_neno.editor.field', $filterField);
 
 		/* @var $stringsModel NenoModelEditor */
-		$editorModel = $this->getModel('Editor', 'NenoModel');
+		$editorModel  = $this->getModel('Editor', 'NenoModel');
 		$translations = $editorModel->getItems();
 
 		//echo JLayoutHelper::render('strings', $translations, JPATH_NENO_LAYOUTS);
 
 		JFactory::getApplication()->close();
-
 	}
 
+	/**
+	 * Method to handle ajax call for google translation
+	 *
+	 * @return string
+	 */
+	public function translate()
+	{
+		$app             = JFactory::getApplication();
+		$input           = $app->input;
+		$text            = $input->getString('text');
+		$workingLanguage = NenoHelper::getWorkingLanguage();
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$translator      = NenoSettings::get('translator');
+
+		try
+		{
+			/* @var $nenoTranslate NenoTranslateApi */
+			$nenoTranslate = NenoTranslateApi::getAdapter($translator);
+			$result        = $nenoTranslate->translate($text, $defaultLanguage, $workingLanguage);
+
+			if ($result == null)
+			{
+				$result = $text;
+			}
+		}
+		catch (UnexpectedValueException $e)
+		{
+			$result = $text;
+		}
+
+		echo $result;
+
+		$app->close();
+	}
+
+	/**
+	 * Get a translations
+	 *
+	 * @return void
+	 */
+	public function getTranslation()
+	{
+		$input         = $this->input;
+		$translationId = $input->getInt('id');
+
+		if (!empty($translationId))
+		{
+			$translation = NenoContentElementTranslation::getTranslation($translationId);
+			echo JLayoutHelper::render('editor', $translation->prepareDataForView(true), JPATH_NENO_LAYOUTS);
+		}
+
+		JFactory::getApplication()->close();
+	}
+
+	/**
+	 * Save translation as draft
+	 *
+	 * @return void
+	 */
+	public function saveAsDraft()
+	{
+		$input           = $this->input;
+		$translationId   = $input->getInt('id');
+		$translationText = $input->getHtml('text');
+
+		if ($this->saveTranslation($translationId, $translationText, NenoContentElementTranslation::NOT_TRANSLATED_STATE))
+		{
+			echo 1;
+		}
+	}
+
+	/**
+	 * Save translation into the database
+	 *
+	 * @param   int    $translationId   Translation ID
+	 * @param   string $translationText Translation Text
+	 * @param   int    $changeState     Translation status
+	 *
+	 * @return bool
+	 */
+	protected function saveTranslation($translationId, $translationText, $changeState = false)
+	{
+		/* @var $translation NenoContentElementTranslation */
+		$translation = NenoContentElementTranslation::load($translationId, false, true);
+
+		$translation
+			->setString($translationText)
+			->setState($changeState);
+
+		if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
+		{
+			$translation->setTimeCompleted(new DateTime);
+		}
+
+		$result = $translation->persist();
+
+		if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
+		{
+			// Move translation to the shadow table
+			$workingLanguage = NenoHelper::getWorkingLanguage();
+			$translation->moveTranslationToShadowTable($workingLanguage);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Save translation as completed
+	 *
+	 * @return void
+	 */
+	public function saveAsCompleted()
+	{
+		$input           = $this->input;
+		$translationId   = $input->getInt('id');
+		$translationText = $input->getHtml('text');
+
+		if ($this->saveTranslation($translationId, $translationText, NenoContentElementTranslation::TRANSLATED_STATE))
+		{
+			echo 1;
+		}
+	}
 }

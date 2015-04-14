@@ -77,6 +77,8 @@ function loadStrings() {
             jsonData: checked,
             limitStart: 0, //document.adminForm.limitstart.value,
             limit: 20, //document.adminForm.list_limit.value,
+            status: document.adminForm.filter_translation_status.value,
+            method: document.adminForm.filter_translator_type.value,
             outputLayout: document.adminForm.outputLayout.value
         }
     })
@@ -87,6 +89,9 @@ function loadStrings() {
                  toggleStringStateAjax(jQuery(this));
                  });
                  fieldset.closest('tr').find('.translation-progress-bar').html(ret);*/
+                if (document.adminForm.outputLayout.value == 'editorStrings') {
+                    setFilterTags(document.adminForm);
+                }
                 jQuery('#elements-wrapper').html(ret);
             }
         });
@@ -133,4 +138,27 @@ function checkUncheckFamilyCheckboxes(checkbox) {
             jQuery('[data-id="group-' + parent_id + '"]').find('input[type=checkbox]').prop('checked', false);
         }
     }
+}
+
+function setFilterTags(form) {
+    jQuery('#filter-tags-wrapper').html('');
+    var search = jQuery(form.filter_search);
+    var status = jQuery(form.filter_translation_status);
+    var method = jQuery(form.filter_translator_type);
+
+    if (search.val() !== '') {
+        printFilterTag('search', '"' + search.val() + '"');
+    }
+    if (status.val() !== '') {
+        printFilterTag('status', status.find('option:selected').html());
+    }
+    if (method.val() !== '') {
+        printFilterTag('method', method.find('option:selected').html());
+    }
+    //var checked = getMultiSelectValue(form.find('#multiselect table'));
+}
+
+function printFilterTag(type, label) {
+    var tag = jQuery('<div class="filter-tag btn btn-small disabled" data-type="' + type + '"><span class="removeTag icon-remove"></span>' + label + '</div>');
+    jQuery('#filter-tags-wrapper').append(tag);
 }

@@ -38,11 +38,25 @@ JHtml::_('behavior.keepalive');
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
 			<fieldset class="adminform">
-				<input type="hidden" name="jform[id]" value="<?php echo $this->item->id; ?>"/>
+				<?php echo $this->form->getInput('id'); ?>
 
 				<div class="control-group">
 					<div class="control-label"><?php echo $this->form->getLabel('group_name'); ?></div>
 					<div class="controls"><?php echo $this->form->getInput('group_name'); ?></div>
+				</div>
+
+				<label>
+					<?php echo JText::_('COM_NENO_GROUPELEMENT_GROUP_TRANSLATION_METHOD'); ?>
+				</label>
+
+				<div class="control-group">
+					<?php echo $this->form->getInput('translation_method_1'); ?>
+				</div>
+				<div class="control-group">
+					<?php echo $this->form->getInput('translation_method_2'); ?>
+				</div>
+				<div class="control-group">
+					<?php echo $this->form->getInput('translation_method_3'); ?>
 				</div>
 			</fieldset>
 		</div>

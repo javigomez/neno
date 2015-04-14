@@ -17,28 +17,6 @@ jimport('joomla.application.component.helper');
 class NenoTranslateApiGoogle extends NenoTranslateApi
 {
 	/**
-	 * @var string
-	 */
-	protected $methodName;
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @param   Joomla\Registry\Registry $options   JHttp options
-	 * @param   JHttpTransport           $transport JHttp Transport
-	 */
-	public function __construct(Joomla\Registry\Registry $options = null, JHttpTransport $transport = null)
-	{
-		parent::__construct();
-
-		// Method name for the api
-		$this->methodName = 'Google Translate';
-
-		// Get the api key
-		$this->apiKey = $this->getApiKey($this->methodName);
-	}
-
-	/**
 	 * Translate text using google api
 	 *
 	 * @param   string $text   text to translate
@@ -53,15 +31,9 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 		$source = $this->convertFromJisoToIso($source);
 		$target = $this->convertFromJisoToIso($target);
 
-		// Check availability of language pair for translation
-		$isAvailable = $this->isTranslationAvailable($source, $target, $this->methodName);
+		$apiKey = NenoSettings::get('api_key');
 
-		if (!$isAvailable)
-		{
-			return null;
-		}
-
-		$url = 'https://www.googleapis.com/language/translate/v2?key=' . $this->apiKey
+		$url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey
 			. '&q=' . rawurlencode($text) . '&source=' . $source . '&target=' . $target;
 
 		// Invoke the GET request.

@@ -46,23 +46,7 @@ $translations = $displayData;
 	</thead>
 	<tbody>
 	<?php /* @var $translation JObject */ ?>
-	<?php foreach ($translations as $translation):
-		$elementObject = $translation->element;
-
-		// If the source element is a field
-		if ($translation->content_type == NenoContentElementTranslation::DB_STRING)
-		{
-			$group   = $elementObject->table->group->group_name;
-			$element = $elementObject->table->table_name;
-			$key     = $elementObject->field_name;
-		}
-		else
-		{
-
-		}
-
-
-		?>
+	<?php foreach ($translations as $translation): ?>
 		<tr class="row-string">
 			<td class="cell-check"><input type="checkbox"/></td>
 			<td class="cell-status">
@@ -71,9 +55,9 @@ $translations = $displayData;
 				      title="<?php echo $translationStatesText[$translation->state]; ?>"></span>
 			</td>
 			<td title="<?php echo NenoHelper::html2text($translation->original_text, 200); ?>"><?php echo NenoHelper::html2text($translation->string, 200); ?></td>
-			<td><?php echo $group; ?></td>
-			<td><?php echo $element; ?></td>
-			<td><?php echo $key; ?></td>
+			<td><?php echo $translation->breadcrumbs[0]; ?></td>
+			<td><?php echo $translation->breadcrumbs[1]; ?></td>
+			<td><?php echo $translation->breadcrumbs[2]; ?></td>
 			<td><?php echo JText::_('COM_NENO_TRANSLATION_METHODS_' . strtoupper($translation->translation_method)); ?></td>
 			<td><?php echo $translation->word_counter; ?></td>
 			<td><?php echo $translation->characters_counter; ?></td>

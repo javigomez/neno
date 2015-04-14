@@ -23,8 +23,8 @@ class NenoSettings
 	/**
 	 * Get the value of a particular property
 	 *
-	 * @param   mixed       $settingName  Setting name
-	 * @param   mixed|null  $default      Default value in case the setting doesn't exist
+	 * @param   mixed      $settingName Setting name
+	 * @param   mixed|null $default     Default value in case the setting doesn't exist
 	 *
 	 * @return mixed
 	 */
@@ -33,44 +33,11 @@ class NenoSettings
 		// If the settings haven't been loaded yet, let's load them
 		if (self::$settings === null)
 		{
-			self::loadSettingsFromDb();
+			self::loadSettings();
 		}
 
 		// If the setting doesn't exists, let's return the default value.
-		return empty(self::$settings[$settingName]) ? $default : self::$settings[$settingName]['value'];
-	}
-
-	/**
-	 * Set the value of a particular property. It will be created if it does not exist before
-	 *
-	 * @param   mixed    $settingName   Setting name
-	 * @param   mixed    $settingValue  Setting value
-	 * @param   boolean  $readOnly      If it should be marked as read only
-	 *
-	 * @return void
-	 */
-	public static function set($settingName, $settingValue, $readOnly = false)
-	{
-		$refresh = false;
-
-		if (empty(self::$settings[$settingName]))
-		{
-			self::$settings[$settingName] = array('value' => $settingValue, 'read_only' => $readOnly);
-			$refresh                      = true;
-		}
-		else
-		{
-			if (!self::$settings[$settingName]['read_only'])
-			{
-				self::$settings[$settingName]['value'] = $settingValue;
-				$refresh                               = true;
-			}
-		}
-
-		if ($refresh)
-		{
-			self::saveSettingsToDb();
-		}
+		return empty(self::$settings[$settingName]) ? $default : self::$settings[$settingName];
 	}
 
 	/**
@@ -78,46 +45,12 @@ class NenoSettings
 	 *
 	 * @return void
 	 */
-	private static function loadSettingsFromDb()
+	private static function loadSettings()
 	{
-		$db = JFactory::getDbo();
+		jimport('joomla.application.component.helper');
 
-		$query = $db->getQuery(true);
-		$query
-			->select('*')
-			->from('#__neno_settings');
-
-		$db->setQuery($query);
-		$settings = $db->loadObjectList();
-
-		self::$settings = array();
-
-		foreach ($settings as $setting)
-		{
-			self::$settings[$setting->setting_key] = array('value' => $setting->setting_value, 'read_only' => $setting->read_only);
-		}
-	}
-
-	/**
-	 * Save the settings into the database
-	 *
-	 * @return void
-	 */
-	private static function saveSettingsToDb()
-	{
-		$db = JFactory::getDbo();
-
-		/* @var $query NenoDatabaseQueryMysqli */
-		$query = $db->getQuery(true);
-		$query->replace('#__neno_settings');
-
-		foreach (self::$settings as $settingName => $settingData)
-		{
-			$query->values('(' . $db->quote($settingName) . ',' . $db->quote($settingData['value']) . ',' . $db->quote($settingData['read_only']) . ')');
-		}
-
-		$db->setQuery($query);
-		$db->execute();
+		/* @var $settings Joomla\Registry\Registry */
+		self::$settings = JComponentHelper::getParams('com_neno')->toArray();
 	}
 
 	/**
@@ -129,7 +62,7 @@ class NenoSettings
 	{
 		if (self::$settings === null)
 		{
-			self::loadSettingsFromDb();
+			self::loadSettings();
 		}
 
 		return array_keys(self::$settings);

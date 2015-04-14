@@ -54,6 +54,81 @@ class NenoModelGroupElement extends JModelAdmin
 	}
 
 	/**
+	 * {@inheritdoc}
+	 *
+	 * @param   array $data Data to save
+	 *
+	 * @return bool
+	 *
+	 * @throws Exception
+	 */
+	public function save($data)
+	{
+		// If groups data has been saved, let's assign translation method
+		if (parent::save($data))
+		{
+			$db              = JFactory::getDbo();
+			$query           = $db->getQuery(true);
+			$workingLanguage = NenoHelper::getWorkingLanguage();
+			$groupId         = (int) $this->getState($this->getName() . '.id');
+
+			$query
+				->delete('#__neno_content_element_presets')
+				->where(
+					array (
+						'group_id = ' . $groupId,
+						'lang = ' . $db->quote($workingLanguage)
+					)
+				);
+
+			$db->setQuery($query);
+			$db->execute();
+
+			$query
+				->clear()
+				->insert('#__neno_content_element_presets')
+				->columns(
+					array (
+						'group_id',
+						'lang',
+						'translation_method',
+						'ordering'
+					)
+				);
+
+			$insert = false;
+
+			if (!empty($data['translation_method_1']))
+			{
+				$insert = true;
+				$query->values($groupId . ',' . $db->quote($workingLanguage) . ',' . $db->quote($data['translation_method_1']) . ', 1');
+			}
+
+			if (!empty($data['translation_method_2']))
+			{
+				$insert = true;
+				$query->values($groupId . ',' . $db->quote($workingLanguage) . ',' . $db->quote($data['translation_method_2']) . ', 2');
+			}
+
+			if (!empty($data['translation_method_3']))
+			{
+				$insert = true;
+				$query->values($groupId . ',' . $db->quote($workingLanguage) . ',' . $db->quote($data['translation_method_3']) . ', 3');
+			}
+
+			if ($insert)
+			{
+				$db->setQuery($query);
+				$db->execute();
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Method to get the data that should be injected in the form.
 	 *
 	 * @return mixed
@@ -86,9 +161,37 @@ class NenoModelGroupElement extends JModelAdmin
 		if (!empty($item->id))
 		{
 			/* @var $group NenoContentElementGroup */
-			$group = NenoContentElementGroup::load($item->id);
+			$group           = NenoContentElementGroup::load($item->id);
+			$workingLanguage = NenoHelper::getWorkingLanguage();
 
 			$item = $group->prepareDataForView();
+
+			// Get presets
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query
+				->select(
+					array (
+						'translation_method',
+						'ordering'
+					)
+				)
+				->from('#__neno_content_element_presets')
+				->where(
+					array (
+						'group_id = ' . $item->get('id'),
+						'lang = ' . $db->quote($workingLanguage)
+					)
+				);
+
+			$db->setQuery($query);
+			$presetsData = $db->loadAssocList();
+
+			foreach ($presetsData as $presetData)
+			{
+				$item->{'translation_method_' . $presetData['ordering']} = $presetData['translation_method'];
+			}
 		}
 
 		return $item;

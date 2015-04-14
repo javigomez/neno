@@ -67,15 +67,19 @@ class NenoContentElementField extends NenoContentElement
 	 * @param   mixed   $data              Field data
 	 * @param   boolean $fetchTranslations If the translation have to be loaded
 	 */
-	public function __construct($data, $loadExtraData = true, $fetchTranslations = false)
+	public function __construct($data, $loadExtraData = true, $loadParent = false, $fetchTranslations = false)
 	{
 		parent::__construct($data);
 
 		$data = new JObject($data);
 
-		$this->table        = $data->get('table') == null
-			? NenoContentElementTable::load($data->get('tableId'), $loadExtraData)
-			: $data->get('table');
+		if ($loadParent)
+		{
+			$this->table = $data->get('table') == null
+				? NenoContentElementTable::load($data->get('tableId'), $loadExtraData)
+				: $data->get('table');
+		}
+
 		$this->translations = null;
 
 		if (!$this->isNew() && $loadExtraData)
@@ -447,12 +451,12 @@ class NenoContentElementField extends NenoContentElement
 	public static function getFieldByTableAndFieldName(NenoContentElementTable $table, $fieldName)
 	{
 		// Get fields related to this table
-		$fields = $table->getFields();
+		$fields = $table->getFields(false);
 		$field  = null;
 
 		if (!empty($fields))
 		{
-			$fields = $table->getFields();
+			$fields = $table->getFields(false);
 			$found  = false;
 
 			for ($i = 0; $i < count($fields) && !$found; $i++)

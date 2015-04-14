@@ -34,12 +34,4 @@ class NenoTableGroupElement extends JTable
 
 		return $group->remove();
 	}
-
-	public function save($src, $orderingFilter = '', $ignore = '')
-	{
-		Kint::dump($src);
-		exit;
-	}
-
-
 }

@@ -22,11 +22,6 @@ abstract class NenoTranslateApi extends JHttp
 	private static $adapters = array ();
 
 	/**
-	 * @var string
-	 */
-	protected $apiKey;
-
-	/**
 	 * Get translator API
 	 *
 	 * @param   string $apiName API Name
@@ -70,46 +65,6 @@ abstract class NenoTranslateApi extends JHttp
 	 * @return string
 	 */
 	abstract public function convertFromJisoToIso($jiso);
-
-	/**
-	 * Method to check if language pair is available or not in translation api
-	 *
-	 * @param   string $source     Source language
-	 * @param   string $target     Target language
-	 * @param   string $methodName Api method name to check
-	 *
-	 * @return boolean
-	 */
-	public function isTranslationAvailable($source, $target, $methodName)
-	{
-		$available = 1;
-
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('*')
-			->from($db->quoteName('#__neno_translation_methods_language_pairs', 'mlp'))
-			->innerJoin(
-				$db->quoteName('#__neno_translation_methods', 'm') . ' ON (' . $db->quoteName('mlp.translation_method_id') . ' = ' . $db->quoteName('m.id') . ')'
-			)
-			->where($db->quoteName('m.translator_name') . '=' . $db->quote($methodName))
-			->where('mlp.source_language = ' . $db->quote($source))
-			->where('mlp.destination_language = ' . $db->quote($target));
-
-		$db->setQuery($query);
-
-		$db->setQuery($query);
-		$db->execute();
-		$num_rows = $db->getNumRows();
-
-		if ($num_rows == 0)
-		{
-			$available = 0;
-		}
-
-		return $available;
-	}
 
 	/**
 	 * Method to save supported language pairs for translation api
@@ -179,60 +134,5 @@ abstract class NenoTranslateApi extends JHttp
 		}
 
 		return $exe;
-	}
-
-	/**
-	 * Method to get supported language pairs for translation from our server
-	 *
-	 * @param   string $methodName api method name
-	 *
-	 * @return array
-	 */
-	public static function getSupportedLanguagePairs($methodName)
-	{
-		return array ();
-	}
-
-	/**
-	 * Method to get api key for translation api
-	 *
-	 * @param   string $methodName api method name
-	 *
-	 * @return string
-	 */
-	protected function getApiKey($methodName)
-	{
-		$paramName  = null;
-		$defaultKey = null;
-
-		switch ($methodName)
-		{
-			case 'Google Translate':
-			{
-				$paramName  = 'googleApiKey';
-				$defaultKey = 'AIzaSyBoWdaSTbZyrRA9RnKZOZZuKeH2l4cdrn8';
-			}
-				break;
-
-			case 'Yandex Translate':
-			{
-				$paramName  = 'yandexApiKey';
-				$defaultKey = 'trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0';
-			}
-
-				break;
-		}
-
-		// Get the key configured by user
-		/** @noinspection PhpUndefinedMethodInspection */
-		$this->apiKey = JComponentHelper::getParams('com_neno')->get($paramName);
-
-		if ($this->apiKey == '')
-		{
-			// Use default key if not provided
-			$this->apiKey = $defaultKey;
-		}
-
-		return $this->apiKey;
 	}
 }

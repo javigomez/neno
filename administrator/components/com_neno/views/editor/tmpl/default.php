@@ -11,8 +11,8 @@
 // No direct access
 defined('_JEXEC') or die;
 
-$document = JFactory::getDocument();
-$document->addStyleSheet(JUri::root() . '/media/neno/css/editorstrings.css');
+/*$document = JFactory::getDocument();
+$document->addStyleSheet(JUri::root() . '/media/neno/css/editorstrings.css');*/
 
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('bootstrap.tooltip');
@@ -25,56 +25,31 @@ if (!empty($this->extra_sidebar))
 }
 ?>
 
-<?php if (!empty($this->sidebar) && 0): ?>
-	<div id="j-sidebar-container" class="span2">
-		<?php echo $this->sidebar; ?>
-	</div>
-<form action="<?php /** @noinspection PhpToStringImplementationInspection */
-echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name="adminForm" id="adminForm">
-<div id="j-main-container" class="span10">
-	<?php else : ?>
-
-	<div id="j-sidebar-container" class="span2">
-		<form action="<?php echo JRoute::_('index.php?option=com_neno&view=editor'); ?>" method="post" name="adminForm" id="adminForm">
-		<?php
-		// Search tools bar
-		//echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
-		$extraDisplayData = new stdClass();
-		$extraDisplayData->groups = $this->groups;
-		echo JLayoutHelper::render('editorfilters', array('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS);
-		?>
-		</form>
-		<div id="conditions-wrapper"></div>
-		<div id="elements-wrapper"></div>
-	</div>
+<style>
+	.full-width {
+		width: 100%;
+	}
+</style>
 
 
-	<div id="j-main-container">
-		<!--
-		<div id="filter-bar" class="btn-toolbar">
-			<div class="filter-search btn-group pull-left">
-				<label for="filter_search" class="element-invisible"><?php echo JText::_('JSEARCH_FILTER');?></label>
-				<input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
+<form action="<?php echo JRoute::_('index.php?option=com_neno&view=strings'); ?>" method="post" name="adminForm"
+      id="adminForm">
+	<div id="j-main-container" class="span12">
+		<div id="j-sidebar-container" class="span2">
+			<form action="<?php echo JRoute::_('index.php?option=com_neno&view=editor'); ?>" method="post"
+			      name="adminForm" id="adminForm">
+				<?php $extraDisplayData = new stdClass; ?>
+				<?php $extraDisplayData->groups = $this->groups; ?>
+				<?php echo JLayoutHelper::render('editorfilters', array ('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS); ?>
+			</form>
+			<div id="filter-tags-wrapper"></div>
+			<div id="elements-wrapper">
+				<?php echo JLayoutHelper::render('editorStrings', $this->items, JPATH_NENO_LAYOUTS); ?>
 			</div>
-			<div class="btn-group pull-left">
-				<button class="btn hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-				<button class="btn hasTooltip" type="button" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
-			</div>
+			<?php echo $this->pagination->getListFooter(); ?>
 		</div>
-		-->
-		<?php endif;
-		//Kint::dump(count($this->items));
-		//Kint::dump($this->items[0]);
-		//Kint::dump($this->items[0]->getSourceElementData());
-		?>
-
 		<div id="editor-wrapper">
-		<!-- <?php //echo JLayoutHelper::render('strings', $this->items, JPATH_NENO_LAYOUTS);	?> -->
+			<?php echo JLayoutHelper::render('editor', null, JPATH_NENO_LAYOUTS); ?>
 		</div>
-
 	</div>
-
-
-</div>
-
-
+</form>

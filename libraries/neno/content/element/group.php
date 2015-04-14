@@ -350,13 +350,15 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * Get all the tables related to this group
 	 *
+	 * @param   bool $loadExtraData Calculate other data
+	 *
 	 * @return array
 	 */
-	public function getTables()
+	public function getTables($loadExtraData = true)
 	{
 		if ($this->tables === null)
 		{
-			$this->tables = NenoContentElementTable::load(array ('group_id' => $this->getId()));
+			$this->tables = NenoContentElementTable::load(array ('group_id' => $this->getId()), $loadExtraData);
 
 			// If there's only one table
 			if ($this->tables instanceof NenoContentElementTable)

@@ -25,12 +25,13 @@
     height: 22px;
 }
 #elements-wrapper .string-text {
-
+    margin-left: 18px;
 }
 #editor-strings-wrapper {
     background-color: white;
     border: 1px solid #ddd;
     padding: 5px 0;
+    overflow-x: hidden;
 }
 #editor-strings-title {
     margin-bottom: 5px;

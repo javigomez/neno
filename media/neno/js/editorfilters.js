@@ -8,5 +8,8 @@
 jQuery(document).ready(function () {
 
     jQuery('.js-stools-field-filter select').addClass('btn dropdown-toggle');
+    setTimeout(function() {
+        jQuery('.js-stools-field-filter .dropdown-toggle').removeClass('active');
+    }, 100);
 
 });
