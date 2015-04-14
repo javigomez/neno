@@ -130,7 +130,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	 *
 	 * @param   mixed $data Element data
 	 */
-	public function __construct($data, $loadExtraData = true)
+	public function __construct($data, $loadExtraData = true, $loadParent = false)
 	{
 		parent::__construct($data);
 
@@ -139,6 +139,23 @@ class NenoContentElementTranslation extends NenoContentElement
 		if ($data->get('content') !== null)
 		{
 			$this->element = $data->get('content');
+		}
+		elseif ($loadParent)
+		{
+			$contentId = $data->get('content_id') === null ? $data->get('contentId') : $data->get('content_id');
+
+			if (!empty($contentId))
+			{
+				// If it's a language string, let's create a NenoContentElementLangstring
+				if ($this->contentType == self::LANG_STRING)
+				{
+					$this->element = NenoContentElementLanguageString::load($contentId, $loadExtraData);
+				}
+				else
+				{
+					$this->element = NenoContentElementField::load($contentId, $loadExtraData);
+				}
+			}
 		}
 
 		$this->charactersCounter = strlen($this->getString());

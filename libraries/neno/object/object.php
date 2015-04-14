@@ -103,7 +103,7 @@ abstract class NenoObject
 	 *
 	 * @return stdClass|array
 	 */
-	public static function load($pk, $loadExtraData = true)
+	public static function load($pk, $loadExtraData = true, $loadParent = false)
 	{
 		if (!is_array($pk))
 		{
@@ -171,7 +171,7 @@ abstract class NenoObject
 						$objectData->{NenoHelper::convertDatabaseColumnNameToPropertyName($key)} = $value;
 					}
 
-					$objectsData[] = empty($pk['_select']) ? new $className($objectData, $loadExtraData) : $objectsData;
+					$objectsData[] = empty($pk['_select']) ? new $className($objectData, $loadExtraData, $loadParent) : $objectsData;
 				}
 			}
 		}
@@ -302,6 +302,10 @@ abstract class NenoObject
 					}
 
 					$data->set($propertyConverted, $dataArray);
+				}
+				elseif ($this->{$property} instanceof Datetime)
+				{
+					$data->set($propertyConverted, $this->{$property}->format('Y-m-d H:i:s'));
 				}
 				else
 				{

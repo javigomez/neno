@@ -67,15 +67,19 @@ class NenoContentElementField extends NenoContentElement
 	 * @param   mixed   $data              Field data
 	 * @param   boolean $fetchTranslations If the translation have to be loaded
 	 */
-	public function __construct($data, $loadExtraData = true, $fetchTranslations = false)
+	public function __construct($data, $loadExtraData = true, $loadParent = false, $fetchTranslations = false)
 	{
 		parent::__construct($data);
 
 		$data = new JObject($data);
 
-		$this->table        = $data->get('table') == null
-			? NenoContentElementTable::load($data->get('tableId'), $loadExtraData)
-			: $data->get('table');
+		if ($loadParent)
+		{
+			$this->table = $data->get('table') == null
+				? NenoContentElementTable::load($data->get('tableId'), $loadExtraData)
+				: $data->get('table');
+		}
+
 		$this->translations = null;
 
 		if (!$this->isNew() && $loadExtraData)

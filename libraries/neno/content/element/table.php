@@ -50,7 +50,7 @@ class NenoContentElementTable extends NenoContentElement
 	 *
 	 * @param   mixed $data Table data
 	 */
-	public function __construct($data, $loadExtraData = true)
+	public function __construct($data, $loadExtraData = true, $loadParent = false)
 	{
 		parent::__construct($data);
 
@@ -64,7 +64,7 @@ class NenoContentElementTable extends NenoContentElement
 			$data = get_object_vars($data);
 		}
 
-		if (!empty($data['groupId']))
+		if (!empty($data['groupId']) && $loadParent)
 		{
 			$this->group = NenoContentElementGroup::load($data['groupId'], $loadExtraData);
 		}

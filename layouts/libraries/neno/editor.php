@@ -31,6 +31,40 @@ $translation = $displayData;
 				}
 			);
 		});
+
+		jQuery('.draft-button').on('click', function () {
+			var text = jQuery('.translate-content').val();
+			var translationId = jQuery(this).data('id');
+			jQuery.post(
+				'index.php?option=com_neno&task=editor.saveAsDraft',
+				{
+					id: translationId,
+					text: text
+				}
+				, function (data) {
+					if (data == 1) {
+						alert('Translation Saved');
+					}
+				}
+			);
+		});
+
+		jQuery('.save-next-button').on('click', function () {
+			var text = jQuery('.translate-content').val();
+			var translationId = jQuery(this).data('id');
+			jQuery.post(
+				'index.php?option=com_neno&task=editor.saveAsCompleted',
+				{
+					id: translationId,
+					text: text
+				}
+				, function (data) {
+					if (data == 1) {
+						alert('Translation Saved');
+					}
+				}
+			);
+		});
 	});
 </script>
 <div class="row">
@@ -40,14 +74,14 @@ $translation = $displayData;
 		</div>
 		<div class="span6 pull-right">
 			<div class="pull-right">
-				<button class="btn skip-button" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+				<button class="btn skip-button" type="button" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
 					<span class="icon-next"></span><?php echo JText::_('COM_NENO_EDITOR_SKIP_BUTTON'); ?>
 				</button>
-				<button class="btn draft-button" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+				<button class="btn draft-button" type="button" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
 								<span
 									class="icon-file"></span><?php echo JText::_('COM_NENO_EDITOR_SAVE_AS_DRAFT_BUTTON'); ?>
 				</button>
-				<button class="btn btn-success" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+				<button class="btn btn-success save-next-button" type="button" data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
 							<span
 								class="icon-checkmark"></span><?php echo JText::_('COM_NENO_EDITOR_SAVE_AND_NEXT_BUTTON'); ?>
 				</button>

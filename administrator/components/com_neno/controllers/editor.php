@@ -126,4 +126,68 @@ class NenoControllerEditor extends JControllerAdmin
 
 		JFactory::getApplication()->close();
 	}
+
+	/**
+	 * Save translation as draft
+	 *
+	 * @return void
+	 */
+	public function saveAsDraft()
+	{
+		$input           = $this->input;
+		$translationId   = $input->getInt('id');
+		$translationText = $input->getHtml('text');
+
+		if ($this->saveTranslation($translationId, $translationText))
+		{
+			echo 1;
+		}
+	}
+
+	/**
+	 * Save translation into the database
+	 *
+	 * @param   int      $translationId   Translation ID
+	 * @param   string   $translationText Translation Text
+	 * @param   bool|int $changeState     False if the state shouldn't be changed, an integer otherwise
+	 *
+	 * @return bool
+	 */
+	protected function saveTranslation($translationId, $translationText, $changeState = false)
+	{
+		/* @var $translation NenoContentElementTranslation */
+		$translation = NenoContentElementTranslation::load($translationId, false, true);
+
+		$translation
+			->setString($translationText);
+
+		if ($changeState !== false)
+		{
+			$translation->setState($changeState);
+
+			if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
+			{
+				$translation->setTimeCompleted(new DateTime);
+			}
+		}
+
+		return $translation->persist();
+	}
+
+	/**
+	 * Save translation as completed
+	 *
+	 * @return void
+	 */
+	public function saveAsCompleted()
+	{
+		$input           = $this->input;
+		$translationId   = $input->getInt('id');
+		$translationText = $input->getHtml('text');
+
+		if ($this->saveTranslation($translationId, $translationText, NenoContentElementTranslation::TRANSLATED_STATE))
+		{
+			echo 1;
+		}
+	}
 }
