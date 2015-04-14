@@ -265,11 +265,14 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
         jQuery.get('index.php?option=com_neno&view=groupelement&id='+id+'&format=raw'
             , function(html) {
                 
-                console.log(html);
-                
-                //Inject in the modal
+                //Inject HTML into the modal
                 jQuery('#nenomodal').find('.modal-body').html(html);
                 jQuery('#nenomodal').modal('show');
+                
+                //Handle saving and submitting the form
+                jQuery('#save-modal-btn').on('click', function() {
+                    jQuery('#groupelement-form').submit();
+                });
                 
 
             }
@@ -299,14 +302,14 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="nenomodaltitle"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_MODAL_GROUPFORM_TITLE'); ?></h4>
+        <h2 class="modal-title" id="nenomodaltitle"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_MODAL_GROUPFORM_TITLE'); ?></h2>
       </div>
       <div class="modal-body">
-          asdasdasd
+          ...
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_MODAL_GROUPFORM_BTN_CLOSE'); ?></button>
+        <button type="button" class="btn btn-primary" id="save-modal-btn"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_MODAL_GROUPFORM_BTN_SAVE'); ?></button>
       </div>
     </div>
   </div>
@@ -342,14 +345,17 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 				<tr class="row-group" data-id="group-<?php echo $group->id; ?>">
 					<td class="toggler toggler-collapsed toggle-elements"><span class="icon-arrow-right-3"></span></td>
 					<td class="cell-check"><input type="checkbox" name="groups[]" value="<?php echo $group->id; ?>" /></td>
-					<td colspan="3"><?php echo $group->group_name; ?></td>
+                    <td colspan="3"><a href="#" class="modalgroupform"><?php echo $group->group_name; ?></a></td>
 					<td<?php echo ($group->element_count) ? ' class="load-elements"' : ''; ?>><?php echo $group->element_count; ?></td>
 					<td><?php echo NenoHelper::printWordCountProgressBar($group->word_count, 1); ?></td>
                     <td>
-                        <?php if (empty($group->translationMethodUsed)): ?>
-                            <a href="#" class="modalgroupform"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ADD_TRANSLATION_METHOD'); ?></a>
+                        <a href="#" class="modalgroupform">
+                        <?php if (empty($group->translation_method_used)): ?>
+                            <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ADD_TRANSLATION_METHOD'); ?>
+                        <?php else: ?>
+                            <?php echo implode(', ', $group->translation_method_used); ?>
                         <?php endif; ?>
-                        
+                        </a>
                     </td>
 					<td></td>
 				</tr>

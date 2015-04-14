@@ -12,29 +12,11 @@
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.tooltip');
-JHtml::_('behavior.formvalidation');
-JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.keepalive');
 ?>
-<script type="text/javascript">
-	Joomla.submitbutton = function (task) {
-		if (task == 'groupelement.cancel') {
-			Joomla.submitform(task, document.getElementById('groupelement-form'));
-		}
-		else {
-			if (task != 'groupelement.cancel' && document.formvalidator.isValid(document.id('groupelement-form'))) {
 
-				Joomla.submitform(task, document.getElementById('groupelement-form'));
-			}
-			else {
-				alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED')); ?>');
-			}
-		}
-	}
-</script>
-
-<form action="<?php echo JRoute::_('index.php?option=com_neno&layout=edit&id=' . (int) $this->item->id); ?>"
-      method="post" enctype="multipart/form-data" name="adminForm" id="groupelement-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_neno&id=' . (int) $this->item->id); ?>"
+      method="post" enctype="multipart/form-data" name="adminForm2" id="groupelement-form">
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
 			<fieldset class="adminform">
@@ -62,6 +44,6 @@ JHtml::_('behavior.keepalive');
 		</div>
 	</div>
 
-	<input type="hidden" name="task" value=""/>
+	<input type="hidden" name="task" value="groupelement.save"/>
 	<?php echo JHtml::_('form.token'); ?>
 </form>

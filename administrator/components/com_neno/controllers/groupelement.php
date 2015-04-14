@@ -30,4 +30,12 @@ class NenoControllerGroupElement extends JControllerForm
 		$this->view_list = 'groupselements';
 		parent::__construct($config);
 	}
+    
+    
+    public function save($key = null, $urlVar = null) {
+        
+        parent::save($key, $urlVar);
+    }
+    
+    
 }
