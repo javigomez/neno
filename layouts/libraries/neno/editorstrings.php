@@ -31,13 +31,14 @@ $translations = $displayData;
 ?>
 
 <style>
-	.string:hover {
-		cursor: pointer;
-		border: 1px solid #ccc;
+	.string-activated {
+		/*border: 1px solid #ccc;*/
+		background-color: #ddd;
 	}
 
-	.string-activated {
-		background-color: #ccc;
+	.string:hover {
+		cursor: pointer;
+		background-color: #eee;
 	}
 </style>
 
@@ -55,10 +56,7 @@ $translations = $displayData;
 	});
 </script>
 
-<span id="editor-strings-title">
-	Search results:
-</span>
-<div id="editor-strings-wrapper">
+
 	<?php /* @var $translation stdClass */ ?>
 	<?php foreach ($translations as $translation): ?>
 		<div class="string" data-id="<?php echo $translation->id; ?>">
@@ -68,9 +66,9 @@ $translations = $displayData;
 			</div>
 			<div class="string-text"
 			     title="<?php echo NenoHelper::html2text($translation->original_text, 300); ?>">
-				<?php echo NenoHelper::html2text($translation->string, 300); ?>
+				<?php echo NenoHelper::html2text($translation->string, 45); ?>
+			</div>
 		</div>
-	</div>
 	<div class="clearfix"></div>
 <?php endforeach; ?>
 
