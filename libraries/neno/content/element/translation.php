@@ -111,6 +111,11 @@ class NenoContentElementTranslation extends NenoContentElement
 	protected $timeRequested;
 
 	/**
+	 * @var Datetime
+	 */
+	protected $timeChanged;
+
+	/**
 	 * @var DateTime
 	 */
 	protected $timeCompleted;
@@ -477,6 +482,12 @@ class NenoContentElementTranslation extends NenoContentElement
 		// Check if this record is new
 		$isNew = $this->isNew();
 
+		if (!$isNew)
+		{
+			// Updating changed time
+			$this->timeChanged = new DateTime;
+		}
+
 		// Only execute this task when the translation is new and there are no records about how to find it.
 		if (parent::persist())
 		{
@@ -628,6 +639,7 @@ class NenoContentElementTranslation extends NenoContentElement
 		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
+
 			if ($this->contentType === self::DB_STRING)
 			{
 				$query
@@ -667,5 +679,29 @@ class NenoContentElementTranslation extends NenoContentElement
 
 
 		return $data;
+	}
+
+	/**
+	 * Get the time when the translation has changed
+	 *
+	 * @return Datetime
+	 */
+	public function getTimeChanged()
+	{
+		return $this->timeChanged;
+	}
+
+	/**
+	 * Set the time when the translation has changed
+	 *
+	 * @param   Datetime $timeChanged Change time
+	 *
+	 * @return $this
+	 */
+	public function setTimeChanged($timeChanged)
+	{
+		$this->timeChanged = $timeChanged;
+
+		return $this;
 	}
 }

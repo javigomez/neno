@@ -70,7 +70,7 @@ class NenoModelStrings extends JModelList
 		foreach ($elements as $element)
 		{
 			$translation    = new NenoContentElementTranslation($element, false);
-			$translations[] = $translation->prepareDataForView();
+			$translations[] = $translation->prepareDataForView(true);
 		}
 
 		return $translations;

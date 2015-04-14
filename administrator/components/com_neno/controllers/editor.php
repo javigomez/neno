@@ -138,7 +138,7 @@ class NenoControllerEditor extends JControllerAdmin
 		$translationId   = $input->getInt('id');
 		$translationText = $input->getHtml('text');
 
-		if ($this->saveTranslation($translationId, $translationText))
+		if ($this->saveTranslation($translationId, $translationText, NenoContentElementTranslation::NOT_TRANSLATED_STATE))
 		{
 			echo 1;
 		}
