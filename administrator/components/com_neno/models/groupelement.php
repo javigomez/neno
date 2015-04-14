@@ -98,22 +98,16 @@ class NenoModelGroupElement extends JModelAdmin
 
 			$insert = false;
 
-			if (!empty($data['translation_method_1']))
+			if (!empty($data['translation_methods']))
 			{
-				$insert = true;
-				$query->values($groupId . ',' . $db->quote($workingLanguage) . ',' . $db->quote($data['translation_method_1']) . ', 1');
-			}
-
-			if (!empty($data['translation_method_2']))
-			{
-				$insert = true;
-				$query->values($groupId . ',' . $db->quote($workingLanguage) . ',' . $db->quote($data['translation_method_2']) . ', 2');
-			}
-
-			if (!empty($data['translation_method_3']))
-			{
-				$insert = true;
-				$query->values($groupId . ',' . $db->quote($workingLanguage) . ',' . $db->quote($data['translation_method_3']) . ', 3');
+				$ordering = 1;
+				
+				foreach ($data['translation_methods'] as $translationMethodId)
+				{
+					$insert = true;
+					$query->values($groupId . ',' . $db->quote($workingLanguage) . ',' . $db->quote($translationMethodId) . ', ' . $ordering);
+					$ordering++;
+				}
 			}
 
 			if ($insert)
