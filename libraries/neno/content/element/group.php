@@ -19,7 +19,7 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * @var array
 	 */
-	public $translationMethodUsed;
+	public $assignedTranslationMethods;
 
 	/**
 	 * @var int
@@ -57,12 +57,12 @@ class NenoContentElementGroup extends NenoContentElement
 	{
 		parent::__construct($data);
 
-		$this->tables                = null;
-		$this->languageFiles         = null;
-		$this->translationMethodUsed = array ();
-		$this->extensions            = array ();
-		$this->elementCount          = null;
-		$this->wordCount             = null;
+		$this->tables                     = null;
+		$this->languageFiles              = null;
+		$this->assignedTranslationMethods = array ();
+		$this->extensions                 = array ();
+		$this->elementCount               = null;
+		$this->wordCount                  = null;
 
 		// Only search for the statistics for existing groups
 		if (!$this->isNew())
@@ -245,20 +245,25 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function calculateExtraData()
 	{
-		$this->translationMethodUsed = array ();
+		$this->assignedTranslationMethods = array ();
 
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query
-			->select('DISTINCT translation_method')
-			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
-			->leftJoin($db->quoteName(NenoContentElementLanguageString::getDbTable(), 'l') . ' ON t.content_id = l.id')
-			->where('content_type = ' . $db->quote(NenoContentElementTranslation::LANG_STRING));
+			->select('translation_method')
+			->from('#__neno_content_element_presets')
+			->where(
+				array (
+					'group_id = ' . $this->id,
+					'lang = ' . $db->quote(NenoHelper::getWorkingLanguage())
+				)
+			)
+			->order('ordering ASC');
 
 		$db->setQuery($query);
-		$this->translationMethodUsed = $db->loadArray();
+		$this->assignedTranslationMethods = $db->loadArray();
 	}
 
 	/**
@@ -580,26 +585,26 @@ class NenoContentElementGroup extends NenoContentElement
 	 *
 	 * @return array
 	 */
-	public function getTranslationMethodUsed()
+	public function getAssignedTranslationMethods()
 	{
-		if ($this->translationMethodUsed === null)
+		if ($this->assignedTranslationMethods === null)
 		{
 			$this->calculateExtraData();
 		}
 
-		return $this->translationMethodUsed;
+		return $this->assignedTranslationMethods;
 	}
 
 	/**
 	 * Set translation methods used
 	 *
-	 * @param   array $translationMethodUsed Translation methods used
+	 * @param   array $assignedTranslationMethods Translation methods used
 	 *
 	 * @return $this
 	 */
-	public function setTranslationMethodUsed(array $translationMethodUsed)
+	public function setAssignedTranslationMethods(array $assignedTranslationMethods)
 	{
-		$this->translationMethodUsed = $translationMethodUsed;
+		$this->assignedTranslationMethods = $assignedTranslationMethods;
 
 		NenoLog::log('Translation method of group changed successfully', 2);
 
