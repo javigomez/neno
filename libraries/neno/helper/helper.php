@@ -1341,7 +1341,7 @@ class NenoHelper
 	 *
 	 * @return string|null
 	 */
-	public static function getTranslationOriginalText($translationId, $translationType, $translationElementId)
+	public static function getTranslationOriginalText($translationId, $translationType)
 	{
 		$cacheId    = NenoCache::getCacheId(__FUNCTION__, func_get_args());
 		$cachedData = NenoCache::getCacheData($cacheId);
@@ -1353,6 +1353,14 @@ class NenoHelper
 			$query  = $db->getQuery(true);
 			$string = null;
 
+			$query
+				->select('content_id')
+				->from('#__neno_content_element_translations')
+				->where('id = ' . $translationId);
+
+			$db->setQuery($query);
+			$translationElementId = (int) $db->loadResult();
+
 			// If the translation comes from database content, let's load it
 			if ($translationType == NenoContentElementTranslation::DB_STRING)
 			{
@@ -1362,6 +1370,7 @@ class NenoHelper
 				if ($queryCacheData === null)
 				{
 					$query
+						->clear()
 						->select(
 							array (
 								'f.field_name',
@@ -1412,6 +1421,7 @@ class NenoHelper
 			else
 			{
 				$query
+					->clear()
 					->select('string')
 					->from(NenoContentElementLanguageString::getDbTable())
 					->where('id = ' . $translationElementId);

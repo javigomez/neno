@@ -34,6 +34,7 @@ class NenoControllerStrings extends JControllerAdmin
 		$filterGroups   = array ();
 		$filterElements = array ();
 		$filterField    = array ();
+		$outputLayout   = strtolower($input->getString('outputLayout'));
 
 		NenoLog::log('Processing filtered json data for getStrings', 3);
 
@@ -70,7 +71,7 @@ class NenoControllerStrings extends JControllerAdmin
 		$stringsModel = $this->getModel('Strings', 'NenoModel');
 		$translations = $stringsModel->getItems();
 
-		echo JLayoutHelper::render($input->getString('outputLayout'), $translations, JPATH_NENO_LAYOUTS);
+		echo JLayoutHelper::render($outputLayout, $translations, JPATH_NENO_LAYOUTS);
 
 		JFactory::getApplication()->close();
 	}
