@@ -1196,7 +1196,7 @@ class NenoHelper
         {
             foreach ($methods as $key => $method) 
             {
-                $methods[$key] = JText::_(strtoupper($method->constant));
+                $methods[$key] = JText::_(strtoupper($method->name_constant));
             }
         }
         return implode(', ', $methods);
