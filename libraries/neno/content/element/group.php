@@ -252,7 +252,7 @@ class NenoContentElementGroup extends NenoContentElement
 		$query = $db->getQuery(true);
 
 		$query
-			->select('tm.name_constant')
+			->select('tm.*')
 			->from('#__neno_content_element_presets AS ep')
 			->innerJoin('#__neno_translation_methods AS tm ON ep.translation_method_id = tm.id')
 			->where(
@@ -264,7 +264,7 @@ class NenoContentElementGroup extends NenoContentElement
 			->order('ordering ASC');
 
 		$db->setQuery($query);
-		$this->assignedTranslationMethods = $db->loadArray();
+		$this->assignedTranslationMethods = $db->loadObjectList();
 	}
 
 	/**
