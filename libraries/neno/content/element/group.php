@@ -253,8 +253,8 @@ class NenoContentElementGroup extends NenoContentElement
 
 		$query
 			->select('tm.*')
-			->from('#__neno_content_element_presets AS ep')
-			->innerJoin('#__neno_translation_methods AS tm ON ep.translation_method_id = tm.id')
+			->from('#__neno_content_element_groups_x_translation_methods AS gt')
+			->innerJoin('#__neno_translation_methods AS tm ON gt.translation_method_id = tm.id')
 			->where(
 				array (
 					'group_id = ' . $this->id,

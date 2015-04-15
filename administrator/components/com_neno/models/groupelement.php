@@ -86,7 +86,7 @@ class NenoModelGroupElement extends JModelAdmin
 
 			$query
 				->clear()
-				->insert('#__neno_content_element_presets')
+				->insert('#__neno_content_element_groups_x_translation_methods')
 				->columns(
 					array (
 						'group_id',
@@ -155,37 +155,8 @@ class NenoModelGroupElement extends JModelAdmin
 		if (!empty($item->id))
 		{
 			/* @var $group NenoContentElementGroup */
-			$group           = NenoContentElementGroup::load($item->id);
-			$workingLanguage = NenoHelper::getWorkingLanguage();
-
-			$item = $group->prepareDataForView();
-
-			// Get presets
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
-
-			$query
-				->select(
-					array (
-						'translation_method_id',
-						'ordering'
-					)
-				)
-				->from('#__neno_content_element_presets')
-				->where(
-					array (
-						'group_id = ' . $item->get('id'),
-						'lang = ' . $db->quote($workingLanguage)
-					)
-				);
-
-			$db->setQuery($query);
-			$presetsData = $db->loadAssocList();
-
-			foreach ($presetsData as $presetData)
-			{
-				$item->{'translation_method_' . $presetData['ordering']} = $presetData['translation_method'];
-			}
+			$group = NenoContentElementGroup::load($item->id);
+			$item  = $group->prepareDataForView();
 		}
 
 		return $item;
