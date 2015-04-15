@@ -142,21 +142,42 @@ class NenoModelStrings extends JModelList
 		NenoLog::log('Querying #__neno_content_element_tables from getListQuery of NenoModelStrings', 3);
 
 		// Create a new query object.
-		$query = parent::getListQuery();
+		$dbStrings           = parent::getListQuery();
+		$languageFileStrings = parent::getListQuery();
 
-		$query
-			->select('tr.*')
-			->from('`#__neno_content_element_tables` AS t')
-			->leftJoin('`#__neno_content_element_fields` AS f ON t.id = f.table_id AND f.translate = 1')
-			->leftJoin('`#__neno_content_element_translations` AS tr ON tr.content_id = f.id')
+		$dbStrings
+			->select('tr1.*')
+			->from('`#__neno_content_element_translations` AS tr1')
+			->innerJoin('`#__neno_content_element_fields` AS f ON tr1.content_id = f.id')
+			->innerJoin('`#__neno_content_element_tables` AS t ON t.id = f.table_id')
+			->innerJoin('`#__neno_content_element_groups` AS g1 ON t.group_id = g1.id ')
+			->innerJoin('`#__neno_content_element_groups_x_translation_methods` AS gtm1 ON g1.id = gtm1.group_id')
 			->where(
 				array (
-					'tr.language = ' . $db->quote($workingLanguage),
-					'f.translate = 1'
+					'tr1.language = ' . $db->quote($workingLanguage),
+					'tr1.content_type = ' . $db->quote('db_string'),
+					'f.translate = 1',
+					'gtm1.lang = ' . $db->quote($workingLanguage)
 				)
-			);
+			)->order('tr1.id');
 
-		$queryWhere = array ();
+		$languageFileStrings
+			->select('tr2.*')
+			->from('`#__neno_content_element_translations` AS tr2')
+			->innerJoin('`#__neno_content_element_language_strings` AS ls ON tr2.content_id = ls.id')
+			->innerJoin('`#__neno_content_element_language_files` AS lf ON lf.id = ls.languagefile_id')
+			->innerJoin('`#__neno_content_element_groups` AS g2 ON lf.group_id = g2.id ')
+			->innerJoin('`#__neno_content_element_groups_x_translation_methods` AS gtm2 ON g2.id = gtm2.group_id')
+			->where(
+				array (
+					'tr2.language = ' . $db->quote($workingLanguage),
+					'tr2.content_type = ' . $db->quote('lang_string'),
+					'gtm2.lang = ' . $db->quote($workingLanguage)
+				)
+			)->order('tr2.id');
+
+		$queryWhereDb = array ();
+
 
 		/* @var $groups array */
 		$groups = $this->getState('filter.group_id', array ());
@@ -174,41 +195,49 @@ class NenoModelStrings extends JModelList
 
 		if (!empty($groups))
 		{
-			$queryWhere[] = 't.group_id IN (' . implode(', ', $groups) . ')';
+			$queryWhereDb[] = 't.group_id IN (' . implode(', ', $groups) . ')';
+			$languageFileStrings->where('lf.group_id IN (' . implode(', ', $groups) . ')');
 		}
-
 
 		if (!empty($element))
 		{
-			$queryWhere[] = 't.id IN (' . implode(', ', $element) . ')';
+			$queryWhereDb[] = 't.id IN (' . implode(', ', $element) . ')';
 		}
 
 		if (!empty($field))
 		{
-			$queryWhere[] = 'f.id IN (' . implode(', ', $field) . ')';
+			$queryWhereDb[] = 'f.id IN (' . implode(', ', $field) . ')';
 		}
 
-		if (count($queryWhere))
+		if (count($queryWhereDb))
 		{
-			$query->where('(' . implode(' OR ', $queryWhere) . ')');
+			$dbStrings->where('(' . implode(' OR ', $queryWhereDb) . ')');
 		}
 
 		$method = $this->getState('filter.translator_type', '');
 
 		if ($method)
 		{
-			$query->where('translation_method = "' . $method . '"');
+			$dbStrings->where('tr.translation_method = ' . $db->quote($method));
+			$languageFileStrings->where('tr.translation_method = ' . $db->quote($method));
 		}
 
 		$status = $this->getState('filter.translation_status', '');
 
 		if ($status)
 		{
-			$query->where('tr.state =' . $status);
+			$dbStrings->where('tr.state =' . (int) $status);
+			$languageFileStrings->where('tr.state =' . (int) $status);
 		}
 
 		$limit  = $this->getState('limit', 20);
 		$offset = $this->getState('limitStart', 0);
+
+		$query = parent::getListQuery();
+
+		$query
+			->select('*')
+			->from('((' . (string) $dbStrings . ') UNION (' . (string) $languageFileStrings . ')) AS a');
 
 		$query->setLimit($limit, $offset);
 
