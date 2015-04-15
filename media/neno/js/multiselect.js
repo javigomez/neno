@@ -50,6 +50,7 @@ function toggleElementVisibility() {
                         row.data('loaded', true);
                         bindEvents();
                         row.removeClass('loading');
+                        checkUncheckFamilyCheckboxes(row.find('input[type=checkbox]').first());
                     }
                 );
             }

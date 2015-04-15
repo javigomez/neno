@@ -77,7 +77,7 @@ $translation = $displayData;
 		min-height: 500px;
 	}
 	.original-text {
-		overflow: auto;
+		word-break: break-word;
 		white-space: normal;
 	}
 	.small-text {
@@ -146,8 +146,7 @@ $translation = $displayData;
 		</div>
 		<div class="span5">
 			<textarea
-				class="full-width translated-content"><?php echo empty($translation) ? '' : $translation->string; ?>
-			</textarea>
+				class="full-width translated-content"><?php echo empty($translation) ? '' : $translation->string; ?></textarea>
 			<div class="clearfix"></div>
 			<div class="pull-right">
 				<?php echo empty($translation) ? '' : JText::sprintf('COM_NENO_EDITOR_LAST_MODIFIED', $translation->time_changed) ?>
