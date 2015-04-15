@@ -31,15 +31,6 @@ JHtml::_('behavior.keepalive');
 					<?php echo JText::_('COM_NENO_GROUPELEMENT_GROUP_TRANSLATION_METHOD'); ?>
 				</label>
 
-				<div class="control-group">
-					<?php echo $this->form->getInput('translation_method_1'); ?>
-				</div>
-				<div class="control-group">
-					<?php echo $this->form->getInput('translation_method_2'); ?>
-				</div>
-				<div class="control-group">
-					<?php echo $this->form->getInput('translation_method_3'); ?>
-				</div>
 			</fieldset>
 		</div>
 	</div>

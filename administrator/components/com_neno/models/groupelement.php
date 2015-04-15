@@ -167,7 +167,7 @@ class NenoModelGroupElement extends JModelAdmin
 			$query
 				->select(
 					array (
-						'translation_method',
+						'translation_method_id',
 						'ordering'
 					)
 				)
