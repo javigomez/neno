@@ -149,7 +149,12 @@ class NenoModelStrings extends JModelList
 			->from('`#__neno_content_element_tables` AS t')
 			->leftJoin('`#__neno_content_element_fields` AS f ON t.id = f.table_id AND f.translate = 1')
 			->leftJoin('`#__neno_content_element_translations` AS tr ON tr.content_id = f.id')
-			->where('tr.language = ' . $db->quote($workingLanguage));
+			->where(
+				array (
+					'tr.language = ' . $db->quote($workingLanguage),
+					'f.translate = 1'
+				)
+			);
 
 		$queryWhere = array ();
 
@@ -202,7 +207,7 @@ class NenoModelStrings extends JModelList
 			$query->where('tr.state =' . $status);
 		}
 
-		$limit = $this->getState('limit', 20);
+		$limit  = $this->getState('limit', 20);
 		$offset = $this->getState('limitStart', 0);
 
 		$query->setLimit($limit, $offset);
