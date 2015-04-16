@@ -588,7 +588,7 @@ class NenoHelper
 				$tableData = array (
 					'tableName'  => $tableNotDiscovered,
 					'primaryKey' => $db->getPrimaryKey($tableNotDiscovered),
-					'translate'  => self::shouldBeTranslated($tableNotDiscovered),
+					'translate'  => true,
 					'group'      => $otherGroup
 				);
 
@@ -886,7 +886,7 @@ class NenoHelper
 				$tableData = array (
 					'tableName'  => $tableName,
 					'primaryKey' => $db->getPrimaryKey($tableName),
-					'translate'  => self::shouldBeTranslated($tableName),
+					'translate'  => true,
 					'group'      => $group
 				);
 
@@ -970,11 +970,6 @@ class NenoHelper
 	public static function shouldBeTranslated($tableName)
 	{
 		$tableName = self::unifyTableName($tableName);
-
-		$coreTablesThatShouldNotBeTranslate = array (
-			'/#__users/',
-			'/__messages(.*)/',
-		);
 
 		foreach ($coreTablesThatShouldNotBeTranslate as $queryRegex)
 		{
