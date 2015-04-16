@@ -140,7 +140,10 @@ class NenoControllerEditor extends JControllerAdmin
 
 		if ($this->saveTranslation($translationId, $translationText, NenoContentElementTranslation::NOT_TRANSLATED_STATE))
 		{
-			echo 1;
+			/* @var $translation NenoContentElementTranslation */
+			$translation = NenoContentElementTranslation::load($translationId, false);
+
+			echo json_encode($translation->prepareDataForView());
 		}
 	}
 
@@ -192,7 +195,10 @@ class NenoControllerEditor extends JControllerAdmin
 
 		if ($this->saveTranslation($translationId, $translationText, NenoContentElementTranslation::TRANSLATED_STATE))
 		{
-			echo 1;
+			/* @var $translation NenoContentElementTranslation */
+			$translation = NenoContentElementTranslation::load($translationId, false);
+
+			echo json_encode($translation->prepareDataForView());
 		}
 	}
 }
