@@ -38,6 +38,11 @@ class NenoJob extends NenoObject
 	const JOB_STATE_PROCESSED = 4;
 
 	/**
+	 * @var array
+	 */
+	public $translations;
+
+	/**
 	 * @var integer
 	 */
 	protected $state;
@@ -80,12 +85,17 @@ class NenoJob extends NenoObject
 	/**
 	 * @var int
 	 */
-	private $wordCount;
+	protected $wordCount;
 
 	/**
-	 * @var array
+	 * @var int
 	 */
-	private $translations;
+	protected $translationCredits;
+
+	/**
+	 * @var Datetime
+	 */
+	protected $estimatedTime;
 
 	/**
 	 * Constructor
@@ -101,37 +111,18 @@ class NenoJob extends NenoObject
 			$this->createdTime = new DateTime($this->createdTime);
 		}
 
-		if (!$this->isNew())
+		if (!empty($this->translationMethod))
 		{
-			/* @var $db NenoDatabaseDriverMysqlx */
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
-			$query
-				->select(
-					array (
-						't.id',
-						't.content_type',
-						't.content_id'
-					)
-				)
-				->from('`#__neno_jobs_x_translations` AS jt')
-				->innerJoin('`#__neno_content_element_translations` AS t ON jt.translation_id = t.id')
-				->where('job_id = ' . $this->getId());
-			$db->setQuery($query);
-			$translations       = $db->loadAssocList();
-			$this->translations = array ();
-			$this->wordCount    = 0;
 
-			foreach ($translations as $translation)
-			{
-				$translationOriginalText                = NenoHelper::getTranslationOriginalText(
-					$translation['id'],
-					$translation['content_type'],
-					$translation['content_id']
-				);
-				$this->translations[$translation['id']] = $translationOriginalText;
-				$this->wordCount                        = $this->wordCount + str_word_count($translationOriginalText);
-			}
+			$query
+				->select('*')
+				->from('#__neno_translation_methods')
+				->where('id = ' . (int) $this->translationMethod);
+
+			$db->setQuery($query);
+			$this->translationMethod = $db->loadObject();
 		}
 	}
 
@@ -173,7 +164,7 @@ class NenoJob extends NenoObject
 				'toLanguage'        => $toLanguage,
 				'state'             => self::JOB_STATE_GENERATED,
 				'createdTime'       => new DateTime,
-				'translationMethod' => $translationMethod
+				'translationMethod' => NenoHelper::convertTranslationMethodNameToId($translationMethod)
 			);
 
 			$job = new NenoJob($jobData);
@@ -352,6 +343,37 @@ class NenoJob extends NenoObject
 	 */
 	public function getTranslations()
 	{
+		if (!empty($this->translations))
+		{
+			/* @var $db NenoDatabaseDriverMysqlx */
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query
+				->select(
+					array (
+						't.id',
+						't.content_type',
+						't.content_id'
+					)
+				)
+				->from('`#__neno_jobs_x_translations` AS jt')
+				->innerJoin('`#__neno_content_element_translations` AS t ON jt.translation_id = t.id')
+				->where('job_id = ' . $this->getId());
+			$db->setQuery($query);
+			$translations       = $db->loadAssocList();
+			$this->translations = array ();
+
+			foreach ($translations as $translation)
+			{
+				$translationOriginalText                = NenoHelper::getTranslationOriginalText(
+					$translation['id'],
+					$translation['content_type'],
+					$translation['content_id']
+				);
+				$this->translations[$translation['id']] = $translationOriginalText;
+			}
+		}
+
 		return $this->translations;
 	}
 
