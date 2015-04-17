@@ -65,7 +65,9 @@ class NenoModelJobs extends JModelList
 		/* @var $job NenoJob */
 		foreach ($jobs as $key => $job)
 		{
-			$jobs[$key] = $job->prepareDataForView(true);
+			$data                     = $job->prepareDataForView(true);
+			$data->translation_method = $job->getTranslationMethod();
+			$jobs[$key]               = $data;
 		}
 
 		return $jobs;
