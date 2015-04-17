@@ -19,5 +19,4 @@ jQuery(document).ready(function () {
             loadStrings(jQuery('.multiselect input[type=checkbox]').first());
         }
     });
-
 });
