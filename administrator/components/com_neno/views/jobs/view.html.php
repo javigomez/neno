@@ -97,8 +97,6 @@ class NenoViewJobs extends JViewLegacy
 	{
 		$canDo = NenoHelper::getActions();
 
-		JToolBarHelper::title(JText::_('COM_NENO_TITLE_JOBS'), 'sources.png');
-
 		if ($canDo->get('core.admin'))
 		{
 			JToolBarHelper::preferences('com_neno');
