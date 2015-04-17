@@ -213,11 +213,47 @@ class NenoJob extends NenoObject
 			}
 
 			$db->setQuery($query);
+			$db->execute();
 
-			return $db->execute() !== false;
+			$query
+				->select('SUM(LENGTH(tr.string) - LENGTH(REPLACE(tr.string, \' \', \'\'))+1)')
+				->from('#__neno_jobs_x_translations AS jt')
+				->innerJoin('#__neno_content_element_translations AS tr')
+				->where('job_id = ' . $this->id)
+				->group('jt.job_id');
+			$db->setQuery($query);
+			$wordCount          = $db->loadResult();
+			$translationCredits = 0;
+
+			switch (NenoHelper::convertTranslationMethodIdToName($this->translationMethod->id))
+			{
+				case 'machine':
+					$translationCredits = $wordCount;
+					break;
+				case 'pro':
+					$translationCredits = $wordCount * 200;
+					break;
+			}
+
+			$this->wordCount          = $wordCount;
+			$this->translationCredits = $translationCredits;
+
+			return parent::persist();
 		}
 
 		return false;
+	}
+
+	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
+	{
+		$data = parent::toObject($allFields, $recursive, $convertToDatabase);
+
+		if (is_object($this->translationMethod))
+		{
+			$data->set('translation_method', $this->translationMethod->id);
+		}
+
+		return $data;
 	}
 
 	/**

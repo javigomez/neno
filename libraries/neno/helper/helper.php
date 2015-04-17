@@ -1464,19 +1464,47 @@ class NenoHelper
 	 */
 	public static function convertTranslationMethodNameToId($translationMethodName)
 	{
+		$id = 0;
 		switch ($translationMethodName)
 		{
 			case 'manual':
-				return 1;
+				$id = 1;
 				break;
 			case 'machine':
-				return 2;
+				$id = 2;
 				break;
 			case 'pro':
-				return 3;
+				$id = 3;
 				break;
-
 		}
+
+		return $id;
+	}
+
+	/**
+	 *
+	 *
+	 * @param   string $translationMethodName Translation method name
+	 *
+	 * @return int
+	 */
+	public static function convertTranslationMethodIdToName($translationId)
+	{
+		$name = 0;
+		switch ($translationId)
+		{
+			case 1:
+				$name = 'manual';
+				break;
+			case 2:
+				$name = 'machine';
+				break;
+			case 3:
+				$name = 'pro';
+				break;
+		}
+
+		return $name;
 	}
 
 	/**
