@@ -33,7 +33,6 @@ if (!empty($this->extra_sidebar))
 	<div id="j-main-container" class="span10">
 		<div id="elements-wrapper">
 			<table class="table table-striped table-jobs" id="table-jobs">
-				<thead>
 				<tr>
 					<th>
 						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'id', $listDirection, $listOrder); ?>
@@ -60,47 +59,42 @@ if (!empty($this->extra_sidebar))
 						<?php echo JHtml::_('grid.sort', 'COM_NENO_JOBS_ESTIMATED_COMPLETION', 'completion_time', $listDirection, $listOrder); ?>
 					</th>
 				</tr>
-				</thead>
-				<tbody>
-				<?php /* @var $item JObject */ ?>
+				<?php /* @var $item stdClass */ ?>
 				<?php foreach ($this->items as $item): ?>
 					<tr class="row-string">
 						<td class="cell-status">
 							<?php echo $item->id; ?>
 						</td>
 						<td>
-							<?php echo NenoHelper::html2text($translation->string, 200); ?>
+							<?php echo JText::_('COM_NENO_JOBS_STATUS_' . $item->state); ?>
 						</td>
 						<td>
-							<?php echo $translation->breadcrumbs[0]; ?>
+							<?php echo JText::_('COM_NENO_JOBS_STATUS_' . strtoupper($item->to_language)); ?>
 						</td>
 						<td>
-							<?php echo $translation->breadcrumbs[1]; ?>
+							<?php echo JText::_($item->translation_method->name_constant); ?>
 						</td>
 						<td>
-							<?php echo $translation->breadcrumbs[2]; ?>
+							<?php echo $item->word_count; ?>
 						</td>
 						<td>
-							<?php echo JText::_('COM_NENO_TRANSLATION_METHODS_' . strtoupper($translation->translation_method)); ?>
+							<?php echo JText::sprintf('COM_NENO_TRANSLATION_CREDIT_AMOUNT', $item->translation_credits); ?>
 						</td>
 						<td>
-							<?php echo $translation->word_counter; ?>
+							<?php echo $item->created_time; ?>
 						</td>
 						<td>
-							<?php echo $translation->characters_counter; ?>
+							<?php echo $item->estimated_time; ?>
 						</td>
 					</tr>
 				<?php endforeach; ?>
-				</tbody>
-				<tfoot>
 				<tr>
-					<td colspan="9">
-						<?php /*echo $this->pagination->getListFooter();*/ ?>
+					<td colspan="8">
+						<?php echo $this->pagination->getListFooter(); ?>
 					</td>
 				</tr>
-				</tfoot>
+
 			</table>
 		</div>
-		<?php echo $this->pagination->getListFooter(); ?>
 	</div>
 </form>
