@@ -34,7 +34,7 @@ class NenoTask extends NenoObject
 	/**
 	 * @var integer
 	 */
-	protected $numberOfAttemps;
+	protected $numberOfAttempts;
 
 	/**
 	 * @var array
@@ -88,9 +88,9 @@ class NenoTask extends NenoObject
 	 *
 	 * @return int
 	 */
-	public function getNumberOfAttemps()
+	public function getNumberOfAttempts()
 	{
-		return $this->numberOfAttemps;
+		return $this->numberOfAttempts;
 	}
 
 	/**
@@ -114,7 +114,7 @@ class NenoTask extends NenoObject
 		$this->timeStarted = new DateTime;
 
 		// Increase the number of attemps
-		$this->numberOfAttemps++;
+		$this->numberOfAttempts++;
 
 		// Save this task on the database
 		$this->persist();

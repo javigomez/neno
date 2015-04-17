@@ -120,7 +120,35 @@ class NenoTaskMonitor
 			)
 		);
 
+		if (empty($task))
+		{
+			self::addTask('job_scanner');
+			$task = self::fetchTask();
+		}
+
 		return $task;
+	}
+
+	/**
+	 * Add a task to the database
+	 *
+	 * @param   string $task     Task name (type)
+	 * @param   array  $taskData Task Data
+	 *
+	 * @return bool
+	 */
+	public static function addTask($task, array $taskData = array ())
+	{
+		$task = new NenoTask(
+			array (
+				'task'     => $task,
+				'taskData' => $taskData
+			)
+		);
+
+		NenoLog::log('Adding translation job to execute', 2);
+
+		return $task->persist();
 	}
 
 	/**
@@ -146,27 +174,5 @@ class NenoTaskMonitor
 		}
 
 		return false;
-	}
-
-	/**
-	 * Add a task to the database
-	 *
-	 * @param   string $task     Task name (type)
-	 * @param   array  $taskData Task Data
-	 *
-	 * @return bool
-	 */
-	public static function addTask($task, array $taskData = array ())
-	{
-		$task = new NenoTask(
-			array (
-				'task'     => $task,
-				'taskData' => $taskData
-			)
-		);
-
-		NenoLog::log('Adding translation job to execute', 2);
-
-		return $task->persist();
 	}
 }
