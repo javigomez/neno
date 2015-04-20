@@ -88,7 +88,7 @@ class NenoContentElementTable extends NenoContentElement
 	 *
 	 * @return array
 	 */
-	public function getFields($loadExtraData)
+	public function getFields($loadExtraData = false)
 	{
 		if ($this->fields === null)
 		{
