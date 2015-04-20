@@ -32,10 +32,6 @@ class NenoControllerGroupElement extends JControllerForm
 	}
     
     
-    public function save($key = null, $urlVar = null) {
-        
-        parent::save($key, $urlVar);
-    }
     
     
 }
