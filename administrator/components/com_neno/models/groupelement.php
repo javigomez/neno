@@ -73,7 +73,7 @@ class NenoModelGroupElement extends JModelAdmin
 			$groupId         = (int) $this->getState($this->getName() . '.id');
 
 			$query
-				->delete('#__neno_content_element_presets')
+				->delete('#__neno_content_element_groups_x_translation_methods')
 				->where(
 					array (
 						'group_id = ' . $groupId,
