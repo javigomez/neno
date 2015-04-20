@@ -1469,4 +1469,93 @@ class NenoHelper
 	{
 		return JFactory::getDbo()->quote($value);
 	}
-}
+    
+    
+    public static function renderTranslationMethodSelector($group_id) 
+    {
+
+        ?>
+        <script>
+            jQuery().ready(function(){
+                loadMissingTranslationMethodSelectors();
+            });
+            
+            function loadMissingTranslationMethodSelectors() {
+
+                //Count how many we currently are showing
+                var n = jQuery('.translation-method-selector-container').length;
+                
+                //If we are loading because of changing a selector, remove all children
+                var selector_id = jQuery(this).attr('data-selector-id');
+                if (typeof selector_id !== 'undefined') {
+                    //Loop through each selector and remove the ones that are after this one
+                    for (i = 0; i < n; i++) { 
+                        if (i > selector_id) {
+                            jQuery("[data-selector-container-id='"+i+"']").remove();
+                        }
+                    }                    
+                }
+                
+                //Create a string to pass the current selections
+                var selected_methods_string = '';
+                jQuery('.translation-method-selector').each(function(){
+                    selected_methods_string += '&selected_methods[]='+jQuery(this).find(':selected').val();
+                });
+                
+                jQuery.get('index.php?option=com_neno&task=groupselements.getTranslationMethodSelector&group_id=<?php echo $group_id; ?>&n='+n+selected_methods_string
+                    , function(html) {
+                        if (html !== '') {
+                            
+                            jQuery('#translation-method-selectors').append(html);
+                            
+                            //Bind the loader unto the new selector
+                            jQuery('.translation-method-selector').off('change').on('change', loadMissingTranslationMethodSelectors);
+                            
+                            loadMissingTranslationMethodSelectors();
+                            
+                        } else {
+                            //console.log('No HTML loaded. Stopping!');
+                        }
+
+                    }
+                );
+              
+                
+            }
+            
+        </script>
+        
+        <div id="translation-method-selectors">
+            
+        </div>
+            
+        <?php
+        
+        
+        
+    }
+    
+    
+    public static function loadTranslationMethods() 
+    {
+        
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->select('*')
+			->from('#__neno_translation_methods');
+
+		$db->setQuery($query);
+		$rows = $db->loadObjectList('id');        
+        
+        return $rows;
+        
+    }
+    
+    
+}   
+
+
+
+
+
