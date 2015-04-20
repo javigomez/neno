@@ -28,8 +28,15 @@ class NenoCache
 	 */
 	public static function getCacheData($cacheId, $default = null)
 	{
-		$app  = JFactory::getApplication();
-		$data = $app->get($cacheId, $default);
+		try
+		{
+			$app  = JFactory::getApplication();
+			$data = $app->get($cacheId, $default);
+		}
+		catch (Exception $e)
+		{
+			$data = $default;
+		}
 
 		return $data;
 	}
@@ -44,8 +51,15 @@ class NenoCache
 	 */
 	public static function setCacheData($cacheId, $data)
 	{
-		$app = JFactory::getApplication();
-		$app->set($cacheId, $data);
+		try
+		{
+			$app = JFactory::getApplication();
+			$app->set($cacheId, $data);
+		}
+		catch (Exception $e)
+		{
+
+		}
 	}
 
 	/**

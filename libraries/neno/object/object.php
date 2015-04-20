@@ -98,8 +98,9 @@ abstract class NenoObject
 	/**
 	 * Load element from the database
 	 *
-	 * @param   mixed   $pk            could be the ID of the element or an array of clauses
+	 * @param   mixed   $pk            Could be the ID of the element or an array of clauses
 	 * @param   boolean $loadExtraData Load extra data once the object has been created
+	 * @param   boolean $loadParent    If the parent should be loaded
 	 *
 	 * @return stdClass|array
 	 */

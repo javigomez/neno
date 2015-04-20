@@ -313,7 +313,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	 */
 	public function generateShadowTableName($tableName, $languageTag)
 	{
-		return '#__neno_sh_' . $this->cleanLanguageTag($languageTag) . '_' . $this->cleanTableName($tableName);
+		return '#___' . $this->cleanLanguageTag($languageTag) . '_' . $this->cleanTableName($tableName);
 	}
 
 	/**

@@ -588,7 +588,7 @@ class NenoHelper
 				$tableData = array (
 					'tableName'  => $tableNotDiscovered,
 					'primaryKey' => $db->getPrimaryKey($tableNotDiscovered),
-					'translate'  => self::shouldBeTranslated($tableNotDiscovered),
+					'translate'  => true,
 					'group'      => $otherGroup
 				);
 
@@ -886,7 +886,7 @@ class NenoHelper
 				$tableData = array (
 					'tableName'  => $tableName,
 					'primaryKey' => $db->getPrimaryKey($tableName),
-					'translate'  => self::shouldBeTranslated($tableName),
+					'translate'  => true,
 					'group'      => $group
 				);
 
@@ -961,33 +961,6 @@ class NenoHelper
 	}
 
 	/**
-	 * Check if a table should be translated.
-	 *
-	 * @param   string $tableName Table name
-	 *
-	 * @return bool
-	 */
-	public static function shouldBeTranslated($tableName)
-	{
-		$tableName = self::unifyTableName($tableName);
-
-		$coreTablesThatShouldNotBeTranslate = array (
-			'/#__users/',
-			'/__messages(.*)/',
-		);
-
-		foreach ($coreTablesThatShouldNotBeTranslate as $queryRegex)
-		{
-			if (preg_match($queryRegex, $tableName))
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
 	 *
 	 */
 	protected static function getTablesNotDiscovered()
@@ -1022,6 +995,28 @@ class NenoHelper
 		$tablesNotDiscovered = $db->loadArray();
 
 		return $tablesNotDiscovered;
+	}
+
+	/**
+	 * Check if a table should be translated.
+	 *
+	 * @param   string $tableName Table name
+	 *
+	 * @return bool
+	 */
+	public static function shouldBeTranslated($tableName)
+	{
+		$tableName = self::unifyTableName($tableName);
+
+		foreach ($coreTablesThatShouldNotBeTranslate as $queryRegex)
+		{
+			if (preg_match($queryRegex, $tableName))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -1182,27 +1177,29 @@ class NenoHelper
 		return JLayoutHelper::render('wordcountprogressbar', $displayData, JPATH_NENO_LAYOUTS);
 
 	}
-    
-    
-    /**
-     * Take an array of strings (enoms) and parse them though JText and get the correct name
-     * Then return as comma separated list
-     * @param array $methods
-     * @return string
-     */
-    public static function renderTranslationMethodsAsCSV($methods=array())
-    {
-        if (!empty($methods))
-        {
-            foreach ($methods as $key => $method) 
-            {
-                $methods[$key] = JText::_(strtoupper($method->name_constant));
-            }
-        }
-        return implode(', ', $methods);
-    }
-    
-    
+
+
+	/**
+	 * Take an array of strings (enoms) and parse them though JText and get the correct name
+	 * Then return as comma separated list
+	 *
+	 * @param array $methods
+	 *
+	 * @return string
+	 */
+	public static function renderTranslationMethodsAsCSV($methods = array ())
+	{
+		if (!empty($methods))
+		{
+			foreach ($methods as $key => $method)
+			{
+				$methods[$key] = JText::_(strtoupper($method->name_constant));
+			}
+		}
+
+		return implode(', ', $methods);
+	}
+
 
 	/**
 	 * Get client list in text/value format for a select field
@@ -1456,6 +1453,58 @@ class NenoHelper
 		}
 
 		return $cachedData;
+	}
+
+	/**
+	 *
+	 *
+	 * @param   string $translationMethodName Translation method name
+	 *
+	 * @return int
+	 */
+	public static function convertTranslationMethodNameToId($translationMethodName)
+	{
+		$id = 0;
+		switch ($translationMethodName)
+		{
+			case 'manual':
+				$id = 1;
+				break;
+			case 'machine':
+				$id = 2;
+				break;
+			case 'pro':
+				$id = 3;
+				break;
+		}
+
+		return $id;
+	}
+
+	/**
+	 *
+	 *
+	 * @param   string $translationMethodName Translation method name
+	 *
+	 * @return int
+	 */
+	public static function convertTranslationMethodIdToName($translationId)
+	{
+		$name = 0;
+		switch ($translationId)
+		{
+			case 1:
+				$name = 'manual';
+				break;
+			case 2:
+				$name = 'machine';
+				break;
+			case 3:
+				$name = 'pro';
+				break;
+		}
+
+		return $name;
 	}
 
 	/**

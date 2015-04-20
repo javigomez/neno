@@ -45,15 +45,19 @@ $translations = $displayData;
 <script>
 	jQuery(document).ready(function () {
 		jQuery('.string').on('click', function () {
-			jQuery('.string-activated').removeClass('string-activated');
-			jQuery(this).addClass('string-activated');
-
-			// Get information
-			jQuery.get('index.php?option=com_neno&task=editor.getTranslation&id=' + jQuery(this).data('id'), function (data) {
-				jQuery('#editor-wrapper').html(data);
-			});
+			loadTranslation(jQuery(this));
 		});
 	});
+
+	function loadTranslation(string) {
+		jQuery('.string-activated').removeClass('string-activated');
+		string.addClass('string-activated');
+
+		// Get information
+		jQuery.get('index.php?option=com_neno&task=editor.getTranslation&id=' + string.data('id'), function (data) {
+			jQuery('#editor-wrapper').html(data);
+		});
+	}
 </script>
 
 

@@ -18,7 +18,7 @@ jimport('joomla.application.component.view');
  *
  * @since  1.0
  */
-class NenoViewStrings extends JViewLegacy
+class NenoViewJobs extends JViewLegacy
 {
 	/**
 	 * @var JForm
@@ -68,13 +68,9 @@ class NenoViewStrings extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->state         = $this->get('State');
-		$this->items         = $this->get('Items');
-		$this->pagination    = $this->get('Pagination');
-		$this->filterForm    = $this->get('FilterForm');
-		$this->activeFilters = $this->get('ActiveFilters');
-		$this->getGroupData();
-
+		$this->state      = $this->get('State');
+		$this->items      = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -82,30 +78,12 @@ class NenoViewStrings extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
 
-		NenoHelper::addSubmenu('strings');
+		NenoHelper::addSubmenu('jobs');
 		$this->addToolbar();
 
 		$this->sidebar = JHtmlSidebar::render();
 
 		parent::display($tpl);
-	}
-
-	/**
-	 * Load group data
-	 *
-	 * @return void
-	 */
-	protected function getGroupData()
-	{
-		$groups = NenoHelper::getGroups(false);
-
-		/* @var $group NenoContentElementGroup */
-		foreach ($groups as $key => $group)
-		{
-			$groups[$key] = $group->prepareDataForView();
-		}
-
-		$this->groups = $groups;
 	}
 
 	/**
@@ -128,6 +106,24 @@ class NenoViewStrings extends JViewLegacy
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=strings');
 
 		$this->extra_sidebar = '';
+	}
+
+	/**
+	 * Load group data
+	 *
+	 * @return void
+	 */
+	protected function getGroupData()
+	{
+		$groups = NenoHelper::getGroups(false);
+
+		/* @var $group NenoContentElementGroup */
+		foreach ($groups as $key => $group)
+		{
+			$groups[$key] = $group->prepareDataForView();
+		}
+
+		$this->groups = $groups;
 	}
 
 	/**

@@ -44,7 +44,7 @@ class NenoController extends JControllerLegacy
 
 		// Ensure that a working language is set for some views
 		$viewsThatRequireWorkingLanguage = array (
-			'groupselements'
+			'groupselements','editor','strings'
 		);
 
 		$showLanguagesDropDown = false;
