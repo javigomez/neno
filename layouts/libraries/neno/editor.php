@@ -114,12 +114,15 @@ $translation = $displayData;
 
 	.central-buttons {
 		/*padding-left: 20px;*/
-		width: auto;
 		text-align: center;
+		width: 81%;
+		position: absolute;
+		margin-top: 53px;
 	}
 
 	.central-buttons button {
 		margin-bottom: 15px;
+		width: 180px;
 	}
 
 	.right-buttons button {
@@ -146,7 +149,7 @@ $translation = $displayData;
 		color: #ddd;
 		font-size: 5em;
 		margin-top: 2.5em;
-		width: 90%;
+		width: 100%;
 		text-align: center;
 	}
 
