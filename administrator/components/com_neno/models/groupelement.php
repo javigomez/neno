@@ -42,8 +42,9 @@ class NenoModelGroupElement extends JModelAdmin
 	 */
 	public function getForm($data = array (), $loadData = true)
 	{
+
 		// Get the form.
-		$form = $this->loadForm('com_neno.groupelement', 'groupelement', array ('control' => 'jform', 'load_data' => $loadData));
+		$form = $this->loadForm('com_neno.groupelement', 'groupelement', array ('load_data' => $loadData));
 
 		if (empty($form))
 		{
@@ -64,6 +65,8 @@ class NenoModelGroupElement extends JModelAdmin
 	 */
 	public function save($data)
 	{
+        echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$data = ". print_r($data, true)."\n</pre>";
+        exit;
 		// If groups data has been saved, let's assign translation method
 		if (parent::save($data))
 		{
@@ -113,6 +116,8 @@ class NenoModelGroupElement extends JModelAdmin
 			if ($insert)
 			{
 				$db->setQuery($query);
+                $db->getQuery();
+                exit;
 				$db->execute();
 			}
 
