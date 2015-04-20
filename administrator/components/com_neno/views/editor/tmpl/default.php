@@ -23,7 +23,8 @@ if (!empty($this->extra_sidebar))
 {
 	$this->sidebar .= $this->extra_sidebar;
 }
-
+$document = JFactory::getDocument();
+$document->addStyleSheet(JUri::root() . '/media/neno/css/editor.css');
 ?>
 
 <div id="j-sidebar-container" class="span2">

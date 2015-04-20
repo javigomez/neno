@@ -18,7 +18,7 @@ $translation = $displayData;
 <script>
 	jQuery(document).ready(function () {
 		jQuery('#copy-btn').on('click', function () {
-			jQuery('.translate-content').val(jQuery('.original-text').html().trim());
+			jQuery('.translated-content').val(jQuery('.original-text').html().trim());
 		});
 
 		jQuery('#translate-btn').on('click', translate);
@@ -35,7 +35,7 @@ $translation = $displayData;
 			// Ctrl-S
 			if (ev.keyCode == 83 && e.ctrlKey) {
 				ev.preventDefault();
-				saveDraft(),
+				saveDraft();
 			}
 
 			// Ctrl-Enter

@@ -22,7 +22,7 @@ function loadNextTranslation() {
 }
 
 function saveTranslationAndNext() {
-    var text = jQuery('.translate-content').val();
+    var text = jQuery('.translated-content').val();
     var translationId = jQuery('#save-next-button').data('id');
     jQuery.post(
         'index.php?option=com_neno&task=editor.saveAsCompleted',
@@ -31,17 +31,13 @@ function saveTranslationAndNext() {
             text: text
         }
         , function (data) {
-            console.log(data);
-            if (data == 1) {
-                alert('Translation Saved');
-            }
             loadNextTranslation();
         }
     );
 }
 
 function saveDraft() {
-    var text = jQuery('.translate-content').val();
+    var text = jQuery('.translated-content').val();
     var translationId = jQuery('#draft-button').data('id');
     jQuery.post(
         'index.php?option=com_neno&task=editor.saveAsDraft',
@@ -50,9 +46,7 @@ function saveDraft() {
             text: text
         }
         , function (data) {
-            if (data == 1) {
-                alert('Translation Saved');
-            }
+
         }
     );
 }
