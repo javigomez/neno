@@ -48,16 +48,6 @@ $translations = $displayData;
 			loadTranslation(jQuery(this));
 		});
 	});
-
-	function loadTranslation(string) {
-		jQuery('.string-activated').removeClass('string-activated');
-		string.addClass('string-activated');
-
-		// Get information
-		jQuery.get('index.php?option=com_neno&task=editor.getTranslation&id=' + string.data('id'), function (data) {
-			jQuery('#editor-wrapper').html(data);
-		});
-	}
 </script>
 
 

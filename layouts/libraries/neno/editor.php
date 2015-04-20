@@ -17,156 +17,36 @@ $translation = $displayData;
 ?>
 <script>
 	jQuery(document).ready(function () {
-		jQuery('.copy-btn').on('click', function () {
+		jQuery('#copy-btn').on('click', function () {
 			jQuery('.translate-content').val(jQuery('.original-text').html().trim());
 		});
 
-		jQuery('.translate-btn').on('click', function () {
-			var text = jQuery('.original-text').html().trim();
-			jQuery.post(
-				'index.php?option=com_neno&task=editor.translate',
-				{text: text}
-				, function (data) {
-					jQuery('.translated-content').val(data);
-				}
-			);
+		jQuery('#translate-btn').on('click', translate);
+
+		jQuery('#skip-button').on('click', loadNextTranslation);
+
+		jQuery('#draft-button').on('click', saveDraft);
+
+		jQuery('#save-next-button').on('click', saveTranslationAndNext);
+
+		jQuery('body').on('keydown', function(e) {
+			var ev = e || window.event;
+
+			// Ctrl-S
+			if (ev.keyCode == 83 && e.ctrlKey) {
+				ev.preventDefault();
+				saveDraft(),
+			}
+
+			// Ctrl-Enter
+			if (ev.keyCode == 13 && e.ctrlKey) {
+				ev.preventDefault();
+				saveTranslationAndNext();
+			}
 		});
 
-		jQuery('.skip-button').on('click', loadNextTranslation);
-
-		jQuery('.draft-button').on('click', function () {
-			var text = jQuery('.translate-content').val();
-			var translationId = jQuery(this).data('id');
-			jQuery.post(
-				'index.php?option=com_neno&task=editor.saveAsDraft',
-				{
-					id: translationId,
-					text: text
-				}
-				, function (data) {
-					if (data == 1) {
-						alert('Translation Saved');
-					}
-				}
-			);
-		});
-
-		jQuery('.save-next-button').on('click', function () {
-			var text = jQuery('.translate-content').val();
-			var translationId = jQuery(this).data('id');
-			jQuery.post(
-				'index.php?option=com_neno&task=editor.saveAsCompleted',
-				{
-					id: translationId,
-					text: text
-				}
-				, function (data) {
-					console.log(data);
-					if (data == 1) {
-						alert('Translation Saved');
-					}
-					loadNextTranslation();
-				}
-			);
-		});
 	});
-	function loadNextTranslation() {
-		var nextString = jQuery('.string-activated').next('div').next('div');
-		if (nextString.length) {
-			loadTranslation(nextString);
-		}
-	}
 </script>
-<style>
-	.full-width {
-		width: 100%;
-		max-width: 100%;
-	}
-
-	.original-text,
-	.translated-content {
-		min-height: 500px;
-		padding: 5%;
-		width: 90%;
-		max-width: 90%;
-	}
-
-	.original-text {
-		word-break: break-word;
-		white-space: normal;
-	}
-
-	button .small-text {
-		display: block;
-		clear: both;
-		font-size: 0.75em;
-		font-style: italic;
-		text-align: left;
-		padding-left: 28px;
-		line-height: 0.75em;
-		margin-bottom: 3px;;
-	}
-
-	button .normal-text {
-		text-align: left;
-		padding-left: 28px;
-	}
-
-	.central-buttons {
-		/*padding-left: 20px;*/
-		text-align: center;
-		width: 81%;
-		position: absolute;
-		margin-top: 53px;
-	}
-
-	.central-buttons button {
-		margin-bottom: 15px;
-		width: 180px;
-	}
-
-	.right-buttons button {
-		margin-left: 7px;
-		margin-bottom: 15px;
-	}
-
-	.btn-big {
-		height: 38px;
-	}
-
-	.big-icon {
-		position: absolute;
-		line-height: 16px;
-		margin-top: 0.25em;
-		font-size: 1.5em;
-	}
-
-	.big-line-height {
-		line-height: 1.8em;
-	}
-
-	.icon-grey {
-		color: #ddd;
-		font-size: 5em;
-		margin-top: 2.5em;
-		width: 100%;
-		text-align: center;
-	}
-
-	.last-modified {
-		color: #ccc;
-		font-style: italic;
-	}
-	.breadcrumbs {
-		padding-top: 15px;
-		color: #999;
-	}
-	.breadcrumbs .gt {
-		font-size: 10px;
-		color: #ccc;
-		margin: 0 10px;
-	}
-</style>
 
 <div>
 	<div class="span12">
@@ -175,19 +55,19 @@ $translation = $displayData;
 		</div>
 		<div class="span6 pull-right">
 			<div class="pull-right right-buttons">
-				<button class="btn btn-big skip-button" type="button"
+				<button id="skip-button" class="btn btn-big" type="button"
 				        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
 					<span class="icon-next big-icon"></span>
 					<span
 						class="normal-text big-line-height"><?php echo JText::_('COM_NENO_EDITOR_SKIP_BUTTON'); ?></span>
 				</button>
-				<button class="btn btn-big draft-button" type="button"
+				<button id="draft-button" class="btn btn-big" type="button"
 				        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
 					<span class="icon-briefcase big-icon"></span>
 					<span class="normal-text"><?php echo JText::_('COM_NENO_EDITOR_SAVE_AS_DRAFT_BUTTON'); ?></span>
 					<span class="small-text">Ctrl+S</span>
 				</button>
-				<button class="btn btn-big btn-success save-next-button" type="button"
+				<button id="save-next-button" class="btn btn-big btn-success" type="button"
 				        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
 					<span class="icon-checkmark big-icon"></span>
 					<span class="normal-text"><?php echo JText::_('COM_NENO_EDITOR_SAVE_AND_NEXT_BUTTON'); ?></span>
@@ -210,7 +90,7 @@ $translation = $displayData;
 		</div>
 		<div class="central-buttons">
 			<div>
-				<button class="btn btn-big copy-btn" type="button">
+				<button id="copy-btn" class="btn btn-big" type="button">
 					<span class="icon-copy big-icon"></span>
 					<span
 						class="normal-text big-line-height"><?php echo JText::_('COM_NENO_EDITOR_COPY_BUTTON'); ?></span>
@@ -218,7 +98,7 @@ $translation = $displayData;
 			</div>
 			<div class="clearfix"></div>
 			<div>
-				<button class="btn btn-big translate-btn" type="button">
+				<button id="translate-btn" class="btn btn-big" type="button">
 					<span class="icon-screen big-icon"></span>
 					<span class="normal-text big-line-height">
 						<?php echo JText::_('COM_NENO_EDITOR_COPY_AND_TRANSLATE_BUTTON'); ?>

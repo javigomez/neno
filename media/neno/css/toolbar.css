@@ -14,7 +14,7 @@
 
 #workingLangSelect {
     display: inline-block;
-    margin: 0px;
+    /*margin: 0px;*/
     font-size: 14px;
 }
 
@@ -30,4 +30,8 @@
 
 #workingLangSelect .dropdown-menu a:hover {
     color: #fff;
+}
+
+#workingLangSelect .dropdown-toggle {
+    margin-left: 3px;
 }
