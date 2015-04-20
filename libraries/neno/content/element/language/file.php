@@ -214,12 +214,15 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	{
 		if (parent::persist())
 		{
-			/* @var $languageString NenoContentElementLanguageString */
-			foreach ($this->languageStrings as $languageString)
+			if (!empty($this->languageStrings))
 			{
-				$languageString
-					->setLanguageFile($this)
-					->persist();
+				/* @var $languageString NenoContentElementLanguageString */
+				foreach ($this->languageStrings as $languageString)
+				{
+					$languageString
+						->setLanguageFile($this)
+						->persist();
+				}
 			}
 		}
 
