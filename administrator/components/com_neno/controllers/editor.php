@@ -145,6 +145,8 @@ class NenoControllerEditor extends JControllerAdmin
 
 			echo json_encode($translation->prepareDataForView());
 		}
+
+		JFactory::getApplication()->close();
 	}
 
 	/**
@@ -200,5 +202,7 @@ class NenoControllerEditor extends JControllerAdmin
 
 			echo json_encode($translation->prepareDataForView());
 		}
+
+		JFactory::getApplication()->close();
 	}
 }
