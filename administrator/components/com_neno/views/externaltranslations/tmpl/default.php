@@ -177,11 +177,12 @@ if (!empty($this->extra_sidebar))
 				</div>
 				<div>
 					<p class="center">
-						<?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_BUY_TC_TEXT', '7.345'); ?>
+						<?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_BUY_TC_TEXT', $this->tcNeeded); ?>
 					</p>
 				</div>
 				<div class="center">
-					<h3><?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_PRICE'); ?> €74</h3>
+					<h3><?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_PRICE'); ?>
+						€<?php echo number_format(ceil($this->tcNeeded * 0.0005), 0, ',', '.'); ?> </h3>
 				</div>
 				<div class="center">
 					<a href="#" class="btn btn-success">

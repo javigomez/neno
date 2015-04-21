@@ -23,9 +23,23 @@ class NenoModelExternalTranslations extends JModelList
 	 *
 	 * @return int
 	 */
-	public function getTC()
+	public function getTCAvailable()
 	{
-		return 9000;
+		return NenoHelperApi::getTCAvailable();
+	}
+
+	public function getTCNeeded()
+	{
+		$db    = JFactory::getDbo();
+		$query = $this->getListQuery();
+
+		$query
+			->clear('select')
+			->select('SUM(IF(translation_method = \'machine\', word_counter, word_counter * 200)) AS tc');
+
+		$db->setQuery($query);
+
+		return (int) $db->loadResult();
 	}
 
 	/**

@@ -34,6 +34,11 @@ class NenoViewExternalTranslations extends JViewLegacy
 	protected $sidebar;
 
 	/**
+	 * @var int
+	 */
+	protected $tcNeeded;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -46,8 +51,9 @@ class NenoViewExternalTranslations extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->state = $this->get('State');
-		$this->items = $this->get('Items');
+		$this->state    = $this->get('State');
+		$this->items    = $this->get('Items');
+		$this->tcNeeded = $this->get('TCNeeded');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -84,7 +90,7 @@ class NenoViewExternalTranslations extends JViewLegacy
 		$toolbar = JToolbar::getInstance();
 
 		$toolbar->addButtonPath(JPATH_NENO . '/button');
-		$toolbar->appendButton('TC', $this->get('TC'));
+		$toolbar->appendButton('TC', $this->get('TCAvailable'));
 
 		$this->extra_sidebar = '';
 	}
