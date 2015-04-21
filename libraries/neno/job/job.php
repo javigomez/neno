@@ -216,10 +216,10 @@ class NenoJob extends NenoObject
 			$db->execute();
 
 			$query
-				->select('SUM(LENGTH(tr.string) - LENGTH(REPLACE(tr.string, \' \', \'\'))+1)')
+				->select('SUM(word_counter)')
 				->from('#__neno_jobs_x_translations AS jt')
-				->innerJoin('#__neno_content_element_translations AS tr')
-				->where('job_id = ' . $this->id)
+				->innerJoin('#__neno_content_element_translations AS tr ON jt.translation_id = tr.id')
+				->where('jt.job_id = ' . $this->id)
 				->group('jt.job_id');
 			$db->setQuery($query);
 			$wordCount          = $db->loadResult();
