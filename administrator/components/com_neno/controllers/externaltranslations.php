@@ -42,4 +42,38 @@ class NenoControllerExternalTranslations extends JControllerAdmin
 
 		$app->close();
 	}
+
+	/**
+	 * This task will create a job
+	 *
+	 * @return void
+	 */
+	public function createJob()
+	{
+		$app   = JFactory::getApplication();
+		$input = $app->input;
+
+		$type     = $input->post->getString('type');
+		$language = $input->post->getString('language');
+
+		if (!empty($type) && !empty($language))
+		{
+			$job = NenoJob::createJob($language, $type);
+
+			if ($job !== null)
+			{
+				echo 'ok';
+			}
+			else
+			{
+				echo 'err';
+			}
+		}
+		else
+		{
+			echo 'err';
+		}
+
+		$app->close();
+	}
 }

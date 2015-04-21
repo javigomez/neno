@@ -68,6 +68,21 @@ if (!empty($this->extra_sidebar))
 				}
 			);
 		});
+
+		jQuery('.order-button').on('click', function () {
+			jQuery.post(
+				'index.php?option=com_neno&task=externaltranslations.createJob',
+				{
+					type: jQuery(this).data('type'),
+					language: jQuery(this).data('language')
+				}
+				, function (data) {
+					if (data != 'ok') {
+						alert("There was an error saving setting");
+					}
+				}
+			);
+		});
 	});
 </script>
 
@@ -109,7 +124,9 @@ if (!empty($this->extra_sidebar))
 									TC
 								</div>
 								<div class="span3">
-									<button type="button" class="btn">
+									<button type="button" class="btn order-button"
+									        data-type="<?php echo $item->translation_method; ?>"
+									        data-language="<?php echo $item->language; ?>">
 										<?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_ORDER_NOW'); ?>
 									</button>
 								</div>
@@ -152,7 +169,10 @@ if (!empty($this->extra_sidebar))
 									TC
 								</div>
 								<div class="span3">
-									<button type="button" class="btn">
+									<button type="button" class="btn order-button"
+									        data-type="<?php echo $item->translation_method; ?>"
+									        data-language="<?php echo $item->language; ?>"
+										>
 										<?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_ORDER_NOW'); ?>
 									</button>
 								</div>

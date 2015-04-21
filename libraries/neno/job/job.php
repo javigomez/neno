@@ -169,7 +169,7 @@ class NenoJob extends NenoObject
 
 			$job = new NenoJob($jobData);
 			$job
-				->setTranslations(NenoHelper::convertOnePropertyArrayToSingleArray($translationObjects))
+				->setTranslations($translationObjects)
 				->persist();
 		}
 
