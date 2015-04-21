@@ -19,6 +19,16 @@ defined('_JEXEC') or die;
 class NenoModelExternalTranslations extends JModelList
 {
 	/**
+	 * Get the amount of link credits available
+	 *
+	 * @return int
+	 */
+	public function getTC()
+	{
+		return 9000;
+	}
+
+	/**
 	 * Build an SQL query to load the list data.
 	 *
 	 * @return    JDatabaseQuery
