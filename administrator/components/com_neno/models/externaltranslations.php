@@ -61,8 +61,13 @@ class NenoModelExternalTranslations extends JModelList
 					'language'
 				)
 			)
-			->from('#__neno_content_element_translations')
-			->where('state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE)
+			->from('#__neno_content_element_translations AS tr')
+			->where(
+				array (
+					'state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE,
+					'NOT EXISTS (SELECT 1 FROM #__neno_jobs_x_translations AS jt WHERE tr.id = jt.translation_id)'
+				)
+			)
 			->group(
 				array (
 					'translation_method',
