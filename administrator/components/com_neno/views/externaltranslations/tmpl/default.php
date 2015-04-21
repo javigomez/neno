@@ -48,6 +48,25 @@ if (!empty($this->extra_sidebar))
 	}
 </style>
 
+<script>
+	jQuery(document).ready(function () {
+		jQuery('.translate_automatically_setting').on('click', function () {
+			jQuery.post(
+				'index.php?option=com_neno&task=externaltranslations.setAutomaticTranslationSetting',
+				{
+					setting: jQuery(this).data('setting'),
+					value: + jQuery(this).is(':checked')
+				}
+				, function (data) {
+					if (data != 'ok') {
+						alert("There was an error saving setting");
+					}
+				}
+			);
+		});
+	});
+</script>
+
 <div id="j-sidebar-container" class="span2">
 	<?php echo $this->sidebar; ?>
 </div>
@@ -95,7 +114,9 @@ if (!empty($this->extra_sidebar))
 				<?php endforeach; ?>
 			</div>
 			<div class="translation-type-footer">
-				<input type="checkbox" name="machine_translation"
+				<input type="checkbox" class="translate_automatically_setting"
+				       data-setting="translate_automatically_machine"
+				       name="machine_translation" <?php echo NenoSettings::get('translate_automatically_machine') ? 'checked="checked"' : ''; ?>
 				       value="1"/> <?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_AUTOMATICALLY_MACHINE_TRANSLATE'); ?>
 			</div>
 		</div>
@@ -135,7 +156,9 @@ if (!empty($this->extra_sidebar))
 				<?php endforeach; ?>
 			</div>
 			<div class="translation-type-footer">
-				<input type="checkbox" name="machine_translation"
+				<input type="checkbox" class="translate_automatically_setting"
+				       data-setting="translate_automatically_professional"
+				       name="machine_translation" <?php echo NenoSettings::get('translate_automatically_professional') ? 'checked="checked"' : ''; ?>
 				       value="1"/> <?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_AUTOMATICALLY_PROFESSIONAL_TRANSLATE'); ?>
 			</div>
 		</div>
