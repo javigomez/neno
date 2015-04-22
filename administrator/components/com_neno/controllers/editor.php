@@ -165,7 +165,8 @@ class NenoControllerEditor extends JControllerAdmin
 
 		$translation
 			->setString($translationText)
-			->setState($changeState);
+			->setState($changeState)
+			->setTranslationMethod(NenoContentElementTranslation::MANUAL_TRANSLATION_METHOD);
 
 		if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
 		{
