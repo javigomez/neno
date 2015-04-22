@@ -29,7 +29,7 @@ $translation = $displayData;
 
 		jQuery('#save-next-button').on('click', saveTranslationAndNext);
 
-		jQuery('body').on('keydown', function(e) {
+		jQuery('body').on('keydown', function (e) {
 			var ev = e || window.event;
 
 			// Ctrl-S
@@ -112,6 +112,9 @@ $translation = $displayData;
 				class="full-width translated-content"><?php echo empty($translation) ? '' : $translation->string; ?></textarea>
 
 			<div class="clearfix"></div>
+			<div class="pull-left">
+				<?php echo JText::sprintf('COM_NENO_EDITOR_TRANSLATED_BY', NenoSettings::get('translator')); ?>
+			</div>
 			<div class="pull-right last-modified">
 				<?php echo empty($translation) ? '' : JText::sprintf('COM_NENO_EDITOR_LAST_MODIFIED', $translation->time_changed !== '0000-00-00 00:00:00' ? $translation->time_changed : JText::_('COM_NENO_EDITOR_NEVER')) ?>
 			</div>
