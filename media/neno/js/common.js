@@ -24,6 +24,7 @@ function loadNextTranslation() {
 function saveTranslationAndNext() {
     var text = jQuery('.translated-content').val();
     var translationId = jQuery('#save-next-button').data('id');
+    var statuses = ['', 'translated', 'queued', 'changed', 'not-translated'];
     jQuery.post(
         'index.php?option=com_neno&task=editor.saveAsCompleted',
         {
@@ -31,14 +32,16 @@ function saveTranslationAndNext() {
             text: text
         }
         , function (data) {
-            var row = jQuery('#elements-wrapper .string[data-id=' +  data.id + ']');
-            var string = data.string;
-            if (string.length > 40) {
-                string = string.substr(0, 35) + '...';
+            var row = jQuery('#elements-wrapper .string[data-id=' + data.id + ']');
+            if (row) {
+                var string = data.string;
+                if (string.length > 40) {
+                    string = string.substr(0, 35) + '...';
+                }
+                row.find('.string-text').html(string);
+                row.find('.status').removeClass().addClass('status');
+                row.find('.status').addClass(statuses[data.state]);
             }
-            row.find('.string-text').html(string);
-
-            console.log(data.string);
             loadNextTranslation();
         }
         , 'json'
@@ -67,6 +70,7 @@ function translate() {
         {text: text}
         , function (data) {
             jQuery('.translated-content').val(data);
+            jQuery('.translated-by').show();
         }
     );
 }

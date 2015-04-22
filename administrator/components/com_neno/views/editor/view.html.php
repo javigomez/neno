@@ -93,6 +93,8 @@ class NenoViewEditor extends JViewLegacy
 		$this->getStatuses();
 		$this->getTranslationMethods();
 
+
+
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
 		{

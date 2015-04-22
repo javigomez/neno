@@ -72,10 +72,16 @@ button .normal-text {
     text-align: center;
 }
 
+.translated-by,
 .last-modified {
-    color: #ccc;
+    color: #aaa;
     font-style: italic;
 }
+
+.translated-by {
+    display: none;
+}
+
 .breadcrumbs {
     padding-top: 15px;
     color: #999;

@@ -19,6 +19,7 @@ $translation = $displayData;
 	jQuery(document).ready(function () {
 		jQuery('#copy-btn').on('click', function () {
 			jQuery('.translated-content').val(jQuery('.original-text').html().trim());
+			jQuery('.translated-by').hide();
 		});
 
 		jQuery('#translate-btn').on('click', translate);
@@ -112,7 +113,7 @@ $translation = $displayData;
 				class="full-width translated-content"><?php echo empty($translation) ? '' : $translation->string; ?></textarea>
 
 			<div class="clearfix"></div>
-			<div class="pull-left">
+			<div class="pull-left translated-by">
 				<?php echo JText::sprintf('COM_NENO_EDITOR_TRANSLATED_BY', NenoSettings::get('translator')); ?>
 			</div>
 			<div class="pull-right last-modified">

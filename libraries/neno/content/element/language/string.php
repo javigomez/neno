@@ -257,7 +257,8 @@ class NenoContentElementLanguageString extends NenoContentElement
 					if ($defaultLanguage !== $language->lang_code)
 					{
 						// If the string is empty or is a number, let's mark as translated.
-						if (empty($this->getString()) || $this->getString() == (int) $this->getString() || $this->getString() == (float) $this->getString())
+						$string = $this->getString();
+						if (empty($string) || $string == (int) $string || $string == (float) $string)
 						{
 							$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
 						}

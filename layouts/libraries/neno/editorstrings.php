@@ -14,13 +14,13 @@ defined('JPATH_NENO') or die;
 //$document = JFactory::getDocument();
 //$document->addStyleSheet(JUri::root() . '/media/neno/css/editorstrings.css');
 
-$translationStatesClasses                                                                   = array ();
+$translationStatesClasses                                                                   = array();
 $translationStatesClasses[NenoContentElementTranslation::TRANSLATED_STATE]                  = 'translated';
 $translationStatesClasses[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = 'queued';
 $translationStatesClasses[NenoContentElementTranslation::SOURCE_CHANGED_STATE]              = 'changed';
 $translationStatesClasses[NenoContentElementTranslation::NOT_TRANSLATED_STATE]              = 'not-translated';
 
-$translationStatesText                                                                   = array ();
+$translationStatesText                                                                   = array();
 $translationStatesText[NenoContentElementTranslation::TRANSLATED_STATE]                  = JText::_('COM_NENO_STATUS_TRANSLATED');
 $translationStatesText[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_QUEUED');
 $translationStatesText[NenoContentElementTranslation::SOURCE_CHANGED_STATE]              = JText::_('COM_NENO_STATUS_CHANGED');
@@ -51,19 +51,20 @@ $translations = $displayData;
 </script>
 
 
-	<?php /* @var $translation stdClass */ ?>
-	<?php foreach ($translations as $translation): ?>
-		<div class="string" data-id="<?php echo $translation->id; ?>">
-			<div class="status <?php echo $translationStatesClasses[$translation->state]; ?>"
-			     alt="<?php echo $translationStatesText[$translation->state]; ?>"
-			     title="<?php echo $translationStatesText[$translation->state]; ?>">
-			</div>
-			<div class="string-text"
-			     title="<?php echo NenoHelper::html2text($translation->original_text, 300); ?>">
-				<?php echo NenoHelper::html2text($translation->string, 45); ?>
-			</div>
+<?php /* @var $translation stdClass */ ?>
+<?php foreach ($translations as $translation): ?>
+	<div class="string" data-id="<?php echo $translation->id; ?>">
+		<div class="status <?php echo $translationStatesClasses[$translation->state]; ?>"
+		     alt="<?php echo $translationStatesText[$translation->state]; ?>"
+		     title="<?php echo $translationStatesText[$translation->state]; ?>">
 		</div>
+		<div class="string-text"
+		     title="<?php echo NenoHelper::html2text($translation->original_text, 300); ?>">
+			<?php echo NenoHelper::html2text($translation->string, 45); ?>
+		</div>
+	</div>
 	<div class="clearfix"></div>
 <?php endforeach; ?>
+<>
 
 

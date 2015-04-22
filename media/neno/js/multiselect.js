@@ -68,7 +68,6 @@ function toggleElementVisibility() {
             jQuery('[data-parent="' + data_id + '"]').removeClass('hide')
         }
     } else {
-
         //Collapse
         row.removeClass('expanded').addClass('collapsed');
         jQuery(this).html('<span class="toggle-arrow icon-arrow-right-3"></span>');
