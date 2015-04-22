@@ -36,6 +36,8 @@ $filters = $data['view']->filterForm->getGroup('filter');
 $document = JFactory::getDocument();
 $document->addStyleSheet(JUri::root() . '/media/neno/css/editorfilters.css');
 $document->addScript(JUri::root() . '/media/neno/js/editorfilters.js');
+
+//var_dump($data['extraDisplayData']->methods);
 ?>
 
 <div class="js-stools clearfix">
@@ -57,7 +59,13 @@ $document->addScript(JUri::root() . '/media/neno/js/editorfilters.js');
 	</div>
 	<!-- Filters div -->
 	<div class="js-stools-container-filters hidden-phone clearfix">
-		<?php echo JLayoutHelper::render('joomla.searchtools.default.filters', $data); ?>
+		<?php //echo JLayoutHelper::render('joomla.searchtools.default.filters', $data); ?>
+		<div class="multiselect-wrapper">
+			<?php echo JLayoutHelper::render('simplemultiselect', array('type' => 'method', 'data' => $data['extraDisplayData']->methods), JPATH_NENO_LAYOUTS); ?>
+		</div>
+		<div class="multiselect-wrapper">
+			<?php echo JLayoutHelper::render('simplemultiselect', array('type' => 'status', 'data' => $data['extraDisplayData']->statuses), JPATH_NENO_LAYOUTS); ?>
+		</div>
 		<div class="multiselect-wrapper">
 			<?php echo JLayoutHelper::render('multiselectgroup', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
 		</div>

@@ -61,6 +61,16 @@ class NenoViewEditor extends JViewLegacy
 	protected $groups;
 
 	/**
+	 * @var array
+	 */
+	protected $statuses;
+
+	/**
+	 * @var array
+	 */
+	protected $methods;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -80,6 +90,8 @@ class NenoViewEditor extends JViewLegacy
 		$this->filterForm      = $this->get('FilterForm');
 		$this->activeFilters   = $this->get('ActiveFilters');
 		$this->getGroupData();
+		$this->getStatuses();
+		$this->getTranslationMethods();
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
@@ -111,6 +123,26 @@ class NenoViewEditor extends JViewLegacy
 		}
 
 		$this->groups = $groups;
+	}
+
+	/**
+	 * Load translation statuses for filter
+	 *
+	 * @return void
+	 */
+	protected function getStatuses()
+	{
+		$this->statuses = NenoHelper::getStatuses();
+	}
+
+	/**
+	 * Load translation methods for filter
+	 *
+	 * @return void
+	 */
+	protected function getTranslationMethods()
+	{
+		$this->methods = NenoHelper::getTranslationMethods();
 	}
 
 	/**

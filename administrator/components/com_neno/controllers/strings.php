@@ -29,12 +29,15 @@ class NenoControllerStrings extends JControllerAdmin
 	{
 		NenoLog::log('Method getStrings of NenoControllerEditor called', 3);
 		$input          = JFactory::getApplication()->input;
-		$filterJson     = $input->getString('jsonData');
+		$filterJson     = $input->getString('jsonGroupsElements');
 		$filterArray    = json_decode($filterJson);
 		$filterGroups   = array ();
 		$filterElements = array ();
 		$filterField    = array ();
+		$filterMethods    = array ();
+		$filterStatus    = array ();
 		$outputLayout   = strtolower($input->getString('outputLayout'));
+		$app = JFactory::getApplication();
 
 		NenoLog::log('Processing filtered json data for getStrings', 3);
 
@@ -55,14 +58,26 @@ class NenoControllerStrings extends JControllerAdmin
 		}
 
 		// Set filters into the request.
-		$app = JFactory::getApplication();
 
 		$app->setUserState('com_neno.strings.group', $filterGroups);
 		$app->setUserState('com_neno.strings.element', $filterElements);
 		$app->setUserState('com_neno.strings.field', $filterField);
 
-		$app->setUserState('com_neno.strings.translator_type', $input->getString('method', ''));
-		$app->setUserState('com_neno.strings.translation_status', $input->getString('status', ''));
+		$filterJson     = $input->getString('jsonMethod');
+		$filterArray    = json_decode($filterJson);
+		foreach ($filterArray as $filterItem)
+		{
+			$filterMethods[] = str_replace('method-', '', $filterItem);
+		}
+		$app->setUserState('com_neno.strings.translator_type', $filterMethods);
+
+		$filterJson     = $input->getString('jsonStatus');
+		$filterArray    = json_decode($filterJson);
+		foreach ($filterArray as $filterItem)
+		{
+			$filterStatus[] = (int) str_replace('status-', '', $filterItem);
+		}
+		$app->setUserState('com_neno.strings.translation_status', $filterStatus);
 
 		$app->setUserState('limit', $input->getInt('limit', 20));
 		$app->setUserState('limitStart', $input->getInt('limitStart', 0));

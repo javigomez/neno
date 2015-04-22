@@ -31,8 +31,17 @@ function saveTranslationAndNext() {
             text: text
         }
         , function (data) {
+            var row = jQuery('#elements-wrapper .string[data-id=' +  data.id + ']');
+            var string = data.string;
+            if (string.length > 40) {
+                string = string.substr(0, 35) + '...';
+            }
+            row.find('.string-text').html(string);
+
+            console.log(data.string);
             loadNextTranslation();
         }
+        , 'json'
     );
 }
 

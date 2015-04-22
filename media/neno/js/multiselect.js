@@ -19,10 +19,16 @@ function bindEvents() {
 
     jQuery('#table-multiselect .cell-expand').click(toggleElementVisibility);
 
-    jQuery('#table-multiselect input[type=checkbox]').click(function() {
+    jQuery('#table-multiselect input[type=checkbox]').unbind('click').click(function() {
         document.adminForm.limitstart.value = 0;
         jQuery('#elements-wrapper').html('');
-        loadStrings(jQuery(this));
+        checkUncheckFamilyCheckboxes(jQuery(this));
+        loadStrings();
+    });
+    jQuery('#status-multiselect input[type=checkbox], #method-multiselect input[type=checkbox]').unbind('click').click(function() {
+        document.adminForm.limitstart.value = 0;
+        jQuery('#elements-wrapper').html('');
+        loadStrings();
     });
 }
 
@@ -70,22 +76,21 @@ function toggleElementVisibility() {
     }
 }
 
-function loadStrings(checkbox) {
-    //var checkbox = jQuery(this);
-    if (document.adminForm.outputLayout.value != 'editorStrings') {
-        checkUncheckFamilyCheckboxes(checkbox);
-    }
-    var checked = JSON.stringify(getMultiSelectValue(checkbox.closest('table')));
-    jQuery('#multiselect-value').val(checked);
+function loadStrings() {
+    var checkedGroupsElements = JSON.stringify(getMultiSelectValue(jQuery('#table-multiselect')));
+    var checkedStatus = JSON.stringify(getMultiSelectValue(jQuery('#status-multiselect')));
+    var checkedMethod = JSON.stringify(getMultiSelectValue(jQuery('#method-multiselect')));
+
+    jQuery('#multiselect-value').val(checkedGroupsElements);
     jQuery.ajax({
         type: "POST",
         url: "index.php?option=com_neno&task=strings.getStrings",
         data: {
-            jsonData: checked,
+            jsonGroupsElements: checkedGroupsElements,
             limitStart: document.adminForm.limitstart.value,
             limit: document.adminForm.list_limit.value,
-            status: document.adminForm.filter_translation_status.value,
-            method: document.adminForm.filter_translator_type.value,
+            jsonStatus: checkedStatus,
+            jsonMethod: checkedMethod,
             outputLayout: document.adminForm.outputLayout.value
         }
     })
@@ -122,6 +127,18 @@ function getMultiSelectValue(table) {
     return result;
 }
 
+function getSimpleMultiSelectValue(table) {
+    var result = [],
+        checks = jQuery('#' + table.attr('id') + ' input[type=checkbox]');
+    for (var i = 0; i < checks.length; i++) {
+        if (jQuery(checks[i]).prop('checked')) {
+            var row = jQuery(checks[i]).closest('tr');
+            checked.push(row.attr('data-id'));
+        }
+    }
+    return result;
+}
+
 /**
  * Check and uncheck checkboxes
  *  - Parent click: check/uncheck all children
@@ -150,17 +167,18 @@ function checkUncheckFamilyCheckboxes(checkbox) {
 function setFilterTags(form) {
     jQuery('#filter-tags-wrapper').html('');
     var search = jQuery(form.filter_search);
-    var status = jQuery(form.filter_translation_status);
-    var method = jQuery(form.filter_translator_type);
+    var status = getMultiSelectValue(jQuery('#status-multiselect'));
+    var method = getMultiSelectValue(jQuery('#method-multiselect'));
 
     if (search.val() !== '') {
         printFilterTag('search', '"' + search.val() + '"');
     }
-    if (status.val() !== '') {
-        printFilterTag('status', status.find('option:selected').html());
+
+    for (s in status) {
+        printFilterTag(status[s], jQuery('[data-id="' + status[s] + '"]').attr('data-label'));
     }
-    if (method.val() !== '') {
-        printFilterTag('method', method.find('option:selected').html());
+    for (m in method) {
+        printFilterTag(method[m], jQuery('[data-id="' + method[m] + '"]').attr('data-label'));
     }
     //var checked = getMultiSelectValue(form.find('#multiselect table'));
 }
@@ -168,4 +186,11 @@ function setFilterTags(form) {
 function printFilterTag(type, label) {
     var tag = jQuery('<div class="filter-tag btn btn-small disabled" data-type="' + type + '"><span class="removeTag icon-remove"></span>' + label + '</div>');
     jQuery('#filter-tags-wrapper').append(tag);
+    tag.find('.removeTag').click(function(){
+        jQuery('[data-id="' + type + '"]').find('input[type=checkbox]').prop('checked', false);
+        document.adminForm.limitstart.value = 0;
+        jQuery('#elements-wrapper').html('');
+        loadStrings();
+        jQuery(this).parent().remove();
+    });
 }

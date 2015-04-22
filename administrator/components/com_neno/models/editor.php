@@ -183,16 +183,18 @@ class NenoModelEditor extends JModelList
 			$query->where('(' . implode(' OR ', $queryWhere) . ')');
 		}
 
-		$method = $this->getState('filter.translator_type', '');
-		if ($method)
+		$method = $this->getState('filter.translator_type', array ());
+		if (count($method))
 		{
-			$query->where('translation_method = "' . $method . '"');
+			$dbStrings->where('tr.translation_method IN ("' . implode('", "', $method) . '"');
+			$languageFileStrings->where('tr.translation_method IN ("' . implode('", "', $method) . '"');
 		}
 
-		$status = $this->getState('filter.translation_status', '');
-		if ($status)
+		$status = $this->getState('filter.translation_status', array ());
+		if (count($status))
 		{
-			$query->where('tr.state =' . $status);
+			$dbStrings->where('tr.state IN ' . implode(', ', $status));
+			$languageFileStrings->where('tr.state IN ' . implode(', ', $status));
 		}
 
 		return $query;

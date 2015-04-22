@@ -32,6 +32,8 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/editor.css');
 	      name="adminForm" id="adminForm">
 		<?php $extraDisplayData = new stdClass; ?>
 		<?php $extraDisplayData->groups = $this->groups; ?>
+		<?php $extraDisplayData->statuses = $this->statuses; ?>
+		<?php $extraDisplayData->methods = $this->methods; ?>
 		<?php echo JLayoutHelper::render('editorfilters', array('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS); ?>
 		<input type="hidden" name="limitstart" id="limitstart" value="0"/>
 		<input type="hidden" name="list_limit" id="list_limit" value="20"/>

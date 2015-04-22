@@ -118,6 +118,22 @@ class NenoModelStrings extends JModelList
 			$this->setState('filter.field', $fields);
 		}
 
+		// Status filtering
+		$status = $app->getUserState($this->context . '.translation_status', array ());
+
+		if (!empty($status))
+		{
+			$this->setState('filter.translation_status', $status);
+		}
+
+		// Translation methods filtering
+		$method = $app->getUserState($this->context . '.translator_type', array ());
+
+		if (!empty($method))
+		{
+			$this->setState('filter.translator_type', $method);
+		}
+
 		// Offset
 		//$group = $app->getUserStateFromRequest('list_limit', 'limit', 0, 'int');
 		$this->setState('limit', $app->getUserState('limit', 20));
@@ -214,20 +230,18 @@ class NenoModelStrings extends JModelList
 			$dbStrings->where('(' . implode(' OR ', $queryWhereDb) . ')');
 		}
 
-		$method = $this->getState('filter.translator_type', '');
-
-		if ($method)
+		$method = $this->getState('filter.translator_type', array ());
+		if (count($method))
 		{
-			$dbStrings->where('tr.translation_method = ' . $db->quote($method));
-			$languageFileStrings->where('tr.translation_method = ' . $db->quote($method));
+			$dbStrings->where('tr1.translation_method IN ("' . implode('", "', $method) . '")');
+			$languageFileStrings->where('tr2.translation_method IN ("' . implode('", "', $method) . '")');
 		}
 
-		$status = $this->getState('filter.translation_status', '');
-
-		if ($status)
+		$status = $this->getState('filter.translation_status', array ());
+		if (count($status))
 		{
-			$dbStrings->where('tr.state =' . (int) $status);
-			$languageFileStrings->where('tr.state =' . (int) $status);
+			$dbStrings->where('tr1.state IN (' . implode(', ', $status) . ')');
+			$languageFileStrings->where('tr2.state IN (' . implode(', ', $status) . ')');
 		}
 
 		$limit  = $this->getState('limit', 20);
