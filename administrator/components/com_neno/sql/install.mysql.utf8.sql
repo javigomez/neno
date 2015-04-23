@@ -135,10 +135,10 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_fields_x_translations` (
   PRIMARY KEY (`field_id`, `translation_id`),
   KEY `fk_#__neno_content_element_fields_idx` (`translation_id`),
   KEY `fk_#__neno_content_element_fields_idx1` (`field_id`),
-  CONSTRAINT `fk_#__neno_content_element_fields_has_#__neno_content_element1` FOREIGN KEY (`field_id`) REFERENCES `#__neno_content_element_fields` (`id`)
+  CONSTRAINT `fk_#__neno_content_element_fields_has_#__neno_content2a1` FOREIGN KEY (`field_id`) REFERENCES `#__neno_content_element_fields` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_#__neno_content_element_fields_has_#__neno_content_element2` FOREIGN KEY (`translation_id`) REFERENCES `#__neno_content_element_translations` (`id`)
+  CONSTRAINT `fk_#__neno_content_element_fields_has_#__neno_conten123` FOREIGN KEY (`translation_id`) REFERENCES `#__neno_content_element_translations` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 )
@@ -252,7 +252,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups_x_extensions` (
   CONSTRAINT `fk_extensions` FOREIGN KEY (`extension_id`) REFERENCES `#__extensions` (`extension_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_#__neno_content_element_groups_x_extensions_#__neno_conten1` FOREIGN KEY (`group_id`) REFERENCES `#__neno_content_element_groups` (`id`)
+  CONSTRAINT `fk_#__neno_content_element_groups_x_extensio` FOREIGN KEY (`group_id`) REFERENCES `#__neno_content_element_groups` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 )
