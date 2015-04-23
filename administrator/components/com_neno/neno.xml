@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--suppress ALL -->
-<extension type="component"
-           version="3.0"
-           method="upgrade">
+<extension type="component" version="3.0" method="upgrade">
     <name>com_neno</name>
-    <creationDate>2014-10-02</creationDate>
-    <copyright>Copyright (C) 2014. All rights reserved.</copyright>
+    <creationDate>XXX_DATE_XXX</creationDate>
+    <copyright>Copyright (C) XXX_COPYRIGHT_YEAR_XXX. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-    <author>Soren Beck Jensen</author>
-    <authorEmail>soren@notwebdesign.com</authorEmail>
-    <authorUrl>http://www.notwebdesign.com</authorUrl>
-    <version>1.0.0</version>
+    <author>Jensen Technologies S.L.</author>
+    <authorEmail>info@jensen.technology</authorEmail>
+    <authorUrl>http://www.jensen.technology</authorUrl>
+    <version>XXX_VERSION_XXX</version>
     <description>The complete translation solution for Joomla</description>
 
     <scriptfile>script.php</scriptfile>
@@ -72,13 +69,10 @@
             <filename>index.html</filename>
             <filename>neno.php</filename>
             <folder>controllers</folder>
-            <folder>assets</folder>
-            <folder>helpers</folder>
             <folder>models</folder>
             <folder>sql</folder>
             <folder>tables</folder>
             <folder>views</folder>
-            <folder>language</folder>
         </files>
         <languages folder="administrator">
 
