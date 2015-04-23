@@ -248,7 +248,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups_x_extensions` (
   `group_id`     INT(11) NOT NULL,
   PRIMARY KEY (`extension_id`, `group_id`),
   UNIQUE KEY `unique_group_extension` (`extension_id`),
-  KEY `fk_#__neno_content_element_groups_x_extensions_#__neno_cont_idx` (`group_id`),
+  KEY `fk_#__neno_content_element_groups_x_exten_idx` (`group_id`),
   CONSTRAINT `fk_extensions` FOREIGN KEY (`extension_id`) REFERENCES `#__extensions` (`extension_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
