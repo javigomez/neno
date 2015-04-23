@@ -10,8 +10,6 @@
     <version>XXX_VERSION_XXX</version>
     <description>The complete translation solution for Joomla</description>
 
-    <scriptfile>script.php</scriptfile>
-
     <install> <!-- Runs on install -->
         <sql>
             <file driver="mysql"
