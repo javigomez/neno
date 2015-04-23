@@ -67,8 +67,8 @@
             <folder>views</folder>
         </files>
         <languages folder="administrator">
-            <language tag="en-GB">language/en-GB/en-GB.com_neno.ini</language>
-            <language tag="en-GB">language/en-GB/en-GB.com_neno.sys.ini</language>
+            <language tag="en-GB">languages/en-GB/en-GB.com_neno.ini</language>
+            <language tag="en-GB">languages/en-GB/en-GB.com_neno.sys.ini</language>
         </languages>
     </administration>
 
