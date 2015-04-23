@@ -12,23 +12,17 @@
     <scriptfile>script.php</scriptfile>
     <install>
         <sql>
-            <file driver="mysql" charset="utf8">
-                sql/install.mysql.utf8.sql
-            </file>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
         </sql>
     </install>
     <uninstall>
         <sql>
-            <file driver="mysql" charset="utf8">
-                sql/uninstall.mysql.utf8.sql
-            </file>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
         </sql>
     </uninstall>
     <update>
         <schemas>
-            <schemapath type="mysql">
-                sql/updates
-            </schemapath>
+            <schemapath type="mysql">sql/updates</schemapath>
         </schemas>
     </update>
     <files folder="front">
