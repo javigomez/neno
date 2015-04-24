@@ -230,7 +230,7 @@ class NenoModelStrings extends JModelList
 
 		$status = (array) $this->getState('filter.translation_status', array ());
 
-		if (count($status))
+		if (count($status) && $status[0] !== '')
 		{
 			$dbStrings->where('tr1.state IN (' . implode(', ', $status) . ')');
 			$languageFileStrings->where('tr2.state IN (' . implode(', ', $status) . ')');
