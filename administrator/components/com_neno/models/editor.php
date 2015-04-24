@@ -28,11 +28,11 @@ class NenoModelEditor extends JModelList
 	 * @see        JController
 	 * @since      1.6
 	 */
-	public function __construct($config = array())
+	public function __construct($config = array ())
 	{
 		if (empty($config['filter_fields']))
 		{
-			$config['filter_fields'] = array(/*'id', 'a.id',
+			$config['filter_fields'] = array (/*'id', 'a.id',
 				'string', 'a.string',
 				'constant', 'a.constant',
 				'lang', 'a.lang',
@@ -48,32 +48,16 @@ class NenoModelEditor extends JModelList
 	}
 
 	/**
-	 * Get all the existing tables in the database
-	 *
-	 * @param   string|null $type Extension type or null no filter will be applied.
+	 * Get all the items
 	 *
 	 * @return array
 	 */
-	public function getExtensionsByType($type = null)
-	{
-		$this->setState('extension.type', $type);
-		$extensions = $this->getItems();
-
-		return $extensions;
-	}
-
 	public function getItems()
 	{
-		$elements     = parent::getItems();
-		$translations = array();
+		/* @var $stringModel NenoModelStrings */
+		$stringModel = NenoHelper::getModel('strings');
 
-		foreach ($elements as $element)
-		{
-			$translation    = new NenoContentElementTranslation($element);
-			$translations[] = $translation->prepareDataForView();
-		}
-
-		return $translations;
+		return $stringModel->getItems();
 	}
 
 	/**
@@ -95,7 +79,7 @@ class NenoModelEditor extends JModelList
 			$this->setState('filter.group_id', $group);
 		}
 
-		$groups = $app->getUserState($this->context . '.group', array());
+		$groups = $app->getUserState($this->context . '.group', array ());
 
 		if (!empty($groups))
 		{
@@ -103,7 +87,7 @@ class NenoModelEditor extends JModelList
 		}
 
 		// Element(s) filtering
-		$elements = $app->getUserState($this->context . '.element', array());
+		$elements = $app->getUserState($this->context . '.element', array ());
 
 		if (!empty($elements))
 		{
@@ -111,7 +95,7 @@ class NenoModelEditor extends JModelList
 		}
 
 		// Field(s) filtering
-		$fields = $app->getUserState($this->context . '.field', array());
+		$fields = $app->getUserState($this->context . '.field', array ());
 
 		if (!empty($fields))
 		{
@@ -120,83 +104,5 @@ class NenoModelEditor extends JModelList
 
 		// List state information.
 		parent::populateState('a.id', 'asc');
-	}
-
-	/**
-	 * Build an SQL query to load the list data.
-	 *
-	 * @return    JDatabaseQuery
-	 *
-	 * @since    1.6
-	 */
-	protected function getListQuery()
-	{
-		$db              = JFactory::getDbo();
-		$workingLanguage = NenoHelper::getWorkingLanguage();
-
-		NenoLog::log('Querying #__neno_content_element_tables from getListQuery of NenoModelStrings', 3);
-
-		// Create a new query object.
-		$query = parent::getListQuery();
-
-		$query
-			->select('tr.*')
-			->from('`#__neno_content_element_tables` AS t')
-			->leftJoin('`#__neno_content_element_fields` AS f ON t.id = f.table_id AND f.translate = 1')
-			->leftJoin('`#__neno_content_element_translations` AS tr ON tr.content_id = f.id')
-			->where('tr.language = ' . $db->quote($workingLanguage));
-
-		$queryWhere = array();
-
-		/* @var $groups array */
-		$groups = $this->getState('filter.group_id', array());
-
-		/* @var $element array */
-		$element = $this->getState('filter.element', array());
-
-		/* @var $field array */
-		$field = $this->getState('filter.field', array());
-
-		if (!is_array($groups))
-		{
-			$groups = array($groups);
-		}
-
-		if (!empty($groups))
-		{
-			$queryWhere[] = 't.group_id IN (' . implode(', ', $groups) . ')';
-		}
-
-
-		if (!empty($element))
-		{
-			$queryWhere[] = 't.id IN (' . implode(', ', $element) . ')';
-		}
-
-		if (!empty($field))
-		{
-			$queryWhere[] = 'f.id IN (' . implode(', ', $field) . ')';
-		}
-
-		if (count($queryWhere))
-		{
-			$query->where('(' . implode(' OR ', $queryWhere) . ')');
-		}
-
-		$method = $this->getState('filter.translator_type', array ());
-		if (count($method))
-		{
-			$dbStrings->where('tr.translation_method IN ("' . implode('", "', $method) . '"');
-			$languageFileStrings->where('tr.translation_method IN ("' . implode('", "', $method) . '"');
-		}
-
-		$status = $this->getState('filter.translation_status', array ());
-		if (count($status))
-		{
-			$dbStrings->where('tr.state IN ' . implode(', ', $status));
-			$languageFileStrings->where('tr.state IN ' . implode(', ', $status));
-		}
-
-		return $query;
 	}
 }

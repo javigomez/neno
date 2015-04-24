@@ -103,7 +103,7 @@ class NenoHelper
 
 		$assetName = 'com_neno';
 
-		$actions = array(
+		$actions = array (
 			'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
 		);
 
@@ -127,7 +127,7 @@ class NenoHelper
 		$app = JFactory::getApplication();
 
 		// If there is a language constant then start with that
-		$displayData = array(
+		$displayData = array (
 			'view' => $app->input->getCmd('view', '')
 		);
 
@@ -140,7 +140,7 @@ class NenoHelper
 		$adminTitleLayout = JLayoutHelper::render('toolbar', $displayData, JPATH_NENO_LAYOUTS);
 		$layout           = new JLayoutFile('joomla.toolbar.title');
 		/** @noinspection PhpParamsInspection */
-		$html = $layout->render(array('title' => $adminTitleLayout, 'icon' => 'nope'));
+		$html = $layout->render(array ('title' => $adminTitleLayout, 'icon' => 'nope'));
 		/** @noinspection PhpUndefinedFieldInspection */
 		$app->JComponentTitle = $html;
 	}
@@ -167,7 +167,7 @@ class NenoHelper
 				->select('profile_value')
 				->from('#__user_profiles')
 				->where(
-					array(
+					array (
 						'user_id = ' . intval($userId),
 						'profile_key = ' . $db->quote('neno_working_language')
 					)
@@ -196,7 +196,7 @@ class NenoHelper
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
 
 		// Create a simple array
-		$arr = array();
+		$arr = array ();
 
 		foreach ($languages as $lang)
 		{
@@ -265,7 +265,7 @@ class NenoHelper
 		$query
 			->replace('#__user_profiles')
 			->set(
-				array(
+				array (
 					'profile_value = ' . $db->quote($lang),
 					'profile_key = ' . $db->quote('neno_working_language'),
 					'user_id = ' . intval($userId)
@@ -289,7 +289,7 @@ class NenoHelper
 	 */
 	public static function convertStdClassArrayToJObjectArray(array $objectList)
 	{
-		$jObjectList = array();
+		$jObjectList = array ();
 
 		foreach ($objectList as $object)
 		{
@@ -308,7 +308,7 @@ class NenoHelper
 	 */
 	public static function convertNenoObjectListToJObjectList(array $objectList)
 	{
-		$jObjectList = array();
+		$jObjectList = array ();
 
 		/* @var $object NenoObject */
 		foreach ($objectList as $object)
@@ -343,7 +343,7 @@ class NenoHelper
 	{
 		$prefix = JFactory::getDbo()->getPrefix();
 
-		return $prefix . str_replace(array('com_'), '', strtolower($componentName));
+		return $prefix . str_replace(array ('com_'), '', strtolower($componentName));
 	}
 
 	/**
@@ -356,7 +356,7 @@ class NenoHelper
 	 */
 	public static function convertOnePropertyObjectListToArray($objectList, $propertyName = null)
 	{
-		$arrayResult = array();
+		$arrayResult = array ();
 
 		if (!empty($objectList))
 		{
@@ -386,7 +386,7 @@ class NenoHelper
 	 */
 	public static function convertOnePropertyArrayToSingleArray($objectList, $propertyName = null)
 	{
-		$arrayResult = array();
+		$arrayResult = array ();
 
 		if (!empty($objectList))
 		{
@@ -447,7 +447,7 @@ class NenoHelper
 	 */
 	public static function convertDatabaseArrayToClassArray(array $databaseArray)
 	{
-		$objectData = array();
+		$objectData = array ();
 
 		foreach ($databaseArray as $fieldName => $fieldValue)
 		{
@@ -472,11 +472,11 @@ class NenoHelper
 		// If there are word left, let's capitalize them.
 		if (!empty($nameParts))
 		{
-			$nameParts = array_merge(array($firstWord), array_map('ucfirst', $nameParts));
+			$nameParts = array_merge(array ($firstWord), array_map('ucfirst', $nameParts));
 		}
 		else
 		{
-			$nameParts = array($firstWord);
+			$nameParts = array ($firstWord);
 		}
 
 		return implode('', $nameParts);
@@ -530,13 +530,13 @@ class NenoHelper
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$extensions = array_map(array('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
+		$extensions = array_map(array ('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
 
 		$query
 			->select('e.*')
 			->from('`#__extensions` AS e')
 			->where(
-				array(
+				array (
 					'e.type IN (' . implode(',', $extensions) . ')',
 					'e.name NOT LIKE \'com_neno\'',
 				)
@@ -556,7 +556,7 @@ class NenoHelper
 			}
 			else
 			{
-				$group = new NenoContentElementGroup(array('group_name' => $extension['name']));
+				$group = new NenoContentElementGroup(array ('group_name' => $extension['name']));
 			}
 
 			$group->addExtension($extension['extension_id']);
@@ -580,12 +580,12 @@ class NenoHelper
 
 		if (!empty($tablesNotDiscovered))
 		{
-			$otherGroup = new NenoContentElementGroup(array('group_name' => 'Other'));
+			$otherGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
 
 			foreach ($tablesNotDiscovered as $tableNotDiscovered)
 			{
 				// Create an array with the table information
-				$tableData = array(
+				$tableData = array (
 					'tableName'  => $tableNotDiscovered,
 					'primaryKey' => $db->getPrimaryKey($tableNotDiscovered),
 					'translate'  => true,
@@ -600,7 +600,7 @@ class NenoHelper
 
 				foreach ($fields as $fieldName => $fieldType)
 				{
-					$fieldData = array(
+					$fieldData = array (
 						'fieldName' => $fieldName,
 						'fieldType' => $fieldType,
 						'translate' => NenoContentElementField::isTranslatableType($fieldType),
@@ -623,7 +623,7 @@ class NenoHelper
 	 */
 	protected static function whichExtensionsShouldBeTranslated()
 	{
-		return array(
+		return array (
 			'component',
 			'module',
 			'plugin',
@@ -721,7 +721,7 @@ class NenoHelper
 		$defaultLanguage     = JFactory::getLanguage()->getDefault();
 		$languageFilePattern = preg_quote($defaultLanguage) . '\.' . $extensionName . '\.(((\w)*\.)^sys)?ini';
 		$languageFilesPath   = JFolder::files(JPATH_ROOT . "/language/$defaultLanguage/", $languageFilePattern);
-		$languageFiles       = array();
+		$languageFiles       = array ();
 
 		foreach ($languageFilesPath as $languageFilePath)
 		{
@@ -732,7 +732,7 @@ class NenoHelper
 				if (self::isLanguageFileAlreadyDiscovered($languageFilePath))
 				{
 					$languageFile = NenoContentElementLanguageFile::load(
-						array(
+						array (
 							'filename' => $languageFilePath
 						)
 					);
@@ -740,7 +740,7 @@ class NenoHelper
 				else
 				{
 					$languageFile = new NenoContentElementLanguageFile(
-						array(
+						array (
 							'filename'  => $languageFilePath,
 							'extension' => $extensionName
 						)
@@ -770,7 +770,7 @@ class NenoHelper
 	{
 		$fileParts = explode('.', $languageFileName);
 
-		$result = self::removeCoreLanguageFilesFromArray(array($languageFileName), $fileParts[0]);
+		$result = self::removeCoreLanguageFilesFromArray(array ($languageFileName), $fileParts[0]);
 
 		return empty($result);
 	}
@@ -787,7 +787,7 @@ class NenoHelper
 	{
 		// Get all the language files from Joomla core extensions based on a particular language
 		$coreFiles  = self::getJoomlaCoreLanguageFiles($language);
-		$validFiles = array();
+		$validFiles = array ();
 
 		// Filter
 		foreach ($files as $file)
@@ -814,7 +814,7 @@ class NenoHelper
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db         = JFactory::getDbo();
 		$query      = $db->getQuery(true);
-		$extensions = array_map(array('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
+		$extensions = array_map(array ('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
 
 		$query
 			->select(
@@ -824,14 +824,14 @@ class NenoHelper
 			)
 			->from('#__extensions')
 			->where(
-				array(
+				array (
 					'extension_id < 10000',
 					'type IN (' . implode(',', $extensions) . ')'
 				)
 			);
 
 		$db->setQuery($query);
-		$joomlaCoreLanguageFiles = array_merge($db->loadArray(), array($language . '.ini'));
+		$joomlaCoreLanguageFiles = array_merge($db->loadArray(), array ($language . '.ini'));
 
 		return $joomlaCoreLanguageFiles;
 	}
@@ -873,7 +873,7 @@ class NenoHelper
 		$db     = JFactory::getDbo();
 		$tables = $db->getComponentTables($tablePattern === null ? $group->getGroupName() : $tablePattern);
 
-		$result = array();
+		$result = array ();
 
 		for ($i = 0; $i < count($tables); $i++)
 		{
@@ -883,7 +883,7 @@ class NenoHelper
 			if (!self::isTableAlreadyDiscovered($tableName))
 			{
 				// Create an array with the table information
-				$tableData = array(
+				$tableData = array (
 					'tableName'  => $tableName,
 					'primaryKey' => $db->getPrimaryKey($tableName),
 					'translate'  => true,
@@ -898,7 +898,7 @@ class NenoHelper
 
 				foreach ($fields as $fieldName => $fieldType)
 				{
-					$fieldData = array(
+					$fieldData = array (
 						'fieldName' => $fieldName,
 						'fieldType' => $fieldType,
 						'translate' => NenoContentElementField::isTranslatableType($fieldType),
@@ -911,7 +911,7 @@ class NenoHelper
 			}
 			else
 			{
-				$table = NenoContentElementTable::load(array('table_name' => $tableName, 'group_id' => $group->getId()));
+				$table = NenoContentElementTable::load(array ('table_name' => $tableName, 'group_id' => $group->getId()));
 			}
 
 			if (!empty($table))
@@ -934,7 +934,7 @@ class NenoHelper
 	{
 		$prefix = JFactory::getDbo()->getPrefix();
 
-		return '#__' . str_replace(array($prefix, '#__'), '', $tableName);
+		return '#__' . str_replace(array ($prefix, '#__'), '', $tableName);
 	}
 
 	/**
@@ -984,7 +984,7 @@ class NenoHelper
 			->select('REPLACE(TABLE_NAME, ' . $db->quote($dbPrefix) . ', \'#__\') AS table_name')
 			->from('INFORMATION_SCHEMA.TABLES AS dbt')
 			->where(
-				array(
+				array (
 					'TABLE_TYPE = ' . $db->quote('BASE TABLE'),
 					'TABLE_SCHEMA = ' . $db->quote($database),
 					'NOT EXISTS ( ' . (string) $subQuery . ')'
@@ -1028,7 +1028,7 @@ class NenoHelper
 	 */
 	public static function getLanguageStringFromLanguageKey($languageKey)
 	{
-		$info = array();
+		$info = array ();
 
 		if (empty($languageKey))
 		{
@@ -1072,7 +1072,7 @@ class NenoHelper
 			->select('1')
 			->from(NenoContentElementLanguageString::getDbTable())
 			->where(
-				array(
+				array (
 					'languagefile_id = ' . $languageFile->getId(),
 					'constant = ' . $db->quote($constant)
 				)
@@ -1187,7 +1187,7 @@ class NenoHelper
 	 *
 	 * @return string
 	 */
-	public static function renderTranslationMethodsAsCSV($methods = array())
+	public static function renderTranslationMethodsAsCSV($methods = array ())
 	{
 		if (!empty($methods))
 		{
@@ -1208,7 +1208,7 @@ class NenoHelper
 	 */
 	public static function getGroupOptions()
 	{
-		$options = array();
+		$options = array ();
 
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true)
@@ -1265,7 +1265,7 @@ class NenoHelper
 	 */
 	public static function getGroups($loadExtraData = true)
 	{
-		$cacheId   = NenoCache::getCacheId(__FUNCTION__, array(1));
+		$cacheId   = NenoCache::getCacheId(__FUNCTION__, array (1));
 		$cacheData = NenoCache::getCacheData($cacheId);
 
 		if ($cacheData === null)
@@ -1319,7 +1319,7 @@ class NenoHelper
 		$db->setQuery($query);
 		$statuses = $db->loadArray();
 
-		$translationStatuses = array();
+		$translationStatuses = array ();
 		foreach ($statuses as $status)
 		{
 			$translationStatuses[$status] = $translationStatesText[$status];
@@ -1335,26 +1335,26 @@ class NenoHelper
 	 */
 	public static function getTranslationMethods()
 	{
-		$translationMethodsText                                                                 = array ();
-		$translationMethodsText[NenoContentElementTranslation::MACHINE_TRANSLATION_METHOD]      = JText::_('COM_NENO_TRANSLATION_METHOD_MACHINE');
-		$translationMethodsText[NenoContentElementTranslation::MANUAL_TRANSLATION_METHOD]       = JText::_('COM_NENO_TRANSLATION_METHOD_MANUAL');
-		$translationMethodsText[NenoContentElementTranslation::PROFESSIONAL_TRANSLATION_METHOD] = JText::_('COM_NENO_TRANSLATION_METHOD_PROFESSIONAL');
-
 		// Create a new query object.
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query
-			->select('DISTINCT translation_method')
-			->from('`#__neno_content_element_translations`');
+			->select(
+				array (
+					'id',
+					'name_constant'
+				)
+			)
+			->from('`#__neno_translation_methods`');
 
 		$db->setQuery($query);
-		$methods = $db->loadArray();
+		$methods = $db->loadAssocList('id');
 
-		$translationMethods = array();
-		foreach ($methods as $method)
+		$translationMethods = array ();
+		foreach ($methods as $id => $methodData)
 		{
-			$translationMethods[$method] = $translationMethodsText[$method];
+			$translationMethods[$id] = JText::_($methodData['name_constant']);
 		}
 
 		return $translationMethods;
@@ -1370,7 +1370,7 @@ class NenoHelper
 	public static function generateRandomString($length = 10)
 	{
 		$result  = null;
-		$replace = array('/', '+', '=');
+		$replace = array ('/', '+', '=');
 		while (!isset($result[$length - 1]))
 		{
 			$result .= str_replace($replace, null, base64_encode(mcrypt_create_iv($length, MCRYPT_RAND)));
@@ -1447,7 +1447,7 @@ class NenoHelper
 			// If the translation comes from database content, let's load it
 			if ($translationType == NenoContentElementTranslation::DB_STRING)
 			{
-				$queryCacheId   = NenoCache::getCacheId('originalTextQuery', array($translationElementId));
+				$queryCacheId   = NenoCache::getCacheId('originalTextQuery', array ($translationElementId));
 				$queryCacheData = NenoCache::getCacheData($queryCacheId);
 
 				if ($queryCacheData === null)
@@ -1455,7 +1455,7 @@ class NenoHelper
 					$query
 						->clear()
 						->select(
-							array(
+							array (
 								'f.field_name',
 								't.table_name'
 							)
@@ -1476,7 +1476,7 @@ class NenoHelper
 				$query
 					->clear()
 					->select(
-						array(
+						array (
 							'f.field_name',
 							'ft.value',
 						)
@@ -1572,19 +1572,6 @@ class NenoHelper
 		return $name;
 	}
 
-	/**
-	 * Escape a string
-	 *
-	 * @param   mixed $value Value
-	 *
-	 * @return string
-	 */
-	private static function escapeString($value)
-	{
-		return JFactory::getDbo()->quote($value);
-	}
-
-
 	public static function renderTranslationMethodSelector($group_id)
 	{
 
@@ -1648,7 +1635,6 @@ class NenoHelper
 
 	}
 
-
 	public static function loadTranslationMethods()
 	{
 
@@ -1663,6 +1649,18 @@ class NenoHelper
 
 		return $rows;
 
+	}
+
+	/**
+	 * Escape a string
+	 *
+	 * @param   mixed $value Value
+	 *
+	 * @return string
+	 */
+	private static function escapeString($value)
+	{
+		return JFactory::getDbo()->quote($value);
 	}
 
 

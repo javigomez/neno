@@ -48,20 +48,10 @@ class NenoModelStrings extends JModelList
 	}
 
 	/**
-	 * Get all the existing tables in the database
-	 *
-	 * @param   string|null $type Extension type or null no filter will be applied.
+	 * Get elements
 	 *
 	 * @return array
 	 */
-	public function getExtensionsByType($type = null)
-	{
-		$this->setState('extension.type', $type);
-		$extensions = $this->getItems();
-
-		return $extensions;
-	}
-
 	public function getItems()
 	{
 		$elements     = parent::getItems();
@@ -230,14 +220,16 @@ class NenoModelStrings extends JModelList
 			$dbStrings->where('(' . implode(' OR ', $queryWhereDb) . ')');
 		}
 
-		$method = $this->getState('filter.translator_type', array ());
+		$method = (array) $this->getState('filter.translator_type', array ());
+
 		if (count($method))
 		{
 			$dbStrings->where('tr1.translation_method IN ("' . implode('", "', $method) . '")');
 			$languageFileStrings->where('tr2.translation_method IN ("' . implode('", "', $method) . '")');
 		}
 
-		$status = $this->getState('filter.translation_status', array ());
+		$status = (array) $this->getState('filter.translation_status', array ());
+
 		if (count($status))
 		{
 			$dbStrings->where('tr1.state IN (' . implode(', ', $status) . ')');
