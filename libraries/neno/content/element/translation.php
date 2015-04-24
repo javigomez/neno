@@ -121,7 +121,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	protected $timeCompleted;
 
 	/**
-	 * @var string
+	 * @var int
 	 */
 	protected $translationMethod;
 
@@ -301,30 +301,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * Get the language of the string (JISO)
-	 *
-	 * @return string
-	 */
-	public function getLanguage()
-	{
-		return $this->language;
-	}
-
-	/**
-	 * Set the language of the string (JISO)
-	 *
-	 * @param   string $language Language on JISO format
-	 *
-	 * @return NenoContentElementTranslation
-	 */
-	public function setLanguage($language)
-	{
-		$this->language = $language;
-
-		return $this;
-	}
-
-	/**
 	 * Get the translation state
 	 *
 	 * @return int
@@ -478,6 +454,35 @@ class NenoContentElementTranslation extends NenoContentElement
 	{
 		// Update word counter
 		$this->wordCounter = str_word_count($this->getString());
+		$db                = JFactory::getDbo();
+		$query             = $db->getQuery(true);
+		$query
+			->select('translation_method_id');
+
+		if ($this->contentType === self::DB_STRING)
+		{
+			$query
+				->from('#__neno_content_element_fields AS f')
+				->innerJoin('#__neno_content_element_tables AS t ON f.table_id = t.id')
+				->innerJoin('#__neno_content_element_groups AS g ON t.group_id = g.id')
+				->where('f.id = ' . $this->element->id);
+		}
+		else
+		{
+			$query
+				->from('#__neno_content_element_language_strings AS ls')
+				->innerJoin('#__neno_content_element_language_files AS lf ON ls.languagefile_id = lf.id')
+				->innerJoin('#__neno_content_element_groups AS g ON lf.group_id = g.id')
+				->where('ls.id = ' . $this->element->id);
+		}
+
+		$query
+			->innerJoin('#__neno_content_element_groups_x_translation_methods AS gtm ON gtm.group_id = g.id')
+			->where('lang = ' . $db->quote($this->getLanguage()))
+			->order('ordering ASC');
+
+		$db->setQuery($query, 0, 1);
+		$this->translationMethod = $db->loadResult();
 
 		// Check if this record is new
 		$isNew = $this->isNew();
@@ -495,9 +500,8 @@ class NenoContentElementTranslation extends NenoContentElement
 			{
 				if (!empty($this->sourceElementData))
 				{
-					$db    = JFactory::getDbo();
-					$query = $db->getQuery(true);
 					$query
+						->clear()
 						->insert('#__neno_content_element_fields_x_translations')
 						->columns(
 							array (
@@ -526,6 +530,30 @@ class NenoContentElementTranslation extends NenoContentElement
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the language of the string (JISO)
+	 *
+	 * @return string
+	 */
+	public function getLanguage()
+	{
+		return $this->language;
+	}
+
+	/**
+	 * Set the language of the string (JISO)
+	 *
+	 * @param   string $language Language on JISO format
+	 *
+	 * @return NenoContentElementTranslation
+	 */
+	public function setLanguage($language)
+	{
+		$this->language = $language;
+
+		return $this;
 	}
 
 	/**
@@ -770,5 +798,7 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			return true;
 		}
+
+		return false;
 	}
 }

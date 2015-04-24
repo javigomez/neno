@@ -564,6 +564,7 @@ class NenoHelper
 			$extensionName = self::getExtensionName($extension);
 			$languageFiles = self::getLanguageFiles($extensionName);
 			$tables        = self::getComponentTables($group, $extensionName);
+			$group->setAssignedTranslationMethods(array (1));
 
 			// If the group contains tables and/or language strings, let's save it
 			if (!empty($tables) || !empty($languageFiles))
