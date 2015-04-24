@@ -6,7 +6,37 @@
 
 jQuery(document).ready(function () {
     bindEvents();
+
+    // Load hierarchy if some groups has been marked
+    jQuery('.expanded').each(function () {
+        loadHierarchy(jQuery(this));
+    });
 });
+
+function loadHierarchy(row) {
+    var data_id = row.data('id');
+    var id = data_id.split('-').pop();
+    if (row.data('level') == 1) {
+        if (!row.data('loaded')) {
+            row.addClass('loading');
+            jQuery.get('index.php?option=com_neno&task=strings.getElements&group_id=' + id
+                , function (html) {
+                    row.after(html);
+                    row.data('loaded', true);
+                    bindEvents();
+                    row.removeClass('loading');
+                    checkUncheckFamilyCheckboxes(row.find('input[type=checkbox]').first());
+                }
+            );
+        }
+        else {
+            jQuery('[data-parent="' + data_id + '"]').removeClass('hide')
+        }
+    }
+    else {
+        jQuery('[data-parent="' + data_id + '"]').removeClass('hide')
+    }
+}
 
 function bindEvents() {
     jQuery('.multiselect *').unbind('click');
@@ -47,26 +77,7 @@ function toggleElementVisibility() {
         row.removeClass('collapsed').addClass('expanded');
         jQuery(this).html('<span class="toggle-arrow icon-arrow-down-3"></span>');
 
-        if (row.data('level') == 1) {
-            if (!row.data('loaded')) {
-                row.addClass('loading');
-                jQuery.get('index.php?option=com_neno&task=strings.getElements&group_id=' + id
-                    , function (html) {
-                        row.after(html);
-                        row.data('loaded', true);
-                        bindEvents();
-                        row.removeClass('loading');
-                        checkUncheckFamilyCheckboxes(row.find('input[type=checkbox]').first());
-                    }
-                );
-            }
-            else {
-                jQuery('[data-parent="' + data_id + '"]').removeClass('hide')
-            }
-        }
-        else {
-            jQuery('[data-parent="' + data_id + '"]').removeClass('hide')
-        }
+        loadHierarchy(row);
     } else {
         //Collapse
         row.removeClass('expanded').addClass('collapsed');
