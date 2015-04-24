@@ -56,11 +56,22 @@ class NenoModelStrings extends JModelList
 	{
 		$elements     = parent::getItems();
 		$translations = array ();
+		$groups       = array ();
 
 		foreach ($elements as $element)
 		{
+			if (!empty($element->group_id))
+			{
+				$groups[] = $element->group_id;
+			}
+
 			$translation    = new NenoContentElementTranslation($element, false);
 			$translations[] = $translation->prepareDataForView(true);
+		}
+
+		if (!empty($groups))
+		{
+			$this->setState('filter.parent_group_id', $groups);
 		}
 
 		return $translations;
@@ -84,12 +95,14 @@ class NenoModelStrings extends JModelList
 		}
 
 		// Element(s) filtering
-		$elements = $app->getUserStateFromRequest($this->context . '.element', 'element', array ());
+		$elements = $app->getUserStateFromRequest($this->context . '.table', 'table', array ());
 
 		if (!empty($elements))
 		{
-			$this->setState('filter.element', $elements);
+			$app->setUserState($this->context . '.filter.elements', $elements);
 		}
+
+		$this->setState('filter.element', $app->getUserState($this->context . '.filter.elements'));
 
 		// Field(s) filtering
 		$fields = $app->getUserStateFromRequest($this->context . '.field', 'field', array ());
@@ -100,7 +113,7 @@ class NenoModelStrings extends JModelList
 		}
 
 		// Status filtering
-		$status = $app->getUserStateFromRequest($this->context . '.translation_status', 'translation_status', array ());
+		$status = $app->getUserStateFromRequest($this->context . '.status', 'status', array ());
 
 		if (!empty($status))
 		{
@@ -108,14 +121,14 @@ class NenoModelStrings extends JModelList
 		}
 
 		// Translation methods filtering
-		$method = $app->getUserStateFromRequest($this->context . '.translator_type', 'translator_type', array ());
+		$method = $app->getUserStateFromRequest($this->context . '.type', 'type', array ());
 
 		if (!empty($method))
 		{
 			$app->setUserState($this->context . '.filter.translator_type', $method);
 		}
 
-		$this->setState('filter.translator_type', $app->getUserState($this->context . '.translator_type'));
+		$this->setState('filter.translator_type', $app->getUserState($this->context . '.filter.translator_type'));
 
 		// Offset
 		$this->setState('limit', $app->getUserStateFromRequest('limit', 20));
@@ -191,7 +204,7 @@ class NenoModelStrings extends JModelList
 			$groups = array ($groups);
 		}
 
-		if (!empty($groups))
+		if (!empty($groups) && !in_array('none', $groups))
 		{
 			$queryWhereDb[] = 't.group_id IN (' . implode(', ', $groups) . ')';
 			$languageFileStrings->where('lf.group_id IN (' . implode(', ', $groups) . ')');
@@ -199,11 +212,15 @@ class NenoModelStrings extends JModelList
 
 		if (!empty($element))
 		{
+			$languageFileStrings->select('g2.id AS group_id');
+			$dbStrings->select('g1.id AS group_id');
 			$queryWhereDb[] = 't.id IN (' . implode(', ', $element) . ')';
 		}
 
 		if (!empty($field))
 		{
+			$languageFileStrings->select('g2.id AS group_id');
+			$dbStrings->select('g1.id AS group_id');
 			$queryWhereDb[] = 'f.id IN (' . implode(', ', $field) . ')';
 		}
 
@@ -222,7 +239,7 @@ class NenoModelStrings extends JModelList
 
 		$status = (array) $this->getState('filter.translation_status', array ());
 
-		if (count($status) && $status[0] !== '')
+		if (!empty($status) && $status[0] !== '' && !in_array('none', $status))
 		{
 			$dbStrings->where('tr1.state IN (' . implode(', ', $status) . ')');
 			$languageFileStrings->where('tr2.state IN (' . implode(', ', $status) . ')');

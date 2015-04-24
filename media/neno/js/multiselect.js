@@ -19,7 +19,7 @@ function loadHierarchy(row) {
     if (row.data('level') == 1) {
         if (!row.data('loaded')) {
             row.addClass('loading');
-            jQuery.get('index.php?option=com_neno&task=strings.getElements&group_id=' + id
+            jQuery.get('index.php?option=com_neno&task=' + getParameterByName('view') + '.getElements&group_id=' + id
                 , function (html) {
                     row.after(html);
                     row.data('loaded', true);
@@ -36,6 +36,13 @@ function loadHierarchy(row) {
     else {
         jQuery('[data-parent="' + data_id + '"]').removeClass('hide')
     }
+}
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
 function bindEvents() {
@@ -101,25 +108,29 @@ function loadStrings() {
             urlElements.push(data[0] + '[]=' + data[1]);
         }
     }
+    else {
+        checkedGroupsElements.push('groups-none');
+        urlElements.push('group[]=none');
+    }
 
     if (checkedStatus.length != 0) {
         for (var i = 0; i < checkedStatus.length; i++) {
             var data = checkedStatus[i].split('-');
-            urlElements.push('translation_status[]=' + data[1]);
+            urlElements.push('status[]=' + data[1]);
         }
     } else {
         checkedStatus.push('status-none');
-        urlElements.push('translation_status[]=none');
+        urlElements.push('status[]=none');
     }
 
     if (checkedMethod.length != 0) {
         for (var i = 0; i < checkedMethod.length; i++) {
             var data = checkedMethod[i].split('-');
-            urlElements.push('translator_type[]=' + data[1]);
+            urlElements.push('type[]=' + data[1]);
         }
     } else {
         checkedMethod.push('method-none');
-        urlElements.push('translator_type[]=none');
+        urlElements.push('type[]=none');
     }
 
     var url = document.location.origin + document.location.pathname + '?option=com_neno&view=editor';
@@ -204,7 +215,11 @@ function checkUncheckFamilyCheckboxes(checkbox) {
     var this_id = this_parts[1];
 
     //Check uncheck all children
-    jQuery('[data-parent="' + this_data_id + '"]').find('input[type=checkbox]').prop('checked', state);
+    jQuery('[data-parent="' + this_data_id + '"]').find('input[type=checkbox]:not(:checked)').prop('checked', state);
+
+    jQuery('[data-parent="' + this_data_id + '"]').find('input[type=checkbox]:checked').each(function () {
+        checkUncheckFamilyCheckboxes(jQuery(this));
+    });
 
     //Uncheck parents
     if (state === false) {
