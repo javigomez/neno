@@ -19,13 +19,13 @@ function bindEvents() {
 
     jQuery('#table-multiselect .cell-expand').click(toggleElementVisibility);
 
-    jQuery('#table-multiselect input[type=checkbox]').unbind('click').click(function() {
+    jQuery('#table-multiselect input[type=checkbox]').unbind('click').click(function () {
         document.adminForm.limitstart.value = 0;
         jQuery('#elements-wrapper').html('');
         checkUncheckFamilyCheckboxes(jQuery(this));
         loadStrings();
     });
-    jQuery('#status-multiselect input[type=checkbox], #method-multiselect input[type=checkbox]').unbind('click').click(function() {
+    jQuery('#status-multiselect input[type=checkbox], #method-multiselect input[type=checkbox]').unbind('click').click(function () {
         document.adminForm.limitstart.value = 0;
         jQuery('#elements-wrapper').html('');
         loadStrings();
@@ -76,20 +76,55 @@ function toggleElementVisibility() {
 }
 
 function loadStrings() {
-    var checkedGroupsElements = JSON.stringify(getMultiSelectValue(jQuery('#table-multiselect')));
-    var checkedStatus = JSON.stringify(getMultiSelectValue(jQuery('#status-multiselect')));
-    var checkedMethod = JSON.stringify(getMultiSelectValue(jQuery('#method-multiselect')));
+    var checkedGroupsElements = getMultiSelectValue(jQuery('#table-multiselect'));
+    var checkedStatus = getMultiSelectValue(jQuery('#status-multiselect'));
+    var checkedMethod = getMultiSelectValue(jQuery('#method-multiselect'));
+    var limitStart = document.adminForm.limitstart.value;
+    var limit = document.adminForm.list_limit.value;
+
+    var urlElements = [];
+
+    if (checkedGroupsElements.length != 0) {
+        for (var i = 0; i < checkedGroupsElements.length; i++) {
+            var data = checkedGroupsElements[i].split('-');
+            urlElements.push(data[0] + '[]=' + data[1]);
+        }
+    }
+
+    if (checkedStatus.length != 0) {
+        for (var i = 0; i < checkedStatus.length; i++) {
+            var data = checkedStatus[i].split('-');
+            urlElements.push('translation_status[]=' + data[1]);
+        }
+    }
+
+    if (checkedMethod.length != 0) {
+        for (var i = 0; i < checkedMethod.length; i++) {
+            var data = checkedMethod[i].split('-');
+            urlElements.push('translator_type[]=' + data[1]);
+        }
+    }
+
+    var url = document.location.origin + document.location.pathname + '?option=com_neno&view=editor';
+
+    if (urlElements.length != 0) {
+        history.pushState(null, null, url + '&' + urlElements.join('&'));
+    }
+    else {
+        history.pushState(null, null, url);
+    }
+
 
     jQuery('#multiselect-value').val(checkedGroupsElements);
     jQuery.ajax({
         type: "POST",
         url: "index.php?option=com_neno&task=strings.getStrings",
         data: {
-            jsonGroupsElements: checkedGroupsElements,
-            limitStart: document.adminForm.limitstart.value,
-            limit: document.adminForm.list_limit.value,
-            jsonStatus: checkedStatus,
-            jsonMethod: checkedMethod,
+            jsonGroupsElements: JSON.stringify(checkedGroupsElements),
+            limitStart: limitStart,
+            limit: limit,
+            jsonStatus: JSON.stringify(checkedStatus),
+            jsonMethod: JSON.stringify(checkedMethod),
             outputLayout: document.adminForm.outputLayout.value
         }
     })
@@ -103,7 +138,7 @@ function loadStrings() {
                 if (document.adminForm.outputLayout.value == 'editorStrings') {
                     setFilterTags(document.adminForm);
                 }
-                jQuery('#elements-wrapper').html(jQuery('#elements-wrapper').html() + ret);
+                jQuery('#elements-wrapper').append(ret);
             }
         });
 }
@@ -185,7 +220,7 @@ function setFilterTags(form) {
 function printFilterTag(type, label) {
     var tag = jQuery('<div class="filter-tag btn btn-small disabled" data-type="' + type + '"><span class="removeTag icon-remove"></span>' + label + '</div>');
     jQuery('#filter-tags-wrapper').append(tag);
-    tag.find('.removeTag').click(function(){
+    tag.find('.removeTag').click(function () {
         jQuery('[data-id="' + type + '"]').find('input[type=checkbox]').prop('checked', false);
         document.adminForm.limitstart.value = 0;
         jQuery('#elements-wrapper').html('');
