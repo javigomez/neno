@@ -214,7 +214,7 @@ class NenoModelStrings extends JModelList
 
 		$method = (array) $this->getState('filter.translator_type', array ());
 
-		if (count($method))
+		if (!empty($method) && !in_array('none', $method))
 		{
 			$dbStrings->where('gtm1.translation_method_id IN ("' . implode('", "', $method) . '")');
 			$languageFileStrings->where('gtm2.translation_method_id IN ("' . implode('", "', $method) . '")');

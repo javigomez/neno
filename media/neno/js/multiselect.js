@@ -96,6 +96,9 @@ function loadStrings() {
             var data = checkedStatus[i].split('-');
             urlElements.push('translation_status[]=' + data[1]);
         }
+    } else {
+        checkedStatus.push('status-none');
+        urlElements.push('translation_status[]=none');
     }
 
     if (checkedMethod.length != 0) {
@@ -103,6 +106,9 @@ function loadStrings() {
             var data = checkedMethod[i].split('-');
             urlElements.push('translator_type[]=' + data[1]);
         }
+    } else {
+        checkedMethod.push('method-none');
+        urlElements.push('translator_type[]=none');
     }
 
     var url = document.location.origin + document.location.pathname + '?option=com_neno&view=editor';
