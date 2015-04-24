@@ -11,9 +11,6 @@
 // No direct access
 defined('JPATH_NENO') or die;
 
-//$document = JFactory::getDocument();
-//$document->addStyleSheet(JUri::root() . '/media/neno/css/editorstrings.css');
-
 $translationStatesClasses                                                                   = array ();
 $translationStatesClasses[NenoContentElementTranslation::TRANSLATED_STATE]                  = 'translated';
 $translationStatesClasses[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = 'queued';

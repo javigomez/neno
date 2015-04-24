@@ -25,12 +25,18 @@ $isOverlay = isset($displayData->isOverlay);
 			<span class="caret pull-right"></span>
 		</a>
 
-		<div id="toggle-<?php echo $displayData['type']; ?>-multiselect" class="dropdown-select menu-multiselect <?php echo ($isOverlay) ? (' overlay') : (''); ?>">
-			<table class="table-condensend <?php echo $displayData['type']; ?>-multiselect" id="<?php echo $displayData['type']; ?>-multiselect">
+		<div id="toggle-<?php echo $displayData['type']; ?>-multiselect"
+		     class="dropdown-select menu-multiselect <?php echo ($isOverlay) ? (' overlay') : (''); ?>">
+			<table class="table-condensend <?php echo $displayData['type']; ?>-multiselect"
+			       id="<?php echo $displayData['type']; ?>-multiselect">
 				<?php foreach ($displayData['data'] as $datum => $label): ?>
-					<tr class="" data-id="<?php echo $displayData['type'] . '-' . $datum; ?>" data-label="<?php echo $label; ?>"
+					<tr class="" data-id="<?php echo $displayData['type'] . '-' . $datum; ?>"
+					    data-label="<?php echo $label; ?>"
 					    data-parent="header">
-						<td class="cell-check"><input value="<?php echo $datum; ?>" type="checkbox"/></td>
+						<td class="cell-check">
+							<input value="<?php echo $datum; ?>"
+							       type="checkbox" <?php echo in_array($datum, $displayData['selected']) ? 'checked=checked' : ''; ?>/>
+						</td>
 						<td title="<?php echo $label; ?>"><?php echo $label; ?></td>
 					</tr>
 				<?php endforeach; ?>
