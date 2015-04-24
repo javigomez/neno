@@ -76,16 +76,7 @@ class NenoModelStrings extends JModelList
 		// Initialise variables.
 		$app = JFactory::getApplication();
 
-
-		// Group(s) filtering
-		$group = $app->getUserStateFromRequest($this->context . 'filter.group_id', 'filter_group_id', '', 'string');
-
-		if (!empty($group))
-		{
-			$this->setState('filter.group_id', $group);
-		}
-
-		$groups = $app->getUserState($this->context . '.group', array ());
+		$groups = $app->getUserStateFromRequest($this->context . '.group', 'group', array ());
 
 		if (!empty($groups))
 		{
@@ -93,7 +84,7 @@ class NenoModelStrings extends JModelList
 		}
 
 		// Element(s) filtering
-		$elements = $app->getUserState($this->context . '.element', array ());
+		$elements = $app->getUserStateFromRequest($this->context . '.element', 'element', array ());
 
 		if (!empty($elements))
 		{
@@ -101,7 +92,7 @@ class NenoModelStrings extends JModelList
 		}
 
 		// Field(s) filtering
-		$fields = $app->getUserState($this->context . '.field', array ());
+		$fields = $app->getUserStateFromRequest($this->context . '.field', 'field', array ());
 
 		if (!empty($fields))
 		{
@@ -109,7 +100,7 @@ class NenoModelStrings extends JModelList
 		}
 
 		// Status filtering
-		$status = $app->getUserState($this->context . '.translation_status', array ());
+		$status = $app->getUserStateFromRequest($this->context . '.translation_status', 'translation_status', array ());
 
 		if (!empty($status))
 		{
@@ -117,17 +108,18 @@ class NenoModelStrings extends JModelList
 		}
 
 		// Translation methods filtering
-		$method = $app->getUserState($this->context . '.translator_type', array ());
+		$method = $app->getUserStateFromRequest($this->context . '.translator_type', 'translator_type', array ());
 
 		if (!empty($method))
 		{
-			$this->setState('filter.translator_type', $method);
+			$app->setUserState($this->context . '.filter.translator_type', $method);
 		}
 
+		$this->setState('filter.translator_type', $app->getUserState($this->context . '.translator_type'));
+
 		// Offset
-		//$group = $app->getUserStateFromRequest('list_limit', 'limit', 0, 'int');
-		$this->setState('limit', $app->getUserState('limit', 20));
-		$this->setState('limitStart', $app->getUserState('limitStart', 0));
+		$this->setState('limit', $app->getUserStateFromRequest('limit', 20));
+		$this->setState('limitStart', $app->getUserStateFromRequest('limitStart', 0));
 
 		// List state information.
 		parent::populateState('a.id', 'asc');

@@ -32,16 +32,7 @@ class NenoModelEditor extends JModelList
 	{
 		if (empty($config['filter_fields']))
 		{
-			$config['filter_fields'] = array (/*'id', 'a.id',
-				'string', 'a.string',
-				'constant', 'a.constant',
-				'lang', 'a.lang',
-				'extension', 'a.extension',
-				'time_added', 'a.time_added',
-				'time_changed', 'a.time_changed',
-				'time_deleted', 'a.time_deleted',
-				'version', 'a.version',*/
-			);
+			$config['filter_fields'] = array ();
 		}
 
 		parent::__construct($config);
@@ -69,7 +60,6 @@ class NenoModelEditor extends JModelList
 	{
 		// Initialise variables.
 		$app = JFactory::getApplication();
-
 
 		// Group(s) filtering
 		$group = $app->getUserStateFromRequest($this->context . 'filter.group_id', 'filter_group_id', '', 'string');
