@@ -173,7 +173,7 @@ class NenoModelStrings extends JModelList
 			->innerJoin('`#__neno_content_element_language_strings` AS ls ON tr2.content_id = ls.id')
 			->innerJoin('`#__neno_content_element_language_files` AS lf ON lf.id = ls.languagefile_id')
 			->innerJoin('`#__neno_content_element_groups` AS g2 ON lf.group_id = g2.id ')
-			->innerJoin('`#__neno_content_element_groups_x_translation_methods` AS gtm2 ON g2.id = gtm2.group_id')
+			->leftJoin('`#__neno_content_element_groups_x_translation_methods` AS gtm2 ON g2.id = gtm2.group_id')
 			->where(
 				array (
 					'tr2.language = ' . $db->quote($workingLanguage),
@@ -224,8 +224,8 @@ class NenoModelStrings extends JModelList
 
 		if (count($method))
 		{
-			$dbStrings->where('tr1.translation_method IN ("' . implode('", "', $method) . '")');
-			$languageFileStrings->where('tr2.translation_method IN ("' . implode('", "', $method) . '")');
+			$dbStrings->where('gtm1.translation_method_id IN ("' . implode('", "', $method) . '")');
+			$languageFileStrings->where('gtm2.translation_method_id IN ("' . implode('", "', $method) . '")');
 		}
 
 		$status = (array) $this->getState('filter.translation_status', array ());
