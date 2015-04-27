@@ -23,7 +23,8 @@ if (!empty($this->extra_sidebar))
 {
 	$this->sidebar .= $this->extra_sidebar;
 }
-
+$document = JFactory::getDocument();
+$document->addStyleSheet(JUri::root() . '/media/neno/css/editor.css');
 ?>
 
 <div id="j-sidebar-container" class="span2">
@@ -31,7 +32,10 @@ if (!empty($this->extra_sidebar))
 	      name="adminForm" id="adminForm">
 		<?php $extraDisplayData = new stdClass; ?>
 		<?php $extraDisplayData->groups = $this->groups; ?>
-		<?php echo JLayoutHelper::render('editorfilters', array('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS); ?>
+		<?php $extraDisplayData->statuses = $this->statuses; ?>
+		<?php $extraDisplayData->methods = $this->methods; ?>
+		<?php $extraDisplayData->modelState = $this->state; ?>
+		<?php echo JLayoutHelper::render('editorfilters', array ('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS); ?>
 		<input type="hidden" name="limitstart" id="limitstart" value="0"/>
 		<input type="hidden" name="list_limit" id="list_limit" value="20"/>
 	</form>
@@ -42,7 +46,7 @@ if (!empty($this->extra_sidebar))
 			</span>
 
 		<div id="elements-wrapper">
-			<?php echo JLayoutHelper::render('editorStrings', $this->items, JPATH_NENO_LAYOUTS); ?>
+			<?php echo JLayoutHelper::render('editorstrings', $this->items, JPATH_NENO_LAYOUTS); ?>
 		</div>
 	</div>
 </div>

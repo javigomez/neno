@@ -62,6 +62,11 @@ class NenoModelJobs extends JModelList
 
 		$jobs = NenoJob::load($queryData);
 
+		if (!is_array($jobs))
+		{
+			$jobs = array ($jobs);
+		}
+
 		/* @var $job NenoJob */
 		foreach ($jobs as $key => $job)
 		{

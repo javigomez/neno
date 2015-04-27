@@ -19,33 +19,22 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/toolbar.css');
 		<img src="<?php echo JUri::root(); ?>/media/neno/images/admin_top_neno_logo.png" width="80" height="30"
 		     alt="Neno logo"/>
 	</a>
-<?php
+<?php if (!empty($displayData['view'])): ?>
+	<?php $default_lang_constant = 'COM_NENO_TITLE_' . strtoupper($displayData['view']); ?>
+	<?php if (JText::_($default_lang_constant) != $default_lang_constant): ?>
+		<?php echo ': ' . JText::_($default_lang_constant); ?>
+	<?php endif; ?>
+<?php endif; ?>
 
-if (!empty($displayData['view']))
-{
-	$default_lang_constant = 'COM_NENO_TITLE_' . strtoupper($displayData['view']);
+<?php // If there is any working language ?>
+<?php if (!empty($displayData['workingLanguage'])): ?>
+	<?php $workingLanguageTitleNative = $displayData['targetLanguages'][$displayData['workingLanguage']]->title_native; ?>
+	<?php $workingLanguageImage = JUri::root() . 'media/mod_languages/images/' . $displayData['targetLanguages'][$displayData['workingLanguage']]->image . '.gif'; ?>
+	<?php unset($displayData['targetLanguages'][$displayData['workingLanguage']]); ?>
 
-	if (JText::_($default_lang_constant) != $default_lang_constant)
-	{
-		?>
-		<?php
-		// If the JText text is different from the constant then it actually exists and should be used
-		echo ': ' . JText::_($default_lang_constant);
-	}
-}
-
-// If there is any working language
-if (!empty($displayData['workingLanguage']))
-{
-	$workingLanguageTitleNative = $displayData['targetLanguages'][$displayData['workingLanguage']]->title_native;
-	$workingLanguageImage       = JUri::root() . '/media/mod_languages/images/' . $displayData['targetLanguages'][$displayData['workingLanguage']]->image . '.gif';
-	unset($displayData['targetLanguages'][$displayData['workingLanguage']]);
-
-	// If we have more than one target languages left then allow changing, if not only show the name
-	if (count($displayData['targetLanguages']) > 0)
-	{
-		$next = empty($displayData['view']) ? 'dashboard' : $displayData['view'];
-		?>
+	<?php // If we have more than one target languages left then allow changing, if not only show the name ?>
+	<?php if (count($displayData['targetLanguages']) > 0): ?>
+		<?php $next = empty($displayData['view']) ? 'dashboard' : $displayData['view']; ?>
 		<ul id="workingLangSelect">
 			<li class="dropdown">
 				<?php echo JText::_('COM_NENO_TOOLBAR_TRANSLATING_TITLE'); ?>
@@ -55,13 +44,11 @@ if (!empty($displayData['workingLanguage']))
 					<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-
-					<?php
-					foreach ($displayData['targetLanguages'] as $targetLanguage):
-						?>
+					<?php foreach ($displayData['targetLanguages'] as $targetLanguage): ?>
+						<?php $otherLanguageImage = JUri::root() . 'media/mod_languages/images/' . $targetLanguage->image . '.gif'; ?>
 						<li>
 							<a href="index.php?option=com_neno&task=setworkinglang&lang=<?php echo $targetLanguage->lang_code; ?>&next=<?php echo $next; ?>">
-								<img src="../media/mod_languages/images/<?php echo $targetLanguage->image; ?>.gif"/>
+								<img src="<?php echo $otherLanguageImage; ?>"/>
 								<?php echo $targetLanguage->title_native; ?>
 							</a>
 						</li>
@@ -71,17 +58,12 @@ if (!empty($displayData['workingLanguage']))
 				</ul>
 			</li>
 		</ul>
-	<?php
-	}
-	else
-	{
-		?>
+	<?php else: ?>
 		<ul id="workingLangSelect">
 			<li class="dropdown">
 				<?php echo JText::_('COM_NENO_TOOLBAR_TRANSLATING_TITLE'); ?>
 				[<?php echo $workingLanguageTitleNative; ?>]
 			</li>
 		</ul>
-	<?php
-	}
-}
+	<?php endif; ?>
+<?php endif; ?>

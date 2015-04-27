@@ -27,7 +27,7 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		parent::__construct();
 
 		// Get the api key
-		$this->apiKey = NenoSettings::get('api_key');
+		$this->apiKey = NenoSettings::get('translator_api_key');
 	}
 
 	/**
@@ -48,7 +48,7 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		$source = $this->convertFromJisoToIso($source);
 		$lang   = $source . "-" . $target;
 
-		$apiKey = NenoSettings::get('api_key');
+		$apiKey = NenoSettings::get('translator_api_key');
 
 		// For POST requests, the maximum size of the text being passed is 10000 characters.
 		$textString  = str_split($text, 10000);

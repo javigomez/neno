@@ -31,6 +31,7 @@ if (!empty($this->extra_sidebar))
 		<?php $extraDisplayData = new stdClass; ?>
 		<?php $extraDisplayData->groups = $this->groups; ?>
 		<?php $extraDisplayData->isOverlay = true; ?>
+		<?php $extraDisplayData->modelState = $this->state; ?>
 		<?php echo JLayoutHelper::render('stringfilters', array ('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS); ?>
 
 		<div id="elements-wrapper">

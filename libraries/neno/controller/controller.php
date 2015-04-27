@@ -44,7 +44,7 @@ class NenoController extends JControllerLegacy
 
 		// Ensure that a working language is set for some views
 		$viewsThatRequireWorkingLanguage = array (
-			'groupselements','editor','strings'
+			'groupselements', 'editor', 'strings'
 		);
 
 		$showLanguagesDropDown = false;
@@ -68,6 +68,21 @@ class NenoController extends JControllerLegacy
 		parent::display($cachable, $urlParams);
 
 		return $this;
+	}
+
+	/**
+	 * Check if the user has lost the session
+	 *
+	 * @return void
+	 */
+	public function checkSession()
+	{
+		if (!JFactory::getUser()->guest)
+		{
+			echo 'ok';
+		}
+		
+		JFactory::getApplication()->close();
 	}
 
 	/**

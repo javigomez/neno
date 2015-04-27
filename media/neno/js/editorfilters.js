@@ -16,7 +16,7 @@ jQuery(document).ready(function () {
         var wrapper = jQuery(this);
         if(wrapper.scrollTop() + wrapper.innerHeight()>=wrapper[0].scrollHeight && wrapper.innerHeight() > 10) {
             document.adminForm.limitstart.value = parseInt(document.adminForm.limitstart.value) + 20;
-            loadStrings(jQuery('.multiselect input[type=checkbox]').first());
+            loadStrings();
         }
     });
 });

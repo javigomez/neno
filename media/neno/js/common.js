@@ -9,9 +9,14 @@ function loadTranslation(string) {
     string.addClass('string-activated');
 
     // Get information
-    jQuery.get('index.php?option=com_neno&task=editor.getTranslation&id=' + string.data('id'), function (data) {
-        jQuery('#editor-wrapper').html(data);
-    });
+    jQuery.ajax({
+            beforeSend: onBeforeAjax,
+            url: 'index.php?option=com_neno&task=editor.getTranslation&id=' + string.data('id'),
+            success: function (data) {
+                jQuery('#editor-wrapper').html(data);
+            }
+        }
+    );
 }
 
 function loadNextTranslation() {
@@ -22,36 +27,47 @@ function loadNextTranslation() {
 }
 
 function saveTranslationAndNext() {
-    var text = jQuery('.translate-content').val();
+    var text = jQuery('.translated-content').val();
     var translationId = jQuery('#save-next-button').data('id');
-    jQuery.post(
-        'index.php?option=com_neno&task=editor.saveAsCompleted',
-        {
-            id: translationId,
-            text: text
-        }
-        , function (data) {
-            console.log(data);
-            if (data == 1) {
-                alert('Translation Saved');
+    var statuses = ['', 'translated', 'queued', 'changed', 'not-translated'];
+    jQuery.ajax({
+            beforeSend: onBeforeAjax,
+            type: 'POST',
+            url: 'index.php?option=com_neno&task=editor.saveAsCompleted',
+            data: {
+                id: translationId,
+                text: text
+            },
+            success: function (data) {
+                var row = jQuery('#elements-wrapper .string[data-id=' + data.id + ']');
+                if (row) {
+                    var string = data.string;
+                    if (string.length > 40) {
+                        string = string.substr(0, 35) + '...';
+                    }
+                    row.find('.string-text').html(string);
+                    row.find('.status').removeClass().addClass('status');
+                    row.find('.status').addClass(statuses[data.state]);
+                }
+                loadNextTranslation();
             }
-            loadNextTranslation();
         }
     );
 }
 
 function saveDraft() {
-    var text = jQuery('.translate-content').val();
+    var text = jQuery('.translated-content').val();
     var translationId = jQuery('#draft-button').data('id');
-    jQuery.post(
-        'index.php?option=com_neno&task=editor.saveAsDraft',
-        {
-            id: translationId,
-            text: text
-        }
-        , function (data) {
-            if (data == 1) {
-                alert('Translation Saved');
+    jQuery.ajax({
+            beforeSend: onBeforeAjax,
+            type: 'POST',
+            url: 'index.php?option=com_neno&task=editor.saveAsDraft',
+            data: {
+                id: translationId,
+                text: text
+            },
+            success: function (data) {
+
             }
         }
     );
@@ -59,11 +75,26 @@ function saveDraft() {
 
 function translate() {
     var text = jQuery('.original-text').html().trim();
-    jQuery.post(
-        'index.php?option=com_neno&task=editor.translate',
-        {text: text}
-        , function (data) {
-            jQuery('.translated-content').val(data);
+    jQuery.ajax({
+            beforeSend: onBeforeAjax,
+            type: 'POST',
+            url: 'index.php?option=com_neno&task=editor.translate',
+            data: {
+                text: text
+            },
+            success: function (data) {
+                jQuery('.translated-content').val(data);
+                jQuery('.translated-by').show();
+            }
         }
     );
+}
+
+// Check if the user has lost the session
+function onBeforeAjax() {
+    jQuery.get('index.php?option=com_neno&task=checkSession', function (response) {
+        if (response != 'ok') {
+            document.location.reload();
+        }
+    });
 }

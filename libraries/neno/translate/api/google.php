@@ -31,7 +31,7 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 		$source = $this->convertFromJisoToIso($source);
 		$target = $this->convertFromJisoToIso($target);
 
-		$apiKey = NenoSettings::get('api_key');
+		$apiKey = NenoSettings::get('translator_api_key');
 
 		$url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey
 			. '&q=' . rawurlencode($text) . '&source=' . $source . '&target=' . $target;

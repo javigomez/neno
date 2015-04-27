@@ -323,8 +323,15 @@ class NenoContentElementField extends NenoContentElement
 						foreach ($strings as $string)
 						{
 							$commonData['string'] = $string['string'];
-							$translation          = new NenoContentElementTranslation($commonData);
-							$sourceData           = array ();
+
+							// If the string is empty or is a number, let's mark as translated.
+							if (empty($string['string']) || $string['string'] == (int) $string['string'] || $string['string'] == (float) $string['string'])
+							{
+								$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
+							}
+
+							$translation = new NenoContentElementTranslation($commonData);
+							$sourceData  = array ();
 
 							foreach ($primaryKeyData as $primaryKey)
 							{

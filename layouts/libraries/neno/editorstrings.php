@@ -11,9 +11,6 @@
 // No direct access
 defined('JPATH_NENO') or die;
 
-//$document = JFactory::getDocument();
-//$document->addStyleSheet(JUri::root() . '/media/neno/css/editorstrings.css');
-
 $translationStatesClasses                                                                   = array ();
 $translationStatesClasses[NenoContentElementTranslation::TRANSLATED_STATE]                  = 'translated';
 $translationStatesClasses[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = 'queued';
@@ -50,7 +47,9 @@ $translations = $displayData;
 	});
 </script>
 
-
+<?php if (empty($translations)): ?>
+	<?php echo JText::_('COM_NENO_EDITOR_STRINGS_NO_MATCHES'); ?>
+<?php else: ?>
 	<?php /* @var $translation stdClass */ ?>
 	<?php foreach ($translations as $translation): ?>
 		<div class="string" data-id="<?php echo $translation->id; ?>">
@@ -63,7 +62,10 @@ $translations = $displayData;
 				<?php echo NenoHelper::html2text($translation->string, 45); ?>
 			</div>
 		</div>
-	<div class="clearfix"></div>
-<?php endforeach; ?>
+		<div class="clearfix"></div>
+	<?php endforeach; ?>
+<?php endif; ?>
+
+
 
 

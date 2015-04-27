@@ -27,11 +27,11 @@ JHtml::_('behavior.keepalive');
 					<div class="controls"><?php echo $this->form->getInput('group_name'); ?></div>
 				</div>
 				<div class="control-group">
-                    <h4><?php echo JText::_('COM_NENO_GROUPELEMENT_GROUP_TRANSLATION_METHOD'); ?></h4>
-                    <?php NenoHelper::renderTranslationMethodSelector($this->item->id); ?>
+					<h4><?php echo JText::_('COM_NENO_GROUPELEMENT_GROUP_TRANSLATION_METHOD'); ?></h4>
+					<?php echo JLayoutHelper::render('loadtranslationmethodselector', $this->item->id, JPATH_NENO_LAYOUTS); ?>
 				</div>
 
-                
+
 			</fieldset>
 		</div>
 	</div>

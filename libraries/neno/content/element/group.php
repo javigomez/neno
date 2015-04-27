@@ -436,17 +436,17 @@ class NenoContentElementGroup extends NenoContentElement
 
 			if (!empty($this->extensions))
 			{
-				$db    = JFactory::getDbo();
-				$query = $db->getQuery(true);
+				$db          = JFactory::getDbo();
+				$deleteQuery = $db->getQuery(true);
 
-				$query
+				$deleteQuery
 					->delete('#__neno_content_element_groups_x_extensions')
 					->where('group_id = ' . $this->getId());
 
-				$db->setQuery($query);
+				$db->setQuery($deleteQuery);
 				$db->execute();
 
-				$query
+				$deleteQuery
 					->clear()
 					->insert('#__neno_content_element_groups_x_extensions')
 					->columns(
@@ -458,11 +458,60 @@ class NenoContentElementGroup extends NenoContentElement
 
 				foreach ($this->extensions as $extension)
 				{
-					$query->values((int) $extension . ',' . $this->getId());
+					$deleteQuery->values((int) $extension . ',' . $this->getId());
 				}
 
-				$db->setQuery($query);
+				$db->setQuery($deleteQuery);
 				$db->execute();
+			}
+
+			if (!empty($this->assignedTranslationMethods))
+			{
+				$db          = JFactory::getDbo();
+				$deleteQuery = $db->getQuery(true);
+				$insertQuery = $db->getQuery(true);
+				$insert      = false;
+
+				$insertQuery
+					->insert('#__neno_content_element_groups_x_translation_methods')
+					->columns(
+						array (
+							'group_id',
+							'lang',
+							'translation_method',
+							'ordering'
+						)
+					);
+
+				$languages       = NenoHelper::getLanguages();
+				$defaultLanguage = JFactory::getLanguage()->getDefault();
+
+				foreach ($languages as $language)
+				{
+					if ($language->lang_code != $defaultLanguage)
+					{
+						$deleteQuery
+							->delete('#__neno_content_element_groups_x_translation_methods')
+							->where(
+								array (
+									'group_id = ' . $this->id,
+									'lang = ' . $db->quote($language->lang_code)
+								)
+							);
+
+						$db->setQuery($deleteQuery);
+						$db->execute();
+
+						$insert = true;
+						$insertQuery->values($this->id . ',' . $db->quote($language->lang_code) . ', 1, 1');
+					}
+
+					if ($insert)
+					{
+						$db->setQuery($deleteQuery);
+						$db->execute();
+					}
+				}
 			}
 
 			if (!empty($this->languageFiles))

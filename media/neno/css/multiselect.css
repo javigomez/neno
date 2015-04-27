@@ -3,10 +3,10 @@
     padding-top: 4px;
     cursor: pointer;
 }
-.table-multiselect .cell-check {
+.multiselect .cell-check {
     width: 15px !important;
 }
-.table-multiselect .cell-check input {
+.multiselect .cell-check input {
     margin-top: 0;
     margin-left: 3px;
 }
@@ -61,4 +61,10 @@
     width: 86%;
     display: inline-block;
     margin: 5px 5px 0 0;
+}
+.simple-multiselect {
+    margin-bottom: 10px;
+}
+.simple-multiselect .menu-multiselect{
+    overflow: hidden;
 }

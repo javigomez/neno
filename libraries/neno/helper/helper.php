@@ -564,6 +564,7 @@ class NenoHelper
 			$extensionName = self::getExtensionName($extension);
 			$languageFiles = self::getLanguageFiles($extensionName);
 			$tables        = self::getComponentTables($group, $extensionName);
+			$group->setAssignedTranslationMethods(array (1));
 
 			// If the group contains tables and/or language strings, let's save it
 			if (!empty($tables) || !empty($languageFiles))
@@ -998,28 +999,6 @@ class NenoHelper
 	}
 
 	/**
-	 * Check if a table should be translated.
-	 *
-	 * @param   string $tableName Table name
-	 *
-	 * @return bool
-	 */
-	public static function shouldBeTranslated($tableName)
-	{
-		$tableName = self::unifyTableName($tableName);
-
-		foreach ($coreTablesThatShouldNotBeTranslate as $queryRegex)
-		{
-			if (preg_match($queryRegex, $tableName))
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
 	 * Get a language string based on its language key
 	 *
 	 * @param   string $languageKey Language key
@@ -1296,6 +1275,71 @@ class NenoHelper
 	}
 
 	/**
+	 * Return all translation statuses present.
+	 *
+	 * @return  array
+	 */
+	public static function getStatuses()
+	{
+		$translationStatesText                                                                   = array ();
+		$translationStatesText[NenoContentElementTranslation::TRANSLATED_STATE]                  = JText::_('COM_NENO_STATUS_TRANSLATED');
+		$translationStatesText[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_QUEUED');
+		$translationStatesText[NenoContentElementTranslation::SOURCE_CHANGED_STATE]              = JText::_('COM_NENO_STATUS_CHANGED');
+		$translationStatesText[NenoContentElementTranslation::NOT_TRANSLATED_STATE]              = JText::_('COM_NENO_STATUS_NOTTRANSLATED');
+
+		// Create a new query object.
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('DISTINCT state')
+			->from('`#__neno_content_element_translations`');
+
+		$db->setQuery($query);
+		$statuses = $db->loadArray();
+
+		$translationStatuses = array ();
+		foreach ($statuses as $status)
+		{
+			$translationStatuses[$status] = $translationStatesText[$status];
+		}
+
+		return $translationStatuses;
+	}
+
+	/**
+	 * Return all translation methods used on any string.
+	 *
+	 * @return  array
+	 */
+	public static function getTranslationMethods()
+	{
+		// Create a new query object.
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(
+				array (
+					'id',
+					'name_constant'
+				)
+			)
+			->from('`#__neno_translation_methods`');
+
+		$db->setQuery($query);
+		$methods = $db->loadAssocList('id');
+
+		$translationMethods = array ();
+		foreach ($methods as $id => $methodData)
+		{
+			$translationMethods[$id] = JText::_($methodData['name_constant']);
+		}
+
+		return $translationMethods;
+	}
+
+	/**
 	 * Generate random string
 	 *
 	 * @param int $length String length
@@ -1507,6 +1551,22 @@ class NenoHelper
 		return $name;
 	}
 
+	public static function loadTranslationMethods()
+	{
+
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->select('*')
+			->from('#__neno_translation_methods');
+
+		$db->setQuery($query);
+		$rows = $db->loadObjectList('id');
+
+		return $rows;
+
+	}
+
 	/**
 	 * Escape a string
 	 *
@@ -1518,90 +1578,8 @@ class NenoHelper
 	{
 		return JFactory::getDbo()->quote($value);
 	}
-    
-    
-    public static function renderTranslationMethodSelector($group_id) 
-    {
 
-        ?>
-        <script>
-            jQuery().ready(function(){
-                loadMissingTranslationMethodSelectors();
-            });
-            
-            function loadMissingTranslationMethodSelectors() {
 
-                //Count how many we currently are showing
-                var n = jQuery('.translation-method-selector-container').length;
-                
-                //If we are loading because of changing a selector, remove all children
-                var selector_id = jQuery(this).attr('data-selector-id');
-                if (typeof selector_id !== 'undefined') {
-                    //Loop through each selector and remove the ones that are after this one
-                    for (i = 0; i < n; i++) { 
-                        if (i > selector_id) {
-                            jQuery("[data-selector-container-id='"+i+"']").remove();
-                        }
-                    }                    
-                }
-                
-                //Create a string to pass the current selections
-                var selected_methods_string = '';
-                jQuery('.translation-method-selector').each(function(){
-                    selected_methods_string += '&selected_methods[]='+jQuery(this).find(':selected').val();
-                });
-                
-                jQuery.get('index.php?option=com_neno&task=groupselements.getTranslationMethodSelector&group_id=<?php echo $group_id; ?>&n='+n+selected_methods_string
-                    , function(html) {
-                        if (html !== '') {
-                            
-                            jQuery('#translation-method-selectors').append(html);
-                            
-                            //Bind the loader unto the new selector
-                            jQuery('.translation-method-selector').off('change').on('change', loadMissingTranslationMethodSelectors);
-                            
-                            loadMissingTranslationMethodSelectors();
-                            
-                        } else {
-                            //console.log('No HTML loaded. Stopping!');
-                        }
-
-                    }
-                );
-              
-                
-            }
-            
-        </script>
-        
-        <div id="translation-method-selectors">
-            
-        </div>
-            
-        <?php
-        
-        
-        
-    }
-    
-    
-    public static function loadTranslationMethods() 
-    {
-        
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query
-			->select('*')
-			->from('#__neno_translation_methods');
-
-		$db->setQuery($query);
-		$rows = $db->loadObjectList('id');        
-        
-        return $rows;
-        
-    }
-    
-    
 }   
 
 

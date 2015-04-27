@@ -27,7 +27,10 @@ $isOverlay = isset($displayData->isOverlay);
 				<span class="icon-arrow-right-3"></span>
 			<?php endif; ?>
 		</td>
-		<td class="cell-check"><input type="checkbox"/></td>
+		<?php $elements = $displayData['state']->get('filter.element', array ()); ?>
+		<td class="cell-check"><input
+				type="checkbox" <?php echo in_array($table->id, $elements) ? 'checked="checked"' : ''; ?>/>
+		</td>
 		<td colspan="3"
 		    title="<?php echo $table->table_name; ?>"><?php echo $table->table_name; ?></td>
 	</tr>

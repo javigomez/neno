@@ -12,11 +12,10 @@ defined('JPATH_BASE') or die;
 $data = $displayData;
 
 // Receive overridable options
-$data['options'] = !empty($data['options']) ? $data['options'] : array();
+$data['options'] = !empty($data['options']) ? $data['options'] : array ();
 
 // Set some basic options
-$customOptions = array(
-	//'filtersHidden'       => isset($data['options']['filtersHidden']) ? $data['options']['filtersHidden'] : empty($data['view']->activeFilters),
+$customOptions = array (
 	'filtersHidden'       => false,
 	'filterButton'        => false,
 	'defaultLimit'        => isset($data['options']['defaultLimit']) ? $data['options']['defaultLimit'] : JFactory::getApplication()->get('list_limit', 20),
@@ -44,9 +43,11 @@ $document->addScript(JUri::root() . '/media/neno/js/editorfilters.js');
 			<label for="filter_search" class="element-invisible">
 				<?php echo JText::_('JSEARCH_FILTER'); ?>
 			</label>
+
 			<div class="btn-wrapper input-append">
 				<?php echo $filters['filter_search']->input; ?>
-				<button type="submit" class="btn hasTooltip" title="<?php echo JHtml::tooltipText('JSEARCH_FILTER_SUBMIT'); ?>">
+				<button type="submit" class="btn hasTooltip"
+				        title="<?php echo JHtml::tooltipText('JSEARCH_FILTER_SUBMIT'); ?>">
 					<i class="icon-search"></i>
 				</button>
 			</div>
@@ -57,7 +58,12 @@ $document->addScript(JUri::root() . '/media/neno/js/editorfilters.js');
 	</div>
 	<!-- Filters div -->
 	<div class="js-stools-container-filters hidden-phone clearfix">
-		<?php echo JLayoutHelper::render('joomla.searchtools.default.filters', $data); ?>
+		<div class="multiselect-wrapper">
+			<?php echo JLayoutHelper::render('simplemultiselect', array ('type' => 'method', 'data' => $data['extraDisplayData']->methods, 'selected' => $data['extraDisplayData']->modelState->get('filter.translator_type')), JPATH_NENO_LAYOUTS); ?>
+		</div>
+		<div class="multiselect-wrapper">
+			<?php echo JLayoutHelper::render('simplemultiselect', array ('type' => 'status', 'data' => $data['extraDisplayData']->statuses, 'selected' => $data['extraDisplayData']->modelState->get('filter.translation_status')), JPATH_NENO_LAYOUTS); ?>
+		</div>
 		<div class="multiselect-wrapper">
 			<?php echo JLayoutHelper::render('multiselectgroup', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
 		</div>
