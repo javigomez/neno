@@ -43,17 +43,19 @@ $groupId = $displayData;
 			selected_methods_string += '&selected_methods[]=' + jQuery(this).find(':selected').val();
 		});
 
-		jQuery.get('index.php?option=com_neno&task=groupselements.getTranslationMethodSelector&group_id=' + groupId + '&n=' + n + selected_methods_string
-			, function (html) {
-				if (html !== '') {
+		jQuery.ajax({
+				beforeSend: onBeforeAjax,
+				url: 'index.php?option=com_neno&task=groupselements.getTranslationMethodSelector&group_id=' + groupId + '&n=' + n + selected_methods_string,
+				success: function (html) {
+					if (html !== '') {
 
-					jQuery('#translation-method-selectors').append(html);
+						jQuery('#translation-method-selectors').append(html);
 
-					//Bind the loader unto the new selector
-					jQuery('.translation-method-selector').off('change').on('change', loadMissingTranslationMethodSelectors);
+						//Bind the loader unto the new selector
+						jQuery('.translation-method-selector').off('change').on('change', loadMissingTranslationMethodSelectors);
 
-					loadMissingTranslationMethodSelectors();
-
+						loadMissingTranslationMethodSelectors();
+					}
 				}
 			}
 		);

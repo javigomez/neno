@@ -55,35 +55,40 @@ if (!empty($this->extra_sidebar))
 <script>
 	jQuery(document).ready(function () {
 		jQuery('.translate_automatically_setting').on('click', function () {
-			jQuery.post(
-				'index.php?option=com_neno&task=externaltranslations.setAutomaticTranslationSetting',
-				{
+			jQuery.ajax({
+				beforeSend: onBeforeAjax,
+				type: "POST",
+				url: 'index.php?option=com_neno&task=externaltranslations.setAutomaticTranslationSetting',
+				data: {
 					setting: jQuery(this).data('setting'),
 					value: +jQuery(this).is(':checked')
-				}
-				, function (data) {
+				},
+				success: function (data) {
 					if (data != 'ok') {
 						alert("There was an error saving setting");
 					}
 				}
-			);
+			});
 		});
 
 		jQuery('.order-button').on('click', function () {
-			jQuery.post(
-				'index.php?option=com_neno&task=externaltranslations.createJob',
-				{
+			jQuery.ajax({
+				beforeSend: onBeforeAjax,
+				type: "POST",
+				url: 'index.php?option=com_neno&task=externaltranslations.createJob',
+				data: {
 					type: jQuery(this).data('type'),
 					language: jQuery(this).data('language')
-				}
-				, function (data) {
+				},
+				success: function (data) {
 					if (data != 'ok') {
 						alert("There was an error saving setting");
 					}
 				}
-			);
+			});
 		});
-	});
+	})
+	;
 </script>
 
 <div id="j-sidebar-container" class="span2">

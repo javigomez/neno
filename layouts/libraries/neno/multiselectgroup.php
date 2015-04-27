@@ -31,13 +31,13 @@ $isOverlay = isset($displayData->isOverlay);
 				<?php foreach ($displayData->groups as $group): ?>
 					<?php $elementCount = $group->element_count; ?>
 					<?php $class = $elementCount ? 'cell-expand' : ''; ?>
-					<tr class="row-group element-row <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id')) || in_array($group->id, $displayData->modelState->get('filter.parent_group_id')) ? 'expanded' : 'collapsed'; ?>"
+					<tr class="row-group element-row <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array ())) || in_array($group->id, $displayData->modelState->get('filter.parent_group_id', array ())) ? 'expanded' : 'collapsed'; ?>"
 					    data-level="1" data-id="group-<?php echo $group->id; ?>"
 					    data-parent="header">
 						<td class="first-cell <?php echo $class; ?>">
 							<?php if ($elementCount): ?>
 								<span
-									class="toggle-arrow <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id')) || in_array($group->id, $displayData->modelState->get('filter.parent_group_id')) ? 'icon-arrow-down-3' : 'icon-arrow-right-3'; ?>"></span>
+									class="toggle-arrow <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array())) || in_array($group->id, $displayData->modelState->get('filter.parent_group_id', array())) ? 'icon-arrow-down-3' : 'icon-arrow-right-3'; ?>"></span>
 							<?php endif; ?>
 						</td>
 						<td class="cell-check">
