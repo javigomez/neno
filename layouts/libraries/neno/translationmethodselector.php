@@ -16,7 +16,7 @@ if ($displayData !== null): ?>
 	<div class="translation-method-selector-container" data-selector-container-id="<?php echo $n; ?>">
 		<div class="control-label"><?php echo JText::sprintf('COM_NENO_METHOD_N', $n + 1); ?></div>
 		<div class="controls">
-			<select name="translation_methods[<?php echo $n; ?>]" class="translation-method-selector"
+            <select name="jform[translation_methods][<?php echo $n; ?>]" class="translation-method-selector" data-selector-id="<?php echo $n; ?>">
 			        data-selector-id="<?php echo $n; ?>">
 				<?php //Set a default for assigned method to avoid errors ?>
 				<?php if (empty($displayData['group']->assigned_translation_methods[$n]->id)): ?>
