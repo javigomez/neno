@@ -1568,6 +1568,128 @@ class NenoHelper
 	}
 
 	/**
+	 * Get a list of languages
+	 *
+	 * @return array
+	 */
+	public static function findLanguages()
+	{
+		$enGbExtensionId = self::getEnGbExtensionId();
+		$languagesFound  = array ();
+
+		if (!empty($enGbExtensionId))
+		{
+			$updater = JUpdater::getInstance();
+
+			// Find updates for languages
+			$updater->findUpdates($enGbExtensionId);
+			$updateSiteId   = self::getLanguagesUpdateSite($enGbExtensionId);
+			$updates        = self::getUpdates($updateSiteId);
+			$languagesFound = $updates;
+		}
+
+		return $languagesFound;
+	}
+
+	/**
+	 * Get the extension_id of the en-GB package
+	 *
+	 * @return int
+	 */
+	protected static function getEnGbExtensionId()
+	{
+		$db       = JFactory::getDbo();
+		$extQuery = $db->getQuery(true);
+		$extType  = 'language';
+		$extElem  = 'en-GB';
+
+		$extQuery->select($db->quoteName('extension_id'))
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('type') . ' = ' . $db->quote($extType))
+			->where($db->quoteName('element') . ' = ' . $db->quote($extElem))
+			->where($db->quoteName('client_id') . ' = 0');
+
+		$db->setQuery($extQuery);
+
+		return (int) $db->loadResult();
+	}
+
+	/**
+	 * Get update site for languages
+	 *
+	 * @param int $enGbExtensionId Extension Id of en-GB package
+	 *
+	 * @return int
+	 */
+	protected static function getLanguagesUpdateSite($enGbExtensionId)
+	{
+		$db        = JFactory::getDbo();
+		$siteQuery = $db->getQuery(true);
+
+		$siteQuery->select($db->quoteName('update_site_id'))
+			->from($db->quoteName('#__update_sites_extensions'))
+			->where($db->quoteName('extension_id') . ' = ' . $enGbExtensionId);
+
+		$db->setQuery($siteQuery);
+
+		return (int) $db->loadResult();
+	}
+
+	/**
+	 * Get updates from a particular update site
+	 *
+	 * @param    int $updateSiteId Update Site Id
+	 *
+	 * @return array
+	 */
+	protected static function getUpdates($updateSiteId)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(
+				array (
+					'*',
+					'REPLACE(element, \'pkg_\', \'\') AS iso'
+				)
+			)
+			->from('#__updates')
+			->where('update_site_id = ' . (int) $updateSiteId);
+
+		$db->setQuery($query);
+
+		return $db->loadAssocList();
+	}
+
+	/**
+	 * Get Language data
+	 *
+	 * @param   int $updateId
+	 *
+	 * @return array
+	 */
+	public static function getLanguageData($updateId)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(
+				array (
+					'*',
+					'REPLACE(element, \'pkg_\', \'\') AS iso'
+				)
+			)
+			->from('#__updates')
+			->where('update_id = ' . (int) $updateId);
+
+		$db->setQuery($query);
+
+		return $db->loadAssoc();
+	}
+
+	/**
 	 * Escape a string
 	 *
 	 * @param   mixed $value Value
@@ -1578,9 +1700,7 @@ class NenoHelper
 	{
 		return JFactory::getDbo()->quote($value);
 	}
-
-
-}   
+}
 
 
 
