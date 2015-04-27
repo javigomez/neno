@@ -85,7 +85,6 @@ class NenoViewEditor extends JViewLegacy
 	{
 		$this->state           = $this->get('State');
 		$this->items           = $this->get('Items');
-		$this->extensionsSaved = $this->get('ExtensionsMarkedAsTranslatable');
 		$this->filterForm      = $this->get('FilterForm');
 		$this->activeFilters   = $this->get('ActiveFilters');
 		$this->getGroupData();

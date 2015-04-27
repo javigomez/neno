@@ -58,7 +58,7 @@ $translations = $displayData;
 			<td><?php echo $translation->breadcrumbs[0]; ?></td>
 			<td><?php echo $translation->breadcrumbs[1]; ?></td>
 			<td><?php echo $translation->breadcrumbs[2]; ?></td>
-			<td><?php echo JText::_('COM_NENO_TRANSLATION_METHODS_' . strtoupper($translation->translation_method)); ?></td>
+			<td><?php echo JText::_($translation->translation_method->name_constant); ?></td>
 			<td><?php echo $translation->word_counter; ?></td>
 			<td><?php echo $translation->characters_counter; ?></td>
 		</tr>

@@ -168,6 +168,16 @@ class NenoContentElementTranslation extends NenoContentElement
 		if (!$this->isNew())
 		{
 			$this->originalText = $this->loadOriginalText();
+
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query
+				->select('*')
+				->from('#__neno_translation_methods')
+				->where('id = ' . (int) $this->translationMethod);
+
+			$db->setQuery($query);
+			$this->translationMethod = $db->loadObject();
 		}
 	}
 

@@ -37,12 +37,12 @@ $isOverlay = isset($displayData->isOverlay);
 						<td class="first-cell <?php echo $class; ?>">
 							<?php if ($elementCount): ?>
 								<span
-									class="toggle-arrow <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array())) || in_array($group->id, $displayData->modelState->get('filter.parent_group_id', array())) ? 'icon-arrow-down-3' : 'icon-arrow-right-3'; ?>"></span>
+									class="toggle-arrow <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array ())) || in_array($group->id, $displayData->modelState->get('filter.parent_group_id', array ())) ? 'icon-arrow-down-3' : 'icon-arrow-right-3'; ?>"></span>
 							<?php endif; ?>
 						</td>
 						<td class="cell-check">
 							<input
-								type="checkbox" <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id')) ? 'checked="checked"' : ''; ?>/>
+								type="checkbox" <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array ())) ? 'checked="checked"' : ''; ?>/>
 						</td>
 						<td colspan="4"
 						    title="<?php echo $group->group_name; ?>"><?php echo $group->group_name; ?></td>
