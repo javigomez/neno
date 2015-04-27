@@ -6,6 +6,7 @@
 
 jQuery(document).ready(function () {
     bindEvents();
+    setFilterTags(document.adminForm);
 
     // Load hierarchy if some groups has been marked
     jQuery('.expanded').each(function () {
@@ -19,13 +20,16 @@ function loadHierarchy(row) {
     if (row.data('level') == 1) {
         if (!row.data('loaded')) {
             row.addClass('loading');
-            jQuery.get('index.php?option=com_neno&task=' + getParameterByName('view') + '.getElements&group_id=' + id
-                , function (html) {
-                    row.after(html);
-                    row.data('loaded', true);
-                    bindEvents();
-                    row.removeClass('loading');
-                    checkUncheckFamilyCheckboxes(row.find('input[type=checkbox]').first());
+            jQuery.ajax({
+                    beforeSend: onBeforeAjax,
+                    url: 'index.php?option=com_neno&task=' + getParameterByName('view') + '.getElements&group_id=' + id,
+                    success: function (html) {
+                        row.after(html);
+                        row.data('loaded', true);
+                        bindEvents();
+                        row.removeClass('loading');
+                        checkUncheckFamilyCheckboxes(row.find('input[type=checkbox]').first());
+                    }
                 }
             );
         }
@@ -145,6 +149,7 @@ function loadStrings() {
 
     jQuery('#multiselect-value').val(checkedGroupsElements);
     jQuery.ajax({
+        beforeSend: onBeforeAjax,
         type: "POST",
         url: "index.php?option=com_neno&task=strings.getStrings",
         data: {
@@ -158,11 +163,6 @@ function loadStrings() {
     })
         .done(function (ret) {
             if (ret) {
-                /*fieldset.find('#check-toggle-translate-' + field + '-' + status).unbind('click');
-                 fieldset.find('#check-toggle-translate-' + field + '-' + notstatus).click(function (e) {
-                 toggleStringStateAjax(jQuery(this));
-                 });
-                 fieldset.closest('tr').find('.translation-progress-bar').html(ret);*/
                 if (document.adminForm.outputLayout.value == 'editorStrings') {
                     setFilterTags(document.adminForm);
                 }
@@ -246,7 +246,6 @@ function setFilterTags(form) {
     for (m in method) {
         printFilterTag(method[m], jQuery('[data-id="' + method[m] + '"]').attr('data-label'));
     }
-    //var checked = getMultiSelectValue(form.find('#multiselect table'));
 }
 
 function printFilterTag(type, label) {
