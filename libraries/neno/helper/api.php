@@ -24,7 +24,7 @@ class NenoHelperApi
 
 		if ($userData !== false && is_array($userData))
 		{
-			return $userData['tcAvailable'];
+			return empty($userData['tcAvailable']) ? 0 : $userData['tcAvailable'];
 		}
 
 		return 0;
