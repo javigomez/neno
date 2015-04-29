@@ -63,10 +63,6 @@ if ($displayData === null): ?>
 
         <?php endforeach; ?>
     <?php endif; ?>
-                    
-    <?php
-    //echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$displayData = ". print_r($displayData, true)."\n</pre>";
-    ?>
             
     <?php if(!empty($displayData['files'])): ?>
         <?php foreach ($displayData['files'] as $file): ?>

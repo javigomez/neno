@@ -35,7 +35,7 @@ $isOverlay = isset($displayData->isOverlay);
 					    data-parent="header">
 						<td class="cell-check">
 							<input value="<?php echo $datum; ?>"
-							       type="checkbox" <?php echo in_array($datum, $displayData['selected']) ? 'checked=checked' : ''; ?>/>
+							       type="checkbox" <?php echo !empty($displayData['selected']) && in_array($datum, $displayData['selected']) ? 'checked=checked' : ''; ?>/>
 						</td>
 						<td title="<?php echo $label; ?>"><?php echo $label; ?></td>
 					</tr>
