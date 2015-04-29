@@ -16,15 +16,17 @@ defined('JPATH_NENO') or die;
 class NenoContentElementLanguageFile extends NenoContentElement
 {
 	/**
+	 * @var stdClass
+	 */
+	public $wordCount;
+	/**
 	 * @var NenoContentElementGroup
 	 */
 	protected $group;
-
 	/**
 	 * @var string
 	 */
 	protected $filename;
-
 	/**
 	 * @var string
 	 */
@@ -45,7 +47,7 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	 *
 	 * @param   mixed $data Data
 	 */
-	public function __construct($data)
+	public function __construct($data, $loadExtraData = true, $loadParent = false)
 	{
 		parent::__construct($data);
 
@@ -55,6 +57,75 @@ class NenoContentElementLanguageFile extends NenoContentElement
 
 			$this->language = $languageFileData[0];
 		}
+
+		if ($loadExtraData)
+		{
+			$this->loadExtraData();
+		}
+	}
+
+	/**
+	 * Load Extra data
+	 *
+	 * @return void
+	 */
+	protected function loadExtraData()
+	{
+		$workingLanguage = NenoHelper::getWorkingLanguage();
+		$db              = JFactory::getDbo();
+		$query           = $db->getQuery(true);
+
+		$query
+			->select(
+				array (
+					'SUM(word_counter) AS counter',
+					'tr.state'
+				)
+			)
+			->from('#__neno_content_element_translations as tr')
+			->innerJoin('#__neno_content_element_language_strings AS ls ON tr.content_id = ls.id')
+			->innerJoin('#__neno_content_element_language_files AS lf ON lf.id = ls.languagefile_id')
+			->where(
+				array (
+					'content_type = ' . $db->quote('lang_string'),
+					'lf.id = ' . $this->getId(),
+					'tr.language = ' . $db->quote($workingLanguage)
+				)
+			)
+			->group('tr.state');
+
+		$db->setQuery($query);
+		$statistics = $db->loadAssocList('state');
+
+		$wordCount               = new stdClass;
+		$wordCount->untranslated = 0;
+		$wordCount->queued       = 0;
+		$wordCount->changed      = 0;
+		$wordCount->translated   = 0;
+
+		// Assign the statistics
+		foreach ($statistics as $state => $data)
+		{
+			switch ($state)
+			{
+				case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
+					$wordCount->untranslated = (int) $data['counter'];
+					break;
+				case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
+					$wordCount->queued = (int) $data['counter'];
+					break;
+				case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
+					$wordCount->changed = (int) $data['counter'];
+					break;
+				case NenoContentElementTranslation::TRANSLATED_STATE:
+					$wordCount->translated = (int) $data['counter'];
+					break;
+			}
+		}
+
+		$wordCount->total = $wordCount->untranslated + $wordCount->queued + $wordCount->changed + $wordCount->translated;
+		$this->wordCount  = $wordCount;
+
 	}
 
 	/**
