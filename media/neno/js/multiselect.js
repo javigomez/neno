@@ -206,26 +206,46 @@ function getSimpleMultiSelectValue(table) {
  *  - Parent click: check/uncheck all children
  *  - Child click: uncheck parent if checked
  */
-function checkUncheckFamilyCheckboxes(checkbox) {
+function checkUncheckFamilyCheckboxes(checkbox, recursive) {
 
     //Set some vars
     var state = checkbox.prop('checked');
     var this_data_id = checkbox.closest('tr').data('id');
-    var this_parts = this_data_id.split('-');
-    var this_id = this_parts[1];
+    var children = jQuery('[data-parent="' + this_data_id + '"]');
+    if (recursive === undefined) {
+        recursive = true;
+    }
 
-    //Check uncheck all children
-    jQuery('[data-parent="' + this_data_id + '"]').find('input[type=checkbox]:not(:checked)').prop('checked', state);
+    if (recursive) {
+        //Check uncheck all children
+        children.find('input[type=checkbox]').prop('checked', state);
+        children.find('input[type=checkbox]').each(function () {
+            checkUncheckFamilyCheckboxes(jQuery(this), true);
+        });
+    }
 
-    jQuery('[data-parent="' + this_data_id + '"]').find('input[type=checkbox]:checked').each(function () {
-        checkUncheckFamilyCheckboxes(jQuery(this));
-    });
-
-    //Uncheck parents
-    if (state === false) {
-        var parent_id = jQuery('[data-id="' + this_data_id + '"').attr('data-parent');
-        if (parent_id) {
-            jQuery('[data-id="group-' + parent_id + '"]').find('input[type=checkbox]').prop('checked', false);
+    //Check uncheck parent
+    var parent_data_id = jQuery('[data-id="' + this_data_id + '"').attr('data-parent');
+    var parent = jQuery('[data-id="' + parent_data_id + '"]');
+    if (parent_data_id) {
+        if (state === true) {
+            // Search all siblings to see if any of them is unchecked
+            var uncheckedSiblings = jQuery('[data-parent="' + parent_data_id + '"]').find('input[type=checkbox]:not(:checked)');
+            if (uncheckedSiblings.length == 0) {
+                parent.find('input[type=checkbox]').prop('checked', true);
+                if (recursive) {
+                    parent.find('input[type=checkbox]').each(function () {
+                        checkUncheckFamilyCheckboxes(jQuery(this), false);
+                    });
+                }
+            }
+        } else {
+            parent.find('input[type=checkbox]').prop('checked', false);
+            if (recursive) {
+                parent.find('input[type=checkbox]').each(function () {
+                    checkUncheckFamilyCheckboxes(jQuery(this), false);
+                });
+            }
         }
     }
 }
@@ -235,6 +255,7 @@ function setFilterTags(form) {
     var search = jQuery(form.filter_search);
     var status = getMultiSelectValue(jQuery('#status-multiselect'));
     var method = getMultiSelectValue(jQuery('#method-multiselect'));
+    var groupsElements = getMultiSelectValue(jQuery('#table-multiselect'));
 
     if (search.val() !== '') {
         printFilterTag('search', '"' + search.val() + '"');
