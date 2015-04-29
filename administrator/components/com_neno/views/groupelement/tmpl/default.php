@@ -18,7 +18,7 @@ JHtml::_('behavior.keepalive');
 <form action="<?php echo JRoute::_('index.php?option=com_neno&id=' . (int) $this->item->id); ?>"
       method="post" enctype="multipart/form-data" name="adminForm2" id="groupelement-form">
 	<div class="row-fluid">
-		<div class="span10 form-horizontal">
+		<div class="span8 form-horizontal">
 			<fieldset class="adminform">
 				<?php echo $this->form->getInput('id'); ?>
 
@@ -35,7 +35,6 @@ JHtml::_('behavior.keepalive');
 			</fieldset>
 		</div>
 	</div>
-
 	<input type="hidden" name="task" value="groupelement.save"/>
 	<?php echo JHtml::_('form.token'); ?>
 </form>

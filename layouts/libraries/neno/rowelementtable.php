@@ -32,7 +32,12 @@ if ($displayData === null): ?>
                 <td>
                     <?php echo NenoHelper::renderTranslationMethodsAsCSV($displayData['group']->assigned_translation_methods); ?>
                 </td>
-                <td></td>
+                <td>
+                    <a href="index.php?option=com_neno&task=groupelement.downloadContentElementFile&table_id=<?php echo $table->id; ?>" class="btn">
+                        <span class="icon-download"></span>
+                        <?php echo JText::_('COM_NENO_GROUPELEMENT_DOWNLOAD_CE_FILE'); ?>
+                    </a>
+                </td>
             </tr>
 
             <?php /* @var $field NenoContentElementField */ ?>
