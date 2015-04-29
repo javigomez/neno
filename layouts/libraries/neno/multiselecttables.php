@@ -20,7 +20,8 @@ $isOverlay = isset($displayData->isOverlay);
 	<?php $class = !empty($table->fields) ? 'cell-expand' : ''; ?>
 	<tr class="row-table element-row collapsed" data-level="2"
 	    data-id="table-<?php echo $table->id; ?>"
-	    data-parent="group-<?php echo $table->group->id; ?>">
+	    data-parent="group-<?php echo $table->group->id; ?>"
+	    data-label="<?php echo $table->table_name; ?>">
 		<td></td>
 		<td class="<?php echo $class; ?>">
 			<?php if (!empty($table->fields)): ?>
@@ -36,13 +37,14 @@ $isOverlay = isset($displayData->isOverlay);
 	</tr>
 	<?php foreach ($table->fields as $field): ?>
 		<tr class="row-field element-row hide" data-level="3" data-id="field-<?php echo $field->id; ?>"
-		    data-parent="table-<?php echo $table->id; ?>">
+		    data-parent="table-<?php echo $table->id; ?>"
+		    data-label="<?php echo $field->field_name; ?>">
 			<td></td>
 			<td></td>
 			<td></td>
 			<td></td>
 			<td class="cell-check"><input type="checkbox"/></td>
-			<td title="<?php echo $field->field_name ?>"><?php echo $field->field_name ?></td>
+			<td title="<?php echo $field->field_name; ?>"><?php echo $field->field_name; ?></td>
 		</tr>
 	<?php endforeach; ?>
 <?php endforeach; ?>

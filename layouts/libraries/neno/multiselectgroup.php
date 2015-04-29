@@ -31,18 +31,18 @@ $isOverlay = isset($displayData->isOverlay);
 				<?php foreach ($displayData->groups as $group): ?>
 					<?php $elementCount = $group->element_count; ?>
 					<?php $class = $elementCount ? 'cell-expand' : ''; ?>
-					<tr class="row-group element-row <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array ())) || in_array($group->id, $displayData->modelState->get('filter.parent_group_id', array ())) ? 'expanded' : 'collapsed'; ?>"
+					<tr class="row-group element-row <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array())) || in_array($group->id, $displayData->modelState->get('filter.parent_group_id', array())) ? 'expanded' : 'collapsed'; ?>"
 					    data-level="1" data-id="group-<?php echo $group->id; ?>"
-					    data-parent="header">
+					    data-parent="header" data-label="<?php echo $group->group_name; ?>">
 						<td class="first-cell <?php echo $class; ?>">
 							<?php if ($elementCount): ?>
 								<span
-									class="toggle-arrow <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array ())) || in_array($group->id, $displayData->modelState->get('filter.parent_group_id', array ())) ? 'icon-arrow-down-3' : 'icon-arrow-right-3'; ?>"></span>
+									class="toggle-arrow <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array())) || in_array($group->id, $displayData->modelState->get('filter.parent_group_id', array())) ? 'icon-arrow-down-3' : 'icon-arrow-right-3'; ?>"></span>
 							<?php endif; ?>
 						</td>
 						<td class="cell-check">
 							<input
-								type="checkbox" <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array ())) ? 'checked="checked"' : ''; ?>/>
+								type="checkbox" <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array())) ? 'checked="checked"' : ''; ?>/>
 						</td>
 						<td colspan="4"
 						    title="<?php echo $group->group_name; ?>"><?php echo $group->group_name; ?></td>

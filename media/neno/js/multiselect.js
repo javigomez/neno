@@ -270,6 +270,20 @@ function setFilterTags(form) {
     for (m in method) {
         printFilterTag(method[m], jQuery('[data-id="' + method[m] + '"]').attr('data-label'));
     }
+    for (ge in groupsElements) {
+        var row = jQuery('[data-id="' + groupsElements[ge] + '"]');
+        var label = '';
+        if (row.attr('data-parent') && row.attr('data-parent') != 'header') {
+            var parent = jQuery('[data-id="' + row.data('parent') + '"]');
+            if (parent.attr('data-parent') && parent.attr('data-parent') != 'header') {
+                label += jQuery('[data-id="' + parent.data('parent') + '"]').attr('data-label') + ' > ';
+            }
+            label += parent.attr('data-label') + ' > ';
+        }
+        label += row.attr('data-label');
+
+        printFilterTag(groupsElements[ge], label);
+    }
 }
 
 function printFilterTag(type, label) {
@@ -277,6 +291,10 @@ function printFilterTag(type, label) {
     jQuery('#filter-tags-wrapper').append(tag);
     tag.find('.removeTag').click(function () {
         jQuery('[data-id="' + type + '"]').find('input[type=checkbox]').prop('checked', false);
+        // Check if the tag is from a Group/Element/Key
+        if (type.indexOf('group') != -1 || type.indexOf('table') != -1 || type.indexOf('field') != -1) {
+            checkUncheckFamilyCheckboxes(jQuery('[data-id="' + type + '"]').find('input[type=checkbox]'), true);
+        }
         document.adminForm.limitstart.value = 0;
         jQuery('#elements-wrapper').html('');
         loadStrings();
