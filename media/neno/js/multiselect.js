@@ -83,17 +83,20 @@ function toggleElementVisibility() {
 
     //Get the state of the current toggler to see if we need to expand or collapse
     if (row.hasClass('collapsed')) {
-
         // Expand
         row.removeClass('collapsed').addClass('expanded');
         jQuery(this).html('<span class="toggle-arrow icon-arrow-down-3"></span>');
-
         loadHierarchy(row);
     } else {
         //Collapse
         row.removeClass('expanded').addClass('collapsed');
         jQuery(this).html('<span class="toggle-arrow icon-arrow-right-3"></span>');
-        jQuery('[data-parent="' + data_id + '"]').removeClass('expanded').addClass('collapsed').addClass('hide');
+        jQuery('[data-parent="' + data_id + '"]').removeClass('expanded').addClass('collapsed').addClass('hide').each(function () {
+            // Collapse also grandchildren
+            jQuery(this).find('.cell-expand').html('<span class="toggle-arrow icon-arrow-right-3"></span>');
+            var descendant_data_id = jQuery(this).data('id');
+            jQuery('[data-parent="' + descendant_data_id + '"]').addClass('hide');
+        });
     }
 }
 
