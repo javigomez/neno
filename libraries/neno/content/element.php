@@ -79,6 +79,7 @@ abstract class NenoContentElement extends NenoObject
 	 *
 	 * @param   mixed $pk            it could be the ID of the element or an array of clauses
 	 * @param   bool  $loadExtraData Load extra data
+	 * @param   bool  $loadParent    Load parent
 	 * @param   bool  $cache         Allows to cache the result
 	 *
 	 * @return stdClass|array
