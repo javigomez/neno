@@ -199,6 +199,8 @@ class NenoModelStrings extends JModelList
 		/* @var $field array */
 		$field = $this->getState('filter.field', array ());
 
+		$groupIdAdded = false;
+
 		if (!is_array($groups))
 		{
 			$groups = array ($groups);
@@ -212,15 +214,25 @@ class NenoModelStrings extends JModelList
 
 		if (!empty($element))
 		{
-			$languageFileStrings->select('g2.id AS group_id');
-			$dbStrings->select('g1.id AS group_id');
+			if ($groupIdAdded === false)
+			{
+				$languageFileStrings->select('g2.id AS group_id');
+				$dbStrings->select('g1.id AS group_id');
+				$groupIdAdded = true;
+			}
+
 			$queryWhereDb[] = 't.id IN (' . implode(', ', $element) . ')';
 		}
 
 		if (!empty($field))
 		{
-			$languageFileStrings->select('g2.id AS group_id');
-			$dbStrings->select('g1.id AS group_id');
+			if ($groupIdAdded === false)
+			{
+				$languageFileStrings->select('g2.id AS group_id');
+				$dbStrings->select('g1.id AS group_id');
+				$groupIdAdded = true;
+			}
+
 			$queryWhereDb[] = 'f.id IN (' . implode(', ', $field) . ')';
 		}
 
