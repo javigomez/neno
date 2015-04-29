@@ -39,12 +39,16 @@ class NenoControllerInstallation extends JControllerAdmin
 		$input     = $this->input;
 		$languages = $input->get('languages', array (), 'ARRAY');
 
-		JLoader::register('InstallerModelLanguages', JPATH_ADMINISTRATOR . '/components/com_installer/models/languages.php');
-		$language = JFactory::getLanguage();
-		$language->load('com_installer');
+		foreach ($languages as $language)
+		{
+			NenoHelper::installLanguage($language);
+		}
 
-		/* @var $model InstallerModelLanguages */
-		$model = $this->getModel('Languages', 'InstallerModel');
-		$model->install($languages);
+		JFactory::getApplication()->redirect('index.php?option=com_neno&view=installation');
+	}
+
+	public function doMenus()
+	{
+		NenoHelper::createMenuStructure();
 	}
 }

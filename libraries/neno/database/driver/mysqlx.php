@@ -451,11 +451,12 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	/**
 	 * Create all the shadow tables needed for
 	 *
-	 * @param   string $tableName Table name
+	 * @param   string $tableName   Table name
+	 * @param   bool   $copyContent Copy the content of the source table
 	 *
 	 * @return void
 	 */
-	public function createShadowTables($tableName)
+	public function createShadowTables($tableName, $copyContent = true)
 	{
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
 		$knownLanguages  = NenoHelper::getLanguages();
@@ -467,7 +468,11 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 				$shadowTableName            = $this->generateShadowTableName($tableName, $knownLanguage->lang_code);
 				$shadowTableCreateStatement = 'CREATE TABLE IF NOT EXISTS ' . $this->quoteName($shadowTableName) . ' LIKE ' . $tableName;
 				$this->executeQuery($shadowTableCreateStatement);
-				$this->copyContentElementsFromSourceTableToShadowTables($tableName, $shadowTableName);
+
+				if ($copyContent)
+				{
+					$this->copyContentElementsFromSourceTableToShadowTables($tableName, $shadowTableName);
+				}
 			}
 		}
 	}

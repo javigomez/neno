@@ -1663,6 +1663,55 @@ class NenoHelper
 	}
 
 	/**
+	 * Installs a language and create necessary data.
+	 *
+	 * @param integer $languageId Language id
+	 *
+	 * @return bool
+	 */
+	public static function installLanguage($languageId)
+	{
+		// Loading language
+		$language = JFactory::getLanguage();
+		$language->load('com_installer');
+
+		$languageData = self::getLanguageData($languageId);
+		$jiso         = str_replace('pkg_', '', $languageData['element']);
+
+		// Registering some classes
+		JLoader::register('InstallerModelLanguages', JPATH_ADMINISTRATOR . '/components/com_installer/models/languages.php');
+		JLoader::register('LanguagesModelLanguage', JPATH_ADMINISTRATOR . '/components/com_languages/models/language.php');
+
+		/* @var $languagesInstallerModel InstallerModelLanguages */
+		$languagesInstallerModel = JModelLegacy::getInstance('Languages', 'InstallerModel');
+
+		// Install language
+		$languagesInstallerModel->install(array ($languageId));
+
+		if (self::isLanguageInstalled($jiso))
+		{
+			/* @var $languageModel LanguagesModelLanguage */
+			$languageModel = JModelLegacy::getInstance('Language', 'LanguagesModel');
+			$icon          = self::getLanguageSupportedIcon($jiso);
+			$jisoParts     = explode('-', $jiso);
+
+			// Create content
+			$data = array (
+				'lang_code'    => $jiso,
+				'title'        => $languageData['name'],
+				'title_native' => $languageData['name'],
+				'sef'          => $jisoParts[0],
+				'image'        => ($icon !== false) ? $icon : '',
+				'published'    => 1
+			);
+
+			return $languageModel->save($data);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get Language data
 	 *
 	 * @param   int $updateId
@@ -1687,6 +1736,247 @@ class NenoHelper
 		$db->setQuery($query);
 
 		return $db->loadAssoc();
+	}
+
+	/**
+	 * Check if a language package has been installed.
+	 *
+	 * @param string $jiso Joomla language ISO
+	 *
+	 * @return bool
+	 */
+	protected static function isLanguageInstalled($jiso)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('1')
+			->from('#__extensions')
+			->where(
+				array (
+					'type = ' . $db->quote('language'),
+					'element = ' . $db->quote($jiso)
+				)
+			);
+
+		$db->setQuery($query);
+
+		return $db->loadResult() == 1;
+	}
+
+	/**
+	 * @param $jiso
+	 *
+	 * @return string|bool
+	 */
+	protected static function getLanguageSupportedIcon($jiso)
+	{
+		$iconName = strtolower(str_replace('-', '_', $jiso));
+		$iconPath = JPATH_ROOT . '/media/mod_languages/images/' . $iconName . '.gif';
+
+		if (!file_exists($iconPath))
+		{
+			$iconName = explode('_', strtolower(str_replace('-', '_', $jiso)));
+			$iconPath = JPATH_ROOT . '/media/mod_languages/images/' . $iconName[0] . '.gif';
+
+			if (!file_exists($iconPath))
+			{
+				return false;
+			}
+		}
+
+		return $iconName;
+	}
+
+	/**
+	 * Create menu structure
+	 *
+	 * @return void
+	 */
+	public static function createMenuStructure()
+	{
+		// Create menu shadow tables
+		self::createMenuTables();
+
+		// Clean menu structure
+		self::cleanMenuStructure();
+
+		// Copy menu structure
+		self::copyMenuEntries();
+	}
+
+	/**
+	 * Create menu tables
+	 *
+	 * @return void
+	 */
+	protected static function createMenuTables()
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db = JFactory::getDbo();
+
+		// Creating tables with no content copying
+		$db->createShadowTables('#__menu', false);
+	}
+
+	/**
+	 * Clean menu structure to unified everything
+	 *
+	 * @return void
+	 */
+	protected static function cleanMenuStructure()
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		// Get menu items
+		$query
+			->select('m.*')
+			->from('#__menu AS m')
+			->innerJoin('#__menu_types AS mt ON mt.menutype = m.menutype')
+			->where(
+				array (
+					'client_id = 0',
+					'level <> 0'
+				)
+			);
+		$db->setQuery($query);
+
+		$menuItems       = $db->loadObjectList();
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+
+		$associatedMenus = array ();
+
+		foreach ($menuItems as $menuItem)
+		{
+			// This menu has been assigned to every language
+			if ($menuItem->language == '*')
+			{
+				$menuItem->language = $defaultLanguage;
+				$db->updateObject('#__menu', $menuItem, 'id');
+			}
+
+			// This menu has been assigned to the default language
+			if ($menuItem->language == $defaultLanguage)
+			{
+				// Checks if this menu has other menus associated.
+				$query
+					->clear()
+					->select('a2.id')
+					->from('#__associations AS a1')
+					->innerJoin('#__associations AS a2 ON a1.key = a2.key')
+					->where(
+						array (
+							'a1.context = ' . $db->quote('com_menus.item'),
+							'a1.id = ' . (int) $menuItem->id
+						)
+					);
+
+				$db->setQuery($query);
+				$associatedMenus = array_unique(array_merge($associatedMenus, $db->loadArray()));
+			}
+			else
+			{
+				// Has no associations, let's duplicate it
+				if (!in_array($menuItem->id, $associatedMenus))
+				{
+
+					// Insert new record into the shadow table
+					$db->insertObject($db->generateShadowTableName('#__menu', $menuItem->language), $menuItem, 'id');
+					$menuItem->language = $defaultLanguage;
+					$db->updateObject('#__menu', $menuItem, 'id');
+				}
+			}
+		}
+
+		// Let's move the associated to the shadow table
+		foreach ($associatedMenus as $associatedMenu)
+		{
+			$query
+				->clear()
+				->select('m.id')
+				->from('#__associations AS a1')
+				->innerJoin('#__associations AS a2 ON a1.key = a2.key')
+				->innerJoin('#__menu AS m ON a2.id = m.id')
+				->where(
+					array (
+						'a1.context = ' . $db->quote('com_menus.item'),
+						'a1.id = ' . (int) $associatedMenu,
+						'm.language = ' . $db->quote($defaultLanguage)
+					)
+				);
+
+			$db->setQuery($query);
+			$newId = (int) $db->loadResult();
+
+			if (!empty($newId))
+			{
+				$query
+					->clear()
+					->select('*')
+					->from('#__menu')
+					->where('id = ' . $associatedMenu);
+
+				$db->setQuery($query);
+				$menuItem = $db->loadObject();
+
+				if (!empty($menuItem))
+				{
+					$oldId        = $menuItem->id;
+					$menuItem->id = $newId;
+
+					// Insert the object into the shadow table
+					$db->insertObject($db->generateShadowTableName('#__menu', $menuItem->language), $menuItem, 'id');
+
+					// Delete the element
+					$db->deleteObject('#__menu', $oldId);
+				}
+
+			}
+		}
+	}
+
+	/**
+	 * Copy menu entries to the shadow table.
+	 *
+	 * @return void
+	 */
+	protected static function copyMenuEntries()
+	{
+		$languages       = NenoHelper::getLanguages();
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		foreach ($languages as $language)
+		{
+			if ($language->lang_code !== $defaultLanguage)
+			{
+				$query
+					->clear()
+					->select('m.*')
+					->from('#__menu as m')
+					->where(
+						array (
+							'client_id = 0',
+							'NOT EXISTS (SELECT 1 FROM ' . $db->generateShadowTableName('#__menu', $language->lang_code) . ' AS sh WHERE sh.id = m.id)'
+						)
+					);
+
+				$db->setQuery($query);
+				$menuItems = $db->loadObjectList();
+
+				foreach ($menuItems as $menuItem)
+				{
+					$menuItem->language = $language->lang_code;
+					$db->insertObject($db->generateShadowTableName('#__menu', $language->lang_code), $menuItem, 'id');
+				}
+			}
+		}
 	}
 
 	/**
