@@ -1831,7 +1831,8 @@ class NenoHelper
 				array (
 					'published = 1',
 					'module = ' . $db->quote('mod_menu'),
-					'client_id = 0'
+					'client_id = 0',
+					'language <> ' . $db->quote('*')
 				)
 			)
 			->group('language');
@@ -1967,24 +1968,37 @@ class NenoHelper
 			$db->execute();
 		}
 
-		$newMenuType           = clone $defaultMenuType;
-		$newMenuType->id       = null;
-		$newMenuType->language = $language;
-		$newMenuType->title    = JText::sprintf('COM_NENO_MAIN_MENU_TITLE', $language);
+		// Create module menu
+		JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
 
-		if (empty($newMenuType->params))
+		/* @var $moduleModel ModulesModelModule */
+		$moduleModel              = JModelLegacy::getInstance('Module', 'ModulesModel');
+		$newMenuType              = get_object_vars($defaultMenuType);
+		$newMenuType['id']        = null;
+		$newMenuType['language']  = $language;
+		$newMenuType['title']     = JText::sprintf('COM_NENO_MAIN_MENU_TITLE', $language);
+		$newMenuType['published'] = 1;
+		$newMenuType['client_id'] = 0;
+		$newMenuType['access']    = 1;
+		$newMenuType['module']    = 'mod_menu';
+
+		if (empty($newMenuType['params']))
 		{
-			$newMenuType->params = array ();
+			$newMenuType['params'] = array ();
 		}
 
-		$newMenuType->params['menutype'] = $menuType;
-		$newMenuType->params             = json_encode($newMenuType->params);
+		$newMenuType['params']['menutype'] = $menuType;
 
-		$db->insertObject('#__modules', $newMenuType, 'id');
+		if ($moduleModel->save($newMenuType))
+		{
+			/* @var $item JObject */
+			$item = $moduleModel->getItem($moduleModel->getState('module.id'));
+			$item = (object) $item->getProperties();
 
-		$newMenuType->params = json_decode($newMenuType->params, true);
+			return $item;
+		}
 
-		return $newMenuType;
+		return false;
 	}
 
 	/**
