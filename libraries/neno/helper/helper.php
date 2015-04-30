@@ -2004,6 +2004,7 @@ class NenoHelper
 			->select('a2.id')
 			->from('#__associations AS a1')
 			->innerJoin('#__associations AS a2 ON a1.key = a2.key')
+			->innerJoin('#__menu AS m on a2.id = m.id')
 			->where(
 				array (
 					'a1.context = ' . $db->quote('com_menus.item'),
