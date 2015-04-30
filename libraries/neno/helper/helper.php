@@ -1796,43 +1796,68 @@ class NenoHelper
 	 */
 	public static function createMenuStructure()
 	{
-		// Create menu shadow tables
-		self::createMenuTables();
-
-		// Clean menu structure
-		self::cleanMenuStructure();
-
-		// Copy menu structure
-		self::copyMenuEntries();
-	}
-
-	/**
-	 * Create menu tables
-	 *
-	 * @return void
-	 */
-	protected static function createMenuTables()
-	{
 		/* @var $db NenoDatabaseDriverMysqlx */
-		$db = JFactory::getDbo();
+		$db              = JFactory::getDbo();
+		$query           = $db->getQuery(true);
+		$languages       = NenoHelper::getLanguages();
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
 
-		// Creating tables with no content copying
-		$db->createShadowTables('#__menu', false);
-	}
+		// Set all the menus items from '*' to default language
+		$query
+			->update('#__menu')
+			->set('language = ' . $db->quote($defaultLanguage))
+			->where(
+				array (
+					'client_id = 0',
+					'level <> 0',
+					'language = ' . $db->quote('*')
+				)
+			);
 
-	/**
-	 * Clean menu structure to unified everything
-	 *
-	 * @return void
-	 */
-	protected static function cleanMenuStructure()
-	{
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$db->setQuery($query);
+		$db->execute();
+
+		$query
+			->clear()
+			->select(
+				array (
+					'position',
+					'params',
+					'language'
+				)
+			)
+			->from('#__modules')
+			->where(
+				array (
+					'published = 1',
+					'module = ' . $db->quote('mod_menu'),
+					'client_id = 0'
+				)
+			)
+			->group('language');
+
+		$db->setQuery($query);
+		$menus = $db->loadObjectList('language');
+
+		// If there's no menu created, let's create one
+		if (empty($menus))
+		{
+			$menu                    = self::createMenu($defaultLanguage, new stdClass());
+			$menus[$defaultLanguage] = $menu;
+		}
+
+		foreach ($menus as $key => $menu)
+		{
+			if (is_string($menu->params))
+			{
+				$menu->params = json_decode($menu->params, true);
+				$menus[$key]  = $menu;
+			}
+		}
 
 		// Get menu items
 		$query
+			->clear()
 			->select('m.*')
 			->from('#__menu AS m')
 			->innerJoin('#__menu_types AS mt ON mt.menutype = m.menutype')
@@ -1844,139 +1869,151 @@ class NenoHelper
 			);
 		$db->setQuery($query);
 
-		$menuItems       = $db->loadObjectList();
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$menuItems         = $db->loadObjectList();
+		$unAssociatedMenus = array ();
 
-		$associatedMenus = array ();
-
+		// Go through to check if the element has associations
 		foreach ($menuItems as $menuItem)
 		{
-			// This menu has been assigned to every language
-			if ($menuItem->language == '*')
-			{
-				$menuItem->language = $defaultLanguage;
-				$db->updateObject('#__menu', $menuItem, 'id');
-			}
+			// Checks if this menu has other menus associated.
+			$associations = self::getAssociations($menuItem->id);
 
-			// This menu has been assigned to the default language
-			if ($menuItem->language == $defaultLanguage)
+			if (empty($associations))
 			{
-				// Checks if this menu has other menus associated.
-				$query
-					->clear()
-					->select('a2.id')
-					->from('#__associations AS a1')
-					->innerJoin('#__associations AS a2 ON a1.key = a2.key')
-					->where(
-						array (
-							'a1.context = ' . $db->quote('com_menus.item'),
-							'a1.id = ' . (int) $menuItem->id
-						)
-					);
-
-				$db->setQuery($query);
-				$associatedMenus = array_unique(array_merge($associatedMenus, $db->loadArray()));
-			}
-			else
-			{
-				// Has no associations, let's duplicate it
-				if (!in_array($menuItem->id, $associatedMenus))
-				{
-
-					// Insert new record into the shadow table
-					$db->insertObject($db->generateShadowTableName('#__menu', $menuItem->language), $menuItem, 'id');
-					$menuItem->language = $defaultLanguage;
-					$db->updateObject('#__menu', $menuItem, 'id');
-				}
+				$unAssociatedMenus[] = $menuItem;
 			}
 		}
 
-		// Let's move the associated to the shadow table
-		foreach ($associatedMenus as $associatedMenu)
+		if (!empty($unAssociatedMenus))
 		{
 			$query
 				->clear()
-				->select('m.id')
-				->from('#__associations AS a1')
-				->innerJoin('#__associations AS a2 ON a1.key = a2.key')
-				->innerJoin('#__menu AS m ON a2.id = m.id')
-				->where(
-					array (
-						'a1.context = ' . $db->quote('com_menus.item'),
-						'a1.id = ' . (int) $associatedMenu,
-						'm.language = ' . $db->quote($defaultLanguage)
-					)
-				);
+				->insert('#__associations');
 
-			$db->setQuery($query);
-			$newId = (int) $db->loadResult();
-
-			if (!empty($newId))
+			// Let's move the associated to the shadow table
+			foreach ($unAssociatedMenus as $unAssociatedMenu)
 			{
-				$query
-					->clear()
-					->select('*')
-					->from('#__menu')
-					->where('id = ' . $associatedMenu);
+				$associations = array ($unAssociatedMenu->id);
 
-				$db->setQuery($query);
-				$menuItem = $db->loadObject();
-
-				if (!empty($menuItem))
+				// Create other menu using this one as base
+				foreach ($languages as $language)
 				{
-					$oldId        = $menuItem->id;
-					$menuItem->id = $newId;
+					if (empty($menus[$language->lang_code]))
+					{
+						$menus[$language->lang_code] = self::createMenu($language->lang_code, $menus[$defaultLanguage]);
+					}
 
-					// Insert the object into the shadow table
-					$db->insertObject($db->generateShadowTableName('#__menu', $menuItem->language), $menuItem, 'id');
+					$menu        = $menus[$language->lang_code];
+					$newMenuItem = clone $unAssociatedMenu;
 
-					// Delete the element
-					$db->deleteObject('#__menu', $oldId);
+					unset($newMenuItem->id);
+					$newMenuItem->menutype = $menu->params['menutype'];
+					$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
+					$newMenuItem->language = $language->lang_code;
+					$db->insertObject('#__menu', $newMenuItem, 'id');
+
+					$associations[] = $newMenuItem->id;
 				}
 
+				$associationKey = md5(json_encode($associations));
+
+				foreach ($associations as $association)
+				{
+					$query->values($association . ',' . $db->quote('com_menus.item') . ',' . $db->quote($associationKey));
+				}
 			}
+
+			$db->setQuery($query);
+			$db->execute();
 		}
 	}
 
 	/**
-	 * Copy menu entries to the shadow table.
+	 * Create a new menu
 	 *
-	 * @return void
+	 * @param   string   $language        Language
+	 * @param   stdClass $defaultMenuType Default language menu type
+	 *
+	 * @return stdClass
 	 */
-	protected static function copyMenuEntries()
+	protected static function createMenu($language, stdClass $defaultMenuType)
 	{
-		$languages       = NenoHelper::getLanguages();
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$db       = JFactory::getDbo();
+		$query    = $db->getQuery(true);
+		$menuType = 'mainmenu-' . strtolower($language);
 
+		$query
+			->select('1')
+			->from('#__menu_types')
+			->where('menutype = ' . $db->quote($menuType));
+
+		$db->setQuery($query);
+		$exists = $db->loadResult() == 1;
+
+		if (!$exists)
+		{
+			$query
+				->clear()
+				->insert('#__menu_types')
+				->columns(
+					array (
+						'menutype',
+						'title'
+					)
+				)
+				->values($db->quote($menuType) . ', ' . $db->quote(JText::sprintf('COM_NENO_MAIN_MENU_TITLE', $language)));
+
+			$db->setQuery($query);
+			$db->execute();
+		}
+
+		$newMenuType           = clone $defaultMenuType;
+		$newMenuType->id       = null;
+		$newMenuType->language = $language;
+		$newMenuType->title    = JText::sprintf('COM_NENO_MAIN_MENU_TITLE', $language);
+
+		if (empty($newMenuType->params))
+		{
+			$newMenuType->params = array ();
+		}
+
+		$newMenuType->params['menutype'] = $menuType;
+		$newMenuType->params             = json_encode($newMenuType->params);
+
+		$db->insertObject('#__modules', $newMenuType, 'id');
+
+		$newMenuType->params = json_decode($newMenuType->params, true);
+
+		return $newMenuType;
+	}
+
+	/**
+	 * Get a list of menu items associated to the one passed by argument
+	 *
+	 * @param    integer $menuItemId Menu Item id
+	 *
+	 * @return array|null Array if there are associations between elements, null there's none
+	 */
+	protected static function getAssociations($menuItemId)
+	{
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		foreach ($languages as $language)
-		{
-			if ($language->lang_code !== $defaultLanguage)
-			{
-				$query
-					->clear()
-					->select('m.*')
-					->from('#__menu as m')
-					->where(
-						array (
-							'client_id = 0',
-							'NOT EXISTS (SELECT 1 FROM ' . $db->generateShadowTableName('#__menu', $language->lang_code) . ' AS sh WHERE sh.id = m.id)'
-						)
-					);
+		$query
+			->select('a2.id')
+			->from('#__associations AS a1')
+			->innerJoin('#__associations AS a2 ON a1.key = a2.key')
+			->where(
+				array (
+					'a1.context = ' . $db->quote('com_menus.item'),
+					'a1.id = ' . (int) $menuItemId
+				)
+			);
 
-				$db->setQuery($query);
-				$menuItems = $db->loadObjectList();
+		$db->setQuery($query);
 
-				foreach ($menuItems as $menuItem)
-				{
-					$menuItem->language = $language->lang_code;
-					$db->insertObject($db->generateShadowTableName('#__menu', $language->lang_code), $menuItem, 'id');
-				}
-			}
-		}
+		return $db->loadArray();
 	}
 
 	/**
@@ -1991,8 +2028,3 @@ class NenoHelper
 		return JFactory::getDbo()->quote($value);
 	}
 }
-
-
-
-
-
