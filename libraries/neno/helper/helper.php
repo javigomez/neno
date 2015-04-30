@@ -1887,44 +1887,104 @@ class NenoHelper
 
 		if (!empty($unAssociatedMenus))
 		{
-			$query
-				->clear()
+			$insertQuery = $db->getQuery(true);
+			$insertQuery
 				->insert('#__associations');
+
+			$alreadyAssociated = array ();
+			$homeAssociated    = false;
 
 			// Let's move the associated to the shadow table
 			foreach ($unAssociatedMenus as $unAssociatedMenu)
 			{
-				$associations = array ($unAssociatedMenu->id);
-
-				// Create other menu using this one as base
-				foreach ($languages as $language)
+				if (!$unAssociatedMenu->home || ($unAssociatedMenu->home && !$homeAssociated))
 				{
-					if (empty($menus[$language->lang_code]))
+					$associations = array ($unAssociatedMenu->id);
+
+					// Let's try to find if there are any home language created already
+					if ($unAssociatedMenu->home)
 					{
-						$menus[$language->lang_code] = self::createMenu($language->lang_code, $menus[$defaultLanguage]);
+						$query
+							->clear()
+							->select('m.id')
+							->from('#__menu AS m')
+							->innerJoin('#__menu_types AS mt ON mt.menutype = m.menutype')
+							->where(
+								array (
+									'm.client_id = 0',
+									'm.level <> 0',
+									'm.home = 1',
+									'm.language <> ' . $db->quote($unAssociatedMenu->language)
+								)
+							);
+
+						$db->setQuery($query);
+						$otherHomes = $db->loadArray();
+
+						if (!empty($otherHomes))
+						{
+							$associations = array_merge($associations, $otherHomes);
+						}
 					}
 
-					$menu        = $menus[$language->lang_code];
-					$newMenuItem = clone $unAssociatedMenu;
+					// Others menu items has not been associated.
+					if (count($associations) == 1)
+					{
+						// Create other menu using this one as base
+						foreach ($languages as $language)
+						{
+							if (empty($menus[$language->lang_code]))
+							{
+								$menus[$language->lang_code] = self::createMenu($language->lang_code, $menus[$defaultLanguage]);
+							}
 
-					unset($newMenuItem->id);
-					$newMenuItem->menutype = $menu->params['menutype'];
-					$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
-					$newMenuItem->language = $language->lang_code;
-					$db->insertObject('#__menu', $newMenuItem, 'id');
+							$menu     = $menus[$language->lang_code];
+							$newAlias = JFilterOutput::stringURLSafe($unAssociatedMenu->alias . '-' . $language->lang_code);
 
-					$associations[] = $newMenuItem->id;
-				}
 
-				$associationKey = md5(json_encode($associations));
+							$query
+								->clear()
+								->select('id')
+								->from('#__menu')
+								->where('alias = ' . $db->quote($newAlias));
 
-				foreach ($associations as $association)
-				{
-					$query->values($association . ',' . $db->quote('com_menus.item') . ',' . $db->quote($associationKey));
+							$db->setQuery($query);
+							$menuId = $db->loadResult();
+
+							if (!empty($menuId) && !in_array($menuId, $alreadyAssociated))
+							{
+								$associations[]      = $menuId;
+								$alreadyAssociated[] = $menuId;
+							}
+							else
+							{
+								$newMenuItem = clone $unAssociatedMenu;
+								unset($newMenuItem->id);
+								$newMenuItem->menutype = $menu->params['menutype'];
+								$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
+								$newMenuItem->language = $language->lang_code;
+								$db->insertObject('#__menu', $newMenuItem, 'id');
+
+								$associations[] = $newMenuItem->id;
+							}
+						}
+					}
+
+					$associationKey = md5(json_encode($associations));
+
+					foreach ($associations as $association)
+					{
+						$insertQuery->values($association . ',' . $db->quote('com_menus.item') . ',' . $db->quote($associationKey));
+					}
+
+					if ($unAssociatedMenu->home)
+					{
+						$homeAssociated = true;
+					}
 				}
 			}
 
-			$db->setQuery($query);
+			$db->setQuery($insertQuery);
 			$db->execute();
 		}
 	}
