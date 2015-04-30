@@ -1802,8 +1802,32 @@ class NenoHelper
 		$languages       = NenoHelper::getLanguages();
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
 
+		// Delete all the menus trashed
+		$query
+			->delete('#__menu')
+			->where('published = -2');
+
+		$db->setQuery($query);
+		$db->execute();
+
+		// Delete all the associations left
+		$query
+			->clear()
+			->delete('a USING jos_associations AS a')
+			->where(
+				array (
+					'context = ' . $db->quote('com_menus.item'),
+					'NOT EXISTS (SELECT 1 FROM #__menu AS m WHERE a.id = m.id)'
+				)
+			);
+
+		$db->setQuery($query);
+		$db->execute();
+
+
 		// Set all the menus items from '*' to default language
 		$query
+			->clear()
 			->update('#__menu')
 			->set('language = ' . $db->quote($defaultLanguage))
 			->where(
@@ -1873,28 +1897,22 @@ class NenoHelper
 
 		$menuItems         = $db->loadObjectList();
 		$alreadyAssociated = array ();
-		$insert            = false;
-		$insertQuery       = $db->getQuery(true);
-		$insertQuery->insert('#__associations');
 
 		// Go through to check if the element has associations
 		foreach ($menuItems as $menuItem)
 		{
 			$existingLanguagesAssociated = self::getLanguageAssociated($menuItem->id);
+			$insertQuery                 = $db->getQuery(true);
+			$insertQuery->insert('#__associations');
+			$associations = array ();
+			$insert       = false;
 
-			if (count($existingLanguagesAssociated) < count($languages))
+			if (count($existingLanguagesAssociated) < (count($languages) - 1))
 			{
 				foreach ($languages as $language)
 				{
-					if (!in_array($language->lang_code, $existingLanguagesAssociated) && !in_array($menuItem->id, $alreadyAssociated))
+					if (!in_array($language->lang_code, $existingLanguagesAssociated) && !in_array($menuItem->id, $alreadyAssociated) && $language->lang_code !== $menuItem->language)
 					{
-						$associations = array ();
-
-						if (empty($existingLanguagesAssociated))
-						{
-							$associations[] = $menuItem->id;
-						}
-
 						// Let's try to find if there are any home language created already
 						if ($menuItem->home)
 						{
@@ -1921,83 +1939,98 @@ class NenoHelper
 							}
 						}
 
-						// Others menu items has not been associated.
-						if (count($associations) <= 1)
+						if (empty($menus[$language->lang_code]))
 						{
-							if (empty($menus[$language->lang_code]))
-							{
-								$menus[$language->lang_code] = self::createMenu($language->lang_code, $menus[$defaultLanguage]);
-							}
-
-							$menu     = $menus[$language->lang_code];
-							$newAlias = JFilterOutput::stringURLSafe($menuItem->alias . '-' . $language->lang_code);
-
-
-							$query
-								->clear()
-								->select('id')
-								->from('#__menu')
-								->where('alias = ' . $db->quote($newAlias));
-
-							$db->setQuery($query);
-							$menuId = $db->loadResult();
-
-							if (!empty($menuId) && !in_array($menuId, $alreadyAssociated))
-							{
-								$associations[]      = $menuId;
-								$alreadyAssociated[] = $menuId;
-							}
-							else
-							{
-								$newMenuItem = clone $menuItem;
-								unset($newMenuItem->id);
-								$newMenuItem->menutype = $menu->params['menutype'];
-								$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
-								$newMenuItem->language = $language->lang_code;
-								$db->insertObject('#__menu', $newMenuItem, 'id');
-
-								$associations[] = $newMenuItem->id;
-							}
+							$menus[$language->lang_code] = self::createMenu($language->lang_code, $menus[$defaultLanguage]);
 						}
 
-						if (empty($existingLanguagesAssociated))
+						$menu     = $menus[$language->lang_code];
+						$newAlias = JFilterOutput::stringURLSafe($menuItem->alias . '-' . $language->lang_code);
+
+
+						$query
+							->clear()
+							->select('id')
+							->from('#__menu')
+							->where('alias = ' . $db->quote($newAlias));
+
+						$db->setQuery($query);
+						$menuId = $db->loadResult();
+
+						if (!empty($menuId) && !in_array($menuId, $alreadyAssociated))
 						{
-							$associationKey = md5(json_encode($associations));
+							$associations[]      = $menuId;
+							$alreadyAssociated[] = $menuId;
 						}
 						else
 						{
-							$query
-								->clear()
-								->select($db->quoteName('key', 'associationKey'))
-								->from('#__associations')
-								->where(
-									array (
-										'id = ' . $menuItem->id,
-										'context = ' . $db->quote('com_menus.item')
-									)
-								);
+							$newMenuItem = clone $menuItem;
+							unset($newMenuItem->id);
+							$newMenuItem->menutype = $menu->params['menutype'];
+							$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
+							$newMenuItem->language = $language->lang_code;
+							$db->insertObject('#__menu', $newMenuItem, 'id');
 
-							$db->setQuery($query);
-							$associationKey = $db->loadResult();
-						}
-
-
-						foreach ($associations as $association)
-						{
-							$insertQuery->values($association . ',' . $db->quote('com_menus.item') . ',' . $db->quote($associationKey));
-							$alreadyAssociated[] = $association;
-							$insert              = true;
+							$associations[] = $newMenuItem->id;
 						}
 					}
 				}
 
-				if ($insert)
+				$query
+					->clear()
+					->select($db->quoteName('key', 'associationKey'))
+					->from('#__associations')
+					->where(
+						array (
+							'id IN (' . implode(',', array_merge($associations, array ($menuItem->id))) . ')',
+							'context = ' . $db->quote('com_menus.item')
+						)
+					);
+
+				$db->setQuery($query);
+				$associationKey = $db->loadResult();
+
+				if (empty($associationKey))
 				{
-					$db->setQuery($insertQuery);
-					$db->execute();
+					if (!in_array($menuItem->id, $associations))
+					{
+						$associations[] = $menuItem->id;
+					}
+
+					$associations   = array_unique($associations);
+					$associationKey = md5(json_encode($associations));
+				}
+				else
+				{
+					$query
+						->clear()
+						->select('id')
+						->from('#__associations')
+						->where($db->quoteName('key') . ' = ' . $db->quote($associationKey));
+
+					$db->setQuery($query);
+					$alreadyInserted = $db->loadArray();
+					$associations    = array_diff($associations, $alreadyInserted);
+				}
+
+				foreach ($associations as $association)
+				{
+					$insertQuery->values($association . ',' . $db->quote('com_menus.item') . ',' . $db->quote($associationKey));
+					$insert = true;
 				}
 			}
+
+			if ($insert)
+			{
+				$db->setQuery($insertQuery);
+				$db->execute();
+			}
 		}
+
+
+		// Once we finish restructuring menus, let's rebuild them
+		$menuTable = new JTableMenu($db);
+		$menuTable->rebuild();
 	}
 
 	/**
@@ -2086,15 +2119,16 @@ class NenoHelper
 		$query = $db->getQuery(true);
 
 		$query
-			->select('l.lang_code')
+			->select('DISTINCT l.lang_code')
 			->from('#__languages AS l')
 			->innerJoin('#__menu AS m ON l.lang_code = m.language')
 			->where(
 				array (
-					'EXISTS(SELECT 1 FROM #__associations a1 INNER JOIN #__associations AS a2 ON a1.key = a2.key WHERE a2.id = m.id AND a1.context = ' . $db->quote('com_menus.item') . ' AND a1.id = ' . (int) $menuItemId . ')',
+					'EXISTS(SELECT 1 FROM #__associations a1 INNER JOIN #__associations AS a2 ON a1.key = a2.key WHERE a2.id = m.id AND a1.context = ' . $db->quote('com_menus.item') . ' AND a1.id = ' . (int) $menuItemId . ' AND a2.id <> ' . (int) $menuItemId . ')',
 					'm.client_id = 0',
 					'm.level <> 0',
-					'm.published <> -2'
+					'm.published <> -2',
+					'm.id <> ' . (int) $menuItemId
 				)
 			);
 
