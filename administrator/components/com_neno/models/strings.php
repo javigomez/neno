@@ -94,6 +94,13 @@ class NenoModelStrings extends JModelList
 			$this->setState('filter.group_id', $groups);
 		}
 
+		$search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '', 'string');
+
+		if (!empty($search))
+		{
+			$this->setState('filter.search', $search);
+		}
+
 		// Element(s) filtering
 		$elements = $app->getUserStateFromRequest($this->context . '.table', 'table', array ());
 
@@ -265,6 +272,14 @@ class NenoModelStrings extends JModelList
 		$query
 			->select('*')
 			->from('((' . (string) $dbStrings . ') UNION (' . (string) $languageFileStrings . ')) AS a');
+
+		$search = $this->getState('filter.search');
+
+		if (!empty($search))
+		{
+			$search = $db->quote('%' . $search . '%');
+			$query->where('(a.source_text LIKE ' . $search . ' OR a.string LIKE ' . $search . ')');
+		}
 
 		$query->setLimit($limit, $offset);
 

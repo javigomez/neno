@@ -73,7 +73,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * @var string
 	 */
-	public $originalText;
+	protected $originalText;
 
 	/**
 	 * @var integer
@@ -167,8 +167,6 @@ class NenoContentElementTranslation extends NenoContentElement
 
 		if (!$this->isNew())
 		{
-			$this->originalText = $this->loadOriginalText();
-
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 			$query
@@ -201,42 +199,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	public function setString($string)
 	{
 		$this->string = $string;
-
-		return $this;
-	}
-
-	/**
-	 * Load Original text
-	 *
-	 * @return string
-	 */
-	private function loadOriginalText()
-	{
-		$string = NenoHelper::getTranslationOriginalText($this->getId(), $this->getContentType());
-
-		return $string;
-	}
-
-	/**
-	 * Get type of the content to translate
-	 *
-	 * @return int
-	 */
-	public function getContentType()
-	{
-		return $this->contentType;
-	}
-
-	/**
-	 * Set content type
-	 *
-	 * @param   int $contentType content type
-	 *
-	 * @return NenoContentElement
-	 */
-	public function setContentType($contentType)
-	{
-		$this->contentType = $contentType;
 
 		return $this;
 	}
@@ -466,8 +428,7 @@ class NenoContentElementTranslation extends NenoContentElement
 		$this->wordCounter = str_word_count($this->getString());
 		$db                = JFactory::getDbo();
 		$query             = $db->getQuery(true);
-		$query
-			->select('translation_method_id');
+		$query->select('translation_method_id');
 
 		if ($this->contentType === self::DB_STRING)
 		{
@@ -501,6 +462,10 @@ class NenoContentElementTranslation extends NenoContentElement
 		{
 			// Updating changed time
 			$this->timeChanged = new DateTime;
+		}
+		else
+		{
+			$this->originalText = $this->loadOriginalText();
 		}
 
 		// Only execute this task when the translation is new and there are no records about how to find it.
@@ -562,6 +527,42 @@ class NenoContentElementTranslation extends NenoContentElement
 	public function setLanguage($language)
 	{
 		$this->language = $language;
+
+		return $this;
+	}
+
+	/**
+	 * Load Original text
+	 *
+	 * @return string
+	 */
+	private function loadOriginalText()
+	{
+		$string = NenoHelper::getTranslationOriginalText($this->getId(), $this->getContentType());
+
+		return $string;
+	}
+
+	/**
+	 * Get type of the content to translate
+	 *
+	 * @return int
+	 */
+	public function getContentType()
+	{
+		return $this->contentType;
+	}
+
+	/**
+	 * Set content type
+	 *
+	 * @param   int $contentType content type
+	 *
+	 * @return NenoContentElement
+	 */
+	public function setContentType($contentType)
+	{
+		$this->contentType = $contentType;
 
 		return $this;
 	}
