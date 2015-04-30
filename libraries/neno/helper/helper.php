@@ -1824,23 +1824,6 @@ class NenoHelper
 		$db->setQuery($query);
 		$db->execute();
 
-
-		// Set all the menus items from '*' to default language
-		$query
-			->clear()
-			->update('#__menu')
-			->set('language = ' . $db->quote($defaultLanguage))
-			->where(
-				array (
-					'client_id = 0',
-					'level <> 0',
-					'language = ' . $db->quote('*')
-				)
-			);
-
-		$db->setQuery($query);
-		$db->execute();
-
 		$query
 			->clear()
 			->select(
@@ -1879,6 +1862,28 @@ class NenoHelper
 				$menus[$key]  = $menu;
 			}
 		}
+
+
+		// Set all the menus items from '*' to default language
+		$query
+			->clear()
+			->update('#__menu AS m')
+			->set(
+				array (
+					'language = ' . $db->quote($defaultLanguage),
+					'menutype = ' . $db->quote($menus[$defaultLanguage]->params['menutype'])
+				)
+			)
+			->where(
+				array (
+					'client_id = 0',
+					'level <> 0',
+					'language = ' . $db->quote('*')
+				)
+			);
+
+		$db->setQuery($query);
+		$db->execute();
 
 		// Get menu items
 		$query
