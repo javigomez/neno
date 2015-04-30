@@ -19,4 +19,21 @@ jQuery(document).ready(function () {
             loadStrings();
         }
     });
+
+    jQuery('body').on('keydown', function (e) {
+        var ev = e || window.event;
+
+        // Ctrl-S
+        if (ev.keyCode == 83 && e.ctrlKey) {
+            ev.preventDefault();
+            saveDraft();
+        }
+
+        // Ctrl-Enter
+        if (ev.keyCode == 13 && e.ctrlKey) {
+            ev.preventDefault();
+            saveTranslationAndNext();
+        }
+    });
+
 });

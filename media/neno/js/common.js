@@ -34,6 +34,7 @@ function saveTranslationAndNext() {
             beforeSend: onBeforeAjax,
             type: 'POST',
             url: 'index.php?option=com_neno&task=editor.saveAsCompleted',
+            dataType: "json",
             data: {
                 id: translationId,
                 text: text
@@ -58,16 +59,27 @@ function saveTranslationAndNext() {
 function saveDraft() {
     var text = jQuery('.translated-content').val();
     var translationId = jQuery('#draft-button').data('id');
+    var statuses = ['', 'translated', 'queued', 'changed', 'not-translated'];
     jQuery.ajax({
             beforeSend: onBeforeAjax,
             type: 'POST',
             url: 'index.php?option=com_neno&task=editor.saveAsDraft',
+            dataType: "json",
             data: {
                 id: translationId,
                 text: text
             },
             success: function (data) {
-
+                var row = jQuery('#elements-wrapper .string[data-id=' + data.id + ']');
+                if (row) {
+                    var string = data.string;
+                    if (string.length > 40) {
+                        string = string.substr(0, 35) + '...';
+                    }
+                    row.find('.string-text').html(string);
+                    row.find('.status').removeClass().addClass('status');
+                    row.find('.status').addClass(statuses[data.state]);
+                }
             }
         }
     );
