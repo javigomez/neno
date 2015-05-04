@@ -429,19 +429,12 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		{
 			if ($key)
 			{
-				if (isset($array[$row->$key]))
+				if (!isset($array[$row->$key]))
 				{
-					if (!is_array($array[$row->$key]))
-					{
-						$array[$row->$key] = array ($array[$row->$key]);
-					}
+					$array[$row->$key] = array ();
+				}
 
-					$array[$row->$key][] = $row;
-				}
-				else
-				{
-					$array[$row->$key] = $row;
-				}
+				$array[$row->$key][] = $row;
 			}
 			else
 			{
