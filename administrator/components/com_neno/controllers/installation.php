@@ -51,4 +51,34 @@ class NenoControllerInstallation extends JControllerAdmin
 	{
 		NenoHelper::createMenuStructure();
 	}
+
+	public function checks()
+	{
+		$app             = JFactory::getApplication();
+		$languages       = JFactory::getLanguage()->getKnownLanguages();
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+
+		foreach ($languages as $language)
+		{
+			if ($language['tag'] != $defaultLanguage)
+			{
+				if (NenoHelper::isLanguageFileOutOfDate($language['tag']))
+				{
+					$app->enqueueMessage('Language file of ' . $language['name'] . ' out of date. Please check', 'error');
+				}
+
+				if (!NenoHelper::hasContentCreated($language['tag']))
+				{
+					$app->enqueueMessage('We have detect that ' . $language['name'] . ' language does not have created a content record', 'error');
+				}
+
+				$contentCounter = NenoHelper::contentCountInOtherLanguages($language['tag']);
+
+				if ($contentCounter !== 0)
+				{
+					$app->enqueueMessage('We have detect content in ' . $language['name'] . ' that have not been moved to the shadow tables', 'error');
+				}
+			}
+		}
+	}
 }

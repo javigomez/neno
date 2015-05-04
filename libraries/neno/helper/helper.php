@@ -2143,6 +2143,135 @@ class NenoHelper
 	}
 
 	/**
+	 * Check if the language has a row created into the languages table.
+	 *
+	 * @param   string $languageTag Language tag
+	 *
+	 * @return bool
+	 */
+	public static function hasContentCreated($languageTag)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('1')
+			->from('#__languages')
+			->where('lang_code = ' . $db->quote($languageTag));
+
+		$db->setQuery($query);
+
+		return $db->loadResult() == 1;
+	}
+
+	/**
+	 * @param string $languageTag Language Tag
+	 *
+	 * @return bool
+	 */
+	public static function isLanguageFileOutOfDate($languageTag)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(
+				array (
+					'us.location',
+					'e.manifest_cache'
+				)
+			)
+			->from('#__extensions AS e')
+			->innerJoin('#__update_sites_extensions AS upe ON e.extension_id = upe.extension_id')
+			->innerJoin('#__update_sites AS us ON upe.update_site_id = us.update_site_id')
+			->where('e.element = ' . $db->quote('pkg_' . $languageTag));
+
+		$db->setQuery($query);
+		$extensionData = $db->loadAssoc();
+
+		if (!empty($extensionData))
+		{
+			$xml = file_get_contents($extensionData['location']);
+
+			if (!empty($xml))
+			{
+				$xml     = new SimpleXMLElement($xml);
+				$xpath   = 'extension[@element="pkg_' . $languageTag . '"]/@version';
+				$version = $xml->xpath($xpath);
+
+				if (!empty($version))
+				{
+					$manifestCacheData = json_decode($extensionData['manifest_cache'], true);
+
+					return version_compare((string) $version[0]->version, $manifestCacheData['version']) == 1;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if there are content in other languages
+	 *
+	 * @param   string $language Language to filter the content
+	 *
+	 * @return int
+	 */
+	public static function contentCountInOtherLanguages($language = null)
+	{
+		$db              = JFactory::getDbo();
+		$query           = $db->getQuery(true);
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+
+		$joomlaTablesUsingLanguageField = array (
+			'#__banners',
+			'#__categories',
+			'#__contact_details',
+			'#__content',
+			'#__finder_links',
+			'#__finder_terms',
+			'#__finder_terms_common',
+			'#__finder_tokens',
+			'#__finder_tokens_aggregate',
+			'#__newsfeeds',
+			'#__tags',
+			'#__weblinks'
+		);
+
+
+		$unionQueries = array ();
+		$query->select('COUNT(*) AS counter');
+
+		if ($language == null)
+		{
+			$query->where('language <> ' . $db->quote($defaultLanguage));
+		}
+		else
+		{
+			$query->where('language = ' . $db->quote($language));
+		}
+
+
+		foreach ($joomlaTablesUsingLanguageField as $joomlaTableUsingLanguageField)
+		{
+			$query
+				->clear('from')
+				->from($joomlaTableUsingLanguageField);
+			$unionQueries[] = (string) $query;
+		}
+
+		$query
+			->clear()
+			->select('SUM(a.counter)')
+			->from('((' . implode(') UNION (', $unionQueries) . ')) AS a');
+
+		$db->setQuery($query);
+
+		return (int) $db->loadResult();
+	}
+
+	/**
 	 * Get a list of menu items associated to the one passed by argument
 	 *
 	 * @param    integer $menuItemId Menu Item id
