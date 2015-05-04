@@ -404,6 +404,58 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	}
 
 	/**
+	 * Load an array of objects based on the query executed, but if the array contains several items with the same key,
+	 * it will create a an array
+	 *
+	 * @param   string $key   Array key
+	 * @param   string $class Object class
+	 *
+	 * @return array|null
+	 */
+	public function loadObjectListMultiIndex($key = '', $class = 'stdClass')
+	{
+		$this->connect();
+
+		$array = array ();
+
+		// Execute the query and get the result set cursor.
+		if (!($cursor = $this->execute()))
+		{
+			return null;
+		}
+
+		// Get all of the rows from the result set as objects of type $class.
+		while ($row = $this->fetchObject($cursor, $class))
+		{
+			if ($key)
+			{
+				if (isset($array[$row->$key]))
+				{
+					if (!is_array($array[$row->$key]))
+					{
+						$array[$row->$key] = array ($array[$row->$key]);
+					}
+
+					$array[$row->$key][] = $row;
+				}
+				else
+				{
+					$array[$row->$key] = $row;
+				}
+			}
+			else
+			{
+				$array[] = $row;
+			}
+		}
+
+		// Free up system resources and return.
+		$this->freeResult($cursor);
+
+		return $array;
+	}
+
+	/**
 	 * Refresh the translatable tables
 	 *
 	 * @return void
