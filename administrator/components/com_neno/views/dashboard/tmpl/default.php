@@ -65,11 +65,11 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 						<?php if ($internalItem->state == NenoContentElementTranslation::TRANSLATED_STATE): ?>
 							<?php $translated = (int) $internalItem->word_count; ?>
 						<?php elseif ($internalItem->state == NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE): ?>
-							<?php $translated = (int) $internalItem->word_count; ?>
+							<?php $queued = (int) $internalItem->word_count; ?>
 						<?php elseif ($internalItem->state == NenoContentElementTranslation::SOURCE_CHANGED_STATE): ?>
-							<?php $translated = (int) $internalItem->word_count; ?>
+							<?php $changed = (int) $internalItem->word_count; ?>
 						<?php elseif ($internalItem->state == NenoContentElementTranslation::NOT_TRANSLATED_STATE): ?>
-							<?php $translated = (int) $internalItem->word_count; ?>
+							<?php $untranslated = (int) $internalItem->word_count; ?>
 						<?php endif; ?>
 					<?php endforeach; ?>
 					<?php $wordCount = new stdClass; ?>
@@ -83,7 +83,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 							src="<?php echo JUri::root() . 'media/mod_languages/images/' . $item[0]->image . '.gif'; ?>"/>
 						<?php echo $item[0]->title; ?>
 					</h3>
-					<?php echo NenoHelper::renderWordCountProgressBar($wordCount) ?>
+					<?php echo NenoHelper::renderWordCountProgressBar($wordCount, true, true) ?>
 					<a class="btn btn-primary"
 					   href="<?php echo JRoute::_('index.php?option=com_neno&task=editor.translate&lang=' . $language) ?>">
 						<?php echo JText::_('COM_NENO_DASHBOARD_TRANSLATE_BUTTON'); ?>

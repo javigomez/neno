@@ -1136,7 +1136,7 @@ class NenoHelper
 	 *
 	 * @return string
 	 */
-	public static function renderWordCountProgressBar($wordCount, $enabled = true)
+	public static function renderWordCountProgressBar($wordCount, $enabled = true, $showPercent = false)
 	{
 
 		$displayData                     = new stdClass;
@@ -1146,6 +1146,7 @@ class NenoHelper
 		$displayData->widthQueued        = ($wordCount->total) ? (100 * $wordCount->queued / $wordCount->total) : (0);
 		$displayData->widthChanged       = ($wordCount->total) ? (100 * $wordCount->changed / $wordCount->total) : (0);
 		$displayData->widthNotTranslated = ($wordCount->total) ? (100 * $wordCount->untranslated / $wordCount->total) : (0);
+		$displayData->showPercent        = $showPercent;
 
 		//If total is 0 (there is no content to translate) then mark everything as translated
 		if ($wordCount->total == 0)
