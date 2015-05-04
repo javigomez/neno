@@ -278,7 +278,7 @@ class NenoModelStrings extends JModelList
 		if (!empty($search))
 		{
 			$search = $db->quote('%' . $search . '%');
-			$query->where('(a.source_text LIKE ' . $search . ' OR a.string LIKE ' . $search . ')');
+			$query->where('(a.original_text LIKE ' . $search . ' OR a.string LIKE ' . $search . ')');
 		}
 
 		$query->setLimit($limit, $offset);

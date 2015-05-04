@@ -104,6 +104,7 @@ function loadStrings() {
     var checkedGroupsElements = getMultiSelectValue(jQuery('#table-multiselect'));
     var checkedStatus = getMultiSelectValue(jQuery('#status-multiselect'));
     var checkedMethod = getMultiSelectValue(jQuery('#method-multiselect'));
+    var search = jQuery('#filter_search').val();
     var limitStart = document.adminForm.limitstart.value;
     var limit = document.adminForm.list_limit.value;
 
@@ -157,6 +158,7 @@ function loadStrings() {
         url: "index.php?option=com_neno&task=strings.getStrings",
         data: {
             jsonGroupsElements: JSON.stringify(checkedGroupsElements),
+            filter_search: search,
             limitStart: limitStart,
             limit: limit,
             jsonStatus: JSON.stringify(checkedStatus),
@@ -294,6 +296,9 @@ function printFilterTag(type, label) {
         // Check if the tag is from a Group/Element/Key
         if (type.indexOf('group') != -1 || type.indexOf('table') != -1 || type.indexOf('field') != -1) {
             checkUncheckFamilyCheckboxes(jQuery('[data-id="' + type + '"]').find('input[type=checkbox]'), true);
+        }
+        if (type == 'search') {
+            jQuery('#filter_search').val('');
         }
         document.adminForm.limitstart.value = 0;
         jQuery('#elements-wrapper').html('');
