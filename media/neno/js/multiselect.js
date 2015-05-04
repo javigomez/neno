@@ -150,7 +150,6 @@ function loadStrings() {
         history.pushState(null, null, url);
     }
 
-
     jQuery('#multiselect-value').val(checkedGroupsElements);
     jQuery.ajax({
         beforeSend: onBeforeAjax,
@@ -191,18 +190,6 @@ function getMultiSelectValue(table) {
         }
     }
 
-    return result;
-}
-
-function getSimpleMultiSelectValue(table) {
-    var result = [],
-        checks = jQuery('#' + table.attr('id') + ' input[type=checkbox]');
-    for (var i = 0; i < checks.length; i++) {
-        if (jQuery(checks[i]).prop('checked')) {
-            var row = jQuery(checks[i]).closest('tr');
-            checked.push(row.attr('data-id'));
-        }
-    }
     return result;
 }
 

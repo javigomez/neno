@@ -7,11 +7,6 @@
 
 jQuery(document).ready(function () {
 
-    jQuery('.js-stools-field-filter select').addClass('btn dropdown-toggle');
-    setTimeout(function() {
-        jQuery('.js-stools-field-filter .dropdown-toggle').removeClass('active');
-    }, 100);
-
     jQuery('#elements-wrapper').scroll(function(){
         var wrapper = jQuery(this);
         if(wrapper.scrollTop() + wrapper.innerHeight()>=wrapper[0].scrollHeight && wrapper.innerHeight() > 10) {
@@ -35,5 +30,15 @@ jQuery(document).ready(function () {
             saveTranslationAndNext();
         }
     });
+
+    var params = document.location.search.replace('?', '');
+    var paramsArray = params.split('&');
+    for (var i in paramsArray) {
+        if (paramsArray[i].indexOf('stringId=') != -1) {
+            var stringId = paramsArray[i].split('=')[1];
+            loadTranslation(stringId);
+            break;
+        }
+    }
 
 });

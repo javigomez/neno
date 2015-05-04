@@ -30,6 +30,7 @@ $formSelector = !empty($data['options']['formSelector']) ? $data['options']['for
 JHtml::_('searchtools.form', $formSelector, $data['options']);
 
 ?>
+
 <div class="js-stools clearfix">
 	<div class="clearfix">
 		<div class="js-stools-container-bar">
@@ -41,10 +42,31 @@ JHtml::_('searchtools.form', $formSelector, $data['options']);
 	</div>
 	<!-- Filters div -->
 	<div class="js-stools-container-filters hidden-phone clearfix">
-		<?php echo JLayoutHelper::render('joomla.searchtools.default.filters', $data); ?>
+		<div class="multiselect-wrapper">
+			<?php echo JLayoutHelper::render('simplemultiselect', array (
+				'type' => 'method',
+				'data' => $data['extraDisplayData']->methods,
+				'selected' => $data['extraDisplayData']->modelState->get('filter.translator_type'),
+				'isOverlay' => true
+			), JPATH_NENO_LAYOUTS); ?>
+		</div>
+		<div class="multiselect-wrapper">
+			<?php echo JLayoutHelper::render('simplemultiselect', array (
+				'type' => 'status',
+				'data' => $data['extraDisplayData']->statuses,
+				'selected' => $data['extraDisplayData']->modelState->get('filter.translation_status'),
+				'isOverlay' => true
+			), JPATH_NENO_LAYOUTS); ?>
+		</div>
 		<div class="multiselect-wrapper">
 			<?php echo JLayoutHelper::render('multiselectgroup', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
 		</div>
+		<!--
+		<?php //echo JLayoutHelper::render('joomla.searchtools.default.filters', $data); ?>
+		<div class="multiselect-wrapper">
+			<?php //echo JLayoutHelper::render('multiselectgroup', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
+		</div>
+		-->
 	</div>
 	<input type="hidden" id="outputLayout" name="outputLayout" value="strings">
 </div>
