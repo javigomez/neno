@@ -63,14 +63,14 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					</h3>
 					<?php echo NenoHelper::renderWordCountProgressBar($item->wordCount, true, true) ?>
 					<a class="btn btn-primary"
-					   href="<?php echo JRoute::_('index.php?option=com_neno&task=editor.translate&lang=' . $item->lang_code) ?>">
+					   href="<?php echo JRoute::_('index.php?option=com_neno&task=setWorkingLang&lang=' . $item->lang_code . '&next=editor'); ?>">
 						<?php echo JText::_('COM_NENO_DASHBOARD_TRANSLATE_BUTTON'); ?>
 					</a>
 					<button class="btn configuration-button" type="button">
 						<?php echo JText::_('COM_NENO_DASHBOARD_CONFIGURATION_BUTTON'); ?>
 					</button>
 					<div class="language-configuration">
-						<?php echo JText::sprintf('COM_NENO_DASHBOARD_GROUPS_ELEMENTS_LINK', JRoute::_('index.php?option=com_neno&task=groupselements.changeConfiguration&lang=' . $item->lang_code)); ?>
+						<?php echo JText::sprintf('COM_NENO_DASHBOARD_GROUPS_ELEMENTS_LINK', JRoute::_('index.php?option=com_neno&task=setWorkingLang&lang=' . $item->lang_code . '&next=groupselements')); ?>
 						<fieldset id="jform_published" class="radio btn-group btn-group-yesno">
 							<input type="radio" id="jform_published0" name="jform[published]" value="1"
 								<?php echo ($item->published) ? 'checked="checked"' : ''; ?>

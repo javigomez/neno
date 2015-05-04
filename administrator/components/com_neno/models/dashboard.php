@@ -86,7 +86,7 @@ class NenoModelDashboard extends JModelList
 	 */
 	protected function getListQuery()
 	{
-// Create a new query object.
+		// Create a new query object.
 		$db    = JFactory::getDbo();
 		$query = parent::getListQuery();
 
