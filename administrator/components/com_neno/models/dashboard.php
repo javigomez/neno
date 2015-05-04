@@ -110,7 +110,7 @@ class NenoModelDashboard extends JModelList
 					'tr.state'
 				)
 			)
-			->order('state');
+			->order('lang_code');
 
 		return $query;
 	}
