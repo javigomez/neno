@@ -79,20 +79,24 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					</button>
 					<div class="language-configuration">
 						<?php echo JText::sprintf('COM_NENO_DASHBOARD_GROUPS_ELEMENTS_LINK', JRoute::_('index.php?option=com_neno&task=setWorkingLang&lang=' . $item->lang_code . '&next=groupselements')); ?>
-						<fieldset id="jform_published_<?php echo $item->lang_code; ?>" class="radio btn-group btn-group-yesno"
+						<fieldset id="jform_published_<?php echo $item->lang_code; ?>"
+						          class="radio btn-group btn-group-yesno"
 						          data-language="<?php echo $item->lang_code; ?>">
-							<input type="radio" id="jform_published_<?php echo $item->lang_code; ?>0" name="jform[published]" value="1"
+							<input type="radio" id="jform_published_<?php echo $item->lang_code; ?>0"
+							       name="jform[published]" value="1"
 								<?php echo ($item->published) ? 'checked="checked"' : ''; ?>>
 							<label for="jform_published_<?php echo $item->lang_code; ?>0" class="btn">
 								<?php echo JText::_('JPUBLISHED'); ?>
 							</label>
-							<input type="radio" id="jform_published_<?php echo $item->lang_code; ?>1" name="jform[published]" value="0"
+							<input type="radio" id="jform_published_<?php echo $item->lang_code; ?>1"
+							       name="jform[published]" value="0"
 								<?php echo ($item->published) ? '' : 'checked="checked"'; ?>>
 							<label for="jform_published_<?php echo $item->lang_code; ?>1" class="btn">
 								<?php echo JText::_('JUNPUBLISHED'); ?>
 							</label>
 						</fieldset>
-						<button class="btn btn-small" type="button">
+						<button class="btn btn-small <?php echo empty($item->errors) ? '' : 'disabled'; ?>"
+						        type="button">
 							<span class="icon-trash"></span> <?php echo JText::_('COM_NENO_DASHBOARD_REMOVE_BUTTON'); ?>
 						</button>
 					</div>

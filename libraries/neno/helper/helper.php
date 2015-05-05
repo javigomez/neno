@@ -2144,25 +2144,34 @@ class NenoHelper
 	}
 
 	/**
-	 * Check if the language has a row created into the languages table.
+	 * Check if a particular language has errors
 	 *
-	 * @param   string $languageTag Language tag
+	 * @param   array $language Language data
 	 *
-	 * @return bool
+	 * @return array
 	 */
-	public static function hasContentCreated($languageTag)
+	public static function getLanguageErrors(array $language)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$errors = array ();
 
-		$query
-			->select('1')
-			->from('#__languages')
-			->where('lang_code = ' . $db->quote($languageTag));
+		if (NenoHelper::isLanguageFileOutOfDate($language['lang_code']))
+		{
+			$errors[] = 'Language file of ' . $language['title'] . ' out of date. Please check';;
+		}
 
-		$db->setQuery($query);
+		if (!NenoHelper::hasContentCreated($language['lang_code']))
+		{
+			$errors[] = 'We have detect that ' . $language['title'] . ' language does not have created a content record';
+		}
 
-		return $db->loadResult() == 1;
+		$contentCounter = NenoHelper::contentCountInOtherLanguages($language['lang_code']);
+
+		if ($contentCounter !== 0)
+		{
+			$errors[] = 'We have detect content in ' . $language['title'] . ' that have not been moved to the shadow tables';
+		}
+
+		return $errors;
 	}
 
 	/**
@@ -2210,6 +2219,28 @@ class NenoHelper
 		}
 
 		return false;
+	}
+
+	/**
+	 * Check if the language has a row created into the languages table.
+	 *
+	 * @param   string $languageTag Language tag
+	 *
+	 * @return bool
+	 */
+	public static function hasContentCreated($languageTag)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('1')
+			->from('#__languages')
+			->where('lang_code = ' . $db->quote($languageTag));
+
+		$db->setQuery($query);
+
+		return $db->loadResult() == 1;
 	}
 
 	/**
@@ -2270,6 +2301,109 @@ class NenoHelper
 		$db->setQuery($query);
 
 		return (int) $db->loadResult();
+	}
+
+	/**
+	 * Deleting language
+	 *
+	 * @param string $languageTag Language tag
+	 *
+	 * @return bool True on success
+	 */
+	public static function deleteLanguage($languageTag)
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		// Delete all the translations
+		$query
+			->delete('#__neno_content_element_translations')
+			->where('language = ' . $db->quote($languageTag));
+		$db->execute();
+
+		// Delete module
+		$query
+			->clear()
+			->delete('#__modules')
+			->where(
+				array (
+					'language = ' . $db->quote($languageTag),
+					'module = ' . $db->quote('mod_menu')
+				)
+			);
+		$db->execute();
+
+		// Delete menu items
+		$query
+			->clear()
+			->delete('#__menu')
+			->where(
+				array (
+					'language = ' . $db->quote($languageTag),
+					'client_id = 1'
+				)
+			);
+		$db->execute();
+
+		// Delete menu type
+		$query
+			->clear()
+			->delete('#__menu_types')
+			->where('menutype NOT IN (SELECT menutype FROM #__menu)');
+		$db->execute();
+
+		// Delete associations
+		$query
+			->clear()
+			->delete('#__associations')
+			->where(
+				array (
+					'id NOT IN (SELECT id FROM #__menu )',
+					'context = ' . $db->quote('com_menus.item')
+				)
+			);
+		$db->execute();
+
+
+		// Delete content
+		$query
+			->clear()
+			->delete('#__languages')
+			->where('lang_code = ' . $db->quote($languageTag));
+		$db->execute();
+
+		// Drop all the shadow tables
+		$shadowTables = preg_grep('/' . preg_quote($db->getPrefix() . '_' . $db->cleanLanguageTag($languageTag)) . '/', $db->getTableList());
+
+		foreach ($shadowTables as $shadowTable)
+		{
+			$db->dropTable($shadowTable);
+		}
+
+		// Delete extension(s)
+		$installer = JInstaller::getInstance();
+
+		$query
+			->clear()
+			->select(
+				array (
+					'extension_id',
+					'type'
+				)
+			)
+			->from('#__extensions')
+			->where('element LIKE ' . $db->quote('%' . $languageTag));
+
+		$db->setQuery($query);
+		$extensions = $db->loadAssocList();
+
+		foreach ($extensions as $extension)
+		{
+			$installer->uninstall($extension['type'], $extension['extension_id']);
+		}
+
+		return true;
 	}
 
 	/**
