@@ -71,39 +71,24 @@ class NenoViewSetting extends JViewLegacy
 	protected function addToolbar()
 	{
 		JFactory::getApplication()->input->set('hidemainmenu', true);
-
-		$user  = JFactory::getUser();
-		$isNew = ($this->item->id == 0);
-
 		$canDo = NenoHelper::getActions();
 
-		JToolBarHelper::title(JText::_('COM_NENO_TITLE_GROUP_ELEMENT'), 'test.png');
+		JToolBarHelper::title(JText::_('COM_NENO_TITLE_SETTING'), 'test.png');
 
 		// If not checked out, can save the item.
 		if ($canDo->get('core.edit') || $canDo->get('core.create'))
 		{
-			JToolBarHelper::apply('groupelement.apply', 'JTOOLBAR_APPLY');
-			JToolBarHelper::save('groupelement.save', 'JTOOLBAR_SAVE');
-		}
-
-		if ($canDo->get('core.create'))
-		{
-			JToolBarHelper::custom('groupelement.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
-		}
-
-		// If an existing item, can save to a copy.
-		if (!$isNew && $canDo->get('core.create'))
-		{
-			JToolBarHelper::custom('groupelement.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
+			JToolBarHelper::apply('setting.apply', 'JTOOLBAR_APPLY');
+			JToolBarHelper::save('setting.save', 'JTOOLBAR_SAVE');
 		}
 
 		if (empty($this->item->id))
 		{
-			JToolBarHelper::cancel('groupelement.cancel', 'JTOOLBAR_CANCEL');
+			JToolBarHelper::cancel('setting.cancel', 'JTOOLBAR_CANCEL');
 		}
 		else
 		{
-			JToolBarHelper::cancel('groupelement.cancel', 'JTOOLBAR_CLOSE');
+			JToolBarHelper::cancel('setting.cancel', 'JTOOLBAR_CLOSE');
 		}
 	}
 }

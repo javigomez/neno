@@ -32,14 +32,8 @@ class NenoModelSettings extends JModelList
 		{
 			$config['filter_fields'] = array (
 				'id', 'a.id',
-				'string', 'a.string',
-				'constant', 'a.constant',
-				'lang', 'a.lang',
-				'extension', 'a.extension',
-				'time_added', 'a.time_added',
-				'time_changed', 'a.time_changed',
-				'time_deleted', 'a.time_deleted',
-				'version', 'a.version',
+				'setting_key', 'a.setting_key',
+				'setting_value', 'a.setting_value'
 			);
 		}
 
@@ -56,6 +50,7 @@ class NenoModelSettings extends JModelList
 	protected function getListQuery()
 	{
 		// Create a new query object.
+		$db    = JFactory::getDbo();
 		$query = parent::getListQuery();
 
 		$query
@@ -63,6 +58,27 @@ class NenoModelSettings extends JModelList
 			->from('#__neno_settings AS a')
 			->where('a.show_settings_screen = 1');
 
+
+		// Add the list ordering clause.
+		$orderCol       = $this->state->get('list.ordering');
+		$orderDirection = $this->state->get('list.direction');
+
+		if ($orderCol && $orderDirection)
+		{
+			$query->order($db->escape($orderCol . ' ' . $orderDirection));
+		}
+
 		return $query;
+	}
+
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 */
+	protected function populateState($ordering = null, $direction = null)
+	{
+		// List state information.
+		parent::populateState('a.setting_name', 'asc');
 	}
 }

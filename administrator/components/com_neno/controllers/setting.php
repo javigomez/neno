@@ -27,7 +27,7 @@ class NenoControllerSetting extends JControllerForm
 	 */
 	public function __construct($config = array ())
 	{
-		$this->view_list = 'groupselements';
+		$this->view_list = 'settings';
 		parent::__construct($config);
 	}
 }

@@ -71,4 +71,40 @@ class NenoModelSetting extends JModelAdmin
 
 		return $data;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param null $pk
+	 *
+	 * @return mixed
+	 */
+	public function getItem($pk = null)
+	{
+		$item = parent::getItem($pk);
+
+		if ($item->setting_key === 'translator')
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query
+				->select(
+					array (
+						'translator_name AS `key`',
+						'translator_name AS value'
+					)
+				)
+				->from('#__neno_machine_translation_apis');
+
+			$db->setQuery($query);
+			$machineTranslators = $db->loadAssocList();
+
+			$item->translator_list = JHtml::_('select.genericlist', $machineTranslators, 'jform[setting_value]', null, 'key', 'value', $item->setting_value);
+		}
+
+		return $item;
+	}
+
+
 }
