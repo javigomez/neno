@@ -73,7 +73,7 @@ $listDirection = $displayData->state->get('list.direction');
 	<tfoot>
 	<tr>
 		<td colspan="9">
-			<?php /*echo $this->pagination->getListFooter();*/ ?>
+			<?php echo $displayData->pagination->getListFooter(); ?>
 		</td>
 	</tr>
 	</tfoot>

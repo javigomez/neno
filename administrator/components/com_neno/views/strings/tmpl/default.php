@@ -43,9 +43,9 @@ if (!empty($this->extra_sidebar))
 			<?php $displayData = new stdClass; ?>
 			<?php $displayData->translations = $this->items; ?>
 			<?php $displayData->state = $this->state; ?>
+			<?php $displayData->pagination = $this->pagination; ?>
 			<?php echo JLayoutHelper::render('strings', $displayData, JPATH_NENO_LAYOUTS); ?>
 		</div>
-		<?php echo $this->pagination->getListFooter(); ?>
 	</div>
 
 	<input type="hidden" name="task" value=""/>
