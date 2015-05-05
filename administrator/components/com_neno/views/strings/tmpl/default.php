@@ -14,6 +14,8 @@ defined('_JEXEC') or die;
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
 JHtml::_('formbehavior.chosen', 'select');
+$listOrder     = $this->state->get('list.ordering');
+$listDirection = $this->state->get('list.direction');
 
 // Joomla Component Creator code to allow adding non select list filters
 if (!empty($this->extra_sidebar))
@@ -38,8 +40,17 @@ if (!empty($this->extra_sidebar))
 		<?php echo JLayoutHelper::render('stringfilters', array ('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS); ?>
 
 		<div id="elements-wrapper">
-			<?php echo JLayoutHelper::render('strings', $this->items, JPATH_NENO_LAYOUTS); ?>
+			<?php $displayData = new stdClass; ?>
+			<?php $displayData->translations = $this->items; ?>
+			<?php $displayData->state = $this->state; ?>
+			<?php echo JLayoutHelper::render('strings', $displayData, JPATH_NENO_LAYOUTS); ?>
 		</div>
 		<?php echo $this->pagination->getListFooter(); ?>
 	</div>
+
+	<input type="hidden" name="task" value=""/>
+	<input type="hidden" name="boxchecked" value="0"/>
+	<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>"/>
+	<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirection; ?>"/>
+	<?php echo JHtml::_('form.token'); ?>
 </form>

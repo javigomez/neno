@@ -46,8 +46,8 @@
             <option value="a.string DESC">COM_NENO_HEADING_STRING_DESC</option>
             <option value="a.group ASC">COM_NENO_HEADING_GROUP_ASC</option>
             <option value="a.group DESC">COM_NENO_HEADING_GROUP_DESC</option>
-            <option value="a.element ASC">COM_NENO_HEADING_ELEMENT_ASC</option>
-            <option value="a.element DESC">COM_NENO_HEADING_ELEMENT_DESC</option>
+            <option value="a.element_name ASC">COM_NENO_HEADING_ELEMENT_ASC</option>
+            <option value="a.element_name DESC">COM_NENO_HEADING_ELEMENT_DESC</option>
             <option value="a.key ASC">COM_NENO_HEADING_KEY_ASC</option>
             <option value="a.key DESC">COM_NENO_HEADING_KEY_DESC</option>
             <option value="a.translation_method ASC">COM_NENO_HEADING_TRANSLATION_METHOD_ASC</option>

@@ -26,7 +26,9 @@ $translationStatesText[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATE
 $translationStatesText[NenoContentElementTranslation::SOURCE_CHANGED_STATE]              = JText::_('COM_NENO_STATUS_CHANGED');
 $translationStatesText[NenoContentElementTranslation::NOT_TRANSLATED_STATE]              = JText::_('COM_NENO_STATUS_NOTTRANSLATED');
 
-$translations = $displayData;
+$translations  = $displayData->translations;
+$listOrder     = $displayData->state->get('list.ordering');
+$listDirection = $displayData->state->get('list.direction');
 
 ?>
 
@@ -34,14 +36,14 @@ $translations = $displayData;
 	<thead>
 	<tr>
 		<th class="cell-check"><input type="checkbox"/></th>
-		<th><?php echo JText::_('COM_NENO_STATUS'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_STRING'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_GROUP'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_ELEMENT'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_KEY'); ?></th>
-		<th><?php echo JText::_('COM_NENO_TRANSLATION_METHODS'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_WORDS'); ?></th>
-		<th><?php echo JText::_('COM_NENO_VIEW_STRINGS_CHARS'); ?></th>
+		<th><?php echo JHtml::_('grid.sort', 'COM_NENO_STATUS', 'a.state', $listDirection, $listOrder); ?></th>
+		<th><?php echo JHtml::_('grid.sort', 'COM_NENO_VIEW_STRINGS_STRING', 'a.string', $listDirection, $listOrder); ?></th>
+		<th><?php echo JHtml::_('grid.sort', 'COM_NENO_VIEW_STRINGS_GROUP', 'a.group', $listDirection, $listOrder); ?></th>
+		<th><?php echo JHtml::_('grid.sort', 'COM_NENO_VIEW_STRINGS_ELEMENT', 'a.element_name', $listDirection, $listOrder); ?></th>
+		<th><?php echo JHtml::_('grid.sort', 'COM_NENO_VIEW_STRINGS_KEY', 'a.key', $listDirection, $listOrder); ?></th>
+		<th><?php echo JHtml::_('grid.sort', 'COM_NENO_TRANSLATION_METHODS', 'a.translation_method', $listDirection, $listOrder); ?></th>
+		<th><?php echo JHtml::_('grid.sort', 'COM_NENO_VIEW_STRINGS_WORDS', 'a.word_counter', $listDirection, $listOrder); ?></th>
+		<th><?php echo JHtml::_('grid.sort', 'COM_NENO_VIEW_STRINGS_CHARS', 'a.characters', $listDirection, $listOrder); ?></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -54,7 +56,7 @@ $translations = $displayData;
 				      alt="<?php echo $translationStatesText[$translation->state]; ?>"
 				      title="<?php echo $translationStatesText[$translation->state]; ?>"></span>
 			</td>
-			<td title="<?php echo JText::sprintf('COM_NENO_VIEW_STRINGS_EDIT', NenoHelper::html2text($translation->original_text, 200));?>">
+			<td title="<?php echo JText::sprintf('COM_NENO_VIEW_STRINGS_EDIT', NenoHelper::html2text($translation->original_text, 200)); ?>">
 				<a href="index.php?option=com_neno&view=editor&stringId=<?php echo $translation->id; ?>">
 					<?php echo NenoHelper::html2text($translation->string, 200); ?>
 				</a>

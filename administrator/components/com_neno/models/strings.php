@@ -32,15 +32,16 @@ class NenoModelStrings extends JModelList
 	{
 		if (empty($config['filter_fields']))
 		{
-			$config['filter_fields'] = array (/*'id', 'a.id',
+			$config['filter_fields'] = array (
+				'id', 'a.id',
 				'string', 'a.string',
-				'constant', 'a.constant',
-				'lang', 'a.lang',
-				'extension', 'a.extension',
-				'time_added', 'a.time_added',
-				'time_changed', 'a.time_changed',
-				'time_deleted', 'a.time_deleted',
-				'version', 'a.version',*/
+				'word_counter', 'a.word_counter',
+				'group', 'a.group',
+				'key', 'a.key',
+				'element_name', 'a.element_name',
+				'translation_method', 'a.translation_method',
+				'word_counter', 'a.word_counter',
+				'characters', 'a.characters'
 			);
 		}
 
@@ -164,7 +165,15 @@ class NenoModelStrings extends JModelList
 		$languageFileStrings = parent::getListQuery();
 
 		$dbStrings
-			->select('tr1.*')
+			->select(
+				array (
+					'tr1.*',
+					'f.field_name AS `key`',
+					't.table_name AS element_name',
+					'g1.group_name AS `group`',
+					'CHAR_LENGTH(tr1.string) AS characters'
+				)
+			)
 			->from('`#__neno_content_element_translations` AS tr1')
 			->innerJoin('`#__neno_content_element_fields` AS f ON tr1.content_id = f.id')
 			->innerJoin('`#__neno_content_element_tables` AS t ON t.id = f.table_id')
@@ -180,7 +189,15 @@ class NenoModelStrings extends JModelList
 			)->order('tr1.id');
 
 		$languageFileStrings
-			->select('tr2.*')
+			->select(
+				array (
+					'tr2.*',
+					'ls.constant AS `key`',
+					'lf.filename AS element_name',
+					'g2.group_name AS `group`',
+					'CHAR_LENGTH(tr2.string) AS characters'
+				)
+			)
 			->from('`#__neno_content_element_translations` AS tr2')
 			->innerJoin('`#__neno_content_element_language_strings` AS ls ON tr2.content_id = ls.id')
 			->innerJoin('`#__neno_content_element_language_files` AS lf ON lf.id = ls.languagefile_id')
@@ -279,6 +296,15 @@ class NenoModelStrings extends JModelList
 		{
 			$search = $db->quote('%' . $search . '%');
 			$query->where('(a.original_text LIKE ' . $search . ' OR a.string LIKE ' . $search . ')');
+		}
+
+		// Add the list ordering clause.
+		$orderCol       = $this->state->get('list.ordering');
+		$orderDirection = $this->state->get('list.direction');
+
+		if ($orderCol && $orderDirection)
+		{
+			$query->order($db->escape($orderCol . ' ' . $orderDirection));
 		}
 
 		$query->setLimit($limit, $offset);
