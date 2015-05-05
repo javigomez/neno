@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
+JHtml::_('formbehavior.chosen', 'select');
 
 // Joomla Component Creator code to allow adding non select list filters
 if (!empty($this->extra_sidebar))

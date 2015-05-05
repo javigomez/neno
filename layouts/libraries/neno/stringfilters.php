@@ -61,12 +61,6 @@ JHtml::_('searchtools.form', $formSelector, $data['options']);
 		<div class="multiselect-wrapper">
 			<?php echo JLayoutHelper::render('multiselectgroup', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
 		</div>
-		<!--
-		<?php //echo JLayoutHelper::render('joomla.searchtools.default.filters', $data); ?>
-		<div class="multiselect-wrapper">
-			<?php //echo JLayoutHelper::render('multiselectgroup', $data['extraDisplayData'], JPATH_NENO_LAYOUTS); ?>
-		</div>
-		-->
 	</div>
 	<input type="hidden" id="outputLayout" name="outputLayout" value="strings">
 </div>
