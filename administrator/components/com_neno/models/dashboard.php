@@ -64,14 +64,14 @@ class NenoModelDashboard extends JModelList
 				}
 			}
 
+			$item->errors                  = NenoHelper::getLanguageErrors((array) $item);
 			$item->wordCount               = new stdClass;
 			$item->wordCount->translated   = $translated;
 			$item->wordCount->queued       = $queued;
 			$item->wordCount->changed      = $changed;
 			$item->wordCount->untranslated = $untranslated;
 			$item->wordCount->total        = $translated + $queued + $changed + $untranslated;
-
-			$items[] = $item;
+			$items[]                       = $item;
 		}
 
 		return $items;
