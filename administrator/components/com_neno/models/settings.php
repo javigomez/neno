@@ -79,6 +79,6 @@ class NenoModelSettings extends JModelList
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// List state information.
-		parent::populateState('a.setting_name', 'asc');
+		parent::populateState('a.setting_key', 'asc');
 	}
 }
