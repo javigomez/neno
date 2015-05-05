@@ -6,7 +6,9 @@
 
 jQuery(document).ready(function () {
     bindEvents();
-    setFilterTags(document.adminForm);
+    if (document.adminForm.outputLayout.value == 'editorStrings') {
+        setFilterTags(document.adminForm);
+    }
 
     // Load hierarchy if some groups has been marked
     jQuery('.expanded').each(function () {
@@ -108,46 +110,49 @@ function loadStrings() {
     var limitStart = document.adminForm.limitstart.value;
     var limit = document.adminForm.list_limit.value;
 
-    var urlElements = [];
+    if (jQuery('#outputLayout').val() == 'editor') {
 
-    if (checkedGroupsElements.length != 0) {
-        for (var i = 0; i < checkedGroupsElements.length; i++) {
-            var data = checkedGroupsElements[i].split('-');
-            urlElements.push(data[0] + '[]=' + data[1]);
+        var urlElements = [];
+
+        if (checkedGroupsElements.length != 0) {
+            for (var i = 0; i < checkedGroupsElements.length; i++) {
+                var data = checkedGroupsElements[i].split('-');
+                urlElements.push(data[0] + '[]=' + data[1]);
+            }
         }
-    }
-    else {
-        checkedGroupsElements.push('groups-none');
-        urlElements.push('group[]=none');
-    }
-
-    if (checkedStatus.length != 0) {
-        for (var i = 0; i < checkedStatus.length; i++) {
-            var data = checkedStatus[i].split('-');
-            urlElements.push('status[]=' + data[1]);
+        else {
+            checkedGroupsElements.push('groups-none');
+            urlElements.push('group[]=none');
         }
-    } else {
-        checkedStatus.push('status-none');
-        urlElements.push('status[]=none');
-    }
 
-    if (checkedMethod.length != 0) {
-        for (var i = 0; i < checkedMethod.length; i++) {
-            var data = checkedMethod[i].split('-');
-            urlElements.push('type[]=' + data[1]);
+        if (checkedStatus.length != 0) {
+            for (var i = 0; i < checkedStatus.length; i++) {
+                var data = checkedStatus[i].split('-');
+                urlElements.push('status[]=' + data[1]);
+            }
+        } else {
+            checkedStatus.push('status-none');
+            urlElements.push('status[]=none');
         }
-    } else {
-        checkedMethod.push('method-none');
-        urlElements.push('type[]=none');
-    }
 
-    var url = document.location.origin + document.location.pathname + '?option=com_neno&view=editor';
+        if (checkedMethod.length != 0) {
+            for (var i = 0; i < checkedMethod.length; i++) {
+                var data = checkedMethod[i].split('-');
+                urlElements.push('type[]=' + data[1]);
+            }
+        } else {
+            checkedMethod.push('method-none');
+            urlElements.push('type[]=none');
+        }
 
-    if (urlElements.length != 0) {
-        history.pushState(null, null, url + '&' + urlElements.join('&'));
-    }
-    else {
-        history.pushState(null, null, url);
+        var url = document.location.origin + document.location.pathname + '?option=com_neno&view=editor';
+
+        if (urlElements.length != 0) {
+            history.pushState(null, null, url + '&' + urlElements.join('&'));
+        }
+        else {
+            history.pushState(null, null, url);
+        }
     }
 
     jQuery('#multiselect-value').val(checkedGroupsElements);

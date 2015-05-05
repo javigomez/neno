@@ -11,9 +11,6 @@
 // No direct access
 defined('_JEXEC') or die;
 
-/*$document = JFactory::getDocument();
-$document->addStyleSheet(JUri::root() . '/media/neno/css/editorstrings.css');*/
-
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
