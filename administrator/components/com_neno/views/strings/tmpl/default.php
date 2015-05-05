@@ -30,6 +30,8 @@ if (!empty($this->extra_sidebar))
 	<div id="j-main-container" class="span10">
 		<?php $extraDisplayData = new stdClass; ?>
 		<?php $extraDisplayData->groups = $this->groups; ?>
+		<?php $extraDisplayData->statuses = $this->statuses; ?>
+		<?php $extraDisplayData->methods = $this->methods; ?>
 		<?php $extraDisplayData->isOverlay = true; ?>
 		<?php $extraDisplayData->modelState = $this->state; ?>
 		<?php echo JLayoutHelper::render('stringfilters', array ('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS); ?>

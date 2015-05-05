@@ -15,7 +15,7 @@ $document = JFactory::getDocument();
 $document->addScript(JUri::root() . '/media/neno/js/multiselect.js');
 $document->addStyleSheet(JUri::root() . '/media/neno/css/multiselect.css');
 
-$isOverlay = isset($displayData->isOverlay);
+$isOverlay = isset($displayData['isOverlay']);
 ?>
 
 <div class="multiselect simple-multiselect">
@@ -26,7 +26,7 @@ $isOverlay = isset($displayData->isOverlay);
 		</a>
 
 		<div id="toggle-<?php echo $displayData['type']; ?>-multiselect"
-		     class="dropdown-select menu-multiselect <?php echo ($isOverlay) ? (' overlay') : (''); ?>">
+		     class="dropdown-select menu-multiselect <?php echo ($isOverlay) ? ('overlay') : (''); ?>">
 			<table class="table-condensend <?php echo $displayData['type']; ?>-multiselect"
 			       id="<?php echo $displayData['type']; ?>-multiselect">
 				<?php foreach ($displayData['data'] as $datum => $label): ?>

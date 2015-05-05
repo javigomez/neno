@@ -38,6 +38,16 @@ class NenoViewStrings extends JViewLegacy
 	/**
 	 * @var array
 	 */
+	protected $statuses;
+
+	/**
+	 * @var array
+	 */
+	protected $methods;
+
+	/**
+	 * @var array
+	 */
 	protected $items;
 
 	/**
@@ -74,6 +84,8 @@ class NenoViewStrings extends JViewLegacy
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 		$this->getGroupData();
+		$this->getStatuses();
+		$this->getTranslationMethods();
 
 
 		// Check for errors.
@@ -109,6 +121,26 @@ class NenoViewStrings extends JViewLegacy
 	}
 
 	/**
+	 * Load translation statuses for filter
+	 *
+	 * @return void
+	 */
+	protected function getStatuses()
+	{
+		$this->statuses = NenoHelper::getStatuses();
+	}
+
+	/**
+	 * Load translation methods for filter
+	 *
+	 * @return void
+	 */
+	protected function getTranslationMethods()
+	{
+		$this->methods = NenoHelper::getTranslationMethods();
+	}
+
+	/**
 	 * Add the page title and toolbar.
 	 *
 	 * @return void
@@ -123,6 +155,9 @@ class NenoViewStrings extends JViewLegacy
 		{
 			JToolBarHelper::preferences('com_neno');
 		}
+
+		$bar = JToolbar::getInstance('toolbar');
+		$bar->appendButton('Link', 'screen', JText::_('COM_NENO_VIEW_STRINGS_TRANSLATE'), 'index.php?option=com_neno');
 
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=strings');

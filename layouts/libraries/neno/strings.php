@@ -54,7 +54,11 @@ $translations = $displayData;
 				      alt="<?php echo $translationStatesText[$translation->state]; ?>"
 				      title="<?php echo $translationStatesText[$translation->state]; ?>"></span>
 			</td>
-			<td title="<?php echo NenoHelper::html2text($translation->original_text, 200); ?>"><?php echo NenoHelper::html2text($translation->string, 200); ?></td>
+			<td title="<?php echo JText::sprintf('COM_NENO_VIEW_STRINGS_EDIT', NenoHelper::html2text($translation->original_text, 200));?>">
+				<a href="index.php?option=com_neno&view=editor&stringId=<?php echo $translation->id; ?>">
+					<?php echo NenoHelper::html2text($translation->string, 200); ?>
+				</a>
+			</td>
 			<td><?php echo $translation->breadcrumbs[0]; ?></td>
 			<td><?php echo $translation->breadcrumbs[1]; ?></td>
 			<td><?php echo $translation->breadcrumbs[2]; ?></td>

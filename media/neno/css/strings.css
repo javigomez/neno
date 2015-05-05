@@ -35,7 +35,7 @@
 .multiselect-wrapper {
     display: inline-block;
     width: 200px !important;
-    position: absolute !important;
     margin-left: 5px !important;
+    margin-right: 25px !important;
     margin-top: 0 !important;
 }

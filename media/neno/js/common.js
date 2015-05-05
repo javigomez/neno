@@ -5,13 +5,20 @@
  */
 
 function loadTranslation(string) {
-    jQuery('.string-activated').removeClass('string-activated');
-    string.addClass('string-activated');
+    var idString;
+    if (jQuery.type(string) == 'object') {
+        jQuery('.string-activated').removeClass('string-activated');
+
+        idString = string.data('id')
+    } else {
+        idString = string;
+        jQuery('div[data-id=' + string + ']').addClass('string-activated');
+    }
 
     // Get information
     jQuery.ajax({
             beforeSend: onBeforeAjax,
-            url: 'index.php?option=com_neno&task=editor.getTranslation&id=' + string.data('id'),
+            url: 'index.php?option=com_neno&task=editor.getTranslation&id=' + idString,
             success: function (data) {
                 jQuery('#editor-wrapper').html(data);
             }
