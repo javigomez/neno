@@ -30,7 +30,7 @@ class NenoControllerEditor extends NenoControllerStrings
 	{
 		$app             = JFactory::getApplication();
 		$input           = $app->input;
-		$text            = $input->getString('text');
+		$text            = html_entity_decode($input->getHtml('text'));
 		$workingLanguage = NenoHelper::getWorkingLanguage();
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
 		$translator      = NenoSettings::get('translator');
