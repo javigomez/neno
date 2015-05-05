@@ -69,7 +69,6 @@ $listDirection = $this->state->get('list.direction');
 		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>"/>
 		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirection; ?>"/>
 		<?php echo JHtml::_('form.token'); ?>
-		<?php echo JHtml::_('form.token'); ?>
 
 	</div>
 
