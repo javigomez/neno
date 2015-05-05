@@ -125,6 +125,13 @@ class NenoModelStrings extends JModelList
 
 		if (!empty($status))
 		{
+			$index = array_search(0, $status);
+
+			if ($index !== false)
+			{
+				unset($status[$index]);
+			}
+
 			$this->setState('filter.translation_status', $status);
 		}
 
@@ -133,6 +140,13 @@ class NenoModelStrings extends JModelList
 
 		if (!empty($method))
 		{
+			$index = array_search(0, $method);
+
+			if ($index !== false)
+			{
+				unset($method[$index]);
+			}
+
 			$app->setUserState($this->context . '.filter.translator_type', $method);
 		}
 

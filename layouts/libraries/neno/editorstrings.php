@@ -11,19 +11,27 @@
 // No direct access
 defined('JPATH_NENO') or die;
 
-$translationStatesClasses                                                                   = array();
+$translationStatesClasses                                                                   = array ();
 $translationStatesClasses[NenoContentElementTranslation::TRANSLATED_STATE]                  = 'translated';
 $translationStatesClasses[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = 'queued';
 $translationStatesClasses[NenoContentElementTranslation::SOURCE_CHANGED_STATE]              = 'changed';
 $translationStatesClasses[NenoContentElementTranslation::NOT_TRANSLATED_STATE]              = 'not-translated';
 
-$translationStatesText                                                                   = array();
+$translationStatesText                                                                   = array ();
 $translationStatesText[NenoContentElementTranslation::TRANSLATED_STATE]                  = JText::_('COM_NENO_STATUS_TRANSLATED');
 $translationStatesText[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_QUEUED');
 $translationStatesText[NenoContentElementTranslation::SOURCE_CHANGED_STATE]              = JText::_('COM_NENO_STATUS_CHANGED');
 $translationStatesText[NenoContentElementTranslation::NOT_TRANSLATED_STATE]              = JText::_('COM_NENO_STATUS_NOTTRANSLATED');
 
-$translations = $displayData;
+if (!empty($displayData->translations))
+{
+	$translations = $displayData->translations;
+}
+else
+{
+	$translations = $displayData;
+}
+
 
 ?>
 

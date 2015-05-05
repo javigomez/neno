@@ -114,6 +114,81 @@ class NenoControllerStrings extends JControllerAdmin
 	}
 
 	/**
+	 * Redirects to the editor using the same filters applied into the string view
+	 *
+	 * @return void
+	 */
+	public function translateTheseStringsTask()
+	{
+		/* @var $stringsModel NenoModelStrings */
+		$stringsModel = $this->getModel();
+
+		$state     = (array) $stringsModel->getState();
+		$queryVars = array (
+			'view'   => 'editor',
+			'option' => 'com_neno'
+		);
+
+		foreach ($state as $filter => $options)
+		{
+			switch ($filter)
+			{
+				case 'filter.translator_type':
+					$queryVars['type'] = $options;
+					break;
+				case 'filter.translation_status':
+					$queryVars['status'] = $options;
+					break;
+				case 'filter.group_id':
+					$queryVars['group'] = $options;
+					break;
+				case 'filter.element':
+					$queryVars['table'] = $options;
+					break;
+				case 'filter.field':
+					$queryVars['field'] = $options;
+					break;
+			}
+		}
+
+		if (!empty($queryVars['field']))
+		{
+			unset($queryVars['group']);
+			unset($queryVars['table']);
+		}
+
+		if (!empty($queryVars['table']))
+		{
+			unset($queryVars['group']);
+		}
+
+		$query = '';
+
+		foreach ($queryVars as $queryVarName => $queryVarValue)
+		{
+			if (!empty($queryVarValue))
+			{
+				if (is_array($queryVarValue))
+				{
+					foreach ($queryVarValue as $queryVarRealValue)
+					{
+						if (!empty($queryVarRealValue))
+						{
+							$query .= $queryVarName . '[]=' . urlencode($queryVarRealValue) . '&';
+						}
+					}
+				}
+				else
+				{
+					$query .= $queryVarName . '=' . urlencode($queryVarValue) . '&';
+				}
+			}
+		}
+
+		JFactory::getApplication()->redirect('index.php?' . substr($query, 0, strlen($query)));
+	}
+
+	/**
 	 * Load elements using AJAX
 	 *
 	 * @return void

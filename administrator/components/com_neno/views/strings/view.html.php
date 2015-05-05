@@ -157,7 +157,7 @@ class NenoViewStrings extends JViewLegacy
 		}
 
 		$bar = JToolbar::getInstance('toolbar');
-		$bar->appendButton('Link', 'screen', JText::_('COM_NENO_VIEW_STRINGS_TRANSLATE'), 'index.php?option=com_neno');
+		$bar->appendButton('Link', 'screen', JText::_('COM_NENO_VIEW_STRINGS_TRANSLATE'), 'index.php?option=com_neno&task=strings.translateTheseStringsTask');
 
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=strings');
