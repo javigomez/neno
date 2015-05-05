@@ -64,7 +64,6 @@ class NenoModelDashboard extends JModelList
 				}
 			}
 
-			$item->errors                  = NenoHelper::getLanguageErrors((array) $item);
 			$item->wordCount               = new stdClass;
 			$item->wordCount->translated   = $translated;
 			$item->wordCount->queued       = $queued;

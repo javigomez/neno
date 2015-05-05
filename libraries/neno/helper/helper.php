@@ -1569,228 +1569,6 @@ class NenoHelper
 	}
 
 	/**
-	 * Get a list of languages
-	 *
-	 * @return array
-	 */
-	public static function findLanguages()
-	{
-		$enGbExtensionId = self::getEnGbExtensionId();
-		$languagesFound  = array ();
-
-		if (!empty($enGbExtensionId))
-		{
-			$updater = JUpdater::getInstance();
-
-			// Find updates for languages
-			$updater->findUpdates($enGbExtensionId);
-			$updateSiteId   = self::getLanguagesUpdateSite($enGbExtensionId);
-			$updates        = self::getUpdates($updateSiteId);
-			$languagesFound = $updates;
-		}
-
-		return $languagesFound;
-	}
-
-	/**
-	 * Get the extension_id of the en-GB package
-	 *
-	 * @return int
-	 */
-	protected static function getEnGbExtensionId()
-	{
-		$db       = JFactory::getDbo();
-		$extQuery = $db->getQuery(true);
-		$extType  = 'language';
-		$extElem  = 'en-GB';
-
-		$extQuery->select($db->quoteName('extension_id'))
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('type') . ' = ' . $db->quote($extType))
-			->where($db->quoteName('element') . ' = ' . $db->quote($extElem))
-			->where($db->quoteName('client_id') . ' = 0');
-
-		$db->setQuery($extQuery);
-
-		return (int) $db->loadResult();
-	}
-
-	/**
-	 * Get update site for languages
-	 *
-	 * @param int $enGbExtensionId Extension Id of en-GB package
-	 *
-	 * @return int
-	 */
-	protected static function getLanguagesUpdateSite($enGbExtensionId)
-	{
-		$db        = JFactory::getDbo();
-		$siteQuery = $db->getQuery(true);
-
-		$siteQuery->select($db->quoteName('update_site_id'))
-			->from($db->quoteName('#__update_sites_extensions'))
-			->where($db->quoteName('extension_id') . ' = ' . $enGbExtensionId);
-
-		$db->setQuery($siteQuery);
-
-		return (int) $db->loadResult();
-	}
-
-	/**
-	 * Get updates from a particular update site
-	 *
-	 * @param    int $updateSiteId Update Site Id
-	 *
-	 * @return array
-	 */
-	protected static function getUpdates($updateSiteId)
-	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select(
-				array (
-					'*',
-					'REPLACE(element, \'pkg_\', \'\') AS iso'
-				)
-			)
-			->from('#__updates')
-			->where('update_site_id = ' . (int) $updateSiteId);
-
-		$db->setQuery($query);
-
-		return $db->loadAssocList();
-	}
-
-	/**
-	 * Installs a language and create necessary data.
-	 *
-	 * @param integer $languageId Language id
-	 *
-	 * @return bool
-	 */
-	public static function installLanguage($languageId)
-	{
-		// Loading language
-		$language = JFactory::getLanguage();
-		$language->load('com_installer');
-
-		$languageData = self::getLanguageData($languageId);
-		$jiso         = str_replace('pkg_', '', $languageData['element']);
-
-		// Registering some classes
-		JLoader::register('InstallerModelLanguages', JPATH_ADMINISTRATOR . '/components/com_installer/models/languages.php');
-		JLoader::register('LanguagesModelLanguage', JPATH_ADMINISTRATOR . '/components/com_languages/models/language.php');
-
-		/* @var $languagesInstallerModel InstallerModelLanguages */
-		$languagesInstallerModel = JModelLegacy::getInstance('Languages', 'InstallerModel');
-
-		// Install language
-		$languagesInstallerModel->install(array ($languageId));
-
-		if (self::isLanguageInstalled($jiso))
-		{
-			/* @var $languageModel LanguagesModelLanguage */
-			$languageModel = JModelLegacy::getInstance('Language', 'LanguagesModel');
-			$icon          = self::getLanguageSupportedIcon($jiso);
-			$jisoParts     = explode('-', $jiso);
-
-			// Create content
-			$data = array (
-				'lang_code'    => $jiso,
-				'title'        => $languageData['name'],
-				'title_native' => $languageData['name'],
-				'sef'          => $jisoParts[0],
-				'image'        => ($icon !== false) ? $icon : '',
-				'published'    => 1
-			);
-
-			return $languageModel->save($data);
-		}
-
-		return false;
-	}
-
-	/**
-	 * Get Language data
-	 *
-	 * @param   int $updateId
-	 *
-	 * @return array
-	 */
-	public static function getLanguageData($updateId)
-	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select(
-				array (
-					'*',
-					'REPLACE(element, \'pkg_\', \'\') AS iso'
-				)
-			)
-			->from('#__updates')
-			->where('update_id = ' . (int) $updateId);
-
-		$db->setQuery($query);
-
-		return $db->loadAssoc();
-	}
-
-	/**
-	 * Check if a language package has been installed.
-	 *
-	 * @param string $jiso Joomla language ISO
-	 *
-	 * @return bool
-	 */
-	protected static function isLanguageInstalled($jiso)
-	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('1')
-			->from('#__extensions')
-			->where(
-				array (
-					'type = ' . $db->quote('language'),
-					'element = ' . $db->quote($jiso)
-				)
-			);
-
-		$db->setQuery($query);
-
-		return $db->loadResult() == 1;
-	}
-
-	/**
-	 * @param $jiso
-	 *
-	 * @return string|bool
-	 */
-	protected static function getLanguageSupportedIcon($jiso)
-	{
-		$iconName = strtolower(str_replace('-', '_', $jiso));
-		$iconPath = JPATH_ROOT . '/media/mod_languages/images/' . $iconName . '.gif';
-
-		if (!file_exists($iconPath))
-		{
-			$iconName = explode('_', strtolower(str_replace('-', '_', $jiso)));
-			$iconPath = JPATH_ROOT . '/media/mod_languages/images/' . $iconName[0] . '.gif';
-
-			if (!file_exists($iconPath))
-			{
-				return false;
-			}
-		}
-
-		return $iconName;
-	}
-
-	/**
 	 * Create menu structure
 	 *
 	 * @return void
@@ -2156,19 +1934,19 @@ class NenoHelper
 
 		if (NenoHelper::isLanguageFileOutOfDate($language['lang_code']))
 		{
-			$errors[] = 'Language file of ' . $language['title'] . ' out of date. Please check';;
+			$errors[] = JText::sprintf('COM_NENO_ERRORS_LANGUAGE_OUT_OF_DATE', $language['title']);
 		}
 
 		if (!NenoHelper::hasContentCreated($language['lang_code']))
 		{
-			$errors[] = 'We have detect that ' . $language['title'] . ' language does not have created a content record';
+			$errors[] = JText::sprintf('COM_NENO_ERRORS_LANGUAGE_DOES_NOT_CONTENT_ROW', $language['title']);
 		}
 
 		$contentCounter = NenoHelper::contentCountInOtherLanguages($language['lang_code']);
 
 		if ($contentCounter !== 0)
 		{
-			$errors[] = 'We have detect content in ' . $language['title'] . ' that have not been moved to the shadow tables';
+			$errors[] = JText::sprintf('COM_NENO_ERRORS_CONTENT_FOUND_IN_JOOMLA_TABLES', $language['title']);
 		}
 
 		return $errors;
@@ -2404,6 +2182,299 @@ class NenoHelper
 		}
 
 		return true;
+	}
+
+	public static function fixLanguageIssues($language, $issue)
+	{
+		switch ($issue)
+		{
+			case 'content_missing':
+				self::createContentRow($language);
+				break;
+			case 'language_file_out_of_date':
+				$languages = self::findLanguages();
+				foreach ($languages as $updateLanguage)
+				{
+					if ($updateLanguage['iso'] == $language)
+					{
+						NenoHelper::installLanguage($updateLanguage['update_id']);
+						break;
+					}
+				}
+				break;
+			case 'content_out_of_neno':
+				self::moveContentIntoShadowTables($language);
+				break;
+		}
+	}
+
+	public static function createContentRow($jiso, $languageName = null)
+	{
+		/* @var $languageModel LanguagesModelLanguage */
+		$languageModel = JModelLegacy::getInstance('Language', 'LanguagesModel');
+		$icon          = self::getLanguageSupportedIcon($jiso);
+		$jisoParts     = explode('-', $jiso);
+
+		if ($languageName == null)
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query
+				->select('name')
+				->from('#__extensions')
+				->where('element = ' . $db->quote($jiso));
+			$db->setQuery($query);
+			$languageName = $db->loadResult();
+		}
+
+		// Create content
+		$data = array (
+			'lang_code'    => $jiso,
+			'title'        => $languageName,
+			'title_native' => $languageName,
+			'sef'          => $jisoParts[0],
+			'image'        => ($icon !== false) ? $icon : '',
+			'published'    => 1
+		);
+
+		return $languageModel->save($data);
+	}
+
+	/**
+	 * @param $jiso
+	 *
+	 * @return string|bool
+	 */
+	protected static function getLanguageSupportedIcon($jiso)
+	{
+		$iconName = strtolower(str_replace('-', '_', $jiso));
+		$iconPath = JPATH_ROOT . '/media/mod_languages/images/' . $iconName . '.gif';
+
+		if (!file_exists($iconPath))
+		{
+			$iconName = explode('_', strtolower(str_replace('-', '_', $jiso)));
+			$iconPath = JPATH_ROOT . '/media/mod_languages/images/' . $iconName[0] . '.gif';
+
+			if (!file_exists($iconPath))
+			{
+				return false;
+			}
+		}
+
+		return $iconName;
+	}
+
+	/**
+	 * Get a list of languages
+	 *
+	 * @return array
+	 */
+	public static function findLanguages()
+	{
+		$enGbExtensionId = self::getEnGbExtensionId();
+		$languagesFound  = array ();
+
+		if (!empty($enGbExtensionId))
+		{
+			$updater = JUpdater::getInstance();
+
+			// Find updates for languages
+			$updater->findUpdates($enGbExtensionId);
+			$updateSiteId   = self::getLanguagesUpdateSite($enGbExtensionId);
+			$updates        = self::getUpdates($updateSiteId);
+			$languagesFound = $updates;
+		}
+
+		return $languagesFound;
+	}
+
+	/**
+	 * Get the extension_id of the en-GB package
+	 *
+	 * @return int
+	 */
+	protected static function getEnGbExtensionId()
+	{
+		$db       = JFactory::getDbo();
+		$extQuery = $db->getQuery(true);
+		$extType  = 'language';
+		$extElem  = 'en-GB';
+
+		$extQuery->select($db->quoteName('extension_id'))
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('type') . ' = ' . $db->quote($extType))
+			->where($db->quoteName('element') . ' = ' . $db->quote($extElem))
+			->where($db->quoteName('client_id') . ' = 0');
+
+		$db->setQuery($extQuery);
+
+		return (int) $db->loadResult();
+	}
+
+	/**
+	 * Get update site for languages
+	 *
+	 * @param int $enGbExtensionId Extension Id of en-GB package
+	 *
+	 * @return int
+	 */
+	protected static function getLanguagesUpdateSite($enGbExtensionId)
+	{
+		$db        = JFactory::getDbo();
+		$siteQuery = $db->getQuery(true);
+
+		$siteQuery->select($db->quoteName('update_site_id'))
+			->from($db->quoteName('#__update_sites_extensions'))
+			->where($db->quoteName('extension_id') . ' = ' . $enGbExtensionId);
+
+		$db->setQuery($siteQuery);
+
+		return (int) $db->loadResult();
+	}
+
+	/**
+	 * Get updates from a particular update site
+	 *
+	 * @param    int $updateSiteId Update Site Id
+	 *
+	 * @return array
+	 */
+	protected static function getUpdates($updateSiteId)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(
+				array (
+					'*',
+					'REPLACE(element, \'pkg_\', \'\') AS iso'
+				)
+			)
+			->from('#__updates')
+			->where('update_site_id = ' . (int) $updateSiteId);
+
+		$db->setQuery($query);
+
+		return $db->loadAssocList();
+	}
+
+	/**
+	 * Installs a language and create necessary data.
+	 *
+	 * @param integer $languageId Language id
+	 *
+	 * @return bool
+	 */
+	public static function installLanguage($languageId)
+	{
+		// Loading language
+		$language = JFactory::getLanguage();
+		$language->load('com_installer');
+
+		$languageData = self::getLanguageData($languageId);
+		$jiso         = str_replace('pkg_', '', $languageData['element']);
+
+		// Registering some classes
+		JLoader::register('InstallerModelLanguages', JPATH_ADMINISTRATOR . '/components/com_installer/models/languages.php');
+		JLoader::register('LanguagesModelLanguage', JPATH_ADMINISTRATOR . '/components/com_languages/models/language.php');
+
+		/* @var $languagesInstallerModel InstallerModelLanguages */
+		$languagesInstallerModel = JModelLegacy::getInstance('Languages', 'InstallerModel');
+
+		// Install language
+		$languagesInstallerModel->install(array ($languageId));
+
+		if (self::isLanguageInstalled($jiso))
+		{
+			return self::createContentRow($jiso, $languageData);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get Language data
+	 *
+	 * @param   int $updateId
+	 *
+	 * @return array
+	 */
+	public static function getLanguageData($updateId)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(
+				array (
+					'*',
+					'REPLACE(element, \'pkg_\', \'\') AS iso'
+				)
+			)
+			->from('#__updates')
+			->where('update_id = ' . (int) $updateId);
+
+		$db->setQuery($query);
+
+		return $db->loadAssoc();
+	}
+
+	/**
+	 * Check if a language package has been installed.
+	 *
+	 * @param string $jiso Joomla language ISO
+	 *
+	 * @return bool
+	 */
+	protected static function isLanguageInstalled($jiso)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('1')
+			->from('#__extensions')
+			->where(
+				array (
+					'type = ' . $db->quote('language'),
+					'element = ' . $db->quote($jiso)
+				)
+			);
+
+		$db->setQuery($query);
+
+		return $db->loadResult() == 1;
+	}
+
+	public static function moveContentIntoShadowTables($languageTag)
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db = JFactory::getDbo();
+
+		$joomlaTablesUsingLanguageField = array (
+			'#__banners',
+			'#__categories',
+			'#__contact_details',
+			'#__content',
+			'#__finder_links',
+			'#__finder_terms',
+			'#__finder_terms_common',
+			'#__finder_tokens',
+			'#__finder_tokens_aggregate',
+			'#__newsfeeds',
+			'#__tags',
+			'#__weblinks'
+		);
+
+
+		foreach ($joomlaTablesUsingLanguageField as $joomlaTableUsingLanguageField)
+		{
+			$query = 'INSERT INTO ' . $db->generateShadowTableName($joomlaTableUsingLanguageField, $languageTag) . ' SELECT * FROM ' . $joomlaTableUsingLanguageField . ' WHERE language = ' . $db->quote($languageTag);
+			$db->setQuery($query);
+			$db->execute();
+		}
 	}
 
 	/**

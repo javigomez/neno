@@ -70,6 +70,13 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 						<?php echo $item->title; ?>
 					</h3>
 					<?php echo NenoHelper::renderWordCountProgressBar($item->wordCount, true, true) ?>
+					<?php if (!empty($item->errors)): ?>
+						<?php foreach ($item->errors as $error): ?>
+							<div class="alert alert-error">
+								<?php echo JText::sprintf($error, $item->lang_code); ?>
+							</div>
+						<?php endforeach; ?>
+					<?php endif; ?>
 					<a class="btn btn-primary"
 					   href="<?php echo JRoute::_('index.php?option=com_neno&task=setWorkingLang&lang=' . $item->lang_code . '&next=editor'); ?>">
 						<?php echo JText::_('COM_NENO_DASHBOARD_TRANSLATE_BUTTON'); ?>
