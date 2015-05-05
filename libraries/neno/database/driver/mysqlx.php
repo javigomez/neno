@@ -323,7 +323,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	 *
 	 * @return string language tag cleaned
 	 */
-	protected function cleanLanguageTag($languageTag)
+	public function cleanLanguageTag($languageTag)
 	{
 		return strtolower(str_replace(array ('-'), array (''), $languageTag));
 	}
