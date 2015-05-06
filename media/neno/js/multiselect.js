@@ -101,11 +101,14 @@ function toggleElementVisibility() {
     }
 }
 
-function loadStrings() {
+function loadStrings(reset) {
     var checkedGroupsElements = getMultiSelectValue(jQuery('#table-multiselect'));
     var checkedStatus = getMultiSelectValue(jQuery('#status-multiselect'));
     var checkedMethod = getMultiSelectValue(jQuery('#method-multiselect'));
     var search = jQuery('#filter_search').val();
+    if (reset == true) {
+        jQuery("input[name='limitstart']").val(0)
+    }
     var limitStart = jQuery("input[name='limitstart']").val();
     var limit = document.adminForm.list_limit.value;
 
@@ -171,6 +174,11 @@ function loadStrings() {
                 if (document.adminForm.outputLayout.value == 'editorStrings') {
                     setFilterTags(document.adminForm);
                 }
+
+                if (reset == true) {
+                    jQuery('#elements-wrapper').empty();
+                }
+
                 jQuery('#elements-wrapper').append(ret);
             }
         });

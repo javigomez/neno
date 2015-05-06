@@ -37,4 +37,69 @@ class NenoModelEditor extends NenoModelStrings
 
 		parent::__construct($config);
 	}
+
+	/**
+	 * Consolidate Translation
+	 *
+	 * @param   int $translationId Translation id
+	 *
+	 * @return bool True on success
+	 */
+	public function consolidateTranslations($translationId)
+	{
+		/* @var $translation NenoContentElementTranslation */
+		$translation = NenoContentElementTranslation::load($translationId);
+		$db          = JFactory::getDbo();
+		$query       = $db->getQuery(true);
+
+		$query
+			->update('#__neno_content_element_translations')
+			->set(
+				array (
+					'string = ' . $db->quote($translation->getString()),
+					'translation_method = 1',
+					'state = 1'
+				)
+			)
+			->where(
+				array (
+					'original_text =' . $db->quote($translation->getOriginalText()),
+					'id <> ' . $translationId
+				)
+			);
+
+		$db->setQuery($query);
+		$db->execute();
+
+		return true;
+	}
+
+	/**
+	 * Get the amount of translations that contains the same text
+	 *
+	 * @param   int    $translationId   Translation Id
+	 * @param   string $translationText Translation Text
+	 *
+	 * @return int
+	 */
+	public function getSimilarTranslationsCounter($translationId, $translationText)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('COUNT(*)')
+			->from('#__neno_content_element_translations')
+			->where(
+				array (
+					'original_text = ' . $db->quote($translationText),
+					'state = 4',
+					'id <> ' . $translationId,
+				)
+			);
+
+		$db->setQuery($query);
+
+		return (int) $db->loadResult();
+	}
 }

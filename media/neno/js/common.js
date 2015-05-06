@@ -49,14 +49,36 @@ function saveTranslationAndNext() {
             success: function (data) {
                 var row = jQuery('#elements-wrapper .string[data-id=' + data.id + ']');
                 if (row) {
-                    var string = data.string;
+                    var string = data.translation.string;
                     if (string.length > 40) {
                         string = string.substr(0, 35) + '...';
                     }
                     row.find('.string-text').html(string);
                     row.find('.status').removeClass().addClass('status');
-                    row.find('.status').addClass(statuses[data.state]);
+                    row.find('.status').addClass(statuses[data.translation.state]);
                 }
+
+                if (typeof data.message != 'undefined') {
+                    jQuery('#consolidate-modal .modal-body p').text(data.message);
+                    jQuery('#consolidate-button').off('click').data('translation', translationId).on('click', function () {
+                        var translationId = jQuery(this).data('translation');
+                        jQuery.ajax({
+                                beforeSend: onBeforeAjax,
+                                type: 'POST',
+                                data: {
+                                    id: translationId
+                                },
+                                url: 'index.php?option=com_neno&task=editor.consolidateTranslation',
+                                success: function () {
+                                    jQuery('#consolidate-modal').modal('hide');
+                                    loadStrings(true);
+                                }
+                            }
+                        );
+                    });
+                    jQuery('#consolidate-modal').modal('show');
+                }
+
                 loadNextTranslation();
             }
         }
