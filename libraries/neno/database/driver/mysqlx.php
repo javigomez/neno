@@ -388,18 +388,30 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	 */
 	public function execute()
 	{
-		try
-		{
-			$result = parent::execute();
+		$language = JFactory::getLanguage();
+		$app      = JFactory::getApplication();
 
-			return $result;
-		}
-		catch (RuntimeException $ex)
+		// Check if the user is trying to insert something in the front-end in different language
+		if ($this->getQueryType((string) $this->sql) === self::INSERT_QUERY && $language->getTag() !== $language->getDefault() && $app->isSite())
 		{
-			echo $ex->getMessage() . "\n";
-			/** @noinspection PhpUndefinedClassInspection */
-			Kint::dump(xdebug_get_function_stack());
-			exit;
+			$language->load('com_neno', JPATH_ADMINISTRATOR);
+			throw new Exception(JText::_('COM_NENO_CONTENT_IN_OTHER_LANGUAGES_ARE_NOT_ALLLOWED'));
+		}
+		else
+		{
+			try
+			{
+				$result = parent::execute();
+
+				return $result;
+			}
+			catch (RuntimeException $ex)
+			{
+				echo $ex->getMessage() . "\n";
+				/** @noinspection PhpUndefinedClassInspection */
+				Kint::dump(xdebug_get_function_stack());
+				exit;
+			}
 		}
 	}
 
