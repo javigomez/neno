@@ -104,7 +104,7 @@ class NenoModelStrings extends JModelList
 		}
 
 		// Element(s) filtering
-		$elements = $app->getUserStateFromRequest($this->context . '.table', 'table', array ());
+		$elements = $app->getUserStateFromRequest($this->context . '.filter.elements', 'table', array ());
 
 		if (!empty($elements))
 		{

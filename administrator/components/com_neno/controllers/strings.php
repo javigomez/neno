@@ -108,9 +108,9 @@ class NenoControllerStrings extends JControllerAdmin
 	 *
 	 * @return NenoModelStrings
 	 */
-	public function getModel($name = '', $prefix = '', $config = array ())
+	public function getModel($name = 'Strings', $prefix = 'NenoModel', $config = array ())
 	{
-		return parent::getModel('Strings', 'NenoModel', $config);
+		return parent::getModel($name, $prefix, $config);
 	}
 
 	/**

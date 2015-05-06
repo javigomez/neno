@@ -29,6 +29,7 @@ function loadHierarchy(row) {
                         bindEvents();
                         row.removeClass('loading');
                         checkUncheckFamilyCheckboxes(row.find('input[type=checkbox]').first());
+                        setFilterTags(document.adminForm);
                     }
                 }
             );
@@ -210,7 +211,10 @@ function checkUncheckFamilyCheckboxes(checkbox, recursive) {
 
     if (recursive) {
         //Check uncheck all children
-        children.find('input[type=checkbox]').prop('checked', state);
+        if (children.find('input[type=checkbox]').length == children.find('input[type=checkbox]:checked').length || state == true) {
+            children.find('input[type=checkbox]').prop('checked', state);
+        }
+
         children.find('input[type=checkbox]').each(function () {
             checkUncheckFamilyCheckboxes(jQuery(this), true);
         });
