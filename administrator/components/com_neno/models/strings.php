@@ -93,6 +93,7 @@ class NenoModelStrings extends JModelList
 		if (!empty($groups))
 		{
 			$this->setState('filter.group_id', $groups);
+			$app->setUserState($this->context . '.filter.elements', array ());
 		}
 
 		$search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '', 'string');
@@ -108,6 +109,7 @@ class NenoModelStrings extends JModelList
 		if (!empty($elements))
 		{
 			$app->setUserState($this->context . '.filter.elements', $elements);
+			$this->setState('filter.group_id', array ());
 		}
 
 		$this->setState('filter.element', $app->getUserState($this->context . '.filter.elements'));

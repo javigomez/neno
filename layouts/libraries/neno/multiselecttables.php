@@ -15,6 +15,7 @@ $document = JFactory::getDocument();
 $tables   = $displayData['tables'];
 
 $isOverlay = isset($displayData->isOverlay);
+$elements  = $displayData['state']->get('filter.element', array ());
 ?>
 <?php foreach ($tables as $table): ?>
 	<?php $class = !empty($table->fields) ? 'cell-expand' : ''; ?>
@@ -28,7 +29,6 @@ $isOverlay = isset($displayData->isOverlay);
 				<span class="icon-arrow-right-3"></span>
 			<?php endif; ?>
 		</td>
-		<?php $elements = $displayData['state']->get('filter.element', array ()); ?>
 		<td class="cell-check"><input
 				type="checkbox" <?php echo in_array($table->id, $elements) ? 'checked="checked"' : ''; ?>/>
 		</td>

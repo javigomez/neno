@@ -125,8 +125,8 @@ class NenoControllerStrings extends JControllerAdmin
 
 		$state     = (array) $stringsModel->getState();
 		$queryVars = array (
-			'view'   => 'editor',
-			'option' => 'com_neno'
+			'option' => 'com_neno',
+			'view'   => 'editor'
 		);
 
 		foreach ($state as $filter => $options)
@@ -185,7 +185,7 @@ class NenoControllerStrings extends JControllerAdmin
 			}
 		}
 
-		JFactory::getApplication()->redirect('index.php?' . substr($query, 0, strlen($query)));
+		JFactory::getApplication()->redirect('index.php?' . substr($query, 0, strlen($query) - 1));
 	}
 
 	/**
