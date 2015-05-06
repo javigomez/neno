@@ -35,10 +35,8 @@ class com_nenoInstallerScript
 				return false;
 			}
 
-			// Show installation screen
-			$url = JRoute::_('index.php?option=com_neno&view=installation');
-
-			echo JLayoutHelper::render('installationgetstarted', $url, JPATH_ROOT . '/layouts/libraries/neno');
+			$app = JFactory::getApplication();
+			$app->setUserState('com_installer.redirect_url', JRoute::_('index.php?option=com_neno&view=installation'));
 		}
 		elseif ($type == 'uninstall')
 		{
