@@ -5,7 +5,7 @@
  *
  * @since  1.0
  */
-class com_nenoInstallerScript
+class pkg_NenoInstallerScript
 {
 	/**
 	 * Copying files
