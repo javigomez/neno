@@ -20,11 +20,11 @@
             <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
         </sql>
     </uninstall>
-    <update>
+    <!--<update>
         <schemas>
             <schemapath type="mysql">sql/updates</schemapath>
         </schemas>
-    </update>
+    </update>-->
     <files folder="front">
         <filename>index.html</filename>
         <filename>neno.php</filename>
