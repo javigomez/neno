@@ -27,7 +27,7 @@ class pkg_NenoInstallerScript
 		// Moving media files
 		JFolder::move($installationPath . '/media', JPATH_ROOT . '/media/neno');
 
-		$parent->getParent()->setRedirectURL(JRoute::_('index.php?option=com_neno&view=installation'));
+		$parent->getParent()->setRedirectURL(JRoute::_('index.php?option=com_neno&view=installation', false));
 
 		return true;
 	}
