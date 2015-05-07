@@ -34,6 +34,11 @@ class NenoViewGroupElement extends JViewLegacy
 	protected $item;
 
 	/**
+	 * @var array
+	 */
+	protected $languages;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -46,9 +51,10 @@ class NenoViewGroupElement extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->state = $this->get('State');
-		$this->item  = $this->get('Item');
-		$this->form  = $this->get('Form');
+		$this->state     = $this->get('State');
+		$this->item      = $this->get('Item');
+		$this->form      = $this->get('Form');
+		$this->languages = $this->get('Languages');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))

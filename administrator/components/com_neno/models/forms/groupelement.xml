@@ -19,5 +19,12 @@
                 label="COM_NENO_GROUPELEMENT_GROUP_TRANSLATION_METHOD"
                 >
         </field>
+
+        <field
+                name="languages"
+                type="checkboxes"
+                label="COM_NENO_GROUPELEMENT_GROUP_TRANSLATION_METHOD"
+                >
+        </field>
     </fields>
 </form>

@@ -65,11 +65,10 @@ class NenoModelGroupElement extends JModelAdmin
 	 */
 	public function save($data)
 	{
-        
 		// If groups data has been saved, let's assign translation method
 		if (parent::save($data))
 		{
-            $db              = JFactory::getDbo();
+			$db              = JFactory::getDbo();
 			$query           = $db->getQuery(true);
 			$workingLanguage = NenoHelper::getWorkingLanguage();
 			$groupId         = (int) $this->getState($this->getName() . '.id');
@@ -79,9 +78,17 @@ class NenoModelGroupElement extends JModelAdmin
 				->where(
 					array (
 						'group_id = ' . $groupId,
-						'lang = ' . $db->quote($workingLanguage)
 					)
 				);
+
+			$languages = array ($workingLanguage);
+
+			if (!empty($data['languages']))
+			{
+				$languages = array_merge($data['languages'], $languages);
+			}
+
+			$query->where('lang IN (' . implode(',', $db->quote($languages)) . ')');
 
 			$db->setQuery($query);
 			$db->execute();
@@ -107,7 +114,12 @@ class NenoModelGroupElement extends JModelAdmin
 				foreach ($data['translation_methods'] as $translationMethodId)
 				{
 					$insert = true;
-					$query->values($groupId . ',' . $db->quote($workingLanguage) . ',' . $db->quote($translationMethodId) . ', ' . $ordering);
+
+					foreach ($languages as $language)
+					{
+						$query->values($groupId . ',' . $db->quote($language) . ',' . $db->quote($translationMethodId) . ', ' . $ordering);
+					}
+
 					$ordering++;
 				}
 			}
@@ -122,6 +134,28 @@ class NenoModelGroupElement extends JModelAdmin
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get languages
+	 *
+	 * @return array
+	 */
+	public function getLanguages()
+	{
+		$languages       = NenoHelper::getLanguages(false);
+		$workingLanguage = NenoHelper::getWorkingLanguage();
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+
+		foreach ($languages as $key => $language)
+		{
+			if ($language->lang_code == $workingLanguage || $language->lang_code == $defaultLanguage)
+			{
+				unset($languages[$key]);
+			}
+		}
+
+		return $languages;
 	}
 
 	/**

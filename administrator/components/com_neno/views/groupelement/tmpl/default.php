@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.keepalive');
+JHtml::_('formbehavior.chosen', 'select');
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_neno&id=' . (int) $this->item->id); ?>"
@@ -31,6 +32,17 @@ JHtml::_('behavior.keepalive');
 					<?php echo JLayoutHelper::render('loadtranslationmethodselector', $this->item->id, JPATH_NENO_LAYOUTS); ?>
 				</div>
 
+				<div class="control-group">
+					<h4><?php echo JText::_('COM_NENO_GROUPELEMENT_APPLY_OTHER_LANGUAGES'); ?></h4>
+					<?php foreach ($this->languages as $language): ?>
+						<div class="controls">
+							<label class="checkbox">
+								<input type="checkbox" name="jform[languages][]"
+								       value="<?php echo $language->lang_code; ?>"> <?php echo $language->title; ?>
+							</label>
+						</div>
+					<?php endforeach; ?>
+				</div>
 
 			</fieldset>
 		</div>
