@@ -9,29 +9,34 @@
  */
 // No direct access
 defined('_JEXEC') or die;
+
+$document = JFactory::getDocument();
+$document->addStyleSheet(JUri::root() . '/media/neno/css/progress-wizard.min.css');
+
+//JHtml::_('bootstrap.tooltip');
 ?>
 
 <script>
-	jQuery(document).ready(function () {
-		jQuery('#find-languages').on('click', function () {
-			jQuery.get('index.php?option=com_neno&task=installation.getLanguages', function (data) {
-				data = JSON.parse(data);
-				for (var i = 0; i < data.length; i++) {
-					jQuery('#languages-form').append('<input type="checkbox" name="languages[]" value="' + data[i].update_id + '" /><img src="http://localhost/neno/media/mod_languages/images/' + data[i].iso.toLowerCase().replace('-', '_') + '.gif" />')
-				}
-			});
+	jQuery(document).ready(loadInstallationStep);
+
+	function loadInstallationStep() {
+		jQuery.ajax({
+			url: 'index.php?option=com_neno&task=installation.loadInstallationStep',
+			success: function (html) {
+				jQuery('.installation-form').empty().append(html);
+				bindEvents();
+			}
 		});
-	});
+	}
+
+	function bindEvents() {
+		jQuery('.next-step-button').off('click').on('click', function () {
+			loadInstallationStep();
+		});
+
+		jQuery('.hasTooltip').tooltip();
+	}
 </script>
 
-<h1>Neno Installation</h1>
-
-<button type="button" class="btn" id="find-languages">Find Languages</button>
-
-<div class="installation-form">
-	<form action="index.php?option=com_neno&task=installation.installLanguages" method="post" id="languages-form">
-
-		<button class="btn">Install</button>
-	</form>
-</div>
+<div class="installation-form"></div>
 

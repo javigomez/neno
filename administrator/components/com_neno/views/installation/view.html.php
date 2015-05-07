@@ -11,8 +11,6 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
 /**
  * View to edit
  *
@@ -20,17 +18,5 @@ jimport('joomla.application.component.view');
  */
 class NenoViewInstallation extends JViewLegacy
 {
-	/**
-	 * Display the view
-	 *
-	 * @param   string $tpl Template to render
-	 *
-	 * @return void
-	 *
-	 * @since 1.0
-	 */
-	public function display($tpl = null)
-	{
-		parent::display($tpl);
-	}
+
 }

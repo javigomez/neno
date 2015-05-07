@@ -4,15 +4,15 @@ defined('_JEXEC') or die;
 
 ?>
 
-<h4>Neno was installed successfully</h4>
 
-<div class="btn-wrapper <?php echo $displayData->class; ?>">
-	<p>
-		Congratulations. You have taken the first step to start getting your web site translated. If you like, you can
-		dive right into the <a href="#">documentation</a> but we recommend that you simply click the "get started"
-		button
-		below as it will take you through our setup guide.
-	</p>
+<div class="installation-step">
+	<img src="<?php echo JUri::root() . '/media/neno/images/neno_logo.png'; ?>" width="150"/>
 
-	<a href="<?php echo $displayData; ?>" class="btn btn-success">Get Started</a>
+	<h2><?php echo JText::_('COM_NENO_INSTALLATION_NENO_WAS_INSTALL_SUCCESSFULLY'); ?></h2>
+
+	<p><?php echo JText::_('COM_NENO_INSTALLATION_MESSAGE'); ?></p>
+
+	<button type="button" class="btn btn-success next-step-button">
+		<?php echo JText::_('COM_NENO_INSTALLATION_GET_STARTED_BUTTON'); ?>
+	</button>
 </div>

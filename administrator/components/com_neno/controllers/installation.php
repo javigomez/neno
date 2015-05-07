@@ -19,6 +19,56 @@ defined('_JEXEC') or die;
 class NenoControllerInstallation extends JControllerAdmin
 {
 	/**
+	 * Load installation step
+	 *
+	 * @return void
+	 */
+	public function loadInstallationStep()
+	{
+		$app  = JFactory::getApplication();
+		$step = $app->getUserState('installation_step');
+
+		if (empty($step))
+		{
+			$layout = JLayoutHelper::render('installationgetstarted', null, JPATH_NENO_LAYOUTS);
+		}
+		else
+		{
+			$layout = JLayoutHelper::render('installationstep' . $step, $this->getDataForStep($step), JPATH_NENO_LAYOUTS);
+		}
+
+		$app->setUserState('installation_step', ((int) $step + 1) % 7);
+
+		echo $layout;
+
+		JFactory::getApplication()->close();
+	}
+
+	/**
+	 * @param int $step Step number
+	 *
+	 * @return stdClass
+	 */
+	protected function getDataForStep($step)
+	{
+		$data = new stdClass;
+
+		switch ($step)
+		{
+			case 1:
+				$languages           = JFactory::getLanguage()->getKnownLanguages();
+				$data->select_widget = JHtml::_('select.genericlist', $languages, 'source_language', null, 'tag', 'name');
+				break;
+			case 3:
+				$translation_methods = NenoHelper::loadTranslationMethods();
+				$data->select_widget = JLayoutHelper::render('translationmethodselector', array ('translation_methods' => $translation_methods), JPATH_NENO_LAYOUTS);
+				break;
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Get languages
 	 *
 	 * @return void

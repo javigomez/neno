@@ -524,4 +524,3 @@ libraries/composer_autoload.php
 libraries/ClassLoader.php
 layouts/plugins/user/profile/fields/dob.php
 *.txt.dist
-
