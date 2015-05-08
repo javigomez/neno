@@ -59,11 +59,6 @@ class NenoControllerInstallation extends JControllerAdmin
 				$languages           = NenoHelper::findLanguages(true);
 				$data->select_widget = JHtml::_('select.genericlist', $languages, 'source_language', null, 'iso', 'name', $language->getDefault());
 				break;
-			case 3:
-				$translation_methods = NenoHelper::loadTranslationMethods();
-				$layoutData          = array ('translation_methods' => $translation_methods);
-				$data->select_widget = JLayoutHelper::render('translationmethodselector', $layoutData, JPATH_NENO_LAYOUTS);
-				break;
 		}
 
 		return $data;
@@ -156,6 +151,80 @@ class NenoControllerInstallation extends JControllerAdmin
 				}
 			}
 		}
+	}
+
+	/**
+	 * Get translation method selector
+	 *
+	 * @return void
+	 */
+	public function getTranslationMethodSelector()
+	{
+		$input               = $this->input;
+		$n                   = $input->getInt('n', 0);
+		$selected_methods    = $input->get('selected_methods', array (), 'ARRAY');
+		$translation_methods = NenoHelper::loadTranslationMethods();
+		$app                 = JFactory::getApplication();
+
+		// Ensure that we know what was selected for the previous selector
+		if (($n > 0 && !isset($selected_methods[$n - 1])) || ($n > 0 && $selected_methods[$n - 1] == 0))
+		{
+			$app->close();
+		}
+
+		// As a safety measure prevent more than 5 selectors and always allow only one more selector than already selected
+		if ($n > 4 || $n > count($selected_methods) + 1)
+		{
+			$app->close();
+		}
+
+		// Reduce the translation methods offered depending on the parents
+		if ($n > 0 && !empty($selected_methods))
+		{
+			$parent_method                   = $selected_methods[$n - 1];
+			$acceptable_follow_up_method_ids = $translation_methods[$parent_method]->acceptable_follow_up_method_ids;
+			$acceptable_follow_up_methods    = explode(',', $acceptable_follow_up_method_ids);
+
+			foreach ($translation_methods as $k => $translation_method)
+			{
+				if (!in_array($k, $acceptable_follow_up_methods))
+				{
+					unset($translation_methods[$k]);
+				}
+			}
+		}
+
+		// If there are no translation methods left then return nothing
+		if (!count($translation_methods))
+		{
+			JFactory::getApplication()->close();
+		}
+
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('setting_value')
+			->from('#__neno_settings')
+			->where('setting_key LIKE ' . $db->quote('translation_method_%'))
+			->order('setting_key ASC');
+
+		$db->setQuery($query);
+		$translation_methods_selected = $db->loadArray();
+
+		// Prepare display data
+		$displayData                                 = array ();
+		$displayData['translation_methods']          = $translation_methods;
+		$displayData['assigned_translation_methods'] = $translation_methods_selected;
+		$displayData['n']                            = $n;
+
+		$selectorHTML = JLayoutHelper::render('translationmethodselector', $displayData, JPATH_NENO_LAYOUTS);
+
+		echo $selectorHTML;
+
+		$app->close();
+
 	}
 
 	/**
@@ -255,6 +324,23 @@ class NenoControllerInstallation extends JControllerAdmin
 	 */
 	protected function validateStep3()
 	{
+		$input = $this->input;
+		$app   = JFactory::getApplication();
 
+		$jform = $input->post->get('jform', array (), 'ARRAY');
+
+		if (!empty($jform['translation_methods']))
+		{
+			foreach ($jform['translation_methods'] as $key => $translationMethod)
+			{
+				NenoSettings::set('translation_method_' . ($key + 1), $translationMethod);
+			}
+
+			return true;
+		}
+
+		$app->enqueueMessage('', 'error');
+
+		return false;
 	}
 }
