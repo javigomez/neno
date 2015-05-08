@@ -59,6 +59,24 @@ class NenoControllerInstallation extends JControllerAdmin
 				$languages           = NenoHelper::findLanguages(true);
 				$data->select_widget = JHtml::_('select.genericlist', $languages, 'source_language', null, 'iso', 'name', $language->getDefault());
 				break;
+			case 4:
+				$language                   = JFactory::getLanguage();
+				$knownLanguages             = $language->getKnownLanguages();
+				$languagesData              = array ();
+				$defaultTranslationsMethods = NenoHelper::getDefaultTranslationMethods();
+
+				foreach ($knownLanguages as $key => $knownLanguage)
+				{
+					$languagesData[$key]                        = $knownLanguage;
+					$languagesData[$key]['lang_code']           = $knownLanguage['tag'];
+					$languagesData[$key]['title']               = $knownLanguage['name'];
+					$languagesData[$key]['translation_methods'] = $defaultTranslationsMethods;
+					$languagesData[$key]['errors']              = NenoHelper::getLanguageErrors($languagesData[$key]);
+				}
+
+				$data->languages = $languagesData;
+
+				break;
 		}
 
 		return $data;
@@ -118,39 +136,79 @@ class NenoControllerInstallation extends JControllerAdmin
 		JFactory::getApplication()->close();
 	}
 
+	/**
+	 * Task to finishing setup
+	 *
+	 * @return void
+	 */
+	public function finishingSetup()
+	{
+		$this->setSetupState(0, 'Generating menus');
+		NenoHelper::createMenuStructure();
+		$this->setSetupState(10, 'Discover extensions');
+
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$extensions = $db->quote(NenoHelper::whichExtensionsShouldBeTranslated());
+
+		$query
+			->select('e.*')
+			->from('`#__extensions` AS e')
+			->where(
+				array (
+					'e.type IN (' . implode(',', $extensions) . ')',
+					'e.name NOT LIKE \'com_neno\'',
+				)
+			)
+			->order('name');
+		$db->setQuery($query);
+		$extensions = $db->loadAssocList();
+
+		$percentPerExtension = (int) 80 / count($extensions);
+		$currentPercent      = 10 + $percentPerExtension;
+
+		foreach ($extensions as $extension)
+		{
+			$this->setSetupState($currentPercent, 'Parsing ' . $extension['name']);
+			NenoHelper::discoverExtension($extension);
+			$currentPercent = $currentPercent + $percentPerExtension;
+		}
+
+		$this->setSetupState(95, 'Parsing Other tables');
+		NenoHelper::groupingTablesNotDiscovered();
+		$this->setSetupState(100, 'Installation completed');
+	}
+
+	/**
+	 * Set setup state
+	 *
+	 * @param   int    $percent Completed percent
+	 * @param   string $message
+	 *
+	 * @return void
+	 */
+	protected function setSetupState($percent, $message)
+	{
+		NenoSettings::set('setup_message', $message);
+		NenoSettings::set('setup_percent', $percent);
+	}
+
+	/**
+	 * Fetch setup status
+	 *
+	 * @return void
+	 */
+	public function getSetupStatus()
+	{
+		echo json_encode(array ('message' => NenoSettings::get('setup_message'), 'percent' => NenoSettings::get('setup_percent')));
+		exit;
+	}
+
 	public function doMenus()
 	{
 		NenoHelper::createMenuStructure();
-	}
-
-	public function checks()
-	{
-		$app             = JFactory::getApplication();
-		$languages       = JFactory::getLanguage()->getKnownLanguages();
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
-
-		foreach ($languages as $language)
-		{
-			if ($language['tag'] != $defaultLanguage)
-			{
-				if (NenoHelper::isLanguageFileOutOfDate($language['tag']))
-				{
-					$app->enqueueMessage('Language file of ' . $language['name'] . ' out of date. Please check', 'error');
-				}
-
-				if (!NenoHelper::hasContentCreated($language['tag']))
-				{
-					$app->enqueueMessage('We have detect that ' . $language['name'] . ' language does not have created a content record', 'error');
-				}
-
-				$contentCounter = NenoHelper::contentCountInOtherLanguages($language['tag']);
-
-				if ($contentCounter !== 0)
-				{
-					$app->enqueueMessage('We have detect content in ' . $language['name'] . ' that have not been moved to the shadow tables', 'error');
-				}
-			}
-		}
 	}
 
 	/**
@@ -200,23 +258,10 @@ class NenoControllerInstallation extends JControllerAdmin
 			JFactory::getApplication()->close();
 		}
 
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('setting_value')
-			->from('#__neno_settings')
-			->where('setting_key LIKE ' . $db->quote('translation_method_%'))
-			->order('setting_key ASC');
-
-		$db->setQuery($query);
-		$translation_methods_selected = $db->loadArray();
-
 		// Prepare display data
 		$displayData                                 = array ();
 		$displayData['translation_methods']          = $translation_methods;
-		$displayData['assigned_translation_methods'] = $translation_methods_selected;
+		$displayData['assigned_translation_methods'] = NenoHelper::getTranslationMethods();
 		$displayData['n']                            = $n;
 
 		$selectorHTML = JLayoutHelper::render('translationmethodselector', $displayData, JPATH_NENO_LAYOUTS);

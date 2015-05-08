@@ -11,7 +11,15 @@ JHtml::_('bootstrap.tooltip');
 		<div class="error-messages"></div>
 		<h2><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_TITLE'); ?></h2>
 
-		<button type="button" class="btn btn-success next-step-button">
+		<div class="progress progress-striped active" id="progress-bar">
+			<div class="bar" style="width: 0%;"></div>
+		</div>
+
+		<div id="task-message">
+
+		</div>
+
+		<button type="button" class="btn btn-success next-step-button disabled">
 			<?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_FINISH_SETUP_BUTTON'); ?>
 		</button>
 		<p><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_FINISH_SETUP_MESSAGE'); ?></p>
@@ -19,3 +27,27 @@ JHtml::_('bootstrap.tooltip');
 
 	<?php echo JLayoutHelper::render('installationbottom', 4, JPATH_NENO_LAYOUTS); ?>
 </div>
+
+<script>
+	jQuery.ajax({
+		url: 'index.php?option=com_neno&task=installation.finishingSetup',
+		success: function (data) {
+			window.clearInterval(interval);
+		}
+	});
+
+	interval = window.setInterval(checkStatus, 2000);
+
+	function checkStatus() {
+		jQuery.ajax({
+			url: 'index.php?option=com_neno&task=installation.getSetupStatus',
+			dataType: 'json',
+			success: function (data) {
+				jQuery('#task-message').empty().append(data.message);
+				jQuery('#progress-bar .bar').width(data.percent + '%');
+			}
+		});
+	}
+
+
+</script>

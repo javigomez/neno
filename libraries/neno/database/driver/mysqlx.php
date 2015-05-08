@@ -409,7 +409,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 			{
 				echo $ex->getMessage() . "\n";
 				/** @noinspection PhpUndefinedClassInspection */
-				Kint::dump(xdebug_get_function_stack());
+				debug_print_backtrace();
 				exit;
 			}
 		}

@@ -518,118 +518,37 @@ class NenoHelper
 		}
 	}
 
-	/**
-	 * Discover all the extensions that haven't been discovered yet
-	 *
-	 * @return void
-	 */
-	public static function discoverExtensions()
+	public static function discoverExtension($extension)
 	{
-		ini_set('maximum_execution_time', 9999);
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		// Check if this extension has been discovered already
+		$groupId = self::isExtensionAlreadyDiscovered($extension['extension_id']);
 
-		$extensions = array_map(array ('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
-
-		$query
-			->select('e.*')
-			->from('`#__extensions` AS e')
-			->where(
-				array (
-					'e.type IN (' . implode(',', $extensions) . ')',
-					'e.name NOT LIKE \'com_neno\'',
-				)
-			)
-			->order('name');
-		$db->setQuery($query);
-		$extensions = $db->loadAssocList();
-
-		foreach ($extensions as $extension)
+		if ($groupId !== false)
 		{
-			// Check if this extension has been discovered already
-			$groupId = self::isExtensionAlreadyDiscovered($extension['extension_id']);
-
-			if ($groupId !== false)
-			{
-				$group = NenoContentElementGroup::load($groupId);
-			}
-			else
-			{
-				$group = new NenoContentElementGroup(array ('group_name' => $extension['name']));
-			}
-
-			$group->addExtension($extension['extension_id']);
-
-			$extensionName = self::getExtensionName($extension);
-			$languageFiles = self::getLanguageFiles($extensionName);
-			$tables        = self::getComponentTables($group, $extensionName);
-			$group->setAssignedTranslationMethods(array (1));
-
-			// If the group contains tables and/or language strings, let's save it
-			if (!empty($tables) || !empty($languageFiles))
-			{
-				$group
-					->setLanguageFiles($languageFiles)
-					->setTables($tables)
-					->persist();
-			}
+			$group = NenoContentElementGroup::load($groupId);
+		}
+		else
+		{
+			$group = new NenoContentElementGroup(array ('group_name' => $extension['name']));
 		}
 
-		// Get all the tables that haven't been detected using naming convention.
-		$tablesNotDiscovered = self::getTablesNotDiscovered();
+		$group->addExtension($extension['extension_id']);
 
-		if (!empty($tablesNotDiscovered))
+		$extensionName = self::getExtensionName($extension);
+		$languageFiles = self::getLanguageFiles($extensionName);
+		$tables        = self::getComponentTables($group, $extensionName);
+		$group->setAssignedTranslationMethods(array (1));
+
+		// If the group contains tables and/or language strings, let's save it
+		if (!empty($tables) || !empty($languageFiles))
 		{
-			$otherGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
-
-			foreach ($tablesNotDiscovered as $tableNotDiscovered)
-			{
-				// Create an array with the table information
-				$tableData = array (
-					'tableName'  => $tableNotDiscovered,
-					'primaryKey' => $db->getPrimaryKey($tableNotDiscovered),
-					'translate'  => true,
-					'group'      => $otherGroup
-				);
-
-				// Create ContentElement object
-				$table = new NenoContentElementTable($tableData);
-
-				// Get all the columns a table contains
-				$fields = $db->getTableColumns($table->getTableName());
-
-				foreach ($fields as $fieldName => $fieldType)
-				{
-					$fieldData = array (
-						'fieldName' => $fieldName,
-						'fieldType' => $fieldType,
-						'translate' => NenoContentElementField::isTranslatableType($fieldType),
-						'table'     => $table
-					);
-
-					$field = new NenoContentElementField($fieldData);
-					$table->addField($field);
-				}
-			}
-
-			$otherGroup->persist();
+			$group
+				->setLanguageFiles($languageFiles)
+				->setTables($tables)
+				->persist();
 		}
-	}
 
-	/**
-	 * Return an array of extensions types allowed to be translate
-	 *
-	 * @return array
-	 */
-	protected static function whichExtensionsShouldBeTranslated()
-	{
-		return array (
-			'component',
-			'module',
-			'plugin',
-			'template'
-		);
+		return true;
 	}
 
 	/**
@@ -838,6 +757,21 @@ class NenoHelper
 	}
 
 	/**
+	 * Return an array of extensions types allowed to be translate
+	 *
+	 * @return array
+	 */
+	public static function whichExtensionsShouldBeTranslated()
+	{
+		return array (
+			'component',
+			'module',
+			'plugin',
+			'template'
+		);
+	}
+
+	/**
 	 * Check if a language file has been discovered already
 	 *
 	 * @param   string $languageFileName Language file name
@@ -959,6 +893,57 @@ class NenoHelper
 		$result = $db->loadResult();
 
 		return $result == 1;
+	}
+
+	/**
+	 * Discover all the extensions that haven't been discovered yet
+	 *
+	 * @return void
+	 */
+	public static function groupingTablesNotDiscovered()
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db = JFactory::getDbo();
+
+		// Get all the tables that haven't been detected using naming convention.
+		$tablesNotDiscovered = self::getTablesNotDiscovered();
+
+		if (!empty($tablesNotDiscovered))
+		{
+			$otherGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
+
+			foreach ($tablesNotDiscovered as $tableNotDiscovered)
+			{
+				// Create an array with the table information
+				$tableData = array (
+					'tableName'  => $tableNotDiscovered,
+					'primaryKey' => $db->getPrimaryKey($tableNotDiscovered),
+					'translate'  => true,
+					'group'      => $otherGroup
+				);
+
+				// Create ContentElement object
+				$table = new NenoContentElementTable($tableData);
+
+				// Get all the columns a table contains
+				$fields = $db->getTableColumns($table->getTableName());
+
+				foreach ($fields as $fieldName => $fieldType)
+				{
+					$fieldData = array (
+						'fieldName' => $fieldName,
+						'fieldType' => $fieldType,
+						'translate' => NenoContentElementField::isTranslatableType($fieldType),
+						'table'     => $table
+					);
+
+					$field = new NenoContentElementField($fieldData);
+					$table->addField($field);
+				}
+			}
+
+			$otherGroup->persist();
+		}
 	}
 
 	/**
@@ -1934,19 +1919,19 @@ class NenoHelper
 
 		if (NenoHelper::isLanguageFileOutOfDate($language['lang_code']))
 		{
-			$errors[] = JText::sprintf('COM_NENO_ERRORS_LANGUAGE_OUT_OF_DATE', $language['title']);
+			$errors[] = JText::sprintf('COM_NENO_ERRORS_LANGUAGE_OUT_OF_DATE', $language['title'], $language['lang_code']);
 		}
 
 		if (!NenoHelper::hasContentCreated($language['lang_code']))
 		{
-			$errors[] = JText::sprintf('COM_NENO_ERRORS_LANGUAGE_DOES_NOT_CONTENT_ROW', $language['title']);
+			$errors[] = JText::sprintf('COM_NENO_ERRORS_LANGUAGE_DOES_NOT_CONTENT_ROW', $language['title'], $language['lang_code']);
 		}
 
 		$contentCounter = NenoHelper::contentCountInOtherLanguages($language['lang_code']);
 
 		if ($contentCounter !== 0)
 		{
-			$errors[] = JText::sprintf('COM_NENO_ERRORS_CONTENT_FOUND_IN_JOOMLA_TABLES', $language['title']);
+			$errors[] = JText::sprintf('COM_NENO_ERRORS_CONTENT_FOUND_IN_JOOMLA_TABLES', $language['title'], $language['lang_code']);
 		}
 
 		return $errors;
@@ -2483,6 +2468,29 @@ class NenoHelper
 			$db->setQuery($query);
 			$db->execute();
 		}
+	}
+
+	/**
+	 * Get default translation methods
+	 *
+	 * @return array
+	 */
+	public static function getDefaultTranslationMethods()
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('setting_value')
+			->from('#__neno_settings')
+			->where('setting_key LIKE ' . $db->quote('translation_method_%'))
+			->order('setting_key ASC');
+
+		$db->setQuery($query);
+		$translation_methods_selected = $db->loadArray();
+
+		return $translation_methods_selected;
 	}
 
 	/**

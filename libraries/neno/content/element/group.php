@@ -428,7 +428,6 @@ class NenoContentElementGroup extends NenoContentElement
 	public function persist()
 	{
 		$result = parent::persist();
-
 		// Check if the saving process has been completed successfully
 		if ($result)
 		{
@@ -446,7 +445,9 @@ class NenoContentElementGroup extends NenoContentElement
 				$db->setQuery($deleteQuery);
 				$db->execute();
 
-				$deleteQuery
+				$insertQuery = $db->getQuery(true);
+
+				$insertQuery
 					->clear()
 					->insert('#__neno_content_element_groups_x_extensions')
 					->columns(
@@ -458,10 +459,10 @@ class NenoContentElementGroup extends NenoContentElement
 
 				foreach ($this->extensions as $extension)
 				{
-					$deleteQuery->values((int) $extension . ',' . $this->getId());
+					$insertQuery->values((int) $extension . ',' . $this->getId());
 				}
 
-				$db->setQuery($deleteQuery);
+				$db->setQuery($insertQuery);
 				$db->execute();
 			}
 
@@ -478,7 +479,7 @@ class NenoContentElementGroup extends NenoContentElement
 						array (
 							'group_id',
 							'lang',
-							'translation_method',
+							'translation_method_id',
 							'ordering'
 						)
 					);
@@ -491,6 +492,7 @@ class NenoContentElementGroup extends NenoContentElement
 					if ($language->lang_code != $defaultLanguage)
 					{
 						$deleteQuery
+							->clear()
 							->delete('#__neno_content_element_groups_x_translation_methods')
 							->where(
 								array (
@@ -505,12 +507,12 @@ class NenoContentElementGroup extends NenoContentElement
 						$insert = true;
 						$insertQuery->values($this->id . ',' . $db->quote($language->lang_code) . ', 1, 1');
 					}
+				}
 
-					if ($insert)
-					{
-						$db->setQuery($deleteQuery);
-						$db->execute();
-					}
+				if ($insert)
+				{
+					$db->setQuery($insertQuery);
+					$db->execute();
 				}
 			}
 

@@ -463,10 +463,6 @@ class NenoContentElementTranslation extends NenoContentElement
 			// Updating changed time
 			$this->timeChanged = new DateTime;
 		}
-		else
-		{
-			$this->originalText = $this->loadOriginalText();
-		}
 
 		// Only execute this task when the translation is new and there are no records about how to find it.
 		if (parent::persist())
@@ -500,6 +496,9 @@ class NenoContentElementTranslation extends NenoContentElement
 					$db->execute();
 				}
 			}
+
+			$this->originalText = $this->loadOriginalText();
+			parent::persist();
 
 			return true;
 		}

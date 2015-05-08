@@ -30,7 +30,7 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		NenoLog::log('Method discoverExtension of NenoControllerGroupsElements called', 3);
 
 		// Check all the extensions that haven't been discover yet
-		NenoHelper::discoverExtensions();
+		NenoHelper::groupingTablesNotDiscovered();
 
 		NenoLog::log('Redirecting to groupselements view', 3);
 
