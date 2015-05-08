@@ -10,10 +10,10 @@
 // No direct access
 defined('_JEXEC') or die;
 
+JHtml::_('formbehavior.chosen', 'select');
+
 $document = JFactory::getDocument();
 $document->addStyleSheet(JUri::root() . '/media/neno/css/progress-wizard.min.css');
-
-//JHtml::_('bootstrap.tooltip');
 ?>
 
 <script>
@@ -30,11 +30,53 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/progress-wizard.min.css
 	}
 
 	function bindEvents() {
-		jQuery('.next-step-button').off('click').on('click', function () {
-			loadInstallationStep();
+		jQuery('.next-step-button').off('click').on('click', processInstallationStep);
+		jQuery('.hasTooltip').tooltip();
+		jQuery('select').chosen();
+	}
+
+	function processInstallationStep() {
+		var allInputs = jQuery('.installation-step').find(':input');
+		var data = {};
+
+		allInputs.each(function () {
+			switch (jQuery(this).prop('tagName').toLowerCase()) {
+				case 'select':
+					data[jQuery(this).prop('name')] = jQuery(this).find('option:selected').val();
+					break;
+				case 'input':
+					switch (jQuery(this).prop('type')) {
+						case 'checkbox':
+							data[jQuery(this).prop('name')] = jQuery(this).is(':checked').val();
+							break;
+						default:
+							data[jQuery(this).prop('name')] = jQuery(this).val();
+							break;
+					}
+					break;
+			}
+		});
+		jQuery.ajax({
+			url: 'index.php?option=com_neno&task=installation.processInstallationStep',
+			type: 'POST',
+			data: data,
+			dataType: "json",
+			success: function (response) {
+				if (response.status == 'ok') {
+					loadInstallationStep();
+				}
+				else {
+					renderErrorMessages(response.error_messages);
+				}
+			}
 		});
 
-		jQuery('.hasTooltip').tooltip();
+		function renderErrorMessages(messages) {
+			jQuery('.error-messages').empty();
+			for (var i = 0; i < messages.length; i++) {
+				jQuery('.error-messages').append('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>' + messages[i] + '</div>');
+			}
+		}
 	}
 </script>
 

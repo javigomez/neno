@@ -25,8 +25,7 @@ class NenoControllerInstallation extends JControllerAdmin
 	 */
 	public function loadInstallationStep()
 	{
-		$app  = JFactory::getApplication();
-		$step = $app->getUserState('installation_step');
+		$step = NenoSettings::get('installation_status', 0);
 
 		if (empty($step))
 		{
@@ -37,15 +36,15 @@ class NenoControllerInstallation extends JControllerAdmin
 			$layout = JLayoutHelper::render('installationstep' . $step, $this->getDataForStep($step), JPATH_NENO_LAYOUTS);
 		}
 
-		$app->setUserState('installation_step', ((int) $step + 1) % 7);
-
 		echo $layout;
 
 		JFactory::getApplication()->close();
 	}
 
 	/**
-	 * @param int $step Step number
+	 * Get data for the installation step
+	 *
+	 * @param   int $step Step number
 	 *
 	 * @return stdClass
 	 */
@@ -56,12 +55,14 @@ class NenoControllerInstallation extends JControllerAdmin
 		switch ($step)
 		{
 			case 1:
-				$languages           = JFactory::getLanguage()->getKnownLanguages();
-				$data->select_widget = JHtml::_('select.genericlist', $languages, 'source_language', null, 'tag', 'name');
+				$language            = JFactory::getLanguage();
+				$languages           = NenoHelper::findLanguages(true);
+				$data->select_widget = JHtml::_('select.genericlist', $languages, 'source_language', null, 'iso', 'name', $language->getDefault());
 				break;
 			case 3:
 				$translation_methods = NenoHelper::loadTranslationMethods();
-				$data->select_widget = JLayoutHelper::render('translationmethodselector', array ('translation_methods' => $translation_methods), JPATH_NENO_LAYOUTS);
+				$layoutData          = array ('translation_methods' => $translation_methods);
+				$data->select_widget = JLayoutHelper::render('translationmethodselector', $layoutData, JPATH_NENO_LAYOUTS);
 				break;
 		}
 
@@ -69,32 +70,57 @@ class NenoControllerInstallation extends JControllerAdmin
 	}
 
 	/**
-	 * Get languages
+	 * Process installation step
 	 *
 	 * @return void
 	 */
-	public function getLanguages()
+	public function processInstallationStep()
 	{
-		echo json_encode(NenoHelper::findLanguages());
-		JFactory::getApplication()->close();
-	}
+		$step        = NenoSettings::get('installation_status', 0);
+		$moveForward = true;
+		$app         = JFactory::getApplication();
+		$response    = array ('status' => 'ok');
 
-	/**
-	 * Installs languages
-	 *
-	 * @return void
-	 */
-	public function installLanguages()
-	{
-		$input     = $this->input;
-		$languages = $input->get('languages', array (), 'ARRAY');
-
-		foreach ($languages as $language)
+		if ($step != 0)
 		{
-			NenoHelper::installLanguage($language);
+			$methodName = 'validateStep' . (int) $step;
+
+			// Validate data.
+			if (method_exists($this, $methodName))
+			{
+				$moveForward = $this->{$methodName}();
+			}
+			else
+			{
+				$app->enqueueMessage(JText::sprintf('COM_NENO_INSTALLATION_ERROR_VALIDATION_METHOD_DOES_NOT_EXIST', $methodName), 'error');
+				$moveForward = false;
+			}
 		}
 
-		JFactory::getApplication()->redirect('index.php?option=com_neno&view=installation');
+		if ($moveForward)
+		{
+			NenoSettings::set('installation_status', $step + 1);
+		}
+		else
+		{
+			$response['status'] = 'err';
+			$messagesQueued     = $app->getMessageQueue();
+			$messages           = array ();
+
+			foreach ($messagesQueued as $messageQueued)
+			{
+				if ($messageQueued['type'] === 'error')
+				{
+					$messages[] = $messageQueued['message'];
+				}
+			}
+
+			$response['error_messages'] = $messages;
+		}
+
+		echo json_encode($response);
+
+		JFactory::getApplication()->close();
 	}
 
 	public function doMenus()
@@ -130,5 +156,62 @@ class NenoControllerInstallation extends JControllerAdmin
 				}
 			}
 		}
+	}
+
+	/**
+	 * Validate installation step 1
+	 *
+	 * @return bool
+	 */
+	protected function validateStep1()
+	{
+		$input          = $this->input;
+		$sourceLanguage = $input->post->get('source_language');
+		$app            = JFactory::getApplication();
+
+		if (!empty($sourceLanguage))
+		{
+			$language           = JFactory::getLanguage();
+			$knownLanguagesTags = array_keys($language->getKnownLanguages());
+
+			if (!in_array($sourceLanguage, $knownLanguagesTags))
+			{
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				$query
+					->select('update_id')
+					->from('#__updates')
+					->where('element = ' . $db->quote('pkg_' . $sourceLanguage))
+					->order('update_id DESC');
+
+				$db->setQuery($query, 0, 1);
+				$updateId = $db->loadResult();
+
+				if (!empty($updateId))
+				{
+					if (!NenoHelper::installLanguage($updateId))
+					{
+						$app->enqueueMessage('There was an error install language. Please try again later.', 'error');
+
+						return false;
+					}
+				}
+			}
+
+			// Once the language is installed, let's mark it as default
+			JLoader::register('LanguagesModelInstalled', JPATH_ADMINISTRATOR . '/components/com_languages/models/installed.php');
+
+			/* @var $model LanguagesModelInstalled */
+			$model = JModelLegacy::getInstance('Installed', 'LanguagesModel');
+
+			$model->publish($sourceLanguage);
+
+			return true;
+		}
+
+		$app->enqueueMessage('Error getting source language', 'error');
+
+		return false;
 	}
 }

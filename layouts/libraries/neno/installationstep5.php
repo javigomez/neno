@@ -8,6 +8,7 @@ JHtml::_('bootstrap.tooltip');
 
 <div class="installation-step">
 	<div class="installation-body span12">
+		<div class="error-messages"></div>
 		<h2><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_TITLE'); ?></h2>
 
 		<button type="button" class="btn btn-success next-step-button">

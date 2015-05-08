@@ -2268,9 +2268,11 @@ class NenoHelper
 	/**
 	 * Get a list of languages
 	 *
+	 * @param   bool $allSupported All the languages supported by Joomla
+	 *
 	 * @return array
 	 */
-	public static function findLanguages()
+	public static function findLanguages($allSupported = false)
 	{
 		$enGbExtensionId = self::getEnGbExtensionId();
 		$languagesFound  = array ();
@@ -2284,6 +2286,11 @@ class NenoHelper
 			$updateSiteId   = self::getLanguagesUpdateSite($enGbExtensionId);
 			$updates        = self::getUpdates($updateSiteId);
 			$languagesFound = $updates;
+		}
+
+		if ($allSupported)
+		{
+			$languagesFound[] = array ('name' => 'English', 'iso' => 'en-GB');
 		}
 
 		return $languagesFound;
@@ -2348,12 +2355,13 @@ class NenoHelper
 		$query
 			->select(
 				array (
-					'*',
-					'REPLACE(element, \'pkg_\', \'\') AS iso'
+					'DISTINCT REPLACE(element, \'pkg_\', \'\') AS iso',
+					'u.*'
 				)
 			)
-			->from('#__updates')
-			->where('update_site_id = ' . (int) $updateSiteId);
+			->from('#__updates AS u')
+			->where('u.update_site_id = ' . (int) $updateSiteId)
+			->group('u.element');
 
 		$db->setQuery($query);
 

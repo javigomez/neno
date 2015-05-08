@@ -9,6 +9,7 @@ JHtml::_('bootstrap.tooltip');
 
 <div class="installation-step">
 	<div class="installation-body span12">
+		<div class="error-messages"></div>
 		<h2><?php echo JText::_('COM_NENO_INSTALLATION_WELCOME_MESSAGE'); ?></h2>
 
 		<p><?php echo JText::_('COM_NENO_INSTALLATION_STEP_ONE_MESSAGE'); ?></p>

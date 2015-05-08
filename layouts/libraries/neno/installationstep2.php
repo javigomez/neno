@@ -15,6 +15,9 @@ JHtml::_('bootstrap.tooltip');
 
 <div class="installation-step">
 	<div class="installation-body span12">
+
+		<div class="error-messages"></div>
+
 		<h2><?php echo JText::_('COM_NENO_INSTALLATION_SCHEDULED_TASK_TITLE'); ?></h2>
 
 		<p><?php echo JText::_('COM_NENO_INSTALLATION_SCHEDULED_TASK_MESSAGE'); ?></p>

@@ -15,6 +15,8 @@ JHtml::_('bootstrap.tooltip');
 
 <div class="installation-step">
 	<div class="installation-body span12">
+
+		<div class="error-messages"></div>
 		<h2><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_TITLE'); ?></h2>
 
 		<div class="span6">
