@@ -218,4 +218,43 @@ class NenoControllerInstallation extends JControllerAdmin
 
 		return false;
 	}
+
+	/**
+	 * Validate installation step 2
+	 *
+	 * @return bool
+	 */
+	protected function validateStep2()
+	{
+		$input       = $this->input;
+		$tasksOption = $input->getWord('schedule_task_option');
+		$app         = JFactory::getApplication();
+
+		if (!empty($tasksOption))
+		{
+			// If the option selected is AJAX, let's enable the module
+			if ($tasksOption === 'ajax')
+			{
+				// Do something
+			}
+
+			NenoSettings::set('schedule_task_option', $tasksOption);
+
+			return true;
+		}
+
+		$app->enqueueMessage('COM_NENO_INSTALLATION_ERROR');
+
+		return false;
+	}
+
+	/**
+	 * Validate installation step 3
+	 *
+	 * @return bool
+	 */
+	protected function validateStep3()
+	{
+
+	}
 }
