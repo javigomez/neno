@@ -20,14 +20,14 @@ if ($displayData !== null): ?>
 			        data-selector-id="<?php echo $n; ?>">
 				data-selector-id="<?php echo $n; ?>">
 				<?php // Set a default for assigned method to avoid errors ?>
-				<?php if (empty($displayData['group']->assigned_translation_methods[$n]->id)): ?>
-					<?php $displayData['group']->assigned_translation_methods[$n]->id = 0; ?>
+				<?php if (empty($displayData['assigned_translation_methods'][$n]->id)): ?>
+					<?php $displayData['assigned_translation_methods'][$n]->id = 0; ?>
 				<?php endif; ?>
 				<option
-					value="0" <?php echo (0 == $displayData['group']->assigned_translation_methods[$n]->id) ? 'selected="selected"' : ''; ?>><?php echo JText::_('COM_NENO_TRANSLATION_METHOD_NONE'); ?></option>
+					value="0" <?php echo (0 == $displayData['assigned_translation_methods'][$n]->id) ? 'selected="selected"' : ''; ?>><?php echo JText::_('COM_NENO_TRANSLATION_METHOD_NONE'); ?></option>
 				<?php foreach ($displayData['translation_methods'] as $translation_method): ?>
 					<option
-						value="<?php echo $translation_method->id; ?>" <?php echo ($translation_method->id == $displayData['group']->assigned_translation_methods[$n]->id) ? 'selected="selected"' : ''; ?>>
+						value="<?php echo $translation_method->id; ?>" <?php echo ($translation_method->id == $displayData['assigned_translation_methods'][$n]->id) ? 'selected="selected"' : ''; ?>>
 						<?php echo JText::_($translation_method->name_constant); ?>
 					</option>
 				<?php endforeach; ?>
@@ -35,7 +35,7 @@ if ($displayData !== null): ?>
 				<?php // Add an "Do not translate option to the first selector ?>
 				<?php if ($n == 0): ?>
 					<option
-						value="0" <?php echo (0 == $displayData['group']->assigned_translation_methods[$n]->id) ? 'selected="selected"' : ''; ?>>
+						value="0" <?php echo (0 == $displayData['assigned_translation_methods'][$n]->id) ? 'selected="selected"' : ''; ?>>
 						<?php echo JText::_('COM_NENO_TRANSLATION_METHOD_DONT'); ?>
 					</option>
 				<?php endif; ?>

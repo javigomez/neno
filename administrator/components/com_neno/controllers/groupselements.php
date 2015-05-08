@@ -27,12 +27,12 @@ class NenoControllerGroupsElements extends JControllerAdmin
 	 */
 	public function discoverExtensions()
 	{
-		NenoLog::log('Method discoverExtension of NenoControllerGroupsElements called',3);
+		NenoLog::log('Method discoverExtension of NenoControllerGroupsElements called', 3);
 
 		// Check all the extensions that haven't been discover yet
 		NenoHelper::discoverExtensions();
 
-		NenoLog::log('Redirecting to groupselements view',3);
+		NenoLog::log('Redirecting to groupselements view', 3);
 
 		$this
 			->setRedirect('index.php?option=com_neno&view=groupselements')
@@ -75,7 +75,7 @@ class NenoControllerGroupsElements extends JControllerAdmin
 			}
 			else
 			{
-				$contentElementFiles = array($destFile);
+				$contentElementFiles = array ($destFile);
 			}
 
 			// Add to each content file the path of the extraction location.
@@ -146,124 +146,117 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		$translateStatus = $input->getBool('translateStatus');
 
 		/* @var $field NenoContentElementField */
-		$field  = NenoContentElementField::getFieldById($fieldId);
+		$field = NenoContentElementField::getFieldById($fieldId);
 
 		// If the table exists, let's work with it.
 		if ($field !== false)
 		{
 
 			$field->setTranslate($translateStatus);
-			if ($field->persist() === false) 
-            {
-                echo "Error saving new state!";
-            }
+			if ($field->persist() === false)
+			{
+				echo "Error saving new state!";
+			}
 
 		}
 
 		JFactory::getApplication()->close();
 	}
 
-    
-    public function getElements() {
-        
-        $input = JFactory::getApplication()->input;
-        $groupId = $input->getInt('group_id');
-        
-        /* @var $group NenoContentElementGroup */
-        $group = NenoContentElementGroup::load($groupId);
-        $tables = $group->getTables();
-        $files = $group->getLanguageFiles();
-        
-        //echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$files = ". print_r($files, true)."\n</pre>";
 
-        
-        $displayData = array();
-        $displayData['group'] = $group->prepareDataForView();
-        $displayData['tables'] = NenoHelper::convertNenoObjectListToJObjectList($tables);
-        $displayData['files'] = NenoHelper::convertNenoObjectListToJObjectList($files);
-        //$files = NenoHelper::convertNenoObjectListToJObjectList($group->getLanguageFiles());
-        
-        //echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$displayData = ". print_r($displayData, true)."\n</pre>";
+	public function getElements()
+	{
+
+		$input   = JFactory::getApplication()->input;
+		$groupId = $input->getInt('group_id');
+
+		/* @var $group NenoContentElementGroup */
+		$group  = NenoContentElementGroup::load($groupId);
+		$tables = $group->getTables();
+		$files  = $group->getLanguageFiles();
+
+		//echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$files = ". print_r($files, true)."\n</pre>";
 
 
-        
-        $tablesHTML = JLayoutHelper::render('rowelementtable', $displayData, JPATH_NENO_LAYOUTS);
-        //$filesHTML = JLayoutHelper::render('rowelementfile', $files, JPATH_NENO_LAYOUTS);
-        
-        
-        
-        //$files = $group->getLanguageFiles();
-        
-        echo $tablesHTML;
-        
-        JFactory::getApplication()->close();
-        
-        
-    }
-    
-    
-    
-    public function getTranslationMethodSelector() {
-        
-        $input = JFactory::getApplication()->input;
-        
-        $n = $input->getInt('n', 0);
-        $group_id = $input->getInt('group_id');
-        $selected_methods = $input->get('selected_methods', array(), 'ARRAY');
-        
-        $translation_methods = NenoHelper::loadTranslationMethods();
+		$displayData           = array ();
+		$displayData['group']  = $group->prepareDataForView();
+		$displayData['tables'] = NenoHelper::convertNenoObjectListToJObjectList($tables);
+		$displayData['files']  = NenoHelper::convertNenoObjectListToJObjectList($files);
+		//$files = NenoHelper::convertNenoObjectListToJObjectList($group->getLanguageFiles());
 
-        $group = NenoContentElementGroup::load($group_id)->prepareDataForView();
-        
-        //Ensure that we know what was selected for the previous selector
-        if ( ( $n > 0 && !isset($selected_methods[$n-1]) ) || ($n > 0 && $selected_methods[$n-1] == 0 ) )
-        {
-            //echo "SELECTED METHOD IS EMPTY!";
-            JFactory::getApplication()->close();
-        }
-        
-        //As a safety measure prevent more than 5 selectors and always allow only one more selector than already selected
-        if ($n > 4 || $n > count($selected_methods)+1) 
-        {
-            JFactory::getApplication()->close();
-        }
-        
-        //Reduce the translation methods offered depending on the parents
-        if ($n > 0 && !empty($selected_methods))
-        {
-            $parent_method = $selected_methods[$n-1];
-            $acceptable_follow_up_method_ids = $translation_methods[$parent_method]->acceptable_follow_up_method_ids;
-            $acceptable_follow_up_methods = explode(',', $acceptable_follow_up_method_ids);
-            foreach ($translation_methods as $k => $translation_method)
-            {
-                if (!in_array($k, $acceptable_follow_up_methods))
-                {
-                    unset($translation_methods[$k]);
-                }
-            }
+		//echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$displayData = ". print_r($displayData, true)."\n</pre>";
 
-        }
-        
-        //If there are no translation methods left then return nothing
-        if (!count($translation_methods))
-        {
-            JFactory::getApplication()->close();
-        }
 
-        //Prepare display data
-        $displayData = array();
-        $displayData['translation_methods'] = $translation_methods;
-        $displayData['group'] = $group;
-        $displayData['n'] = $n;
-        
-        $selectorHTML = JLayoutHelper::render('translationmethodselector', $displayData, JPATH_NENO_LAYOUTS);
-        
-        echo $selectorHTML;
-        
-        JFactory::getApplication()->close();
-        
-    }
-    
-    
+		$tablesHTML = JLayoutHelper::render('rowelementtable', $displayData, JPATH_NENO_LAYOUTS);
+		//$filesHTML = JLayoutHelper::render('rowelementfile', $files, JPATH_NENO_LAYOUTS);
 
+
+		//$files = $group->getLanguageFiles();
+
+		echo $tablesHTML;
+
+		JFactory::getApplication()->close();
+
+
+	}
+
+
+	public function getTranslationMethodSelector()
+	{
+		$app              = JFactory::getApplication();
+		$input            = $this->input;
+		$n                = $input->getInt('n', 0);
+		$group_id         = $input->getInt('group_id');
+		$selected_methods = $input->get('selected_methods', array (), 'ARRAY');
+
+		$translation_methods = NenoHelper::loadTranslationMethods();
+
+		$group = NenoContentElementGroup::load($group_id)->prepareDataForView();
+
+		// Ensure that we know what was selected for the previous selector
+		if (($n > 0 && !isset($selected_methods[$n - 1])) || ($n > 0 && $selected_methods[$n - 1] == 0))
+		{
+			JFactory::getApplication()->close();
+		}
+
+		// As a safety measure prevent more than 5 selectors and always allow only one more selector than already selected
+		if ($n > 4 || $n > count($selected_methods) + 1)
+		{
+			$app->close();
+		}
+
+		// Reduce the translation methods offered depending on the parents
+		if ($n > 0 && !empty($selected_methods))
+		{
+			$parent_method                   = $selected_methods[$n - 1];
+			$acceptable_follow_up_method_ids = $translation_methods[$parent_method]->acceptable_follow_up_method_ids;
+			$acceptable_follow_up_methods    = explode(',', $acceptable_follow_up_method_ids);
+
+			foreach ($translation_methods as $k => $translation_method)
+			{
+				if (!in_array($k, $acceptable_follow_up_methods))
+				{
+					unset($translation_methods[$k]);
+				}
+			}
+		}
+
+		// If there are no translation methods left then return nothing
+		if (!count($translation_methods))
+		{
+			$app->close();
+		}
+
+		// Prepare display data
+		$displayData                                 = array ();
+		$displayData['translation_methods']          = $translation_methods;
+		$displayData['assigned_translation_methods'] = $group->assigned_translation_methods;
+		$displayData['n']                            = $n;
+
+		$selectorHTML = JLayoutHelper::render('translationmethodselector', $displayData, JPATH_NENO_LAYOUTS);
+
+		echo $selectorHTML;
+
+		$app->close();
+	}
 }
