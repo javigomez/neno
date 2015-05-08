@@ -67,7 +67,7 @@ JHtml::_('bootstrap.tooltip');
 		</button>
 	</div>
 
-	<input type="hidden" name="schedule_task_option" id="schedule_task_option" value=""/>
+	<input type="hidden" name="schedule_task_option" id="schedule_task_option" value="ajax"/>
 	
 	<?php echo JLayoutHelper::render('installationbottom', 1, JPATH_NENO_LAYOUTS); ?>
 </div>
