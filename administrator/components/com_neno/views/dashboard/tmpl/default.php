@@ -40,7 +40,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	jQuery(document).ready(function () {
 
 		jQuery('.configuration-button').on('click', function () {
-			jQuery(this).siblings('.language-configuration').slideToggle();
+			jQuery(this).siblings('.language-configuration').slideToggle('fast');
 		});
 
 		jQuery(".radio").on('change', function () {
@@ -64,11 +64,11 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 		<div class="languages-holder">
 			<?php foreach ($this->items as $item): ?>
 				<div class="language-wrapper">
-					<h3>
+					<h4>
 						<img
 							src="<?php echo JUri::root() . 'media/mod_languages/images/' . $item->image . '.gif'; ?>"/>
 						<?php echo $item->title; ?>
-					</h3>
+					</h4>
 					<?php echo NenoHelper::renderWordCountProgressBar($item->wordCount, true, true) ?>
 					<?php if (!empty($item->errors)): ?>
 						<?php foreach ($item->errors as $error): ?>
@@ -77,15 +77,22 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 							</div>
 						<?php endforeach; ?>
 					<?php endif; ?>
-					<a class="btn btn-primary"
+					<a class="btn"
 					   href="<?php echo JRoute::_('index.php?option=com_neno&task=setWorkingLang&lang=' . $item->lang_code . '&next=editor'); ?>">
 						<?php echo JText::_('COM_NENO_DASHBOARD_TRANSLATE_BUTTON'); ?>
 					</a>
 					<button class="btn configuration-button" type="button">
 						<?php echo JText::_('COM_NENO_DASHBOARD_CONFIGURATION_BUTTON'); ?>
 					</button>
+					<div class="clearfix"></div>
 					<div class="language-configuration">
-						<?php echo JText::sprintf('COM_NENO_DASHBOARD_GROUPS_ELEMENTS_LINK', JRoute::_('index.php?option=com_neno&task=setWorkingLang&lang=' . $item->lang_code . '&next=groupselements')); ?>
+						<span class="link-ge">
+							<?php echo JText::sprintf('COM_NENO_DASHBOARD_GROUPS_ELEMENTS_LINK', JRoute::_('index.php?option=com_neno&task=setWorkingLang&lang=' . $item->lang_code . '&next=groupselements')); ?>
+						</span>
+						<button class="btn <?php echo empty($item->errors) ? '' : 'disabled'; ?>"
+						        type="button">
+							<span class="icon-trash"></span> <?php echo JText::_('COM_NENO_DASHBOARD_REMOVE_BUTTON'); ?>
+						</button>
 						<fieldset id="jform_published_<?php echo $item->lang_code; ?>"
 						          class="radio btn-group btn-group-yesno"
 						          data-language="<?php echo $item->lang_code; ?>">
@@ -102,10 +109,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 								<?php echo JText::_('JUNPUBLISHED'); ?>
 							</label>
 						</fieldset>
-						<button class="btn btn-small <?php echo empty($item->errors) ? '' : 'disabled'; ?>"
-						        type="button">
-							<span class="icon-trash"></span> <?php echo JText::_('COM_NENO_DASHBOARD_REMOVE_BUTTON'); ?>
-						</button>
 					</div>
 				</div>
 			<?php endforeach; ?>
