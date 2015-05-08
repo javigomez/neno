@@ -205,7 +205,11 @@ class NenoControllerInstallation extends JControllerAdmin
 			/* @var $model LanguagesModelInstalled */
 			$model = JModelLegacy::getInstance('Installed', 'LanguagesModel');
 
-			$model->publish($sourceLanguage);
+			// If the language has been marked as default, let's save that on the settings
+			if ($model->publish($sourceLanguage))
+			{
+				NenoSettings::set('source_language', $sourceLanguage, true);
+			}
 
 			return true;
 		}
