@@ -345,8 +345,13 @@ class NenoContentElementField extends NenoContentElement
 							}
 
 							$translation->setSourceElementData($sourceData);
-							$translation->persist();
-							$this->translations[] = $translation;
+
+							// If the translation does not exists already, let's add it
+							if (!$translation->existsAlready())
+							{
+								$translation->persist();
+								$this->translations[] = $translation;
+							}
 						}
 					}
 				}

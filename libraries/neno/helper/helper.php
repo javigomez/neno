@@ -2494,6 +2494,49 @@ class NenoHelper
 	}
 
 	/**
+	 * Get language flag
+	 *
+	 * @param   string $languageTag
+	 *
+	 * @return string
+	 */
+	public static function getLanguageImage($languageTag)
+	{
+		$cleanLanguageTag = str_replace('-', '_', strtolower($languageTag));
+		$image            = $cleanLanguageTag;;
+
+		if (!file_exists(JPATH_ROOT . '/media/mod_languages/images/' . $cleanLanguageTag . '.gif'))
+		{
+			list($image, $other) = explode('_', $cleanLanguageTag);
+		}
+
+		return $image;
+	}
+
+	/**
+	 * Get language flag
+	 *
+	 * @param   string $languageTag
+	 *
+	 * @return bool
+	 */
+	public static function isLanguagePublished($languageTag)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('published')
+			->from('#__languages')
+			->where('lang_code = ' . $db->quote($languageTag));
+
+		$db->setQuery($query);
+		$published = $db->loadResult();
+
+		return !empty($published);
+	}
+
+	/**
 	 * Get a list of menu items associated to the one passed by argument
 	 *
 	 * @param    integer $menuItemId Menu Item id

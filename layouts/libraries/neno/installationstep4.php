@@ -3,6 +3,7 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
+$items = $displayData->languages;
 
 ?>
 
@@ -19,6 +20,10 @@ JHtml::_('bootstrap.tooltip');
 		<h2><?php echo JText::_('COM_NENO_INSTALLATION_TARGET_LANGUAGES_TITLE'); ?></h2>
 
 		<p><?php echo JText::_('COM_NENO_INSTALLATION_TARGET_LANGUAGES_MESSAGE'); ?></p>
+
+		<?php foreach ($items as $item): ?>
+			<?php echo JLayoutHelper::render('languageconfiguration', $item, JPATH_NENO_LAYOUTS); ?>
+		<?php endforeach; ?>
 
 		<button type="button" class="btn btn-primary">
 			<?php echo JText::_('COM_NENO_INSTALLATION_TARGET_LANGUAGES_ADD_LANGUAGE_BUTTON'); ?>

@@ -14,6 +14,7 @@ JHtml::_('formbehavior.chosen', 'select');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet(JUri::root() . '/media/neno/css/progress-wizard.min.css');
+$document->addStyleSheet(JUri::root() . '/media/neno/css/languageconfiguration.css');
 ?>
 
 <script>
