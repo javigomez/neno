@@ -139,3 +139,22 @@ function onBeforeAjax() {
         }
     });
 }
+
+function toggleMethodSelect() {
+    var select = jQuery(this);
+    var container = select.closest('.language-configuration');
+    var method2 = container.find('.method-2-wrapper');
+    if (select.val() == 'machine') {
+        method2.show();
+        container.height(
+            container.height() + method2.height()
+        );
+        method2.addClass('shown');
+    } else if (jQuery('.method-2-wrapper').hasClass('shown')) {
+        method2.hide();
+        container.height(
+            container.height() - method2.height()
+        );
+        method2.removeClass('shown');
+    }
+}
