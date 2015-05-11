@@ -292,73 +292,75 @@ class NenoContentElementField extends NenoContentElement
 	{
 		if ($this->translate)
 		{
-			// If it doesn't have translations
-			if (empty($this->translations))
+			$commonData = array (
+				'contentType' => NenoContentElementTranslation::DB_STRING,
+				'contentId'   => $this->getId(),
+				'content'     => $this,
+				'state'       => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
+				'timeAdded'   => new DateTime
+			);
+
+			$languages          = NenoHelper::getLanguages();
+			$defaultLanguage    = JFactory::getLanguage()->getDefault();
+			$this->translations = array ();
+			$strings            = $this->getStrings();
+			$primaryKeyData     = $this->getTable()->getPrimaryKey();
+
+			if (!empty($string))
 			{
-				$this->translations = NenoContentElementTranslation::getTranslations($this);
-			}
-
-			if (empty($this->translations))
-			{
-				$commonData = array (
-					'contentType' => NenoContentElementTranslation::DB_STRING,
-					'contentId'   => $this->getId(),
-					'content'     => $this,
-					'state'       => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
-					'timeAdded'   => new DateTime
-				);
-
-				$languages          = NenoHelper::getLanguages();
-				$defaultLanguage    = JFactory::getLanguage()->getDefault();
-				$this->translations = array ();
-				$strings            = $this->getStrings();
-				$primaryKeyData     = $this->getTable()->getPrimaryKey();
-
-				if (!empty($string))
+				foreach ($languages as $language)
 				{
-					foreach ($languages as $language)
+					if ($defaultLanguage !== $language->lang_code)
 					{
-						if ($defaultLanguage !== $language->lang_code)
+						$commonData['language'] = $language->lang_code;
+
+						foreach ($strings as $string)
 						{
-							$commonData['language'] = $language->lang_code;
+							$commonData['string'] = $string['string'];
 
-							foreach ($strings as $string)
+							// If the string is empty or is a number, let's mark as translated.
+							if (empty($string['string']) || $string['string'] == (int) $string['string'] || $string['string'] == (float) $string['string'])
 							{
-								$commonData['string'] = $string['string'];
+								$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
+							}
+							else
+							{
+								$commonData['state'] = NenoContentElementTranslation::NOT_TRANSLATED_STATE;
+							}
 
-								// If the string is empty or is a number, let's mark as translated.
-								if (empty($string['string']) || $string['string'] == (int) $string['string'] || $string['string'] == (float) $string['string'])
-								{
-									$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
-								}
-								else
-								{
-									$commonData['state'] = NenoContentElementTranslation::NOT_TRANSLATED_STATE;
-								}
+							$translation = new NenoContentElementTranslation($commonData);
+							$sourceData  = array ();
 
-								$translation = new NenoContentElementTranslation($commonData);
-								$sourceData  = array ();
+							foreach ($primaryKeyData as $primaryKey)
+							{
+								$field     = self::getFieldByTableAndFieldName($this->getTable(), $primaryKey);
+								$fieldData = array (
+									'field' => $field,
+									'value' => $string[$primaryKey]
+								);
 
-								foreach ($primaryKeyData as $primaryKey)
-								{
-									$field     = self::getFieldByTableAndFieldName($this->getTable(), $primaryKey);
-									$fieldData = array (
-										'field' => $field,
-										'value' => $string[$primaryKey]
-									);
+								$sourceData[] = $fieldData;
+							}
 
-									$sourceData[] = $fieldData;
-								}
+							$translation->setSourceElementData($sourceData);
 
-								$translation->setSourceElementData($sourceData);
+							// If the translation does not exists already, let's add it
+							if ($translation->existsAlready())
+							{
+								$translation = NenoContentElementTranslation::getTranslationBySourceElementData($sourceData, $language->lang_code, $this->getId());
 
-								// If the translation does not exists already, let's add it
-								if (!$translation->existsAlready())
+								if ($translation->refresh())
 								{
 									$translation->persist();
-									$this->translations[] = $translation;
 								}
 							}
+							else
+							{
+								$translation->persist();
+							}
+
+							$translation->persist();
+							$this->translations[] = $translation;
 						}
 					}
 				}

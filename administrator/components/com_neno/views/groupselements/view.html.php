@@ -34,9 +34,9 @@ class NenoViewGroupsElements extends JViewLegacy
 	 * @var string
 	 */
 	protected $sidebar;
-    
-    
-    /**
+
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -49,9 +49,9 @@ class NenoViewGroupsElements extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->state        = $this->get('State');
-		$this->items        = NenoHelper::convertNenoObjectListToJObjectList($this->get('Items'));
-        
+		$this->state = $this->get('State');
+		$this->items = NenoHelper::convertNenoObjectListToJObjectList($this->get('Items'));
+
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
 		{
@@ -77,9 +77,9 @@ class NenoViewGroupsElements extends JViewLegacy
 	protected function addToolbar()
 	{
 		$canDo = NenoHelper::getActions();
-        
-        JToolbarHelper::custom('moveelementconfirm.show', 'move', 'move', JText::_('COM_NENO_VIEW_GROUPSELEMENTS_BTN_MOVE_ELEMENTS'), TRUE);
-        
+
+		JToolbarHelper::custom('moveelementconfirm.show', 'move', 'move', JText::_('COM_NENO_VIEW_GROUPSELEMENTS_BTN_MOVE_ELEMENTS'), true);
+
 		if ($canDo->get('core.admin'))
 		{
 			JToolBarHelper::preferences('com_neno');
@@ -90,6 +90,4 @@ class NenoViewGroupsElements extends JViewLegacy
 
 		$this->extra_sidebar = '';
 	}
-
-
 }

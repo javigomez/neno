@@ -18,10 +18,6 @@ JHtml::_('bootstrap.tooltip');
 		<div id="task-message">
 
 		</div>
-
-		<button type="button" class="btn btn-success next-step-button disabled">
-			<?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_FINISH_SETUP_BUTTON'); ?>
-		</button>
 		<p><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_FINISH_SETUP_MESSAGE'); ?></p>
 	</div>
 
@@ -32,6 +28,8 @@ JHtml::_('bootstrap.tooltip');
 	jQuery.ajax({
 		url: 'index.php?option=com_neno&task=installation.finishingSetup',
 		success: function (data) {
+			checkStatus();
+			processInstallationStep();
 			window.clearInterval(interval);
 		}
 	});

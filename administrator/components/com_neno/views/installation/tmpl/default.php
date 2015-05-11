@@ -15,6 +15,12 @@ JHtml::_('formbehavior.chosen', 'select');
 $document = JFactory::getDocument();
 $document->addStyleSheet(JUri::root() . '/media/neno/css/progress-wizard.min.css');
 $document->addStyleSheet(JUri::root() . '/media/neno/css/languageconfiguration.css');
+
+// Joomla Component Creator code to allow adding non select list filters
+if (!empty($this->extra_sidebar))
+{
+	$this->sidebar .= $this->extra_sidebar;
+}
 ?>
 
 <script>
@@ -81,5 +87,10 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/languageconfiguration.c
 	}
 </script>
 
-<div class="installation-form"></div>
+<div id="j-sidebar-container" class="hide">
+	<?php echo $this->sidebar; ?>
+</div>
+<div id="j-main-container" class="span12">
+	<div class="installation-form"></div>
+</div>
 

@@ -18,5 +18,17 @@ defined('_JEXEC') or die;
  */
 class NenoViewInstallation extends JViewLegacy
 {
+	/**
+	 * @var string
+	 */
+	public $sidebar;
 
+	public function display($tpl = null)
+	{
+		NenoHelper::addSubmenu('');
+
+		$this->sidebar = JHtmlSidebar::render();
+
+		return parent::display($tpl);
+	}
 }

@@ -249,6 +249,52 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Get translation using its source data, language and contentId
+	 *
+	 * @param array  $sourceElementData
+	 * @param string $language
+	 * @param int    $contentId
+	 *
+	 * @return NenoContentElementTranslation
+	 */
+	public static function getTranslationBySourceElementData(array $sourceElementData, $language, $contentId)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('tr.*')
+			->from('`#__neno_content_element_translations` AS tr');
+
+		foreach ($sourceElementData as $index => $sourceData)
+		{
+			/* @var $field NenoContentElementField */
+			$field      = $sourceData['field'];
+			$fieldValue = $sourceData['value'];
+			$query
+				->innerJoin('#__neno_content_element_fields_x_translations AS ft' . $index . ' ON ft' . $index . '.translation_id = tr.id')
+				->where(
+					array (
+						'ft' . $index . '.field_id = ' . $field->getId(),
+						'ft' . $index . '.value = ' . $db->quote($fieldValue)
+					)
+				);
+		}
+
+		$query->where(
+			array (
+				'tr.language = ' . $db->quote($language),
+				'tr.content_id = ' . $db->quote($contentId)
+			)
+		);
+
+		$db->setQuery($query);
+		$translationData = $db->loadAssoc();
+
+		return new NenoContentElementTranslation($translationData);
+	}
+
+	/**
 	 * Get the method used to translate the string
 	 *
 	 * @return string
@@ -672,16 +718,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * Get the original text
-	 *
-	 * @return string
-	 */
-	public function getOriginalText()
-	{
-		return $this->originalText;
-	}
-
-	/**
 	 * {@inheritdoc}
 	 *
 	 * @return bool
@@ -861,5 +897,35 @@ class NenoContentElementTranslation extends NenoContentElement
 		}
 
 		return false;
+	}
+
+	/**
+	 * Refresh data
+	 *
+	 * @return bool
+	 */
+	public function refresh()
+	{
+		$currentOriginalText = $this->loadOriginalText();
+
+		if ($currentOriginalText != $this->originalText)
+		{
+			$this->originalText = $currentOriginalText;
+			$this->state        = self::SOURCE_CHANGED_STATE;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the original text
+	 *
+	 * @return string
+	 */
+	public function getOriginalText()
+	{
+		return $this->originalText;
 	}
 }
