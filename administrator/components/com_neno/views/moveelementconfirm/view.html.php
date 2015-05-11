@@ -21,9 +21,6 @@ jimport('joomla.application.component.view');
 class NenoViewMoveElementConfirm extends JViewLegacy
 {
     
-    var $tables = null;
-    var $files = null;
-    
     /**
 	 * Display the view
 	 *
@@ -38,9 +35,6 @@ class NenoViewMoveElementConfirm extends JViewLegacy
 	public function display($tpl = null)
 	{
 		
-        echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$this = ". print_r($this, true)."\n</pre>";
-
-        
 		$this->addToolbar();
 
 		parent::display($tpl);

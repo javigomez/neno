@@ -31,12 +31,11 @@ class NenoControllerMoveElementConfirm extends JControllerAdmin
         // Overwrite the view
 		$input->set('view', 'moveelementconfirm');
 
-		// We can ignore groups as they should have all their children checked if they are checked
+		$groups = $input->get('groups', array (), 'array');
 		$tables = $input->get('tables', array (), 'array');
 		$files  = $input->get('files', array (), 'files');
 
         // If a group is selected then load all the elements from that group
-        $groups = $input->get('groups', array(), 'array');
         if (!empty($groups))
         {
             foreach ($groups as $groupId)
@@ -61,8 +60,7 @@ class NenoControllerMoveElementConfirm extends JControllerAdmin
                     foreach ($group_files as $group_file)
                     {
                         // Add the file id to the files array
-                        // @todo Get the id when files have id
-                        // $files[] = $group_file->getId();
+                        $files[] = $group_file->getId();
                     }
                 }
 
@@ -85,7 +83,8 @@ class NenoControllerMoveElementConfirm extends JControllerAdmin
 		// Show output
 		// Get the view
 		$view         = $this->getView('MoveElementConfirm', 'html');
-		$view->tables = $tables; // assign data from the model
+		$view->tables = NenoHelper::convertNenoObjectListToJObjectList($tables); // assign data from the model
+		$view->files = NenoHelper::convertNenoObjectListToJObjectList($files); // assign data from the model
 		$view->display(); // display the view
 	}
 }

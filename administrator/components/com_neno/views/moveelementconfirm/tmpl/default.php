@@ -17,7 +17,11 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 <h2>Confirm</h2>
 
 <form action="<?php echo JRoute::_('index.php?option=com_neno&view=groupselements'); ?>" method="post" name="adminForm" id="adminForm">
-
+    
+    
+    <?php 
+    echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$this = ". print_r($this, true)."\n</pre>";
+    ?>
         
     <input type="hidden" name="task" value="" />
     <input type="hidden" name="boxchecked" value="0" />
