@@ -242,6 +242,7 @@ class NenoContentElementLanguageString extends NenoContentElement
 			{
 				$commonData = array (
 					'contentType' => NenoContentElementTranslation::LANG_STRING,
+					'element'     => $this,
 					'contentId'   => $this->getId(),
 					'state'       => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
 					'string'      => $this->getString(),
@@ -263,11 +264,20 @@ class NenoContentElementLanguageString extends NenoContentElement
 						{
 							$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
 						}
+						else
+						{
+							$commonData['state'] = NenoContentElementTranslation::NOT_TRANSLATED_STATE;
+						}
 						
 						$commonData['language'] = $language->lang_code;
 						$translation            = new NenoContentElementTranslation($commonData);
-						$translation->persist();
-						$this->translations[] = $translation;
+
+						// If the translation does not exists already, let's add it
+						if (!$translation->existsAlready())
+						{
+							$translation->persist();
+							$this->translations[] = $translation;
+						}
 					}
 				}
 			}

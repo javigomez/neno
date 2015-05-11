@@ -249,54 +249,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * Get Content element
-	 *
-	 * @return NenoContentElement
-	 */
-	public function getElement()
-	{
-		return $this->element;
-	}
-
-	/**
-	 * Set content element
-	 *
-	 * @param   NenoContentElement $element Content element
-	 *
-	 * @return NenoContentElement
-	 */
-	public function setElement(NenoContentElement $element)
-	{
-		$this->element = $element;
-
-		return $this;
-	}
-
-	/**
-	 * Get the translation state
-	 *
-	 * @return int
-	 */
-	public function getState()
-	{
-		return $this->state;
-	}
-
-	/**
-	 * Set the translation state
-	 *
-	 * @param   int $state Translation state
-	 *
-	 * @return NenoContentElementTranslation
-	 */
-	public function setState($state)
-	{
-		$this->state = $state;
-
-		return $this;
-	}
-
-	/**
 	 * Get the method used to translate the string
 	 *
 	 * @return string
@@ -418,6 +370,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+	 * Check if the translation exists already
+	 *
 	 * @return bool
 	 */
 	public function existsAlready()
@@ -429,7 +383,7 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			$query
 				->select('1')
-				->from('``#__neno_content_element_translations` AS tr');
+				->from('`#__neno_content_element_translations` AS tr');
 
 			foreach ($this->sourceElementData as $index => $sourceData)
 			{
@@ -445,9 +399,68 @@ class NenoContentElementTranslation extends NenoContentElement
 						)
 					);
 			}
+
+			$query->where(
+				array (
+					'tr.language = ' . $db->quote($this->getLanguage()),
+					'tr.content_id = ' . $this->getElement()->getId()
+				)
+			);
+
+			$db->setQuery($query);
+
+			return $db->loadResult() == 1;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Get the language of the string (JISO)
+	 *
+	 * @return string
+	 */
+	public function getLanguage()
+	{
+		return $this->language;
+	}
+
+	/**
+	 * Set the language of the string (JISO)
+	 *
+	 * @param   string $language Language on JISO format
+	 *
+	 * @return NenoContentElementTranslation
+	 */
+	public function setLanguage($language)
+	{
+		$this->language = $language;
+
+		return $this;
+	}
+
+	/**
+	 * Get Content element
+	 *
+	 * @return NenoContentElement
+	 */
+	public function getElement()
+	{
+		return $this->element;
+	}
+
+	/**
+	 * Set content element
+	 *
+	 * @param   NenoContentElement $element Content element
+	 *
+	 * @return NenoContentElement
+	 */
+	public function setElement(NenoContentElement $element)
+	{
+		$this->element = $element;
+
+		return $this;
 	}
 
 	/**
@@ -487,6 +500,11 @@ class NenoContentElementTranslation extends NenoContentElement
 
 		$db->setQuery($query, 0, 1);
 		$this->translationMethod = $db->loadResult();
+
+		if ($this->getState() == self::TRANSLATED_STATE)
+		{
+			$this->timeCompleted = new DateTime;
+		}
 
 		// Check if this record is new
 		$isNew = $this->isNew();
@@ -540,25 +558,25 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * Get the language of the string (JISO)
+	 * Get the translation state
 	 *
-	 * @return string
+	 * @return int
 	 */
-	public function getLanguage()
+	public function getState()
 	{
-		return $this->language;
+		return $this->state;
 	}
 
 	/**
-	 * Set the language of the string (JISO)
+	 * Set the translation state
 	 *
-	 * @param   string $language Language on JISO format
+	 * @param   int $state Translation state
 	 *
 	 * @return NenoContentElementTranslation
 	 */
-	public function setLanguage($language)
+	public function setState($state)
 	{
-		$this->language = $language;
+		$this->state = $state;
 
 		return $this;
 	}

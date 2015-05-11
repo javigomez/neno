@@ -314,43 +314,50 @@ class NenoContentElementField extends NenoContentElement
 				$strings            = $this->getStrings();
 				$primaryKeyData     = $this->getTable()->getPrimaryKey();
 
-				foreach ($languages as $language)
+				if (!empty($string))
 				{
-					if ($defaultLanguage !== $language->lang_code)
+					foreach ($languages as $language)
 					{
-						$commonData['language'] = $language->lang_code;
-
-						foreach ($strings as $string)
+						if ($defaultLanguage !== $language->lang_code)
 						{
-							$commonData['string'] = $string['string'];
+							$commonData['language'] = $language->lang_code;
 
-							// If the string is empty or is a number, let's mark as translated.
-							if (empty($string['string']) || $string['string'] == (int) $string['string'] || $string['string'] == (float) $string['string'])
+							foreach ($strings as $string)
 							{
-								$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
-							}
+								$commonData['string'] = $string['string'];
 
-							$translation = new NenoContentElementTranslation($commonData);
-							$sourceData  = array ();
+								// If the string is empty or is a number, let's mark as translated.
+								if (empty($string['string']) || $string['string'] == (int) $string['string'] || $string['string'] == (float) $string['string'])
+								{
+									$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
+								}
+								else
+								{
+									$commonData['state'] = NenoContentElementTranslation::NOT_TRANSLATED_STATE;
+								}
 
-							foreach ($primaryKeyData as $primaryKey)
-							{
-								$field     = self::getFieldByTableAndFieldName($this->getTable(), $primaryKey);
-								$fieldData = array (
-									'field' => $field,
-									'value' => $string[$primaryKey]
-								);
+								$translation = new NenoContentElementTranslation($commonData);
+								$sourceData  = array ();
 
-								$sourceData[] = $fieldData;
-							}
+								foreach ($primaryKeyData as $primaryKey)
+								{
+									$field     = self::getFieldByTableAndFieldName($this->getTable(), $primaryKey);
+									$fieldData = array (
+										'field' => $field,
+										'value' => $string[$primaryKey]
+									);
 
-							$translation->setSourceElementData($sourceData);
+									$sourceData[] = $fieldData;
+								}
 
-							// If the translation does not exists already, let's add it
-							if (!$translation->existsAlready())
-							{
-								$translation->persist();
-								$this->translations[] = $translation;
+								$translation->setSourceElementData($sourceData);
+
+								// If the translation does not exists already, let's add it
+								if (!$translation->existsAlready())
+								{
+									$translation->persist();
+									$this->translations[] = $translation;
+								}
 							}
 						}
 					}

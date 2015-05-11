@@ -428,6 +428,7 @@ class NenoContentElementGroup extends NenoContentElement
 	public function persist()
 	{
 		$result = parent::persist();
+
 		// Check if the saving process has been completed successfully
 		if ($result)
 		{

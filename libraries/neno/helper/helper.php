@@ -940,6 +940,8 @@ class NenoHelper
 					$field = new NenoContentElementField($fieldData);
 					$table->addField($field);
 				}
+
+				$otherGroup->addTable($table);
 			}
 
 			$otherGroup->persist();
@@ -964,7 +966,7 @@ class NenoHelper
 		$subQuery
 			->select('1')
 			->from($db->quoteName($database) . '.#__neno_content_element_tables AS cet')
-			->where('cet.table_name LIKE REPLACE(dbt.table_name, ' . $db->quote($dbPrefix) . ', \'#__\')) AND REPLACE(dbt.table_name, ' . $db->quote($dbPrefix) . ', \'#__\') NOT LIKE \'#__neno_%\'');
+			->where('cet.table_name LIKE REPLACE(dbt.table_name, ' . $db->quote($dbPrefix) . ', ' . $db->quote('#__') . ')');
 
 		$query
 			->select('REPLACE(TABLE_NAME, ' . $db->quote($dbPrefix) . ', \'#__\') AS table_name')
@@ -973,6 +975,8 @@ class NenoHelper
 				array (
 					'TABLE_TYPE = ' . $db->quote('BASE TABLE'),
 					'TABLE_SCHEMA = ' . $db->quote($database),
+					'REPLACE(dbt.table_name, ' . $db->quote($dbPrefix) . ', ' . $db->quote('#__') . ') NOT LIKE ' . $db->quote('#\_\_neno_%'),
+					'REPLACE(dbt.table_name, ' . $db->quote($dbPrefix) . ', ' . $db->quote('#__') . ') NOT LIKE ' . $db->quote('#\_\_\_%'),
 					'NOT EXISTS ( ' . (string) $subQuery . ')'
 				)
 			);

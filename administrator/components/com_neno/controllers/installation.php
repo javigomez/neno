@@ -106,11 +106,6 @@ class NenoControllerInstallation extends JControllerAdmin
 			{
 				$moveForward = $this->{$methodName}();
 			}
-			else
-			{
-				$app->enqueueMessage(JText::sprintf('COM_NENO_INSTALLATION_ERROR_VALIDATION_METHOD_DOES_NOT_EXIST', $methodName), 'error');
-				$moveForward = false;
-			}
 		}
 
 		if ($moveForward)
@@ -146,6 +141,7 @@ class NenoControllerInstallation extends JControllerAdmin
 	 */
 	public function finishingSetup()
 	{
+		ini_set('max_execution_time', 600);
 		$this->setSetupState(0, 'Generating menus');
 		NenoHelper::createMenuStructure();
 		$this->setSetupState(10, 'Discover extensions');
@@ -182,6 +178,10 @@ class NenoControllerInstallation extends JControllerAdmin
 		$this->setSetupState(95, 'Parsing Other tables');
 		NenoHelper::groupingTablesNotDiscovered();
 		$this->setSetupState(100, 'Installation completed');
+
+		echo 'ok';
+
+		JFactory::getApplication()->close();
 	}
 
 	/**
@@ -207,11 +207,6 @@ class NenoControllerInstallation extends JControllerAdmin
 	{
 		echo json_encode(array ('message' => NenoSettings::get('setup_message'), 'percent' => NenoSettings::get('setup_percent')));
 		exit;
-	}
-
-	public function doMenus()
-	{
-		NenoHelper::createMenuStructure();
 	}
 
 	/**
