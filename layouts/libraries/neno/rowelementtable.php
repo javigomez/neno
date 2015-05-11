@@ -72,7 +72,7 @@ if ($displayData === null): ?>
     <?php if(!empty($displayData['files'])): ?>
         <?php foreach ($displayData['files'] as $file): ?>
             
-            <tr class="row-table" data-id="row-<?php echo $file->filename; ?>" data-parent="<?php echo $displayData['group']->getId(); ?>">
+            <tr class="row-table" data-id="row-<?php echo $file->filename; ?>" data-parent="<?php echo $displayData['group']->id; ?>">
                 <td></td>
                 <td class="toggler toggler-collapsed toggle-fields"><span class="icon-arrow-right-3"></span></td>
                 <td class="cell-check"><input type="checkbox" name="files[]" value="<?php echo $file->filename; ?>" /></td>

@@ -28,11 +28,11 @@ class NenoModelGroupsElements extends JModelList
 	 * @see        JController
 	 * @since      1.6
 	 */
-	public function __construct($config = array())
+	public function __construct($config = array ())
 	{
 		if (empty($config['filter_fields']))
 		{
-			$config['filter_fields'] = array(
+			$config['filter_fields'] = array (
 				'id', 'a.id',
 				'string', 'a.string',
 				'constant', 'a.constant',
@@ -63,20 +63,24 @@ class NenoModelGroupsElements extends JModelList
 		return $extensions;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return array
+	 */
 	public function getItems()
 	{
-        
-        $this->setState('list.limit',0);        
+		$this->setState('list.limit', 0);
 		$groups = parent::getItems();
-        
-        if (!empty($groups))
-        {
-            foreach ($groups as $key => $group)
-            {
-                $groups[$key] = NenoContentElementGroup::getGroup($group->id);
-            }
-        }
-        
+
+		if (!empty($groups))
+		{
+			foreach ($groups as $key => $group)
+			{
+				$groups[$key] = NenoContentElementGroup::getGroup($group->id);
+			}
+		}
+
 		return $groups;
 	}
 

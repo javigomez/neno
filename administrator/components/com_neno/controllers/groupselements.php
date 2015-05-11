@@ -166,7 +166,6 @@ class NenoControllerGroupsElements extends JControllerAdmin
 
 	public function getElements()
 	{
-
 		$input   = JFactory::getApplication()->input;
 		$groupId = $input->getInt('group_id');
 
