@@ -66,7 +66,7 @@ class NenoModelGroupsElements extends JModelList
 	public function getItems()
 	{
         
-        //$this->setState('list.limit',3);        
+        $this->setState('list.limit',0);        
 		$groups = parent::getItems();
         
         if (!empty($groups))
