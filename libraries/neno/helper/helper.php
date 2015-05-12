@@ -2567,6 +2567,7 @@ class NenoHelper
 	/**
 	 * Highlight html tags on a text
 	 *
+	 * @param string $text String with HTML code encoded with HTML entities
 	 *
 	 * @return string
 	 */
