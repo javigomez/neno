@@ -49,64 +49,56 @@ class NenoHelper
 	public static function addSubmenu($vName = '')
 	{
 
-        JHtmlSidebar::addEntry(
-            JText::_('COM_NENO_NAV_LINK_DASHBOARD'),
-            'index.php?option=com_neno&view=dashboard',
-            ($vName == 'dashboard') ? true : false
-        );
-        
-        JHtmlSidebar::addEntry(
-            JText::_('COM_NENO_NAV_LINK_EDITOR'),
-            'index.php?option=com_neno&view=editor',
-            ($vName == 'editor') ? true : false
-        );
-        
-        JHtmlSidebar::addEntry(
-            JText::_('COM_NENO_NAV_LINK_EXTERNAL_TRANSLATIONS'),
-            'index.php?option=com_neno&view=externaltranslations',
-            ($vName == 'externaltranslations') ? true : false
-        );
-        
-        JHtmlSidebar::addEntry(
-            JText::_('COM_NENO_NAV_LINK_EXTERNAL_GROUPSELEMENTS'),
-            'index.php?option=com_neno&view=groupselements',
-            ($vName == 'groupselements') ? true : false
-        );
-        
-        //Only show the jobs link if there are any jobs
-        $jobs = self::getModel('Jobs');
-        $joblist = $jobs->getItems();
-        if (count($joblist) > 0)
-        {
-            JHtmlSidebar::addEntry(
-                JText::_('COM_NENO_NAV_LINK_EXTERNAL_JOBS'),
-                'index.php?option=com_neno&view=jobs',
-                ($vName == 'jobs') ? true : false
-            );
-        }
-        
-        JHtmlSidebar::addEntry(
-            JText::_('COM_NENO_NAV_LINK_EXTERNAL_STRINGS'),
-            'index.php?option=com_neno&view=strings',
-            ($vName == 'strings') ? true : false
-        );
-        
-        JHtmlSidebar::addEntry(
-            JText::_('COM_NENO_NAV_LINK_EXTERNAL_SETTINGS'),
-            'index.php?option=com_neno&view=settings',
-            ($vName == 'settings') ? true : false
-        );
-        
+		JHtmlSidebar::addEntry(
+			JText::_('COM_NENO_NAV_LINK_DASHBOARD'),
+			'index.php?option=com_neno&view=dashboard',
+			($vName == 'dashboard') ? true : false
+		);
+
+		JHtmlSidebar::addEntry(
+			JText::_('COM_NENO_NAV_LINK_EDITOR'),
+			'index.php?option=com_neno&view=editor',
+			($vName == 'editor') ? true : false
+		);
+
+		JHtmlSidebar::addEntry(
+			JText::_('COM_NENO_NAV_LINK_EXTERNAL_TRANSLATIONS'),
+			'index.php?option=com_neno&view=externaltranslations',
+			($vName == 'externaltranslations') ? true : false
+		);
+
+		JHtmlSidebar::addEntry(
+			JText::_('COM_NENO_NAV_LINK_EXTERNAL_GROUPSELEMENTS'),
+			'index.php?option=com_neno&view=groupselements',
+			($vName == 'groupselements') ? true : false
+		);
+
+		//Only show the jobs link if there are any jobs
+		$jobs    = self::getModel('Jobs');
+		$joblist = $jobs->getItems();
+		if (count($joblist) > 0)
+		{
+			JHtmlSidebar::addEntry(
+				JText::_('COM_NENO_NAV_LINK_EXTERNAL_JOBS'),
+				'index.php?option=com_neno&view=jobs',
+				($vName == 'jobs') ? true : false
+			);
+		}
+
+		JHtmlSidebar::addEntry(
+			JText::_('COM_NENO_NAV_LINK_EXTERNAL_STRINGS'),
+			'index.php?option=com_neno&view=strings',
+			($vName == 'strings') ? true : false
+		);
+
+		JHtmlSidebar::addEntry(
+			JText::_('COM_NENO_NAV_LINK_EXTERNAL_SETTINGS'),
+			'index.php?option=com_neno&view=settings',
+			($vName == 'settings') ? true : false
+		);
+
 
 	}
-    
-    
-    public static function getSidebarInfobox($vName='')
-    {
-        return JLayoutHelper::render('sidebarinfobox', $vName, JPATH_NENO_LAYOUTS);
-    }
-    
-    
 
 	/**
 	 * Get an instance of the named model
@@ -129,6 +121,11 @@ class NenoHelper
 		}
 
 		return null;
+	}
+
+	public static function getSidebarInfobox($vName = '')
+	{
+		return JLayoutHelper::render('sidebarinfobox', $vName, JPATH_NENO_LAYOUTS);
 	}
 
 	/**
@@ -1963,19 +1960,19 @@ class NenoHelper
 
 		if (NenoHelper::isLanguageFileOutOfDate($language['lang_code']))
 		{
-			$errors[] = JText::sprintf('COM_NENO_ERRORS_LANGUAGE_OUT_OF_DATE', $language['title'], $language['lang_code']);
+			$errors[] = JText::sprintf('COM_NENO_ERRORS_LANGUAGE_OUT_OF_DATE', $language['title']) . JLayoutHelper::render('fix_button', array ('language' => $language['lang_code'], 'issue' => 'language_file_out_of_date'), JPATH_NENO_LAYOUTS);
 		}
 
 		if (!NenoHelper::hasContentCreated($language['lang_code']))
 		{
-			$errors[] = JText::sprintf('COM_NENO_ERRORS_LANGUAGE_DOES_NOT_CONTENT_ROW', $language['title'], $language['lang_code']);
+			$errors[] = JText::sprintf('COM_NENO_ERRORS_LANGUAGE_DOES_NOT_CONTENT_ROW', $language['title']) . JLayoutHelper::render('fix_button', array ('language' => $language['lang_code'], 'issue' => 'content_missing'), JPATH_NENO_LAYOUTS);
 		}
 
 		$contentCounter = NenoHelper::contentCountInOtherLanguages($language['lang_code']);
 
 		if ($contentCounter !== 0)
 		{
-			$errors[] = JText::sprintf('COM_NENO_ERRORS_CONTENT_FOUND_IN_JOOMLA_TABLES', $language['title'], $language['lang_code']);
+			$errors[] = JText::sprintf('COM_NENO_ERRORS_CONTENT_FOUND_IN_JOOMLA_TABLES', $language['title']) . JLayoutHelper::render('fix_button', array ('language' => $language['lang_code'], 'issue' => 'content_out_of_neno'), JPATH_NENO_LAYOUTS);
 		}
 
 		return $errors;
@@ -2299,7 +2296,9 @@ class NenoHelper
 	}
 
 	/**
-	 * @param $jiso
+	 * Get language JISO
+	 *
+	 * @param   string $jiso Joomla ISO
 	 *
 	 * @return string|bool
 	 */
@@ -2451,12 +2450,12 @@ class NenoHelper
 		// Install language
 		$languagesInstallerModel->install(array ($languageId));
 
-		if (self::isLanguageInstalled($jiso))
+		if (self::isLanguageInstalled($jiso) && !self::hasContentCreated($languageData['element']))
 		{
 			return self::createContentRow($jiso, $languageData);
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
@@ -2621,8 +2620,10 @@ class NenoHelper
 	 *
 	 * @return string
 	 */
-	public static function highlightHTMLTags($text) {
+	public static function highlightHTMLTags($text)
+	{
 		$text = preg_replace("/(&lt;(\/)?\w+( )?(style=(.+))?(\/)?&gt;)/i", '<span class="highlighted-tag">${1}</span>', $text);
+
 		return $text;
 	}
 
