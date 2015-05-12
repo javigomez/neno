@@ -48,25 +48,65 @@ class NenoHelper
 	 */
 	public static function addSubmenu($vName = '')
 	{
-		jimport('joomla.filesystem.folder');
-		$viewsPath = JPATH_ADMINISTRATOR . '/components/com_neno/views';
-		$views     = JFolder::folders($viewsPath);
 
-		foreach ($views as $view)
-		{
-			$model = self::getModel($view);
+        JHtmlSidebar::addEntry(
+            JText::_('COM_NENO_NAV_LINK_DASHBOARD'),
+            'index.php?option=com_neno&view=dashboard',
+            ($vName == 'dashboard') ? true : false
+        );
+        
+        JHtmlSidebar::addEntry(
+            JText::_('COM_NENO_NAV_LINK_EDITOR'),
+            'index.php?option=com_neno&view=editor',
+            ($vName == 'editor') ? true : false
+        );
+        
+        JHtmlSidebar::addEntry(
+            JText::_('COM_NENO_NAV_LINK_EXTERNAL_TRANSLATIONS'),
+            'index.php?option=com_neno&view=externaltranslations',
+            ($vName == 'externaltranslations') ? true : false
+        );
+        
+        JHtmlSidebar::addEntry(
+            JText::_('COM_NENO_NAV_LINK_EXTERNAL_GROUPSELEMENTS'),
+            'index.php?option=com_neno&view=groupselements',
+            ($vName == 'groupselements') ? true : false
+        );
+        
+        //Only show the jobs link if there are any jobs
+        $jobs = self::getModel('Jobs');
+        $joblist = $jobs->getItems();
+        if (count($joblist) > 0)
+        {
+            JHtmlSidebar::addEntry(
+                JText::_('COM_NENO_NAV_LINK_EXTERNAL_JOBS'),
+                'index.php?option=com_neno&view=jobs',
+                ($vName == 'jobs') ? true : false
+            );
+        }
+        
+        JHtmlSidebar::addEntry(
+            JText::_('COM_NENO_NAV_LINK_EXTERNAL_STRINGS'),
+            'index.php?option=com_neno&view=strings',
+            ($vName == 'strings') ? true : false
+        );
+        
+        JHtmlSidebar::addEntry(
+            JText::_('COM_NENO_NAV_LINK_EXTERNAL_SETTINGS'),
+            'index.php?option=com_neno&view=settings',
+            ($vName == 'settings') ? true : false
+        );
+        
 
-			// If the view has a JModelList class
-			if (is_subclass_of($model, 'JModelList'))
-			{
-				JHtmlSidebar::addEntry(
-					JText::_('COM_NENO_TITLE_' . strtoupper($view)),
-					'index.php?option=com_neno&view=' . strtolower($view),
-					$vName == strtolower($view)
-				);
-			}
-		}
 	}
+    
+    
+    public static function getSidebarInfobox($vName='')
+    {
+        return JLayoutHelper::render('sidebarinfobox', $vName, JPATH_NENO_LAYOUTS);
+    }
+    
+    
 
 	/**
 	 * Get an instance of the named model
