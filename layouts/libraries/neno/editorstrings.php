@@ -67,7 +67,7 @@ else
 			</div>
 			<div class="string-text"
 			     title="<?php echo NenoHelper::html2text($translation->original_text, 300); ?>">
-				<?php echo NenoHelper::html2text($translation->string, 45); ?>
+				<?php echo NenoHelper::html2text($translation->string, 32); ?>
 			</div>
 		</div>
 		<div class="clearfix"></div>

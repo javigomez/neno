@@ -2567,12 +2567,12 @@ class NenoHelper
 	/**
 	 * Highlight html tags on a text
 	 *
-	 * @param string $text String with HTML code encoded with HTML entities
+	 * @param string $text String with HTML code already encoded with HTML entities
 	 *
 	 * @return string
 	 */
 	public static function highlightHTMLTags($text) {
-		$text = preg_replace("/(&lt;(\/)?\w+( )?(style=(.+))?(\/)?&gt;)/i", '<span class="highlighted-tag">${1}</span>', $text);
+		$text = preg_replace("/(&lt;[\s\S]+?&gt;)/i", '<span class="highlighted-tag">${1}</span>', $text);
 		return $text;
 	}
 
