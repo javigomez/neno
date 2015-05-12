@@ -34,7 +34,7 @@ class NenoViewMoveElementConfirm extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		
+        
 		$this->addToolbar();
 
 		parent::display($tpl);
@@ -50,8 +50,10 @@ class NenoViewMoveElementConfirm extends JViewLegacy
 	protected function addToolbar()
 	{
 		$canDo = NenoHelper::getActions();
+
+		JToolBarHelper::title(JText::_('COM_NENO_VIEW_MOVELEMENTCONFIRM_TITLE'), 'move.png');
         
-        JToolbarHelper::save('moveelementconfirm.save');
+        JToolbarHelper::save('moveelementconfirm.move', JText::_('COM_NENO_VIEW_MOVELEMENTCONFIRM_CONFIRM_BTN'));
         JToolbarHelper::cancel('moveelementconfirm.cancel');
         
 		if ($canDo->get('core.admin'))
