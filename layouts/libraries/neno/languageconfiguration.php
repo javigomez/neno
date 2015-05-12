@@ -14,14 +14,7 @@ defined('JPATH_NENO') or die;
 $document = JFactory::getDocument();
 $document->addStyleSheet(JUri::root() . '/media/neno/css/languageconfiguration.css');
 
-$item             = (array) $displayData;
-$item['errors']   = array ();
-$item['errors'][] = 'This is an error. <a href="#">Fix it.</a>';
-/*
-$item->errors[]  = 'This is another error. <a href="#">Fix it.</a>';
-$item->errors[]  = 'This is ano. <a href="#">Fix it.</a>';*/
-/*$item->orderText = 'Order it.';
-$item->orderLink = '#';*/
+$item = (array) $displayData;
 ?>
 
 <div class="language-wrapper language-<?php echo $item['placement']; ?>">
@@ -56,8 +49,9 @@ $item->orderLink = '#';*/
 		<button class="btn configuration-button" type="button">
 			<?php echo JText::_('COM_NENO_DASHBOARD_CONFIGURATION_BUTTON'); ?>
 		</button>
+		<div class="clearfix"></div>
 	<?php endif; ?>
-	<div class="clearfix"></div>
+
 	<div class="language-configuration">
 		<?php if ($item['placement'] == 'dashboard'): ?>
 			<span class="link-ge">
