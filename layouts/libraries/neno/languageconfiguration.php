@@ -53,11 +53,12 @@ $item = (array) $displayData;
 	<?php endif; ?>
 
 	<div class="language-configuration">
-		<?php if ($item['placement'] == 'dashboard'): ?>
-			<span class="link-ge">
-					<?php echo JText::sprintf('COM_NENO_DASHBOARD_GROUPS_ELEMENTS_LINK', JRoute::_('index.php?option=com_neno&task=setWorkingLang&lang=' . $item['lang_code'] . '&next=groupselements')); ?>
-				</span>
-		<?php endif; ?>
+		<span class="link-ge">
+			&nbsp;
+			<?php if ($item['placement'] == 'dashboard'): ?>
+				<?php echo JText::sprintf('COM_NENO_DASHBOARD_GROUPS_ELEMENTS_LINK', JRoute::_('index.php?option=com_neno&task=setWorkingLang&lang=' . $item['lang_code'] . '&next=groupselements')); ?>
+			<?php endif; ?>
+		</span>
 		<div class="language-configuration-controls">
 			<button class="btn <?php echo empty($item['errors']) ? '' : 'disabled'; ?>"
 			        title="<?php echo empty($item['errors']) ? '' : JText::_('COM_NENO_DASHBOARD_REMOVE_DISABLED'); ?>"
