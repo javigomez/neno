@@ -116,15 +116,4 @@ class NenoControllerDashboard extends JControllerAdmin
 
 		echo JLayoutHelper::render('messages', $displayData, JPATH_NENO_LAYOUTS);
 	}
-
-	public function fixLanguageIssues()
-	{
-		$input    = $this->input;
-		$language = $input->getString('language');
-		$issue    = $input->getCmd('issue');
-
-		NenoHelper::fixLanguageIssues($language, $issue);
-
-		JFactory::getApplication()->redirect('index.php?option=com_nen&view=dashboard');
-	}
 }

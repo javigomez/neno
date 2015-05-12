@@ -158,3 +158,17 @@ function toggleMethodSelect() {
         method2.removeClass('shown');
     }
 }
+
+function fixIssue() {
+    var button = jQuery(this);
+    button.closest('.alert').remove();
+    jQuery.ajax({
+        beforeSend: onBeforeAjax,
+        url: 'index.php?option=com_neno&task=fixLanguageIssue',
+        data: {
+            language: button.data('language'),
+            issue: button.data('issue')
+        },
+        type: 'POST'
+    });
+}

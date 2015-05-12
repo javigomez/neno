@@ -66,7 +66,7 @@ $translation = $displayData;
 	<div>
 		<div class="span5">
 			<div class="uneditable-input full-width original-text">
-				<?php echo empty($translation) ? '' : NenoHelper::html2text($translation->original_text); ?>
+				<?php echo empty($translation) ? '' : NenoHelper::highlightHTMLTags(NenoHelper::html2text($translation->original_text)); ?>
 			</div>
 			<div class="clearfix"></div>
 			<div class="pull-right last-modified">

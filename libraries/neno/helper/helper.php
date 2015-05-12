@@ -2220,12 +2220,20 @@ class NenoHelper
 		return true;
 	}
 
+	/**
+	 * Fix language issue
+	 *
+	 * @param   string $language Language
+	 * @param   string $issue    Issue
+	 *
+	 * @return bool
+	 */
 	public static function fixLanguageIssues($language, $issue)
 	{
 		switch ($issue)
 		{
 			case 'content_missing':
-				self::createContentRow($language);
+				return self::createContentRow($language);
 				break;
 			case 'language_file_out_of_date':
 				$languages = self::findLanguages();
@@ -2233,25 +2241,28 @@ class NenoHelper
 				{
 					if ($updateLanguage['iso'] == $language)
 					{
-						NenoHelper::installLanguage($updateLanguage['update_id']);
+						return NenoHelper::installLanguage($updateLanguage['update_id']);
 						break;
 					}
 				}
 				break;
 			case 'content_out_of_neno':
-				self::moveContentIntoShadowTables($language);
+				return self::moveContentIntoShadowTables($language);
 				break;
 		}
+
+		return false;
 	}
 
 	public static function createContentRow($jiso, $languageName = null)
 	{
+		JLoader::register('LanguagesModelLanguage', JPATH_ADMINISTRATOR . '/components/com_languages/models/language.php');
 		/* @var $languageModel LanguagesModelLanguage */
 		$languageModel = JModelLegacy::getInstance('Language', 'LanguagesModel');
 		$icon          = self::getLanguageSupportedIcon($jiso);
 		$jisoParts     = explode('-', $jiso);
 
-		if ($languageName == null)
+		if (!is_string($languageName))
 		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
@@ -2262,6 +2273,16 @@ class NenoHelper
 				->where('element = ' . $db->quote($jiso));
 			$db->setQuery($query);
 			$languageName = $db->loadResult();
+
+			if (empty($languageName))
+			{
+				$query
+					->clear('where')
+					->where('element = ' . $db->quote('pkg_' . $jiso));
+
+				$db->setQuery($query);
+				$languageName = $db->loadResult();
+			}
 		}
 
 		// Create content
@@ -2515,10 +2536,16 @@ class NenoHelper
 
 		foreach ($joomlaTablesUsingLanguageField as $joomlaTableUsingLanguageField)
 		{
-			$query = 'INSERT INTO ' . $db->generateShadowTableName($joomlaTableUsingLanguageField, $languageTag) . ' SELECT * FROM ' . $joomlaTableUsingLanguageField . ' WHERE language = ' . $db->quote($languageTag);
+			$query = 'REPLACE INTO ' . $db->generateShadowTableName($joomlaTableUsingLanguageField, $languageTag) . ' SELECT * FROM ' . $joomlaTableUsingLanguageField . ' WHERE language = ' . $db->quote($languageTag);
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = 'DELETE FROM ' . $joomlaTableUsingLanguageField . ' WHERE language = ' . $db->quote($languageTag);
 			$db->setQuery($query);
 			$db->execute();
 		}
+
+		return true;
 	}
 
 	/**
@@ -2585,6 +2612,18 @@ class NenoHelper
 		$published = $db->loadResult();
 
 		return !empty($published);
+	}
+
+	/**
+	 * Highlight html tags on a text
+	 *
+	 * @param string $text String with HTML code encoded with HTML entities
+	 *
+	 * @return string
+	 */
+	public static function highlightHTMLTags($text) {
+		$text = preg_replace("/(&lt;(\/)?\w+( )?(style=(.+))?(\/)?&gt;)/i", '<span class="highlighted-tag">${1}</span>', $text);
+		return $text;
 	}
 
 	/**
