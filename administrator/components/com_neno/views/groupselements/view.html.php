@@ -76,18 +76,8 @@ class NenoViewGroupsElements extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		$canDo = NenoHelper::getActions();
 
 		JToolbarHelper::custom('moveelementconfirm.show', 'move', 'move', JText::_('COM_NENO_VIEW_GROUPSELEMENTS_BTN_MOVE_ELEMENTS'), true);
-
-		if ($canDo->get('core.admin'))
-		{
-			JToolBarHelper::preferences('com_neno');
-		}
-
-		// Set sidebar action - New in 3.0
-		JHtmlSidebar::setAction('index.php?option=com_neno&view=groupselements');
-
-		$this->extra_sidebar = '';
-	}
+        $this->extra_sidebar = NenoHelper::getSidebarInfobox('groupselements');
+    }
 }

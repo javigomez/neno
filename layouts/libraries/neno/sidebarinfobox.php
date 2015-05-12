@@ -10,6 +10,15 @@ defined('JPATH_NENO') or die;
 
 $view = $displayData;
 
-echo $view;
 ?>
+
+<?php if ($view == 'groupselements'): ?>
+    <br />
+    <div class="alert alert-info">
+        <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_INFOBOX'); ?>
+        <br />
+        <br />
+        <?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_INFOBOX2'); ?>
+    </div>
+<?php endif; ?>
 
