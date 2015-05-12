@@ -2180,12 +2180,20 @@ class NenoHelper
 		return true;
 	}
 
+	/**
+	 * Fix language issue
+	 *
+	 * @param   string $language Language
+	 * @param   string $issue    Issue
+	 *
+	 * @return bool
+	 */
 	public static function fixLanguageIssues($language, $issue)
 	{
 		switch ($issue)
 		{
 			case 'content_missing':
-				self::createContentRow($language);
+				return self::createContentRow($language);
 				break;
 			case 'language_file_out_of_date':
 				$languages = self::findLanguages();
@@ -2193,19 +2201,22 @@ class NenoHelper
 				{
 					if ($updateLanguage['iso'] == $language)
 					{
-						NenoHelper::installLanguage($updateLanguage['update_id']);
+						return NenoHelper::installLanguage($updateLanguage['update_id']);
 						break;
 					}
 				}
 				break;
 			case 'content_out_of_neno':
-				self::moveContentIntoShadowTables($language);
+				return self::moveContentIntoShadowTables($language);
 				break;
 		}
+
+		return false;
 	}
 
 	public static function createContentRow($jiso, $languageName = null)
 	{
+		JLoader::register('LanguagesModelLanguage', JPATH_ADMINISTRATOR . '/components/com_languages/models/language.php');
 		/* @var $languageModel LanguagesModelLanguage */
 		$languageModel = JModelLegacy::getInstance('Language', 'LanguagesModel');
 		$icon          = self::getLanguageSupportedIcon($jiso);
@@ -2475,10 +2486,16 @@ class NenoHelper
 
 		foreach ($joomlaTablesUsingLanguageField as $joomlaTableUsingLanguageField)
 		{
-			$query = 'INSERT INTO ' . $db->generateShadowTableName($joomlaTableUsingLanguageField, $languageTag) . ' SELECT * FROM ' . $joomlaTableUsingLanguageField . ' WHERE language = ' . $db->quote($languageTag);
+			$query = 'REPLACE INTO ' . $db->generateShadowTableName($joomlaTableUsingLanguageField, $languageTag) . ' SELECT * FROM ' . $joomlaTableUsingLanguageField . ' WHERE language = ' . $db->quote($languageTag);
+			$db->setQuery($query);
+			$db->execute();
+
+			$query = 'DELETE FROM ' . $joomlaTableUsingLanguageField . ' WHERE language = ' . $db->quote($languageTag);
 			$db->setQuery($query);
 			$db->execute();
 		}
+
+		return true;
 	}
 
 	/**

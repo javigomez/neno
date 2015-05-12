@@ -44,6 +44,8 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 		jQuery('.method-1').change(toggleMethodSelect);
 
+		jQuery("[data-issue]").off('click').on('click', fixIssue);
+
 	});
 </script>
 

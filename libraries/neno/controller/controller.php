@@ -134,4 +134,27 @@ class NenoController extends JControllerLegacy
 
 		JFactory::getApplication()->close();
 	}
+
+	/**
+	 * Fix Language issue
+	 *
+	 * @return void
+	 */
+	public function fixLanguageIssue()
+	{
+		$input    = $this->input;
+		$language = $input->post->getString('language');
+		$issue    = $input->post->getCmd('issue');
+
+		if (NenoHelper::fixLanguageIssues($language, $issue) === true)
+		{
+			echo 'ok';
+		}
+		else
+		{
+			echo 'err';
+		}
+
+		JFactory::getApplication()->close();
+	}
 }
