@@ -82,12 +82,18 @@ button .normal-text {
     display: none;
 }
 
+.uneditable-input {
+    color: #888 !important;
+}
 .breadcrumbs {
     padding-top: 15px;
-    color: #999;
+    color: #888;
 }
 .breadcrumbs .gt {
     font-size: 10px;
     color: #ccc;
     margin: 0 10px;
+}
+.highlighted-tag {
+    color: #87AEC5;
 }

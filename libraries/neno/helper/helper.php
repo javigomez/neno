@@ -2575,6 +2575,18 @@ class NenoHelper
 	}
 
 	/**
+	 * Highlight html tags on a text
+	 *
+	 * @param string $text String with HTML code encoded with HTML entities
+	 *
+	 * @return string
+	 */
+	public static function highlightHTMLTags($text) {
+		$text = preg_replace("/(&lt;(\/)?\w+( )?(style=(.+))?(\/)?&gt;)/i", '<span class="highlighted-tag">${1}</span>', $text);
+		return $text;
+	}
+
+	/**
 	 * Get a list of menu items associated to the one passed by argument
 	 *
 	 * @param    integer $menuItemId Menu Item id
