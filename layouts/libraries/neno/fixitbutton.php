@@ -10,9 +10,9 @@
 // No direct access
 defined('JPATH_NENO') or die;
 
-?>
+$displayData = (array) $displayData;
 
+?>
+<?php echo $displayData['message']; ?>
 <button type="button" class="btn btn-link" data-language="<?php echo $displayData['language']; ?>"
-        data-issue="<?php echo $displayData['issue']; ?>">
-	<?php echo JText::_('COM_NENO_FIX_IT_BUTTON_FIX_IT_TEXT'); ?>
-</button>
+        data-issue="<?php echo $displayData['issue']; ?>"><?php echo JText::_('COM_NENO_FIX_IT_BUTTON_FIX_IT_TEXT'); ?></button>
