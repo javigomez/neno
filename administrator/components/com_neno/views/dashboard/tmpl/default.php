@@ -29,8 +29,9 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 <script type="text/javascript">
 
-	jQuery(document).ready(function () {
+	jQuery(document).ready(bindEvents);
 
+	function bindEvents() {
 		jQuery('.configuration-button').on('click', function () {
 			jQuery(this).siblings('.language-configuration').slideToggle('fast');
 		});
@@ -46,7 +47,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 		jQuery("[data-issue]").off('click').on('click', fixIssue);
 
-	});
+	}
 </script>
 
 

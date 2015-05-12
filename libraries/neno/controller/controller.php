@@ -197,7 +197,7 @@ class NenoController extends JControllerLegacy
 
 		if (NenoHelper::installLanguage($updateId))
 		{
-			// Create a new query object.
+			/* @var $db NenoDatabaseDriverMysqlx */
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -224,10 +224,51 @@ class NenoController extends JControllerLegacy
 				->order('lang_code');
 
 			$db->setQuery($query);
-			$languageData              = $db->loadAssoc();
-			$languageData['placement'] = $placement;
+			$languages = $db->loadObjectListMultiIndex('lang_code');
 
-			echo JLayoutHelper::render('languageconfiguration', $languageData, JPATH_NENO_LAYOUTS);
+			foreach ($languages as $language)
+			{
+				$translated      = 0;
+				$queued          = 0;
+				$changed         = 0;
+				$untranslated    = 0;
+				$item            = new stdClass;
+				$item->lang_code = $language[0]->lang_code;
+				$item->published = $language[0]->published;
+				$item->title     = $language[0]->title;
+				$item->image     = $language[0]->image;
+				$item->errors    = NenoHelper::getLanguageErrors((array) $language[0]);
+
+				foreach ($language as $internalItem)
+				{
+					switch ($internalItem->state)
+					{
+						case NenoContentElementTranslation::TRANSLATED_STATE:
+							$untranslated = (int) $internalItem->word_count;
+							break;
+						case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
+							$untranslated = (int) $internalItem->word_count;
+							break;
+						case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
+							$untranslated = (int) $internalItem->word_count;
+							break;
+						case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
+							$untranslated = (int) $internalItem->word_count;
+							break;
+					}
+				}
+
+				$item->wordCount               = new stdClass;
+				$item->wordCount->translated   = $translated;
+				$item->wordCount->queued       = $queued;
+				$item->wordCount->changed      = $changed;
+				$item->wordCount->untranslated = $untranslated;
+				$item->wordCount->total        = $translated + $queued + $changed + $untranslated;
+				$item->placement               = $placement;
+			}
+
+
+			echo JLayoutHelper::render('languageconfiguration', get_object_vars($item), JPATH_NENO_LAYOUTS);
 		}
 		else
 		{
