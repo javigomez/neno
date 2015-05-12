@@ -2251,6 +2251,14 @@ class NenoHelper
 		return false;
 	}
 
+	/**
+	 * Create content row
+	 *
+	 * @param   string $jiso
+	 * @param   mixed  $languageName
+	 *
+	 * @return bool
+	 */
 	public static function createContentRow($jiso, $languageName = null)
 	{
 		JLoader::register('LanguagesModelLanguage', JPATH_ADMINISTRATOR . '/components/com_languages/models/language.php');

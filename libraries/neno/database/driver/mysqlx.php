@@ -162,8 +162,10 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	 */
 	public function languageHasChanged()
 	{
-		$currentLanguage = JFactory::getLanguage();
-		$defaultLanguage = $currentLanguage->getDefault();
+		$input           = JFactory::getApplication()->input;
+		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$lang            = $input->getString('lang', $defaultLanguage);
+		$currentLanguage = JLanguage::getInstance($lang);
 
 		return $currentLanguage->getTag() !== $defaultLanguage;
 	}
