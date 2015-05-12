@@ -2222,7 +2222,7 @@ class NenoHelper
 		$icon          = self::getLanguageSupportedIcon($jiso);
 		$jisoParts     = explode('-', $jiso);
 
-		if ($languageName == null)
+		if (!is_string($languageName))
 		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
@@ -2233,6 +2233,16 @@ class NenoHelper
 				->where('element = ' . $db->quote($jiso));
 			$db->setQuery($query);
 			$languageName = $db->loadResult();
+
+			if (empty($languageName))
+			{
+				$query
+					->clear('where')
+					->where('element = ' . $db->quote('pkg_' . $jiso));
+
+				$db->setQuery($query);
+				$languageName = $db->loadResult();
+			}
 		}
 
 		// Create content
