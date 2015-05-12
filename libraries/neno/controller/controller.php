@@ -157,4 +157,124 @@ class NenoController extends JControllerLegacy
 
 		JFactory::getApplication()->close();
 	}
+
+	/**
+	 * Show languages modal content
+	 *
+	 * @return void
+	 */
+	public function showInstallLanguagesModal()
+	{
+		$languages = NenoHelper::findLanguages();
+		$placement = $this->input->getString('placement', 'dashboard');
+
+		if (!empty($languages))
+		{
+			$displayData            = new stdClass;
+			$displayData->languages = $languages;
+			$displayData->placement = $placement;
+			echo JLayoutHelper::render('installlanguages', $displayData, JPATH_NENO_LAYOUTS);
+		}
+		else
+		{
+			echo JText::_('COM_NENO_INSTALL_LANGUAGES_NO_LANGUAGES_TO_INSTALL');
+		}
+
+		JFactory::getApplication()->close();
+	}
+
+	/**
+	 * Install language
+	 *
+	 * @return void
+	 */
+	public function installLanguage()
+	{
+		$input     = $this->input;
+		$updateId  = $input->post->getInt('update');
+		$language  = $input->post->getString('language');
+		$placement = $input->post->getCmd('placement');
+
+		if (NenoHelper::installLanguage($updateId))
+		{
+			/* @var $db NenoDatabaseDriverMysqlx */
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query
+				->select(
+					array (
+						'l.lang_code',
+						'l.published',
+						'l.title',
+						'l.image',
+						'tr.state',
+						'SUM(tr.word_counter) AS word_count'
+					)
+				)
+				->from('#__languages AS l')
+				->leftJoin('#__neno_content_element_translations AS tr ON tr.language = l.lang_code')
+				->where('l.lang_code = ' . $db->quote($language))
+				->group(
+					array (
+						'l.lang_code',
+						'tr.state'
+					)
+				)
+				->order('lang_code');
+
+			$db->setQuery($query);
+			$languages = $db->loadObjectListMultiIndex('lang_code');
+
+			foreach ($languages as $language)
+			{
+				$translated      = 0;
+				$queued          = 0;
+				$changed         = 0;
+				$untranslated    = 0;
+				$item            = new stdClass;
+				$item->lang_code = $language[0]->lang_code;
+				$item->published = $language[0]->published;
+				$item->title     = $language[0]->title;
+				$item->image     = $language[0]->image;
+				$item->errors    = NenoHelper::getLanguageErrors((array) $language[0]);
+
+				foreach ($language as $internalItem)
+				{
+					switch ($internalItem->state)
+					{
+						case NenoContentElementTranslation::TRANSLATED_STATE:
+							$untranslated = (int) $internalItem->word_count;
+							break;
+						case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
+							$untranslated = (int) $internalItem->word_count;
+							break;
+						case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
+							$untranslated = (int) $internalItem->word_count;
+							break;
+						case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
+							$untranslated = (int) $internalItem->word_count;
+							break;
+					}
+				}
+
+				$item->wordCount               = new stdClass;
+				$item->wordCount->translated   = $translated;
+				$item->wordCount->queued       = $queued;
+				$item->wordCount->changed      = $changed;
+				$item->wordCount->untranslated = $untranslated;
+				$item->wordCount->total        = $translated + $queued + $changed + $untranslated;
+				$item->placement               = $placement;
+			}
+
+
+			echo JLayoutHelper::render('languageconfiguration', get_object_vars($item), JPATH_NENO_LAYOUTS);
+		}
+		else
+		{
+			echo 'err';
+		}
+
+		JFactory::getApplication()->close();
+	}
 }

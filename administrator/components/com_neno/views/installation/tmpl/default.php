@@ -122,4 +122,16 @@ if (!empty($this->extra_sidebar))
 <div id="j-main-container" class="span12">
 	<div class="installation-form"></div>
 </div>
+<div class="modal hide fade" id="languages-modal">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3>Modal header</h3>
+	</div>
+	<div class="modal-body">
+
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn">Close</a>
+	</div>
+</div>
 

@@ -25,7 +25,7 @@ $items = $displayData->languages;
 			<?php echo JLayoutHelper::render('languageconfiguration', $item, JPATH_NENO_LAYOUTS); ?>
 		<?php endforeach; ?>
 
-		<button type="button" class="btn btn-primary">
+		<button type="button" class="btn btn-primary" id="add-languages-button">
 			<?php echo JText::_('COM_NENO_INSTALLATION_TARGET_LANGUAGES_ADD_LANGUAGE_BUTTON'); ?>
 		</button>
 
@@ -36,3 +36,16 @@ $items = $displayData->languages;
 
 	<?php echo JLayoutHelper::render('installationbottom', 3, JPATH_NENO_LAYOUTS); ?>
 </div>
+
+<script>
+	jQuery('#add-languages-button').click(function () {
+		jQuery.ajax({
+			beforeSend: onBeforeAjax,
+			url: 'index.php?option=com_neno&task=showInstallLanguagesModal&placement=installation',
+			success: function (html) {
+				jQuery('#languages-modal .modal-body').empty().append(html);
+				jQuery('#languages-modal').modal('show');
+			}
+		});
+	})
+</script>

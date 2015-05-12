@@ -58,32 +58,13 @@ class NenoViewDashboard extends JViewLegacy
 
 		NenoHelper::addSubmenu('dashboard');
 
-		$this->addToolbar();
 
 		$this->sidebar = JHtmlSidebar::render();
 
+		$this->extra_sidebar = NenoHelper::getSidebarInfobox('dashboard');
+        
+        
 		parent::display($tpl);
 	}
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 * @return void
-	 *
-	 * @since    1.6
-	 */
-	protected function addToolbar()
-	{
-		$canDo = NenoHelper::getActions();
-
-		if ($canDo->get('core.admin'))
-		{
-			JToolBarHelper::preferences('com_neno');
-		}
-
-		// Set sidebar action - New in 3.0
-		JHtmlSidebar::setAction('index.php?option=com_neno&view=groupselements');
-
-		$this->extra_sidebar = '';
-	}
 }
