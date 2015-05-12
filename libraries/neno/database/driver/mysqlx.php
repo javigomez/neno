@@ -182,7 +182,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		$ignoredQueryRegex = array (
 			'/show (.+)/i',
 			'/#__neno_(.+)/',
-			'/#__extensions/',
+			'/FROM #__extensions/',
 			'/#__associations/',
 			'/#__session/',
 			'/#__schemas/',
