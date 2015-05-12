@@ -2022,52 +2022,59 @@ class NenoHelper
 		$db              = JFactory::getDbo();
 		$query           = $db->getQuery(true);
 		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$content         = 0;
 
-		$joomlaTablesUsingLanguageField = array (
-			'#__banners',
-			'#__categories',
-			'#__contact_details',
-			'#__content',
-			'#__finder_links',
-			'#__finder_terms',
-			'#__finder_terms_common',
-			'#__finder_tokens',
-			'#__finder_tokens_aggregate',
-			'#__newsfeeds',
-			'#__tags',
-			'#__weblinks'
-		);
-
-
-		$unionQueries = array ();
-		$query->select('COUNT(*) AS counter');
-
-		if ($language == null)
+		if ($language !== $defaultLanguage)
 		{
-			$query->where('language <> ' . $db->quote($defaultLanguage));
-		}
-		else
-		{
-			$query->where('language = ' . $db->quote($language));
-		}
+			$joomlaTablesUsingLanguageField = array (
+				'#__banners',
+				'#__categories',
+				'#__contact_details',
+				'#__content',
+				'#__finder_links',
+				'#__finder_terms',
+				'#__finder_terms_common',
+				'#__finder_tokens',
+				'#__finder_tokens_aggregate',
+				'#__newsfeeds',
+				'#__tags',
+				'#__weblinks'
+			);
 
 
-		foreach ($joomlaTablesUsingLanguageField as $joomlaTableUsingLanguageField)
-		{
+			$unionQueries = array ();
+			$query->select('COUNT(*) AS counter');
+
+			if ($language == null)
+			{
+				$query->where('language <> ' . $db->quote($defaultLanguage));
+			}
+			else
+			{
+				$query->where('language = ' . $db->quote($language));
+			}
+
+
+			foreach ($joomlaTablesUsingLanguageField as $joomlaTableUsingLanguageField)
+			{
+				$query
+					->clear('from')
+					->from($joomlaTableUsingLanguageField);
+				$unionQueries[] = (string) $query;
+			}
+
 			$query
-				->clear('from')
-				->from($joomlaTableUsingLanguageField);
-			$unionQueries[] = (string) $query;
+				->clear()
+				->select('SUM(a.counter)')
+				->from('((' . implode(') UNION (', $unionQueries) . ')) AS a');
+
+			$db->setQuery($query);
+
+			$content = (int) $db->loadResult();
 		}
 
-		$query
-			->clear()
-			->select('SUM(a.counter)')
-			->from('((' . implode(') UNION (', $unionQueries) . ')) AS a');
+		return $content;
 
-		$db->setQuery($query);
-
-		return (int) $db->loadResult();
 	}
 
 	/**
