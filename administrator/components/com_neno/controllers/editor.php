@@ -160,7 +160,7 @@ class NenoControllerEditor extends NenoControllerStrings
 
 			if ($counter != 0)
 			{
-				$data['message'] = JText::sprintf('COM_NENO_EDITOR_CONSOLIDATE_MESSAGE', $counter, $original_text, $translationText);
+				$data['message'] = JText::sprintf('COM_NENO_EDITOR_CONSOLIDATE_MESSAGE', $counter, NenoHelper::html2text($original_text, 200), NenoHelper::html2text($translationText, 200));
 			}
 
 			echo json_encode($data);
