@@ -202,7 +202,14 @@ class NenoModelStrings extends JModelList
 					'f.translate = 1',
 					'gtm1.lang = ' . $db->quote($workingLanguage)
 				)
-			)->order('tr1.id');
+			)
+			->group(
+				array (
+					'tr1.string',
+					'tr1.state'
+				)
+			)
+			->order('tr1.id');
 
 		$languageFileStrings
 			->select(
@@ -225,7 +232,14 @@ class NenoModelStrings extends JModelList
 					'tr2.content_type = ' . $db->quote('lang_string'),
 					'gtm2.lang = ' . $db->quote($workingLanguage)
 				)
-			)->order('tr2.id');
+			)
+			->group(
+				array (
+					'tr2.string',
+					'tr2.state'
+				)
+			)
+			->order('tr2.id');
 
 		$queryWhereDb = array ();
 
@@ -296,6 +310,14 @@ class NenoModelStrings extends JModelList
 			$dbStrings->where('tr1.state IN (' . implode(', ', $status) . ')');
 			$languageFileStrings->where('tr2.state IN (' . implode(', ', $status) . ')');
 		}
+
+		// Hide empty strings if the user wants to do that
+		if (NenoSettings::get('hide_empty_strings', true))
+		{
+			$dbStrings->where('tr1.string <> ' . $db->quote(''));
+			$languageFileStrings->where('tr2.string <> ' . $db->quote(''));
+		}
+
 
 		$limit  = $this->getState('limit', 20);
 		$offset = $this->getState('limitStart', 0);
