@@ -46,8 +46,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 			});
 		});
 
-		jQuery('.method-1').change(toggleMethodSelect);
-
 		jQuery("[data-issue]").off('click').on('click', fixIssue);
 
 	}
@@ -87,7 +85,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 				//Loop through each selector and remove the ones that are after this one
 				for (var i = 0; i < n; i++) {
 					if (i > selector_id) {
-						console.log(jQuery(this).closest('.method-selectors').find("[data-selector-container-id='" + i + "']"));
+						//console.log(jQuery(this).closest('.method-selectors').find("[data-selector-container-id='" + i + "']"));
 						jQuery(this).closest('.method-selectors').find("[data-selector-container-id='" + i + "']").remove();
 					}
 				}
@@ -115,6 +113,21 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 				jQuery('.translation-method-selector').off('change').on('change', loadMissingTranslationMethodSelectors);
 				jQuery('select').chosen();
+				//console.log(element.parents('.method-selectors').find("[data-selector-container-id='1']"));
+				var container = element.parents('.language-configuration');
+				var select1 = element.parents('.method-selectors').find("[data-selector-container-id='1']");
+				if (select1.length) {
+					if (!container.hasClass('expanded')) {
+						container.height(
+							container.height() + 26
+						);
+						container.addClass('expanded');
+					}
+				} else if (container.hasClass('expanded')) {
+					container.height(
+						container.height() - 26
+					);
+				}
 			}
 		});
 	}

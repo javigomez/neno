@@ -84,6 +84,7 @@ button .normal-text {
 
 .uneditable-input {
     color: #888 !important;
+    overflow-y: scroll !important;
 }
 .breadcrumbs {
     padding-top: 15px;

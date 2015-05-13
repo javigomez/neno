@@ -152,12 +152,6 @@ class NenoViewEditor extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		$canDo = NenoHelper::getActions();
-
-		if ($canDo->get('core.admin'))
-		{
-			JToolBarHelper::preferences('com_neno');
-		}
 
 		$bar = JToolbar::getInstance('toolbar');
 		$bar->appendButton('Link', 'home', JText::_('COM_NENO_BACK_TO_DASHBOARD'), 'index.php?option=com_neno');

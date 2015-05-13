@@ -11,13 +11,9 @@
 // No direct access
 defined('_JEXEC') or die;
 
-JHtml::_('bootstrap.tooltip');
-JHtml::_('behavior.multiselect');
+echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$this = ". print_r($this->items, true)."\n</pre>";
+echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$this = ". print_r($this->tcNeeded, true)."\n</pre>";
 
-$listOrder     = $this->state->get('list.ordering');
-$listDirection = $this->state->get('list.direction');
-
-// Joomla Component Creator code to allow adding non select list filters
 if (!empty($this->extra_sidebar))
 {
 	$this->sidebar .= $this->extra_sidebar;
@@ -116,7 +112,7 @@ if (!empty($this->extra_sidebar))
 				</div>
 				<div class="translation-type-content">
 					<?php foreach ($this->items as $key => $item): ?>
-						<?php if ($item->translation_method == 'machine'): ?>
+						<?php if ($item->translation_method == '2'): ?>
 							<div class="translation">
 								<div class="span3">
 									<?php echo $item->language; ?>
@@ -161,7 +157,7 @@ if (!empty($this->extra_sidebar))
 				</div>
 				<div class="translation-type-content">
 					<?php foreach ($this->items as $key => $item): ?>
-						<?php if ($item->translation_method == 'pro'): ?>
+						<?php if ($item->translation_method == '3'): ?>
 							<div class="translation">
 								<div class="span3">
 									<?php echo $item->language; ?>
