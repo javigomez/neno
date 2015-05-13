@@ -112,7 +112,7 @@ if (!empty($this->extra_sidebar))
 				</div>
 				<div class="translation-type-content">
 					<?php foreach ($this->items as $key => $item): ?>
-						<?php if ($item->translation_method == '2'): ?>
+						<?php if ($item->translation_method_id == '2'): ?>
 							<div class="translation">
 								<div class="span3">
 									<?php echo $item->language; ?>
@@ -126,7 +126,7 @@ if (!empty($this->extra_sidebar))
 								</div>
 								<div class="span3">
 									<button type="button" class="btn order-button"
-									        data-type="<?php echo $item->translation_method; ?>"
+									        data-type="<?php echo $item->translation_method_id; ?>"
 									        data-language="<?php echo $item->language; ?>">
 										<?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_ORDER_NOW'); ?>
 									</button>
@@ -157,7 +157,7 @@ if (!empty($this->extra_sidebar))
 				</div>
 				<div class="translation-type-content">
 					<?php foreach ($this->items as $key => $item): ?>
-						<?php if ($item->translation_method == '3'): ?>
+						<?php if ($item->translation_method_id == '3'): ?>
 							<div class="translation">
 								<div class="span3">
 									<?php echo $item->language; ?>
@@ -171,7 +171,7 @@ if (!empty($this->extra_sidebar))
 								</div>
 								<div class="span3">
 									<button type="button" class="btn order-button"
-									        data-type="<?php echo $item->translation_method; ?>"
+									        data-type="<?php echo $item->translation_method_id; ?>"
 									        data-language="<?php echo $item->language; ?>"
 										>
 										<?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_ORDER_NOW'); ?>

@@ -35,7 +35,7 @@ class NenoModelExternalTranslations extends JModelList
 
 		$query
 			->clear('select')
-			->select('SUM(IF(translation_method = \'machine\', word_counter, word_counter * 200)) AS tc');
+			->select('SUM(tr.word_counter * tm.pricing_per_word) AS tc');
 
 		$db->setQuery($query);
 
@@ -57,20 +57,24 @@ class NenoModelExternalTranslations extends JModelList
 			->select(
 				array (
 					'SUM(word_counter) AS words',
-					'translation_method',
+					'trtm.translation_method_id',
 					'language'
 				)
 			)
 			->from('#__neno_content_element_translations AS tr')
+			->innerJoin('#__neno_content_element_translation_x_translation_methods AS trtm ON trtm.translation_id = tr.id')
+			->innerJoin('#__neno_translation_methods AS tm ON trtm.translation_method_id = tm.id')
 			->where(
 				array (
 					'state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE,
-					'NOT EXISTS (SELECT 1 FROM #__neno_jobs_x_translations AS jt WHERE tr.id = jt.translation_id)'
+					'NOT EXISTS (SELECT 1 FROM #__neno_jobs_x_translations AS jt WHERE tr.id = jt.translation_id)',
+					'tm.pricing_per_word <> 0',
+					'trtm.ordering = 1'
 				)
 			)
 			->group(
 				array (
-					'translation_method',
+					'trtm.translation_method_id',
 					'language'
 				)
 			);

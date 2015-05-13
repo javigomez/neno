@@ -113,14 +113,17 @@ class NenoModelGroupElement extends JModelAdmin
 				
 				foreach ($data['translation_methods'] as $translationMethodId)
 				{
-					$insert = true;
-
-					foreach ($languages as $language)
+					if (!empty($translationMethodId))
 					{
-						$query->values($groupId . ',' . $db->quote($language) . ',' . $db->quote($translationMethodId) . ', ' . $ordering);
-					}
+						$insert = true;
 
-					$ordering++;
+						foreach ($languages as $language)
+						{
+							$query->values($groupId . ',' . $db->quote($language) . ',' . $db->quote($translationMethodId) . ', ' . $ordering);
+						}
+
+						$ordering++;
+					}
 				}
 			}
 
@@ -129,6 +132,8 @@ class NenoModelGroupElement extends JModelAdmin
 				$db->setQuery($query);
 				$db->execute();
 			}
+
+			NenoHelper::consolidateTranslationMethods($groupId);
 
 			return true;
 		}
