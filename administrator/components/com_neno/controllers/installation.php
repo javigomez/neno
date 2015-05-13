@@ -180,6 +180,9 @@ class NenoControllerInstallation extends JControllerAdmin
 		NenoHelper::groupingTablesNotDiscovered();
 		$this->setSetupState(100, 'Installation completed');
 
+		$group = new NenoContentElementGroup(array ('group_name' => JText::_('COM_NENO_DO_NOT_TRANSLATE_GROUP_NAME')));
+		$group->persist();
+
 		echo 'ok';
 
 		JFactory::getApplication()->close();
