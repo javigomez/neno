@@ -149,12 +149,6 @@ class NenoViewStrings extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		$canDo = NenoHelper::getActions();
-
-		if ($canDo->get('core.admin'))
-		{
-			JToolBarHelper::preferences('com_neno');
-		}
 
 		$bar = JToolbar::getInstance('toolbar');
 		$bar->appendButton('Link', 'screen', JText::_('COM_NENO_VIEW_STRINGS_TRANSLATE'), 'index.php?option=com_neno&task=strings.translateTheseStringsTask');

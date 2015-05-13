@@ -49,17 +49,11 @@ class NenoViewMoveElementConfirm extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		$canDo = NenoHelper::getActions();
 
 		JToolBarHelper::title(JText::_('COM_NENO_VIEW_MOVELEMENTCONFIRM_TITLE'), 'move.png');
         
         JToolbarHelper::save('moveelementconfirm.move', JText::_('COM_NENO_VIEW_MOVELEMENTCONFIRM_CONFIRM_BTN'));
         JToolbarHelper::cancel('moveelementconfirm.cancel');
-        
-		if ($canDo->get('core.admin'))
-		{
-			JToolBarHelper::preferences('com_neno');
-		}
 
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=groupselements');

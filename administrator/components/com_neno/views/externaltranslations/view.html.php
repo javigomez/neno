@@ -78,12 +78,6 @@ class NenoViewExternalTranslations extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		$canDo = NenoHelper::getActions();
-
-		if ($canDo->get('core.admin'))
-		{
-			JToolBarHelper::preferences('com_neno');
-		}
 
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=externaltranslations');
