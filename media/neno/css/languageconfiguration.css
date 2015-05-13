@@ -22,6 +22,9 @@
 .language-wrapper .configuration-button {
     float: right;
 }
+.method-selectors {
+    width: 300px;
+}
 .language-wrapper .language-configuration {
     background-color: #eee;
     margin-left: -20px;
@@ -60,4 +63,13 @@
 }
 button.disabled {
     cursor: not-allowed !important;
+}
+.method-selectors .controls,
+.method-selectors .control-label {
+    float: left;
+    line-height: 24px;
+    margin: 2px 7px 7px 0;
+}
+.method-selectors .control-label {
+    margin-top: 3px;
 }
