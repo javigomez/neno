@@ -59,7 +59,7 @@ function saveTranslationAndNext() {
                 }
 
                 if (typeof data.message != 'undefined') {
-                    jQuery('#consolidate-modal .modal-body p').text(data.message);
+                    jQuery('#consolidate-modal .modal-body p').html(data.message);
                     jQuery('#consolidate-button').off('click').data('translation', translationId).on('click', function () {
                         var translationId = jQuery(this).data('translation');
                         jQuery.ajax({

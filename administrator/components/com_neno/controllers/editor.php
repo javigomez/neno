@@ -152,13 +152,15 @@ class NenoControllerEditor extends NenoControllerStrings
 			$data = array (
 				'translation' => $translation->prepareDataForView()
 			);
-
+            
+            $original_text = $translation->getOriginalText();
+            
 			$model   = $this->getModel();
-			$counter = $model->getSimilarTranslationsCounter($translationId, $translation->getOriginalText());
+			$counter = $model->getSimilarTranslationsCounter($translationId, $original_text);
 
 			if ($counter != 0)
 			{
-				$data['message'] = JText::sprintf('COM_NENO_EDITOR_CONSOLIDATE_MESSAGE', $counter);
+				$data['message'] = JText::sprintf('COM_NENO_EDITOR_CONSOLIDATE_MESSAGE', $counter, $original_text, $translationText);
 			}
 
 			echo json_encode($data);
