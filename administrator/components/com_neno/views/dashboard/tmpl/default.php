@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
+JHtml::_('formbehavior.chosen', 'select');
 
 // Include the CSS file
 JHtml::stylesheet('media/neno/css/admin.css');
@@ -32,6 +33,8 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	jQuery(document).ready(bindEvents);
 
 	function bindEvents() {
+		//Bind the loader unto the new selector
+		loadMissingTranslationMethodSelectors();
 		jQuery('.configuration-button').on('click', function () {
 			jQuery(this).siblings('.language-configuration').slideToggle('fast');
 		});
@@ -47,6 +50,86 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 		jQuery("[data-issue]").off('click').on('click', fixIssue);
 
+	}
+
+	function loadMissingTranslationMethodSelectors() {
+		if (typeof jQuery(this).prop("tagName") == 'undefined') {
+			i = 1;
+			jQuery('.method-selectors').each(function () {
+				//Count how many we currently are showing
+				var n = jQuery(this).find('.translation-method-selector-container').length;
+
+				//If we are loading because of changing a selector, remove all children
+				var selector_id = jQuery(this).find('.translation-method-selector').attr('data-selector-id');
+				if (typeof selector_id !== 'undefined') {
+					//Loop through each selector and remove the ones that are after this one
+					for (var i = 0; i < n; i++) {
+						if (i > selector_id) {
+							jQuery(this).find("[data-selector-container-id='" + i + "']").remove();
+						}
+					}
+				}
+
+				//Create a string to pass the current selections
+				var selected_methods_string = '';
+				jQuery(this).find('.translation-method-selector').each(function () {
+					selected_methods_string += '&selected_methods[]=' + jQuery(this).find(':selected').val();
+				});
+
+				executeAjax(n, selected_methods_string, jQuery(this).find('.translation-method-selector'));
+			});
+		}
+		else {
+			//If we are loading because of changing a selector, remove all children
+			var selector_id = jQuery(this).data('selector-id');
+			var n = jQuery(this).closest('.method-selectors').find('.translation-method-selector-container').length;
+			if (typeof selector_id !== 'undefined') {
+				//Loop through each selector and remove the ones that are after this one
+				for (var i = 0; i < n; i++) {
+					if (i > selector_id) {
+						console.log(jQuery(this).closest('.method-selectors').find("[data-selector-container-id='" + i + "']"));
+						jQuery(this).closest('.method-selectors').find("[data-selector-container-id='" + i + "']").remove();
+					}
+				}
+			}
+			var selected_methods_string = '&selected_methods[]=' + jQuery(this).find(':selected').val();
+			var lang = jQuery(this).closest('.method-selectors').data('language');
+			var otherParams = '&language=' + lang;
+			saveTranslationMethod(jQuery(this).find(':selected').val(), lang, selector_id + 1);
+			executeAjax(n, selected_methods_string, jQuery(this), otherParams);
+		}
+
+
+		function executeAjax(n, selected_methods_string, element, otherParams) {
+			if (typeof otherParams == 'undefined') {
+				otherParams = '';
+			}
+			jQuery.ajax({
+				beforeSend: onBeforeAjax,
+				url: 'index.php?option=com_neno&task=getTranslationMethodSelector&placement=language&n=' + n + selected_methods_string + otherParams,
+				success: function (html) {
+					if (html !== '') {
+						jQuery(element).closest('.method-selectors').append(html);
+					}
+
+					jQuery('.translation-method-selector').off('change').on('change', loadMissingTranslationMethodSelectors);
+					jQuery('select').chosen();
+				}
+			});
+		}
+
+		function saveTranslationMethod(translationMethod, language, ordering) {
+			jQuery.ajax({
+				beforeSend: onBeforeAjax,
+				url: 'index.php?option=com_neno&task=saveTranslationMethod',
+				type: 'POST',
+				data: {
+					translationMethod: translationMethod,
+					language: language,
+					ordering: ordering
+				}
+			});
+		}
 	}
 </script>
 

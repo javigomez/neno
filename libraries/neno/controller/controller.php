@@ -225,6 +225,7 @@ class NenoController extends JControllerLegacy
 
 			$db->setQuery($query);
 			$languages = $db->loadObjectListMultiIndex('lang_code');
+			$item      = new stdClass;
 
 			foreach ($languages as $language)
 			{
@@ -232,7 +233,6 @@ class NenoController extends JControllerLegacy
 				$queued          = 0;
 				$changed         = 0;
 				$untranslated    = 0;
-				$item            = new stdClass;
 				$item->lang_code = $language[0]->lang_code;
 				$item->published = $language[0]->published;
 				$item->title     = $language[0]->title;
@@ -276,5 +276,108 @@ class NenoController extends JControllerLegacy
 		}
 
 		JFactory::getApplication()->close();
+	}
+
+	/**
+	 * Get translation method selector
+	 *
+	 * @return void
+	 */
+	public function getTranslationMethodSelector()
+	{
+		$input              = $this->input;
+		$n                  = $input->getInt('n', 0);
+		$selected_methods   = $input->get('selected_methods', array (), 'ARRAY');
+		$placement          = $input->getString('placement', 'general');
+		$translationMethods = NenoHelper::loadTranslationMethods();
+		$app                = JFactory::getApplication();
+
+		// Ensure that we know what was selected for the previous selector
+		if (($n > 0 && !isset($selected_methods[$n - 1])) || ($n > 0 && $selected_methods[$n - 1] == 0))
+		{
+			$app->close();
+		}
+
+		// As a safety measure prevent more than 5 selectors and always allow only one more selector than already selected
+		if ($n > 4 || $n > count($selected_methods) + 1)
+		{
+			$app->close();
+		}
+
+		// Reduce the translation methods offered depending on the parents
+		if ($n > 0 && !empty($selected_methods))
+		{
+			$parent_method                   = $selected_methods[$n - 1];
+			$acceptable_follow_up_method_ids = $translationMethods[$parent_method]->acceptable_follow_up_method_ids;
+			$acceptable_follow_up_methods    = explode(',', $acceptable_follow_up_method_ids);
+
+			foreach ($translationMethods as $k => $translation_method)
+			{
+				if (!in_array($k, $acceptable_follow_up_methods))
+				{
+					unset($translationMethods[$k]);
+				}
+			}
+		}
+
+		// If there are no translation methods left then return nothing
+		if (!count($translationMethods))
+		{
+			JFactory::getApplication()->close();
+		}
+
+		// Prepare display data
+		$displayData                        = array ();
+		$displayData['translation_methods'] = $translationMethods;
+		$displayData['n']                   = $n;
+
+		if ($placement == 'general')
+		{
+			$displayData['assigned_translation_methods'] = NenoHelper::getTranslationMethods();
+		}
+		else
+		{
+			$lang                                        = $input->getString('language');
+			$displayData['assigned_translation_methods'] = NenoHelper::getLanguageDefault($lang);
+		}
+
+		$selectorHTML = JLayoutHelper::render('translationmethodselector', $displayData, JPATH_NENO_LAYOUTS);
+
+		echo $selectorHTML;
+
+		$app->close();
+
+	}
+
+	/**
+	 * Save translation method
+	 *
+	 * @return void
+	 */
+	public function saveTranslationMethod()
+	{
+		$input             = $this->input;
+		$language          = $input->getString('language');
+		$translationMethod = $input->getInt('translationMethod');
+		$ordering          = $input->getInt('ordering');
+
+		$db    = JFactory::getDbo();
+		$query = 'REPLACE INTO #__neno_content_language_defaults (lang,translation_method_id, ordering) VALUES (' . $db->quote($language) . ',' . $translationMethod . ',' . $ordering . ')';
+		$db->setQuery($query);
+		$db->execute();
+
+		$query = $db->getQuery(true);
+		$query
+			->delete('#__neno_content_language_defaults')
+			->where(
+				array (
+					'lang = ' . $db->quote($language),
+					'ordering > ' . $ordering
+				)
+			);
+
+		$db->setQuery($query);
+		$db->execute();
+
 	}
 }

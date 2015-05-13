@@ -2652,6 +2652,29 @@ class NenoHelper
 	}
 
 	/**
+	 * Get language default translation methods
+	 *
+	 * @param   string $languageTag Language tag
+	 *
+	 * @return array
+	 */
+	public static function getLanguageDefault($languageTag)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('*')
+			->from('#__neno_content_language_defaults')
+			->where('lang = ' . $db->quote($languageTag));
+
+		$db->setQuery($query);
+		$translationMethods = $db->loadObjectList();
+
+		return $translationMethods;
+	}
+
+	/**
 	 * Get a list of menu items associated to the one passed by argument
 	 *
 	 * @param    integer $menuItemId Menu Item id

@@ -14,7 +14,9 @@ defined('JPATH_NENO') or die;
 $document = JFactory::getDocument();
 $document->addStyleSheet(JUri::root() . '/media/neno/css/languageconfiguration.css');
 
-$item = (array) $displayData;
+$item               = (array) $displayData;
+$translationMethods = NenoHelper::loadTranslationMethods();
+$n                  = 0;
 ?>
 
 <div class="language-wrapper language-<?php echo $item['placement']; ?>">
@@ -59,6 +61,7 @@ $item = (array) $displayData;
 				<?php echo JText::sprintf('COM_NENO_DASHBOARD_GROUPS_ELEMENTS_LINK', JRoute::_('index.php?option=com_neno&task=setWorkingLang&lang=' . $item['lang_code'] . '&next=groupselements')); ?>
 			<?php endif; ?>
 		</span>
+
 		<div class="language-configuration-controls">
 			<button class="btn <?php echo empty($item['errors']) ? '' : 'disabled'; ?>"
 			        title="<?php echo empty($item['errors']) ? '' : JText::_('COM_NENO_DASHBOARD_REMOVE_DISABLED'); ?>"
@@ -82,23 +85,12 @@ $item = (array) $displayData;
 					<?php echo JText::_('JUNPUBLISHED'); ?>
 				</label>
 			</fieldset>
-			<div class="method-selectors">
-				<div class="method-1-wrapper">
-					<label>Method 1:</label>
-					<select class="method-1" data-lang-code="<?php echo $item['lang_code']; ?>">
-						<option value="machine">Machine</option>
-						<option>Translation</option>
-						<option>Translation</option>
-					</select>
-				</div>
-				<div class="method-2-wrapper">
-					<label>Method 2:</label>
-					<select class="method-2" data-lang-code="<?php echo $item['lang_code']; ?>">
-						<option>Translation</option>
-						<option>Translation</option>
-						<option>Translation</option>
-					</select>
-				</div>
+			<div class="method-selectors" data-language="<?php echo $item['lang_code']; ?>">
+				<?php $displayData = array (); ?>
+				<?php $displayData['n'] = $n; ?>
+				<?php $displayData['assigned_translation_methods'] = $item['translationMethods']; ?>
+				<?php $displayData['translation_methods'] = $translationMethods; ?>
+				<?php echo JLayoutHelper::render('translationmethodselector', $displayData, JPATH_NENO_LAYOUTS); ?>
 			</div>
 		</div>
 	</div>

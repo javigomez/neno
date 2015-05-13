@@ -29,7 +29,7 @@ defined('JPATH_NENO') or die;
 <?php endforeach; ?>
         </table>
     </reference>
-</neno>    
-            
+</neno>
+
 <?php endif; ?>
 

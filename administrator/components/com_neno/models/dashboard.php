@@ -71,6 +71,7 @@ class NenoModelDashboard extends JModelList
 			$item->wordCount->changed      = $changed;
 			$item->wordCount->untranslated = $untranslated;
 			$item->wordCount->total        = $translated + $queued + $changed + $untranslated;
+			$item->translationMethods      = NenoHelper::getLanguageDefault($item->lang_code);
 			$items[]                       = $item;
 		}
 

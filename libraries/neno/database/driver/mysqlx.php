@@ -146,7 +146,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 			$queryType = $this->getQueryType($sql);
 
 			// If the query is a select statement let's get the sql query using its shadow table name
-			if ($queryType === self::SELECT_QUERY)
+			if ($queryType === self::SELECT_QUERY && JFactory::getApplication()->isSite())
 			{
 				$sql = $this->replaceTableNameStatements($sql);
 			}
