@@ -69,62 +69,50 @@ class NenoContentElementTranslation extends NenoContentElement
 	 * @var integer
 	 */
 	public $charactersCounter;
-
+	/**
+	 * @var int
+	 */
+	public $translationMethods;
 	/**
 	 * @var string
 	 */
 	protected $originalText;
-
 	/**
 	 * @var integer
 	 */
 	protected $contentType;
-
 	/**
 	 * @var NenoContentElement
 	 */
 	protected $element;
-
 	/**
 	 * @var string
 	 */
 	protected $language;
-
 	/**
 	 * @var integer
 	 */
 	protected $state;
-
 	/**
 	 * @var string
 	 */
 	protected $string;
-
 	/**
 	 * @var DateTime
 	 */
 	protected $timeAdded;
-
 	/**
 	 * @var DateTime
 	 */
 	protected $timeRequested;
-
 	/**
 	 * @var Datetime
 	 */
 	protected $timeChanged;
-
 	/**
 	 * @var DateTime
 	 */
 	protected $timeCompleted;
-
-	/**
-	 * @var int
-	 */
-	protected $translationMethod;
-
 	/**
 	 * @var int
 	 */
@@ -170,12 +158,13 @@ class NenoContentElementTranslation extends NenoContentElement
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 			$query
-				->select('*')
-				->from('#__neno_translation_methods')
-				->where('id = ' . (int) $this->translationMethod);
+				->select('tm.*')
+				->from('#__neno_translation_methods AS tm')
+				->innerJoin('#__neno_content_element_translation_x_translation_methods AS tr_x_tm ON tr_x_tm.translation_method_id = tm.id')
+				->where('tr_x_tm.translation_id = ' . (int) $this->id);
 
 			$db->setQuery($query);
-			$this->translationMethod = $db->loadObject();
+			$this->translationMethods = $db->loadObjectList();
 		}
 	}
 
@@ -299,21 +288,21 @@ class NenoContentElementTranslation extends NenoContentElement
 	 *
 	 * @return string
 	 */
-	public function getTranslationMethod()
+	public function getTranslationMethods()
 	{
-		return $this->translationMethod;
+		return $this->translationMethods;
 	}
 
 	/**
 	 * Set the translation method
 	 *
-	 * @param   string $translationMethod Translation method
+	 * @param   string $translationMethods Translation method
 	 *
 	 * @return NenoContentElementTranslation
 	 */
-	public function setTranslationMethod($translationMethod)
+	public function setTranslationMethods($translationMethods)
 	{
-		$this->translationMethod = $translationMethod;
+		$this->translationMethods = $translationMethods;
 
 		return $this;
 	}
@@ -518,8 +507,10 @@ class NenoContentElementTranslation extends NenoContentElement
 	{
 		// Update word counter
 		$this->wordCounter = str_word_count($this->getString());
-		$db                = JFactory::getDbo();
-		$query             = $db->getQuery(true);
+
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 		$query->select('translation_method_id');
 
 		if ($this->contentType === self::DB_STRING)
@@ -545,7 +536,7 @@ class NenoContentElementTranslation extends NenoContentElement
 			->order('ordering ASC');
 
 		$db->setQuery($query, 0, 1);
-		$this->translationMethod = $db->loadResult();
+		$this->translationMethods = $db->loadArray();
 
 		if ($this->getState() == self::TRANSLATED_STATE)
 		{

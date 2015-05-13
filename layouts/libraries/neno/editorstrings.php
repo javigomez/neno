@@ -23,7 +23,7 @@ $translationStatesText[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATE
 $translationStatesText[NenoContentElementTranslation::SOURCE_CHANGED_STATE]              = JText::_('COM_NENO_STATUS_CHANGED');
 $translationStatesText[NenoContentElementTranslation::NOT_TRANSLATED_STATE]              = JText::_('COM_NENO_STATUS_NOTTRANSLATED');
 
-if (!empty($displayData->translations))
+if (isset($displayData->translations))
 {
 	$translations = $displayData->translations;
 }

@@ -64,7 +64,12 @@ $listDirection = $displayData->state->get('list.direction');
 			<td><?php echo $translation->breadcrumbs[0]; ?></td>
 			<td><?php echo $translation->breadcrumbs[1]; ?></td>
 			<td><?php echo $translation->breadcrumbs[2]; ?></td>
-			<td><?php echo JText::_($translation->translation_method->name_constant); ?></td>
+			<td>
+				<?php for ($i = 0; $i < count($translation->translation_methods); $i++): ?>
+					<?php echo JText::_($translation->translation_methods[$i]->name_constant); ?>
+					<?php echo ($i < count($translation->translation_methods) - 1) ? ',' : ''; ?>
+				<?php endfor; ?>
+			</td>
 			<td><?php echo $translation->word_counter; ?></td>
 			<td><?php echo $translation->characters_counter; ?></td>
 		</tr>

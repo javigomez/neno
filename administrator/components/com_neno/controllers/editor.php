@@ -114,7 +114,7 @@ class NenoControllerEditor extends NenoControllerStrings
 		$translation
 			->setString($translationText)
 			->setState($changeState)
-			->setTranslationMethod(NenoContentElementTranslation::MANUAL_TRANSLATION_METHOD);
+			->setTranslationMethods(NenoContentElementTranslation::MANUAL_TRANSLATION_METHOD);
 
 		if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
 		{

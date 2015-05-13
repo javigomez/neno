@@ -194,13 +194,11 @@ class NenoModelStrings extends JModelList
 			->innerJoin('`#__neno_content_element_fields` AS f ON tr1.content_id = f.id')
 			->innerJoin('`#__neno_content_element_tables` AS t ON t.id = f.table_id')
 			->innerJoin('`#__neno_content_element_groups` AS g1 ON t.group_id = g1.id ')
-			->innerJoin('`#__neno_content_element_groups_x_translation_methods` AS gtm1 ON g1.id = gtm1.group_id')
 			->where(
 				array (
 					'tr1.language = ' . $db->quote($workingLanguage),
 					'tr1.content_type = ' . $db->quote('db_string'),
-					'f.translate = 1',
-					'gtm1.lang = ' . $db->quote($workingLanguage)
+					'f.translate = 1'
 				)
 			)
 			->group(
@@ -225,12 +223,10 @@ class NenoModelStrings extends JModelList
 			->innerJoin('`#__neno_content_element_language_strings` AS ls ON tr2.content_id = ls.id')
 			->innerJoin('`#__neno_content_element_language_files` AS lf ON lf.id = ls.languagefile_id')
 			->innerJoin('`#__neno_content_element_groups` AS g2 ON lf.group_id = g2.id ')
-			->leftJoin('`#__neno_content_element_groups_x_translation_methods` AS gtm2 ON g2.id = gtm2.group_id')
 			->where(
 				array (
 					'tr2.language = ' . $db->quote($workingLanguage),
-					'tr2.content_type = ' . $db->quote('lang_string'),
-					'gtm2.lang = ' . $db->quote($workingLanguage)
+					'tr2.content_type = ' . $db->quote('lang_string')
 				)
 			)
 			->group(
@@ -299,8 +295,12 @@ class NenoModelStrings extends JModelList
 
 		if (!empty($method) && !in_array('none', $method))
 		{
-			$dbStrings->where('gtm1.translation_method_id IN ("' . implode('", "', $method) . '")');
-			$languageFileStrings->where('gtm2.translation_method_id IN ("' . implode('", "', $method) . '")');
+			$dbStrings
+				->where('tr_x_tm1.translation_method_id IN ("' . implode('", "', $method) . '")')
+				->leftJoin('`#__neno_content_element_translation_x_translation_methods` AS tr_x_tm1 ON tr1.id = tr_x_tm1.translation_id');
+			$languageFileStrings
+				->where('tr_x_tm2.translation_method_id IN ("' . implode('", "', $method) . '")')
+				->leftJoin('`#__neno_content_element_translation_x_translation_methods` AS tr_x_tm2 ON tr2.id = tr_x_tm2.translation_id');
 		}
 
 		$status = (array) $this->getState('filter.translation_status', array ());
