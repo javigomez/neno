@@ -2692,7 +2692,7 @@ class NenoHelper
 
 			foreach ($serverInformation as $key => $name)
 			{
-				echo $other . $key . ' => ';
+				echo '### ' . $other . $key . ' ###';
 
 				if (is_array($name))
 				{
@@ -2846,6 +2846,16 @@ class NenoHelper
 
 		return trim($output);
 
+	}
+
+	public static function consolidateTranslationMethods($groupId)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('')
+		;
 	}
 
 	/**
