@@ -78,6 +78,11 @@ class NenoViewGroupsElements extends JViewLegacy
 	{
 
 		JToolbarHelper::custom('moveelementconfirm.show', 'move', 'move', JText::_('COM_NENO_VIEW_GROUPSELEMENTS_BTN_MOVE_ELEMENTS'), true);
+
+		$toolbar = JToolbar::getInstance();
+		$toolbar->addButtonPath(JPATH_NENO . '/button');
+		$toolbar->appendButton('TC', $this->get('TCAvailable'));
+        
         $this->extra_sidebar = NenoHelper::getSidebarInfobox('groupselements');
     }
 }
