@@ -94,6 +94,12 @@ class NenoHelper
 			'index.php?option=com_neno&view=settings',
 			($vName == 'settings') ? true : false
 		);
+
+		JHtmlSidebar::addEntry(
+			JText::_('COM_NENO_NAV_LINK_DEBUG_REPORT'),
+			'index.php?option=com_neno&view=debug',
+			($vName == 'debug') ? true : false
+		);
 	}
 
 	/**
@@ -2674,6 +2680,36 @@ class NenoHelper
 		return $translationMethods;
 	}
 
+	public static function printServerInformation($serverInformation, $other = '')
+	{
+		ob_start();
+		if (is_array($serverInformation))
+		{
+			if (!empty($other))
+			{
+				$other = $other . '.';
+			}
+
+			foreach ($serverInformation as $key => $name)
+			{
+				echo $other . $key . ' => ';
+
+				if (is_array($name))
+				{
+					echo "\r\t";
+				}
+
+				echo self::printServerInformation($name, $other . $key) . "\r\t";
+			}
+		}
+		else
+		{
+			echo $serverInformation;
+		}
+
+		return ob_get_clean();
+	}
+
 	/**
 	 * Get information about PHP
 	 *
@@ -2708,22 +2744,108 @@ class NenoHelper
 			}
 		}
 
+		// Get extensions installed
+
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(
+				array (
+					'name', 'element'
+				)
+			)
+			->from('#__extensions');
+
+		$db->setQuery($query);
+		$phpInfo['extensions']     = $db->loadAssocList();
+		$xml                       = new SimpleXMLElement(file_get_contents(JPATH_ADMINISTRATOR . '/components/com_neno/neno.xml'));
+		$phpInfo['neno_version']   = (string) $xml->version;
+		$phpInfo['joomla_version'] = JVERSION;
+		$phpInfo['neno_log']       = self::tailCustom(JPATH_ROOT . '/logs/neno_log.php', 100);
+
 		if (!empty($phpInfo))
 		{
 			foreach ($phpInfo as $name => $section)
 			{
-				foreach ($section as $key => $val)
+				if ($name != 'extensions')
 				{
-					if (is_numeric($key))
+					if (is_array($section))
 					{
-						unset($phpInfo[$name][$key]);
+						foreach ($section as $key => $val)
+						{
+							if (is_numeric($key))
+							{
+								unset($phpInfo[$name][$key]);
+							}
+						}
 					}
-
 				}
 			}
 		}
 
 		return $phpInfo;
+	}
+
+	public static function tailCustom($filepath, $lines = 1, $adaptive = true)
+	{
+
+		// Open file
+		$f = @fopen($filepath, "rb");
+		if ($f === false) return false;
+
+		// Sets buffer size
+		if (!$adaptive) $buffer = 4096;
+		else $buffer = ($lines < 2 ? 64 : ($lines < 10 ? 512 : 4096));
+
+		// Jump to last character
+		fseek($f, -1, SEEK_END);
+
+		// Read it and adjust line number if necessary
+		// (Otherwise the result would be wrong if file doesn't end with a blank line)
+		if (fread($f, 1) != "\n") $lines -= 1;
+
+		// Start reading
+		$output = '';
+		$chunk  = '';
+
+		// While we would like more
+		while (ftell($f) > 0 && $lines >= 0)
+		{
+
+			// Figure out how far back we should jump
+			$seek = min(ftell($f), $buffer);
+
+			// Do the jump (backwards, relative to where we are)
+			fseek($f, -$seek, SEEK_CUR);
+
+			// Read a chunk and prepend it to our output
+			$output = ($chunk = fread($f, $seek)) . $output;
+
+			// Jump back to where we started reading
+			fseek($f, -mb_strlen($chunk, '8bit'), SEEK_CUR);
+
+			// Decrease our line counter
+			$lines -= substr_count($chunk, "\n");
+
+		}
+
+		// While we have too many lines
+		// (Because of buffer size we might have read too many)
+		while ($lines++ < 0)
+		{
+
+			// Find first newline and remove all text before that
+			$output = substr($output, strpos($output, "\n") + 1);
+
+		}
+
+		// Close file and return
+		fclose($f);
+
+		return trim($output);
+
 	}
 
 	/**
