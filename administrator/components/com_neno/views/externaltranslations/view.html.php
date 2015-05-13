@@ -81,10 +81,6 @@ class NenoViewExternalTranslations extends JViewLegacy
 
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=externaltranslations');
-		$toolbar = JToolbar::getInstance();
-
-		$toolbar->addButtonPath(JPATH_NENO . '/button');
-		$toolbar->appendButton('TC', $this->get('TCAvailable'));
 
 		$this->extra_sidebar = '';
 	}
