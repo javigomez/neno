@@ -93,7 +93,7 @@ class NenoModelEditor extends NenoModelStrings
 			->where(
 				array (
 					'original_text = ' . $db->quote($translationText),
-					'state = 4',
+					'state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE,
 					'id <> ' . $translationId,
 				)
 			);

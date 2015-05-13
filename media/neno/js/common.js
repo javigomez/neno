@@ -47,7 +47,7 @@ function saveTranslationAndNext() {
                 text: text
             },
             success: function (data) {
-                var row = jQuery('#elements-wrapper .string[data-id=' + data.id + ']');
+                var row = jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']');
                 if (row) {
                     var string = data.translation.string;
                     if (string.length > 40) {
