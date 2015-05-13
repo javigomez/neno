@@ -379,5 +379,6 @@ class NenoController extends JControllerLegacy
 		$db->setQuery($query);
 		$db->execute();
 
+		JFactory::getApplication()->close();
 	}
 }

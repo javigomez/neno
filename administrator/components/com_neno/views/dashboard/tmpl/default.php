@@ -98,38 +98,38 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 			saveTranslationMethod(jQuery(this).find(':selected').val(), lang, selector_id + 1);
 			executeAjax(n, selected_methods_string, jQuery(this), otherParams);
 		}
+	}
 
 
-		function executeAjax(n, selected_methods_string, element, otherParams) {
-			if (typeof otherParams == 'undefined') {
-				otherParams = '';
+	function executeAjax(n, selected_methods_string, element, otherParams) {
+		if (typeof otherParams == 'undefined') {
+			otherParams = '';
+		}
+		jQuery.ajax({
+			beforeSend: onBeforeAjax,
+			url: 'index.php?option=com_neno&task=getTranslationMethodSelector&placement=language&n=' + n + selected_methods_string + otherParams,
+			success: function (html) {
+				if (html !== '') {
+					jQuery(element).closest('.method-selectors').append(html);
+				}
+
+				jQuery('.translation-method-selector').off('change').on('change', loadMissingTranslationMethodSelectors);
+				jQuery('select').chosen();
 			}
-			jQuery.ajax({
-				beforeSend: onBeforeAjax,
-				url: 'index.php?option=com_neno&task=getTranslationMethodSelector&placement=language&n=' + n + selected_methods_string + otherParams,
-				success: function (html) {
-					if (html !== '') {
-						jQuery(element).closest('.method-selectors').append(html);
-					}
+		});
+	}
 
-					jQuery('.translation-method-selector').off('change').on('change', loadMissingTranslationMethodSelectors);
-					jQuery('select').chosen();
-				}
-			});
-		}
-
-		function saveTranslationMethod(translationMethod, language, ordering) {
-			jQuery.ajax({
-				beforeSend: onBeforeAjax,
-				url: 'index.php?option=com_neno&task=saveTranslationMethod',
-				type: 'POST',
-				data: {
-					translationMethod: translationMethod,
-					language: language,
-					ordering: ordering
-				}
-			});
-		}
+	function saveTranslationMethod(translationMethod, language, ordering) {
+		jQuery.ajax({
+			beforeSend: onBeforeAjax,
+			url: 'index.php?option=com_neno&task=saveTranslationMethod',
+			type: 'POST',
+			data: {
+				translationMethod: translationMethod,
+				language: language,
+				ordering: ordering
+			}
+		});
 	}
 </script>
 
