@@ -2854,7 +2854,19 @@ class NenoHelper
 		$subQuery        = $db->getQuery(true);
 		$workingLanguage = self::getWorkingLanguage();
 
-		// For untranslated strings
+		$subQuery2 = $db->getQuery(true);
+		$subQuery2
+			->select('1')
+			->from('#__neno_content_element_translation_x_translation_methods AS trtm')
+			->innerJoin('#__neno_translation_methods AS tm ON trtm.translation_method_id = tm.id')
+			->where(
+				array (
+					'trtm.translation_id = tr.id',
+					'FIND_IN_SET(gtm.translation_method_id,tm.acceptable_follow_up_method_ids)'
+				)
+			);
+
+		// For database strings
 		$subQuery
 			->select(
 				array (
@@ -2891,6 +2903,35 @@ class NenoHelper
 				)
 			)
 			->from('#__neno_content_element_translations AS tr')
+			->innerJoin('#__neno_content_element_fields AS f ON tr.content_id = f.id')
+			->innerJoin('#__neno_content_element_tables AS t ON f.table_id = t.id')
+			->innerJoin('#__neno_content_element_groups AS g ON g.id = t.group_id')
+			->leftJoin('#__neno_content_element_groups_x_translation_methods AS gtm ON g.id = gtm.group_id AND tr.language = gtm.lang')
+			->where(
+				array (
+					'tr.state = ' . NenoContentElementTranslation::TRANSLATED_STATE,
+					'tr.content_type = ' . $db->quote('db_string'),
+					'tr.language = ' . $db->quote($workingLanguage),
+					'g.id = ' . (int) $groupId,
+					'gtm.ordering > 1',
+					'EXISTS (' . (string) $subQuery2 . ' )'
+				)
+			);
+
+		$query = 'REPLACE INTO #__neno_content_element_translation_x_translation_methods (translation_id,translation_method_id,ordering) (' . (string) $subQuery . ')';
+		$db->setQuery($query);
+		$db->execute();
+
+		$subQuery
+			->clear()
+			->select(
+				array (
+					'tr.id',
+					'gtm.translation_method_id',
+					'gtm.ordering'
+				)
+			)
+			->from('#__neno_content_element_translations AS tr')
 			->innerJoin('#__neno_content_element_language_strings AS ls ON tr.content_id = ls.id')
 			->innerJoin('#__neno_content_element_language_files AS lf ON ls.languagefile_id = lf.id')
 			->innerJoin('#__neno_content_element_groups AS g ON g.id = lf.group_id')
@@ -2901,6 +2942,35 @@ class NenoHelper
 					'tr.content_type = ' . $db->quote('db_string'),
 					'tr.language = ' . $db->quote($workingLanguage),
 					'g.id = ' . (int) $groupId
+				)
+			);
+
+		$query = 'REPLACE INTO #__neno_content_element_translation_x_translation_methods (translation_id,translation_method_id,ordering) (' . (string) $subQuery . ')';
+		$db->setQuery($query);
+		$db->execute();
+
+		$subQuery
+			->clear()
+			->select(
+				array (
+					'tr.id',
+					'gtm.translation_method_id',
+					'gtm.ordering'
+				)
+			)
+			->from('#__neno_content_element_translations AS tr')
+			->innerJoin('#__neno_content_element_language_strings AS ls ON tr.content_id = ls.id')
+			->innerJoin('#__neno_content_element_language_files AS lf ON ls.languagefile_id = lf.id')
+			->innerJoin('#__neno_content_element_groups AS g ON g.id = lf.group_id')
+			->leftJoin('#__neno_content_element_groups_x_translation_methods AS gtm ON g.id = gtm.group_id AND tr.language = gtm.lang')
+			->where(
+				array (
+					'tr.state = ' . NenoContentElementTranslation::TRANSLATED_STATE,
+					'tr.content_type = ' . $db->quote('db_string'),
+					'tr.language = ' . $db->quote($workingLanguage),
+					'g.id = ' . (int) $groupId,
+					'gtm.ordering > 1',
+					'EXISTS (' . (string) $subQuery2 . ' )'
 				)
 			);
 
