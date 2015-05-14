@@ -566,6 +566,24 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	}
 
 	/**
+	 * Copy all the content to the shadow table
+	 *
+	 * @param   string $sourceTableName Name of the source table
+	 * @param   string $language        Language
+	 *
+	 * @return void
+	 */
+	public function deleteContentElementsFromSourceTableToShadowTables($sourceTableName, $language)
+	{
+		$query = $this->getQuery(true);
+		$query
+			->delete($sourceTableName)
+			->where('language = ' . $language);
+		$this->setQuery($query);
+		$this->execute();
+	}
+
+	/**
 	 * Copy the content to a table that uses Joomla language field
 	 *
 	 * @param   string $tableName Table name
