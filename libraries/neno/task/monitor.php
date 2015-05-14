@@ -130,8 +130,9 @@ class NenoTaskMonitor
 
 		if (empty($task))
 		{
-			self::addTask('job_scanner');
-			self::addTask('scan', array ('group' => 1));
+			//self::addTask('job_scanner');
+			//self::addTask('scan', array ('group' => 1));
+			self::addTask('discover');
 			$task = self::fetchTask();
 		}
 
