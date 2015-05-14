@@ -78,4 +78,18 @@ class PlgSystemNeno extends JPlugin
 	{
 
 	}
+
+	/**
+	 * This event is executed before Joomla render the page
+	 *
+	 * @return void
+	 */
+	public function onBeforeRender()
+	{
+		if (NenoSettings::get('schedule_task_option', 'ajax') == 'ajax')
+		{
+			$document = JFactory::getDocument();
+			$document->addScript(JUri::root() . '/media/neno/js/ajax_module.js');
+		}
+	}
 }
