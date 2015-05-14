@@ -12,7 +12,7 @@ JHtml::_('bootstrap.tooltip');
 		<div class="error-messages"></div>
 		<h2><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_TITLE'); ?></h2>
 
-		<div class="span6">
+		<div class="span6 default-method-selectors">
 			<p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_MESSAGE'); ?></p>
 
 			<div id="translation-method-selectors"></div>
