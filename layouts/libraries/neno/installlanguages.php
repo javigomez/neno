@@ -4,7 +4,7 @@ defined('_JEXEC') or die;
 $languages = $displayData->languages;
 
 ?>
-<table class="table">
+<table class="table table-striped">
 	<tr>
 		<th><?php echo JText::_('COM_NENO_INSTALL_LANGUAGES_LANGUAGE_NAME'); ?></th>
 		<th><?php echo JText::_('JVERSION'); ?></th>
@@ -26,7 +26,8 @@ $languages = $displayData->languages;
 
 <script>
 	jQuery("[data-language]").click(function () {
-		jQuery(this).attr('disabled', true);
+		var button = jQuery(this);
+		button.attr('disabled', true);
 		jQuery.ajax({
 			beforeSend: onBeforeAjax,
 			url: 'index.php?option=com_neno&task=installLanguage',
@@ -38,6 +39,8 @@ $languages = $displayData->languages;
 			type: 'POST',
 			success: function (html) {
 				if (html != 'err') {
+					button.parent.appendChild('<i class="icon-checkmark"></i>');
+					button.remove();
 					jQuery(html).insertBefore('#add-languages-button');
 					bindEvents();
 				}
