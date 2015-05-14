@@ -394,7 +394,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		$app      = JFactory::getApplication();
 
 		// Check if the user is trying to insert something in the front-end in different language
-		if ($this->getQueryType((string) $this->sql) === self::INSERT_QUERY && $language->getTag() !== $language->getDefault() && $app->isSite())
+		if ($this->getQueryType((string) $this->sql) === self::INSERT_QUERY && $language->getTag() !== $language->getDefault() && $app->isSite() && !$this->isNenoSql((string) $this->sql))
 		{
 			$language->load('com_neno', JPATH_ADMINISTRATOR);
 			throw new Exception(JText::_('COM_NENO_CONTENT_IN_OTHER_LANGUAGES_ARE_NOT_ALLLOWED'));
@@ -414,6 +414,18 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 				return false;
 			}
 		}
+	}
+
+	/**
+	 * Check if the SQL is from Neno
+	 *
+	 * @param   string $sql SQL to check
+	 *
+	 * @return int
+	 */
+	public function isNenoSql($sql)
+	{
+		return preg_match('/#__neno_(.+)/', $sql);
 	}
 
 	/**

@@ -41,6 +41,14 @@ class NenoTask extends NenoObject
 	 */
 	protected $taskData;
 
+	public function __construct($data, $loadExtraData = true)
+	{
+		parent::__construct($data, $loadExtraData);
+
+		$this->taskData = json_decode($this->taskData, true);
+	}
+
+
 	/**
 	 * Generate an id for a new record
 	 *
