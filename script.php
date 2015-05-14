@@ -27,6 +27,24 @@ class pkg_NenoInstallerScript
 		// Moving media files
 		JFolder::move($installationPath . '/media', JPATH_ROOT . '/media/neno');
 
+		// Enabling Neno plugin
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->update('#__extensions')
+			->set('enabled = 1')
+			->where(
+				array (
+					'type = ' . $db->quote('plugin'),
+					'folder = ' . $db->quote('system'),
+					'element = ' . $db->quote('neno')
+				)
+			);
+
+		$db->setQuery($query);
+		$db->execute();
+
 		$parent->getParent()->setRedirectURL(JRoute::_('index.php?option=com_neno&view=installation', false));
 
 		return true;
