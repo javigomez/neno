@@ -16,7 +16,7 @@ JHtml::_('bootstrap.tooltip');
 		<p><?php echo JText::_('COM_NENO_INSTALLATION_SCHEDULED_TASK_MESSAGE'); ?></p>
 		
 		<div class="schedule-task-options span12">
-			<div class="schedule-task-option btn span4 selected" data-option="ajax">
+			<div class="schedule-task-option btn span4 selected" data-option="ajax" data-toggle="tooltip" title="<?php echo JText::_('COM_NENO_INSTALLATION_SCHEDULED_TASK_TOOLTIP'); ?>">
 				<h3><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_AJAX_MODULE_TITLE'); ?></h3>
 				
 				<p><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_AJAX_MODULE_P1'); ?></p>
@@ -28,7 +28,7 @@ JHtml::_('bootstrap.tooltip');
 					<strong><?php echo JText::_('JDEFAULT'); ?></strong>
 				</div>
 			</div>
-			<div class="schedule-task-option btn span4" data-option="cron">
+			<div class="schedule-task-option btn span4" data-option="cron" data-toggle="tooltip" title="<?php echo JText::_('COM_NENO_INSTALLATION_SCHEDULED_TASK_TOOLTIP'); ?>">
 				<h3><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_CRON_TITLE'); ?></h3>
 				
 				<p><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_CRON_P1'); ?></p>
@@ -40,7 +40,7 @@ JHtml::_('bootstrap.tooltip');
 					<strong><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_CRON_RECOMMENDED'); ?></strong>
 				</div>
 			</div>
-			<div class="schedule-task-option btn span4" data-option="disable">
+			<div class="schedule-task-option btn span4" data-option="disable" data-toggle="tooltip" title="<?php echo JText::_('COM_NENO_INSTALLATION_SCHEDULED_TASK_TOOLTIP'); ?>">
 				<h3><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_DISABLE_TITLE'); ?></h3>
 				
 				<p><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_DISABLE_P1'); ?></p>
