@@ -229,7 +229,12 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 			jQuery('[for="check-toggle-translate-' + id + '-0"]').addClass('active btn-danger');
 			jQuery('[for="check-toggle-translate-' + id + '-1"]').removeClass('active btn-success');
 		}
-
+        
+        //Show an alert that count no longer is acurate
+        jQuery('#reload-notice').remove();
+        jQuery('.navbar-fixed-top .navbar-inner').append('<div style="padding:10px 30px;" id="reload-notice"><div class="alert alert-warning"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_WARNING'); ?><a href="index.php?option=com_neno&view=groupselements" class="btn btn-info pull-right" style="height: 16px; font-size: 12px;margin-top:-4px"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_BTN'); ?></a></div></div>').height('92');
+        jQuery('body').css('padding-top', '93px');
+        
 		jQuery.ajax({
 				beforeSend: onBeforeAjax,
 				url: 'index.php?option=com_neno&task=groupselements.toggleContentElementField&fieldId=' + id + '&translateStatus=' + status
