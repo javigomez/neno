@@ -288,7 +288,7 @@ class NenoContentElementField extends NenoContentElement
 	 *
 	 * @return void
 	 */
-	public function persistTranslations()
+	public function persistTranslations($recordId = null)
 	{
 		if ($this->translate)
 		{
@@ -303,7 +303,7 @@ class NenoContentElementField extends NenoContentElement
 			$languages          = NenoHelper::getLanguages();
 			$defaultLanguage    = JFactory::getLanguage()->getDefault();
 			$this->translations = array ();
-			$strings            = $this->getStrings();
+			$strings            = $this->getStrings($recordId);
 			$primaryKeyData     = $this->getTable()->getPrimaryKey();
 
 			if (!empty($strings))
@@ -385,7 +385,7 @@ class NenoContentElementField extends NenoContentElement
 	 *
 	 * @return array
 	 */
-	protected function getStrings()
+	protected function getStrings($recordId = null)
 	{
 		$rows       = array ();
 		$primaryKey = $this->getTable()->getPrimaryKey();
@@ -401,6 +401,11 @@ class NenoContentElementField extends NenoContentElement
 			foreach ($primaryKeyData as $primaryKey)
 			{
 				$query->select($db->quoteName($primaryKey));
+
+				if (!empty($recordId[$primaryKey]))
+				{
+					$query->where($db->quoteName($primaryKey) . ' = ' . $recordId[$primaryKey]);
+				}
 			}
 
 			$query
