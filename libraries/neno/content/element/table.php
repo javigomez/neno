@@ -144,7 +144,7 @@ class NenoContentElementTable extends NenoContentElement
 			$query
 				->select(
 					array (
-						'SUM((LENGTH(tr.string) - LENGTH(replace(tr.string,\' \',\'\'))+1)) AS counter',
+						'SUM(word_counter) AS counter',
 						'tr.state'
 					)
 				)
