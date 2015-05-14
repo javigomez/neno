@@ -2680,31 +2680,37 @@ class NenoHelper
 		return $translationMethods;
 	}
 
-	public static function printServerInformation($serverInformation, $other = '')
+	public static function printServerInformation($serverInformation)
 	{
 		ob_start();
 		if (is_array($serverInformation))
 		{
-			if (!empty($other))
-			{
-				$other = $other . '.';
-			}
 
 			foreach ($serverInformation as $key => $name)
 			{
-				echo '### ' . $other . $key . ' ###';
 
 				if (is_array($name))
 				{
-					echo "\r\t";
+					echo "### ";
+				} 
+                else
+                {
+                    echo '    ';
+                }
+                
+                echo $key;
+
+				if (is_array($name))
+				{
+					echo " ###\r    ";
 				}
 
-				echo self::printServerInformation($name, $other . $key) . "\r\t";
+				echo self::printServerInformation($name, $key) . "\r    ";
 			}
 		}
 		else
 		{
-			echo $serverInformation;
+			echo ': '.$serverInformation;
 		}
 
 		return ob_get_clean();
