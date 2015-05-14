@@ -28,17 +28,17 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * Machine translation method
 	 */
-	const MACHINE_TRANSLATION_METHOD = 'machine';
+	const MACHINE_TRANSLATION_METHOD = '2';
 
 	/**
 	 * Manual translation method
 	 */
-	const MANUAL_TRANSLATION_METHOD = 'manual';
+	const MANUAL_TRANSLATION_METHOD = '1';
 
 	/**
 	 * Professional translation method
 	 */
-	const PROFESSIONAL_TRANSLATION_METHOD = 'pro';
+	const PROFESSIONAL_TRANSLATION_METHOD = '3';
 
 	/**
 	 * This state is for a string that has been translated
@@ -281,30 +281,6 @@ class NenoContentElementTranslation extends NenoContentElement
 		$translationData = $db->loadAssoc();
 
 		return new NenoContentElementTranslation($translationData);
-	}
-
-	/**
-	 * Get the method used to translate the string
-	 *
-	 * @return string
-	 */
-	public function getTranslationMethods()
-	{
-		return $this->translationMethods;
-	}
-
-	/**
-	 * Set the translation method
-	 *
-	 * @param   string $translationMethods Translation method
-	 *
-	 * @return NenoContentElementTranslation
-	 */
-	public function setTranslationMethods($translationMethods)
-	{
-		$this->translationMethods = $translationMethods;
-
-		return $this;
 	}
 
 	/**
@@ -675,8 +651,8 @@ class NenoContentElementTranslation extends NenoContentElement
 		// If the translation comes from database content, let's load it
 		if ($this->contentType == self::DB_STRING)
 		{
-			
-            $query->clear()
+
+			$query->clear()
 				->select(
 					array (
 						'f.field_name',
@@ -692,17 +668,17 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			list($fieldName, $tableName) = $row;
 
-            //Ensure data entegrity
-            $methods = $this->getTranslationMethods();
-            
-            echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$methods = ". print_r($this, true)."\n</pre>";
+			//Ensure data entegrity
+			$methods = $this->getTranslationMethods();
 
-            
-            if (in_array(1, $methods))
-            {
-                $this->string = NenoHelper::ensureDataIntegrity($this->element->id, $this->string);
-            }
-            
+			echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$methods = " . print_r($this, true) . "\n</pre>";
+
+
+			if (in_array(1, $methods))
+			{
+				$this->string = NenoHelper::ensureDataIntegrity($this->element->id, $this->string);
+			}
+
 			$query
 				->clear()
 				->select(
@@ -770,6 +746,43 @@ class NenoContentElementTranslation extends NenoContentElement
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the method used to translate the string
+	 *
+	 * @return string
+	 */
+	public function getTranslationMethods()
+	{
+		return $this->translationMethods;
+	}
+
+	/**
+	 * Set the translation method
+	 *
+	 * @param   string $translationMethod Translation method
+	 *
+	 * @return NenoContentElementTranslation
+	 */
+	public function addTranslationMethod($translationMethod)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->select('*')
+			->from('#__neno_translation_methods')
+			->where('id = ' . (int) $translationMethod);
+		$db->setQuery($query);
+
+		if (!is_array($this->translationMethods))
+		{
+			$this->translationMethods = array ();
+		}
+
+		$this->translationMethods[] = $db->loadObject();
+
+		return $this;
 	}
 
 	/**
