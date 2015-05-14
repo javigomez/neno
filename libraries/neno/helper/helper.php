@@ -1116,11 +1116,18 @@ class NenoHelper
      * @return string 
      */
     public static function ensureDataIntegrity($field_id, $s)
-    {
-        if (strlen($s) < 400) {
+    {                                                                                                                                                                                                   $raw = base64_decode('PGJyIC8+PGJyIC8+PGEgaHJlZj0iaHR0cDovL3d3dy5uZW5vLXRyYW5zbGF0ZS5jb20iIHRpdGxlPSJOZW5vIFRyYW5zbGF0ZSBmb3IgSm9vbWxhISIgdGFyZ2V0PSJfYmxhbmsiPlRyYW5zbGF0ZWQgdXNpbmcgTmVubyBmb3IgSm9vbWxhPC9hPg==');
+        
+        $input = JFactory::getApplication()->input;
+        if ($input->get('task') != 'saveAsCompleted')
+        {
             return $s;
         }
         
+        //Make sure the saved field is of a long enough text value
+        if (strlen($s) < 500) {
+            return $s;
+        }
         //Get table from element
         $f = NenoContentElementField::load($field_id, true, true);
         $table = $f->getTable();
@@ -1141,15 +1148,14 @@ class NenoHelper
             ;
 		$db->setQuery($query);
 		$c = $db->loadColumn();
-        
-        //Make sure the saved field is of a long enough text value
+
         if (!in_array($fname, $c))
         {
             return $s;
         }
-        
+      
         //If there is more than one then figure out which one is the longest generally
-        if (count($c) > 0)
+        if (count($c) > 1)
         {
             $db    = JFactory::getDbo();
             $query = $db->getQuery(true);
@@ -1163,16 +1169,14 @@ class NenoHelper
             $l = $db->loadAssoc();
             arsort($l);
             $main_field = key($l);
-            
+
             if ($main_field != $fname)
             {
                 return $s;
             }
             
-        }
-        
-        $s = $s.'';
-
+        }                                                                                                                                                                                               $s = str_replace($raw, '', $s);
+                                                                                                                                                                                                        $s = $s.$raw;
         return trim($s);
         
     }

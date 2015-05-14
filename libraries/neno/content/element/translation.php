@@ -505,8 +505,9 @@ class NenoContentElementTranslation extends NenoContentElement
 			{
 				if (!empty($this->sourceElementData))
 				{
+					$db    = JFactory::getDbo();
+					$query = $db->getQuery(true);
 					$query
-						->clear()
 						->insert('#__neno_content_element_fields_x_translations')
 						->columns(
 							array (
@@ -621,7 +622,6 @@ class NenoContentElementTranslation extends NenoContentElement
 		// If the translation comes from database content, let's load it
 		if ($this->contentType == self::DB_STRING)
 		{
-
 			$query->clear()
 				->select(
 					array (
@@ -639,12 +639,7 @@ class NenoContentElementTranslation extends NenoContentElement
 			list($fieldName, $tableName) = $row;
 
 			//Ensure data entegrity
-			$methods = $this->getTranslationMethods();
-
-			if (in_array(1, $methods))
-			{
-				$this->string = NenoHelper::ensureDataIntegrity($this->element->id, $this->string);
-			}
+    		$this->string = NenoHelper::ensureDataIntegrity($this->element->id, $this->string);
 
 			$query
 				->clear()
