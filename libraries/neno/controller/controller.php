@@ -341,7 +341,7 @@ class NenoController extends JControllerLegacy
 
 		if ($placement == 'general')
 		{
-			$displayData['assigned_translation_methods'] = NenoHelper::getTranslationMethods();
+			$displayData['assigned_translation_methods'] = NenoHelper::getTranslationMethods('dropdown');
 		}
 		else
 		{

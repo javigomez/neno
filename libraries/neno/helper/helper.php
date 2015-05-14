@@ -1361,7 +1361,7 @@ class NenoHelper
 	 *
 	 * @return  array
 	 */
-	public static function getTranslationMethods()
+	public static function getTranslationMethods($type = 'list')
 	{
 		// Create a new query object.
 		$db    = JFactory::getDbo();
@@ -1377,12 +1377,19 @@ class NenoHelper
 			->from('`#__neno_translation_methods`');
 
 		$db->setQuery($query);
-		$methods = $db->loadAssocList('id');
-
+		$methods            = $db->loadObjectList('id');
 		$translationMethods = array ();
-		foreach ($methods as $id => $methodData)
+
+		if ($type != 'list')
 		{
-			$translationMethods[$id] = JText::_($methodData['name_constant']);
+			$translationMethods = $methods;
+		}
+		else
+		{
+			foreach ($methods as $id => $methodData)
+			{
+				$translationMethods[$id] = JText::_($methodData->name_constant);
+			}
 		}
 
 		return $translationMethods;
@@ -2692,13 +2699,13 @@ class NenoHelper
 				if (is_array($name))
 				{
 					echo "### ";
-				} 
-                else
-                {
-                    echo '    ';
-                }
-                
-                echo $key;
+				}
+				else
+				{
+					echo '    ';
+				}
+
+				echo $key;
 
 				if (is_array($name))
 				{
@@ -2710,7 +2717,7 @@ class NenoHelper
 		}
 		else
 		{
-			echo ': '.$serverInformation;
+			echo ': ' . $serverInformation;
 		}
 
 		return ob_get_clean();
@@ -2989,7 +2996,7 @@ class NenoHelper
 	 * Save INI file
 	 *
 	 * @param   string $filename filename
-	 * @param   array $strings Strings to save
+	 * @param   array  $strings  Strings to save
 	 *
 	 * @return bool
 	 */
