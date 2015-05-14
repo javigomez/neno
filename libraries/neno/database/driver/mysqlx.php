@@ -409,10 +409,9 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 			}
 			catch (RuntimeException $ex)
 			{
-				echo $ex->getMessage() . "\n";
-				/** @noinspection PhpUndefinedClassInspection */
-				debug_print_backtrace();
-				exit;
+				NenoLog::log($ex->getMessage(), NenoLog::PRIORITY_ERROR);
+
+				return false;
 			}
 		}
 	}
@@ -479,9 +478,12 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 
 		$this->manifestTables = array ();
 
-		foreach ($manifestTablesObjectList as $object)
+		if (!empty($manifestTablesObjectList))
 		{
-			$this->manifestTables[] = $object->table_name;
+			foreach ($manifestTablesObjectList as $object)
+			{
+				$this->manifestTables[] = $object->table_name;
+			}
 		}
 	}
 
