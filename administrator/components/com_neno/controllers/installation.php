@@ -183,6 +183,9 @@ class NenoControllerInstallation extends JControllerAdmin
 		$group = new NenoContentElementGroup(array ('group_name' => JText::_('COM_NENO_DO_NOT_TRANSLATE_GROUP_NAME')));
 		$group->persist();
 
+		// Set installation as completed
+		NenoSettings::set('installation_completed', 1);
+
 		echo 'ok';
 
 		JFactory::getApplication()->close();

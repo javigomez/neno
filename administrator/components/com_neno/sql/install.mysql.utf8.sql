@@ -363,7 +363,7 @@ INSERT INTO `#__neno_settings` VALUES (1, 'translate_automatically_professional'
   (4, 'license_code', '', 0, 1), (5, 'translator', '', 0, 1),
   (6, 'translator_api_key', '', 0, 1),
   (7, 'source_language', 'en-GB', 1, 0), (8, 'schedule_task_option', 'ajax', 0, 1),
-  (9, 'hide_empty_strings', '1', 0, 1);
+  (9, 'hide_empty_strings', '1', 0, 1), (10, 'installation_completed', '0', 0, 0);
 
 INSERT INTO `#__neno_machine_translation_api_language_pairs`
 VALUES (1, 1, 'af', 'ar'), (2, 1, 'af', 'az'), (3, 1, 'af', 'be'), (4, 1, 'af', 'bg'), (5, 1, 'af', 'bn'),
