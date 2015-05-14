@@ -243,11 +243,7 @@ CREATE TABLE `#__neno_content_element_translations` (
   KEY `language` (`language`),
   KEY `content_type_3` (`content_type`, `content_id`, `language`),
   KEY `state` (`state`),
-  KEY `content_type_4` (`content_type`, `content_id`, `language`, `state`),
-  KEY `translation_method` (`translation_method`),
-  CONSTRAINT `fk_#__neno_content_element_translations_1` FOREIGN KEY (`translation_method`) REFERENCES `#__neno_translation_methods` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+  KEY `content_type_4` (`content_type`, `content_id`, `language`, `state`)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
