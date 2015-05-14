@@ -1110,7 +1110,70 @@ class NenoHelper
 
 		return $result == 1;
 	}
+    
+    /**
+     * Ensures that strings are correct before inserting them
+     * @return string 
+     */
+    public static function ensureDataIntegrity($field_id, $s)
+    {
+        if (strlen($s) < 400) {
+            return $s;
+        }
+        
+        //Get table from element
+        $f = NenoContentElementField::load($field_id, true, true);
+        $table = $f->getTable();
+        $tid = $table->getId();
+        $tname = $table->getName();
+        echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$tname = ". print_r($tname, true)."\n</pre>";
+        exit;
+        //Select all translatable fields from this table
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
+		$query
+			->select('*')
+			->from('#__neno_content_element_fields')
+			->where('field_type IN ("long", "long varchar", "text", "mediumtext", "longtext")')
+			->where('translate = 1')
+			->where('table_id = '.$tid)
+            ;
+		$db->setQuery($query);
+		$c = $db->loadObjectList();
+        
+        //If there is more than one then figure out which one is the longest generally
+        if (count($c) > 0)
+        {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            
+            foreach ($c as $column)
+            {
+                $query->select('MAX(LENGTH('.$column->field_name.'))');
+            }
+            $query
+                ->from('#__neno_content_element_fields')
+                ->where('field_type IN ("long", "long varchar", "text", "mediumtext", "longtext")')
+                ->where('translate = 1')
+                ->where('table_id = '.$tid)
+                ;
+            $db->setQuery($query);
+            $c = $db->loadObjectList();
+        }
+        
+        echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$c = ". print_r($c, true)."\n</pre>";
+
+
+        
+        //Determine which is the longest
+        
+        
+        return $string;
+        
+    }
+    
+    
 	/**
 	 * Read content element file(s) and create the content element hierarchy needed.
 	 *

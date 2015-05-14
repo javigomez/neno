@@ -675,7 +675,8 @@ class NenoContentElementTranslation extends NenoContentElement
 		// If the translation comes from database content, let's load it
 		if ($this->contentType == self::DB_STRING)
 		{
-			$query->clear()
+			
+            $query->clear()
 				->select(
 					array (
 						'f.field_name',
@@ -691,7 +692,17 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			list($fieldName, $tableName) = $row;
 
+            //Ensure data entegrity
+            $methods = $this->getTranslationMethods();
+            
+            echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$methods = ". print_r($this, true)."\n</pre>";
 
+            
+            if (in_array(1, $methods))
+            {
+                $this->string = NenoHelper::ensureDataIntegrity($this->element->id, $this->string);
+            }
+            
 			$query
 				->clear()
 				->select(
