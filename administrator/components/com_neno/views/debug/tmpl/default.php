@@ -11,17 +11,53 @@
 // No direct access
 defined('_JEXEC') or die;
 ?>
+<script>
+    jQuery(document).ready(function(){
+        selectDebugText();
+        jQuery('#select-all-btn').on('click', selectDebugText);
+    });
+    
+    function selectDebugText() {
+        jQuery('#debug-text').select();
+    }
+    
+    
+</script>
+<style>
+    textarea {
+        width: 100%;
+        font-family: monospace;
+        white-space: pre;
+        word-wrap: normal;
+        overflow-x: scroll;        
+    }
+    #copy-help-text {
+        font-size: 12px;
+        color: #9f9f9f;
+        width: 300px;
+        text-align: right;
+    }
+    .debug-header {
+        height: 60px;
+    }
+</style>
+
 <div id="j-sidebar-container" class="span2">
-	<?php echo $this->sidebar; ?>
+    <?php echo $this->sidebar; ?>
 </div>
 <div id="j-main-container" class="span10">
-	<div class="control-group">
-		<label class="control-label" for="inputPassword">Debug report</label>
+    <div class="control-group">
+        <div class="debug-header">
+            <div class="pull-right">
+                <div style="text-align:right;"><button class="btn btn-info" id="select-all-btn">Select all</button></div>
+                <div id="copy-help-text">Press CTRL+C to copy</div>
+            </div>
+            <H2>Debug report</h2>
+        </div>
 
-		<div class="controls">
-		<textarea class="span10"
-		          rows="200"><?php echo NenoHelper::printServerInformation(NenoHelper::getServerInfo()); ?></textarea>
-		</div>
-	</div>
+        <div class="controls">
+            <textarea rows="40" id="debug-text"><?php echo NenoHelper::printServerInformation(NenoHelper::getServerInfo()); ?></textarea>
+        </div>
+    </div>
 </div>
 
