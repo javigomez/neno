@@ -784,7 +784,7 @@ class NenoContentElementTranslation extends NenoContentElement
 					)
 					->from('#__neno_content_element_translations AS tr')
 					->innerJoin('#__neno_content_element_language_strings AS ls ON tr.content_id = ls.id')
-					->innerJoin('neno_content_element_language_files AS lf ON ls.languagefile_id = lf.id')
+					->innerJoin('#__neno_content_element_language_files AS lf ON ls.languagefile_id = lf.id')
 					->innerJoin('#__neno_content_element_groups AS g ON lf.group_id = g.id')
 					->where('tr.id = ' . $this->id);
 			}
@@ -828,14 +828,15 @@ class NenoContentElementTranslation extends NenoContentElement
 	 *
 	 * @return bool
 	 */
-	public function moveTranslationToShadowTable($language)
+	public function moveTranslationToTarget($language)
 	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
 		// If the translation comes from database content, let's load it
 		if ($this->contentType == self::DB_STRING)
 		{
-			/* @var $db NenoDatabaseDriverMysqlx */
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
 			$query
 				->clear()
 				->select(
@@ -885,6 +886,39 @@ class NenoContentElementTranslation extends NenoContentElement
 			$db->execute();
 
 			return true;
+		}
+		else
+		{
+			$query
+				->select(
+					array (
+						'REPLACE(lf.filename, lf.language, ' . $db->quote($language) . ') AS filename',
+						'ls.constant'
+					)
+				)
+				->from('#__neno_content_element_translations AS tr')
+				->innerJoin('#__neno_content_element_language_strings AS ls ON ls.id = tr.content_id')
+				->innerJoin('#__neno_content_element_language_files AS lf ON ls.languagefile_id = lf.id')
+				->where('tr.id = ' . (int) $this->id);
+
+			$db->setQuery($query);
+			$translationData = $db->loadAssoc();
+
+			$existingStrings = array ();
+
+			if (!empty($translationData))
+			{
+				$filePath = JPATH_ROOT . '/language/' . $language . '/' . $translationData['filename'];
+
+				if (file_exists($filePath))
+				{
+					$existingStrings = parse_ini_file($filePath);
+				}
+
+				$existingStrings[$translationData['constant']] = $this->string;
+
+				NenoHelper::saveIniFile($filePath, $existingStrings);
+			}
 		}
 
 		return false;

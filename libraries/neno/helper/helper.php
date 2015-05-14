@@ -2980,6 +2980,57 @@ class NenoHelper
 	}
 
 	/**
+	 * Save INI file
+	 *
+	 * @param   string $filename filename
+	 * @param   array $strings Strings to save
+	 *
+	 * @return bool
+	 */
+	public static function saveIniFile($filename, array $strings)
+	{
+		$res = array ();
+		foreach ($strings as $key => $val)
+		{
+			if (is_array($val))
+			{
+				$res[] = "[$key]";
+				foreach ($val as $skey => $sval)
+				{
+					$res[] = "$skey = " . (is_numeric($sval) ? $sval : '"' . $sval . '"');
+				}
+			}
+			else
+			{
+				$res[] = "$key = " . (is_numeric($val) ? $val : '"' . $val . '"');
+			}
+		}
+
+		if ($fp = fopen($filename, 'w'))
+		{
+			$startTime = microtime(true);
+			do
+			{
+				$canWrite = flock($fp, LOCK_EX);
+				// If lock not obtained sleep for 0 - 100 milliseconds, to avoid collision and CPU load
+				if (!$canWrite) usleep(round(rand(0, 100) * 1000));
+			} while ((!$canWrite) and ((microtime(true) - $startTime) < 5));
+
+			//file was locked so now we can store information
+			if ($canWrite)
+			{
+				fwrite($fp, implode("\r\n", $res));
+				flock($fp, LOCK_UN);
+			}
+			fclose($fp);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get a list of menu items associated to the one passed by argument
 	 *
 	 * @param    integer $menuItemId Menu Item id

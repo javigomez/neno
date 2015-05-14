@@ -127,7 +127,7 @@ class NenoControllerEditor extends NenoControllerStrings
 		{
 			// Move translation to the shadow table
 			$workingLanguage = NenoHelper::getWorkingLanguage();
-			$translation->moveTranslationToShadowTable($workingLanguage);
+			$translation->moveTranslationToTarget($workingLanguage);
 		}
 
 		return $result;
@@ -152,11 +152,11 @@ class NenoControllerEditor extends NenoControllerStrings
 			$data = array (
 				'translation' => $translation->prepareDataForView()
 			);
-            
-            $original_text = $translation->getOriginalText();
-            
+
+			$original_text = $translation->getOriginalText();
+
 			$model   = $this->getModel();
-			$counter = $model->getSimilarTranslationsCounter($translationId, $original_text);
+			$counter = $model->getSimilarTranslationsCounter($translationId, $translation->getLanguage(), $original_text);
 
 			if ($counter != 0)
 			{

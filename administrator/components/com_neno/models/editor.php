@@ -77,12 +77,13 @@ class NenoModelEditor extends NenoModelStrings
 	/**
 	 * Get the amount of translations that contains the same text
 	 *
-	 * @param   int    $translationId   Translation Id
-	 * @param   string $translationText Translation Text
+	 * @param   int    $translationId       Translation Id
+	 * @param   string $translationLanguage Translation language
+	 * @param   string $translationText     Translation Text
 	 *
 	 * @return int
 	 */
-	public function getSimilarTranslationsCounter($translationId, $translationText)
+	public function getSimilarTranslationsCounter($translationId, $translationLanguage, $translationText)
 	{
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -93,6 +94,7 @@ class NenoModelEditor extends NenoModelStrings
 			->where(
 				array (
 					'original_text = ' . $db->quote($translationText),
+					'language = ' . $db->quote($translationLanguage),
 					'state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE,
 					'id <> ' . $translationId,
 				)
