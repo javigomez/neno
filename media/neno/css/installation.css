@@ -46,3 +46,19 @@
     max-height: 500px;
     overflow-y: scroll;
 }
+#languages-modal td {
+    line-height: 28px !important;
+}
+.loading,
+.icon-checkmark {
+    color: #65D074;
+    background: url('../images/loading_mini.gif') center left no-repeat;
+    height: 14px;
+    width: 14px;
+    margin-top: 7px;
+    margin-left: 23px;
+}
+.task-message {
+    margin-bottom: 20px;
+    font-style: italic;
+}

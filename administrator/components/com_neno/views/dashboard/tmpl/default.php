@@ -33,7 +33,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	jQuery(document).ready(bindEvents);
 
 	function bindEvents() {
-		//Bind the loader unto the new selector
+		//Bind the loader into the new selector
 		loadMissingTranslationMethodSelectors();
 		jQuery('.configuration-button').on('click', function () {
 			jQuery(this).siblings('.language-configuration').slideToggle('fast');
