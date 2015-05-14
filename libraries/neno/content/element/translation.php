@@ -621,7 +621,6 @@ class NenoContentElementTranslation extends NenoContentElement
 		// If the translation comes from database content, let's load it
 		if ($this->contentType == self::DB_STRING)
 		{
-
 			$query->clear()
 				->select(
 					array (

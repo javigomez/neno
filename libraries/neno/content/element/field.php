@@ -306,7 +306,7 @@ class NenoContentElementField extends NenoContentElement
 			$strings            = $this->getStrings();
 			$primaryKeyData     = $this->getTable()->getPrimaryKey();
 
-			if (!empty($string))
+			if (!empty($strings))
 			{
 				foreach ($languages as $language)
 				{
@@ -348,6 +348,7 @@ class NenoContentElementField extends NenoContentElement
 							if ($translation->existsAlready())
 							{
 								$translation = NenoContentElementTranslation::getTranslationBySourceElementData($sourceData, $language->lang_code, $this->getId());
+								$translation->setElement($this);
 
 								if ($translation->refresh())
 								{
