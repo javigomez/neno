@@ -41,7 +41,7 @@ class NenoController extends JControllerLegacy
 		$input = $this->input;
 		$view  = $input->getCmd('view', 'dashboard');
 
-		if (NenoSettings::get('installation_completed') != 1 && ($view != 'installation' || $view != 'debug'))
+		if (NenoSettings::get('installation_completed') != 1 && $view != 'installation' && $view != 'debug')
 		{
 			$app = JFactory::getApplication();
 			$app->enqueueMessage(JText::_('COM_NENO_INSTALLATION_ERROR'), 'error');
