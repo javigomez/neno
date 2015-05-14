@@ -28,17 +28,17 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * Machine translation method
 	 */
-	const MACHINE_TRANSLATION_METHOD = 'machine';
+	const MACHINE_TRANSLATION_METHOD = '2';
 
 	/**
 	 * Manual translation method
 	 */
-	const MANUAL_TRANSLATION_METHOD = 'manual';
+	const MANUAL_TRANSLATION_METHOD = '1';
 
 	/**
 	 * Professional translation method
 	 */
-	const PROFESSIONAL_TRANSLATION_METHOD = 'pro';
+	const PROFESSIONAL_TRANSLATION_METHOD = '3';
 
 	/**
 	 * This state is for a string that has been translated
@@ -284,30 +284,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-	 * Get the method used to translate the string
-	 *
-	 * @return string
-	 */
-	public function getTranslationMethods()
-	{
-		return $this->translationMethods;
-	}
-
-	/**
-	 * Set the translation method
-	 *
-	 * @param   string $translationMethods Translation method
-	 *
-	 * @return NenoContentElementTranslation
-	 */
-	public function setTranslationMethods($translationMethods)
-	{
-		$this->translationMethods = $translationMethods;
-
-		return $this;
-	}
-
-	/**
 	 * Get the time when this translation was added
 	 *
 	 * @return DateTime
@@ -508,36 +484,6 @@ class NenoContentElementTranslation extends NenoContentElement
 		// Update word counter
 		$this->wordCounter = str_word_count($this->getString());
 
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query->select('translation_method_id');
-
-		if ($this->contentType === self::DB_STRING)
-		{
-			$query
-				->from('#__neno_content_element_fields AS f')
-				->innerJoin('#__neno_content_element_tables AS t ON f.table_id = t.id')
-				->innerJoin('#__neno_content_element_groups AS g ON t.group_id = g.id')
-				->where('f.id = ' . $this->element->id);
-		}
-		else
-		{
-			$query
-				->from('#__neno_content_element_language_strings AS ls')
-				->innerJoin('#__neno_content_element_language_files AS lf ON ls.languagefile_id = lf.id')
-				->innerJoin('#__neno_content_element_groups AS g ON lf.group_id = g.id')
-				->where('ls.id = ' . $this->element->id);
-		}
-
-		$query
-			->innerJoin('#__neno_content_element_groups_x_translation_methods AS gtm ON gtm.group_id = g.id')
-			->where('lang = ' . $db->quote($this->getLanguage()))
-			->order('ordering ASC');
-
-		$db->setQuery($query, 0, 1);
-		$this->translationMethods = $db->loadArray();
-
 		if ($this->getState() == self::TRANSLATED_STATE)
 		{
 			$this->timeCompleted = new DateTime;
@@ -675,8 +621,8 @@ class NenoContentElementTranslation extends NenoContentElement
 		// If the translation comes from database content, let's load it
 		if ($this->contentType == self::DB_STRING)
 		{
-			
-            $query->clear()
+
+			$query->clear()
 				->select(
 					array (
 						'f.field_name',
@@ -692,14 +638,14 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			list($fieldName, $tableName) = $row;
 
-            //Ensure data entegrity
-            $methods = $this->getTranslationMethods();
-            
-            if (in_array(1, $methods) || true)
-            {
-                $this->string = NenoHelper::ensureDataIntegrity($this->element->id, $this->string);
-            }
-            
+			//Ensure data entegrity
+			$methods = $this->getTranslationMethods();
+
+			if (in_array(1, $methods))
+			{
+				$this->string = NenoHelper::ensureDataIntegrity($this->element->id, $this->string);
+			}
+
 			$query
 				->clear()
 				->select(
@@ -767,6 +713,59 @@ class NenoContentElementTranslation extends NenoContentElement
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the method used to translate the string
+	 *
+	 * @return string
+	 */
+	public function getTranslationMethods()
+	{
+		return $this->translationMethods;
+	}
+
+	/**
+	 * Set the translation method
+	 *
+	 * @param   string $translationMethod Translation method
+	 *
+	 * @return NenoContentElementTranslation
+	 */
+	public function addTranslationMethod($translationMethod)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->select('*')
+			->from('#__neno_translation_methods')
+			->where('id = ' . (int) $translationMethod);
+		$db->setQuery($query);
+		$translationMethod = $db->loadObject();
+
+		if (!is_array($this->translationMethods))
+		{
+			$this->translationMethods = array ($translationMethod);
+		}
+		else
+		{
+			$found = false;
+			foreach ($this->translationMethods as $translationMethodAdded)
+			{
+				if ($translationMethodAdded->id === $translationMethod->id)
+				{
+					$found = true;
+					break;
+				}
+			}
+
+			if (!$found)
+			{
+				$this->translationMethods[] = $translationMethod;
+			}
+		}
+
+		return $this;
 	}
 
 	/**
