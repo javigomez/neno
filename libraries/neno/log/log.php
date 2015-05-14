@@ -54,7 +54,7 @@ class NenoLog extends JLog
 		$priority = self::getJLogPriorityFromDebugLevel($level);
 
 		// Setup the logging method
-		self::setLogMethod($level);
+		self::setLogMethod();
 
 		// Check if log entry should be made
 		if (self::checkAddLog($level))
@@ -104,21 +104,10 @@ class NenoLog extends JLog
 	 *
 	 * @return void
 	 */
-	public static function setLogMethod($level = self::PRIORITY_INFO)
+	public static function setLogMethod()
 	{
-		switch ($level)
-		{
-			case self::PRIORITY_ERROR:
-				$options['logger'] = 'api';
-				break;
-			default:
-				$options['text_entry_format'] = "{DATETIME}\t{PRIORITY}\t\t{MESSAGE}";
-				$options['text_file']         = 'neno_log.php';
-				break;
-		}
-
 		self::addLogger(
-			$options,
+			array ('text_entry_format' => "{DATETIME}\t{PRIORITY}\t\t{MESSAGE}", 'text_file' => 'neno_log.php'),
 			self::ALL,
 			array ('com_neno')
 		);
