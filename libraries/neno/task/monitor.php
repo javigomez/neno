@@ -95,6 +95,14 @@ class NenoTaskMonitor
 
 		$db->setQuery($query);
 		$db->execute();
+
+		$query
+			->clear()
+			->delete('#__neno_tasks')
+			->where('number_of_attempts > 3');
+
+		$db->setQuery($query);
+		$db->execute();
 	}
 
 	/**
@@ -123,6 +131,7 @@ class NenoTaskMonitor
 		if (empty($task))
 		{
 			self::addTask('job_scanner');
+			self::addTask('scan', array ('group' => 1));
 			$task = self::fetchTask();
 		}
 
@@ -142,7 +151,7 @@ class NenoTaskMonitor
 		$task = new NenoTask(
 			array (
 				'task'     => $task,
-				'taskData' => $taskData
+				'taskData' => json_encode($taskData)
 			)
 		);
 
