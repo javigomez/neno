@@ -41,4 +41,10 @@ jQuery(document).ready(function () {
         }
     }
 
+    if (document.location.href == document.location.origin + document.location.pathname + '?option=com_neno&view=editor') {
+        jQuery('[data-id="method-1"] input').prop('checked', true);
+        jQuery('[data-id="status-4"] input').prop('checked', true);
+        loadStrings();
+    }
+
 });

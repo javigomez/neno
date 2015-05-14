@@ -39,7 +39,7 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/editor.css');
 	<div id="filter-tags-wrapper"></div>
 	<div id="results-wrapper">
 			<span id="editor-strings-title">
-				Search results:
+				<?php echo JText::_('COM_NENO_EDITOR_STRINGS'); ?>:
 			</span>
 
 		<div id="elements-wrapper">
