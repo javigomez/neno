@@ -52,6 +52,30 @@ class NenoModelEditor extends NenoModelStrings
 		$db          = JFactory::getDbo();
 		$query       = $db->getQuery(true);
 
+		if (!empty($translation))
+		{
+			$translationsToConsolidate = NenoContentElementTranslation::load(
+				array (
+					'original_text' => $translation->getOriginalText(),
+					'language'      => $translation->getLanguage(),
+					'id'            => array (
+						'_field'     => 'id',
+						'_condition' => '<>',
+						'_value'     => $translation->getId()
+					)
+				)
+			);
+
+			/* @var $translationToConsolidate NenoContentElementTranslation */
+			foreach ($translationsToConsolidate as $translationToConsolidate)
+			{
+				$translationToConsolidate
+					->setString($translation->getString())
+					->setState(NenoContentElementTranslation::TRANSLATED_STATE)
+					->persist();
+			}
+		}
+
 		$query
 			->update('#__neno_content_element_translations')
 			->set(

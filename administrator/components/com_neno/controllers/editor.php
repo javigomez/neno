@@ -123,13 +123,6 @@ class NenoControllerEditor extends NenoControllerStrings
 
 		$result = $translation->persist();
 
-		if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
-		{
-			// Move translation to the shadow table
-			$workingLanguage = NenoHelper::getWorkingLanguage();
-			$translation->moveTranslationToTarget($workingLanguage);
-		}
-
 		return $result;
 	}
 
