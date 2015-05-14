@@ -14,7 +14,7 @@ $languages = $displayData->languages;
 		<tr>
 			<td><?php echo $language['name']; ?></td>
 			<td><?php echo $language['version']; ?></td>
-			<td>
+			<td class="action-cell" data-language-iso="<?php echo $language['iso'] ?>">
 				<button type="button" class="btn" data-update="<?php echo $language['update_id']; ?>"
 				        data-language="<?php echo $language['iso'] ?>">
 					<?php echo JText::_('JTOOLBAR_INSTALL'); ?>
@@ -27,7 +27,8 @@ $languages = $displayData->languages;
 <script>
 	jQuery("[data-language]").click(function () {
 		var button = jQuery(this);
-		button.attr('disabled', true);
+		button.hide();
+		button.parent().append('<div class="loading"></div>')
 		jQuery.ajax({
 			beforeSend: onBeforeAjax,
 			url: 'index.php?option=com_neno&task=installLanguage',
@@ -39,9 +40,11 @@ $languages = $displayData->languages;
 			type: 'POST',
 			success: function (html) {
 				if (html != 'err') {
-					button.parent.appendChild('<i class="icon-checkmark"></i>');
-					button.remove();
-					jQuery(html).insertBefore('#add-languages-button');
+					var response = jQuery(html);
+					var iso = response.find('fieldset').attr('data-language');
+					var cell = jQuery('.action-cell [data-language-iso="' + iso + '"]');
+					cell.html('<div class="icon-checkmark"></div>');
+					response.insertBefore('#add-languages-button');
 					bindEvents();
 				}
 			}

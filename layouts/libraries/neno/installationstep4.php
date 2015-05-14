@@ -45,7 +45,5 @@ $items = $displayData->languages;
 			}
 		});
 	});
-
-
 	loadMissingTranslationMethodSelectors();
 </script>
