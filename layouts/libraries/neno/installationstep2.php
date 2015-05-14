@@ -6,18 +6,6 @@ JHtml::_('bootstrap.tooltip');
 
 ?>
 
-<style>
-	.schedule-task-option {
-		border: 1px solid #000;
-		padding: 5px 10px;
-		cursor: pointer;
-	}
-
-	.schedule-task-option.selected {
-		border: 3px solid #000;
-	}
-</style>
-
 <div class="installation-step">
 	<div class="installation-body span12">
 		
@@ -28,35 +16,37 @@ JHtml::_('bootstrap.tooltip');
 		<p><?php echo JText::_('COM_NENO_INSTALLATION_SCHEDULED_TASK_MESSAGE'); ?></p>
 		
 		<div class="schedule-task-options span12">
-			<div class="schedule-task-option span4 selected" data-option="ajax">
+			<div class="schedule-task-option btn span4 selected" data-option="ajax">
 				<h3><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_AJAX_MODULE_TITLE'); ?></h3>
 				
 				<p><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_AJAX_MODULE_P1'); ?></p>
 				
 				<p><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_AJAX_MODULE_P2'); ?></p>
+				<p>&nbsp;</p>
 
 				<div class="alert alert-info">
 					<strong><?php echo JText::_('JDEFAULT'); ?></strong>
 				</div>
 			</div>
-			<div class="schedule-task-option span4" data-option="cron">
+			<div class="schedule-task-option btn span4" data-option="cron">
 				<h3><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_CRON_TITLE'); ?></h3>
 				
 				<p><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_CRON_P1'); ?></p>
 				
 				<p><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_CRON_P2'); ?></p>
-				<a href="#"><?php echo JText::_('COM_NENO_DOCUMENTATION'); ?></a>
+				<p><a href="#"><?php echo JText::_('COM_NENO_DOCUMENTATION'); ?></a></p>
 
 				<div class="alert alert-success">
-					<strong><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_CRON_RECOMMEND'); ?></strong>
+					<strong><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_CRON_RECOMMENDED'); ?></strong>
 				</div>
 			</div>
-			<div class="schedule-task-option span4" data-option="disable">
+			<div class="schedule-task-option btn span4" data-option="disable">
 				<h3><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_DISABLE_TITLE'); ?></h3>
 				
 				<p><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_DISABLE_P1'); ?></p>
 				
 				<p><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_DISABLE_P2'); ?></p>
+				<p>&nbsp;</p>
 				
 				<div class="alert"><?php echo JText::_('COM_NENO_INSTALLATION_TASK_OPTION_DISABLE_P3'); ?></div>
 			</div>

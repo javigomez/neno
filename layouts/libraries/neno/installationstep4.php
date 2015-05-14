@@ -8,10 +8,6 @@ $items = $displayData->languages;
 ?>
 
 <style>
-	.schedule-task-option {
-		border: 1px solid #000;
-		padding: 5px 10px;
-	}
 </style>
 
 <div class="installation-step">
