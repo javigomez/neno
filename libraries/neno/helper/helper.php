@@ -2489,6 +2489,29 @@ class NenoHelper
 
 		if (self::isLanguageInstalled($jiso) && !self::hasContentCreated($languageData['element']))
 		{
+			// Assign translation methods to that language
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$i     = 1;
+
+			$query
+				->insert('#__neno_content_language_defaults')
+				->columns(
+					array (
+						'lang',
+						'translation_method_id',
+						'ordering'
+					)
+				);
+
+			while (($translationMethod = NenoSettings::get('translation_method_' . $i)) !== null)
+			{
+				$query->values($db->quote($jiso) . ', ' . $db->quote($translationMethod) . ',' . $db->quote($i));
+			}
+
+			$db->setQuery($query);
+			$db->execute();
+
 			return self::createContentRow($jiso, $languageData);
 		}
 

@@ -237,15 +237,16 @@ class NenoController extends JControllerLegacy
 
 			foreach ($languages as $language)
 			{
-				$translated      = 0;
-				$queued          = 0;
-				$changed         = 0;
-				$untranslated    = 0;
-				$item->lang_code = $language[0]->lang_code;
-				$item->published = $language[0]->published;
-				$item->title     = $language[0]->title;
-				$item->image     = $language[0]->image;
-				$item->errors    = NenoHelper::getLanguageErrors((array) $language[0]);
+				$translated               = 0;
+				$queued                   = 0;
+				$changed                  = 0;
+				$untranslated             = 0;
+				$item->lang_code          = $language[0]->lang_code;
+				$item->published          = $language[0]->published;
+				$item->title              = $language[0]->title;
+				$item->image              = $language[0]->image;
+				$item->errors             = NenoHelper::getLanguageErrors((array) $language[0]);
+				$item->translationMethods = NenoHelper::getLanguageDefault($item->lang_code);
 
 				foreach ($language as $internalItem)
 				{
