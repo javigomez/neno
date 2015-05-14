@@ -1125,22 +1125,28 @@ class NenoHelper
         $f = NenoContentElementField::load($field_id, true, true);
         $table = $f->getTable();
         $tid = $table->getId();
-        $tname = $table->getName();
-        echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$tname = ". print_r($tname, true)."\n</pre>";
-        exit;
+        $fname = $f->getFieldName();
+        $tname = $table->getTableName();
+
         //Select all translatable fields from this table
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query
-			->select('*')
+			->select('field_name')
 			->from('#__neno_content_element_fields')
 			->where('field_type IN ("long", "long varchar", "text", "mediumtext", "longtext")')
 			->where('translate = 1')
 			->where('table_id = '.$tid)
             ;
 		$db->setQuery($query);
-		$c = $db->loadObjectList();
+		$c = $db->loadColumn();
+        
+        //Make sure the saved field is of a long enough text value
+        if (!in_array($fname, $c))
+        {
+            return $s;
+        }
         
         //If there is more than one then figure out which one is the longest generally
         if (count($c) > 0)
@@ -1150,26 +1156,24 @@ class NenoHelper
             
             foreach ($c as $column)
             {
-                $query->select('MAX(LENGTH('.$column->field_name.'))');
+                $query->select('MAX(LENGTH('.$column.')) as '.$column.'');
             }
-            $query
-                ->from('#__neno_content_element_fields')
-                ->where('field_type IN ("long", "long varchar", "text", "mediumtext", "longtext")')
-                ->where('translate = 1')
-                ->where('table_id = '.$tid)
-                ;
+            $query->from($tname);
             $db->setQuery($query);
-            $c = $db->loadObjectList();
+            $l = $db->loadAssoc();
+            arsort($l);
+            $main_field = key($l);
+            
+            if ($main_field != $fname)
+            {
+                return $s;
+            }
+            
         }
         
-        echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$c = ". print_r($c, true)."\n</pre>";
+        $s = $s.'';
 
-
-        
-        //Determine which is the longest
-        
-        
-        return $string;
+        return trim($s);
         
     }
     
