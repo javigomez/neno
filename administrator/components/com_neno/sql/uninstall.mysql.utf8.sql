@@ -1,87 +1,18 @@
--- --------------------------------------------------------
-
---
--- Table structure for table `jos_neno_content_elements_metadata_x_translators`
---
-
-DROP TABLE IF EXISTS `jos_neno_content_elements_metadata_x_translators`;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jos_neno_content_element_fields`
---
-
-DROP TABLE IF EXISTS `jos_neno_content_element_fields`;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jos_neno_content_element_groups`
---
-
-DROP TABLE IF EXISTS `jos_neno_content_element_groups`;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jos_neno_content_element_langfile_sources`
---
-
-DROP TABLE IF EXISTS `jos_neno_content_element_langfile_sources`;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jos_neno_content_element_langfile_translations`
---
-
-DROP TABLE IF EXISTS `jos_neno_content_element_langfile_translations`;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jos_neno_content_element_metadata`
---
-
-DROP TABLE IF EXISTS `jos_neno_content_element_metadata`;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jos_neno_content_element_preset`
---
-
-DROP TABLE IF EXISTS `jos_neno_content_element_preset`;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jos_neno_content_element_preset_x_translators`
---
-
-DROP TABLE IF EXISTS `jos_neno_content_element_preset_x_translators`;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jos_neno_content_element_tables`
---
-
-DROP TABLE IF EXISTS `jos_neno_content_element_tables`;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jos_neno_settings`
---
-
-DROP TABLE IF EXISTS `jos_neno_settings`;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jos_neno_translators`
---
-
-DROP TABLE IF EXISTS `jos_neno_translators`;
+DROP TABLE IF EXISTS `#__neno_machine_translation_apis`;
+DROP TABLE IF EXISTS `#__neno_settings`;
+DROP TABLE IF EXISTS `#__neno_translation_methods`;
+DROP TABLE IF EXISTS `#__neno_content_language_defaults`;
+DROP TABLE IF EXISTS `#__neno_jobs`;
+DROP TABLE IF EXISTS `#__neno_tasks`;
+DROP TABLE IF EXISTS `#__neno_content_element_groups`;
+DROP TABLE IF EXISTS `#__neno_content_element_groups_x_translation_methods`;
+DROP TABLE IF EXISTS `#__neno_content_element_tables`;
+DROP TABLE IF EXISTS `#__neno_content_element_language_files`;
+DROP TABLE IF EXISTS `#__neno_content_element_fields`;
+DROP TABLE IF EXISTS `#__neno_content_element_language_strings`;
+DROP TABLE IF EXISTS `#__neno_content_element_translations`;
+DROP TABLE IF EXISTS `#__neno_content_element_translation_x_translation_methods`;
+DROP TABLE IF EXISTS `#__neno_jobs_x_translations`;
+DROP TABLE IF EXISTS `#__neno_machine_translation_api_language_pairs`;
+DROP TABLE IF EXISTS `#__neno_content_element_fields_x_translations`;
+DROP TABLE IF EXISTS `#__neno_content_element_groups_x_extensions`;

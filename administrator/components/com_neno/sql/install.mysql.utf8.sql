@@ -224,19 +224,18 @@ CREATE TABLE `#__neno_content_element_language_strings` (
 --
 
 CREATE TABLE `#__neno_content_element_translations` (
-  `id`                 INT(11)                          NOT NULL AUTO_INCREMENT,
-  `content_type`       ENUM('lang_string', 'db_string') NOT NULL,
-  `content_id`         INT(11)                          NOT NULL,
-  `language`           VARCHAR(5)                       NOT NULL,
-  `state`              TINYINT(1)                       NOT NULL,
-  `string`             TEXT                             NOT NULL,
-  `time_added`         DATETIME                         NOT NULL,
-  `time_changed`       DATETIME                         NOT NULL,
-  `time_requested`     DATETIME                         NOT NULL,
-  `time_completed`     DATETIME                         NOT NULL,
-  `translation_method` INT(11)                          NOT NULL,
-  `word_counter`       INT(11)                          NOT NULL,
-  `original_text`      TEXT                             NOT NULL,
+  `id`             INT(11)                          NOT NULL AUTO_INCREMENT,
+  `content_type`   ENUM('lang_string', 'db_string') NOT NULL,
+  `content_id`     INT(11)                          NOT NULL,
+  `language`       VARCHAR(5)                       NOT NULL,
+  `state`          TINYINT(1)                       NOT NULL,
+  `string`         TEXT                             NOT NULL,
+  `time_added`     DATETIME                         NOT NULL,
+  `time_changed`   DATETIME                         NOT NULL,
+  `time_requested` DATETIME                         NOT NULL,
+  `time_completed` DATETIME                         NOT NULL,
+  `word_counter`   INT(11)                          NOT NULL,
+  `original_text`  TEXT                             NOT NULL,
   PRIMARY KEY (`id`),
   KEY `content_id` (`content_id`),
   KEY `content_type` (`content_type`, `content_id`),
@@ -247,6 +246,29 @@ CREATE TABLE `#__neno_content_element_translations` (
   KEY `content_type_4` (`content_type`, `content_id`, `language`, `state`),
   KEY `translation_method` (`translation_method`),
   CONSTRAINT `fk_#__neno_content_element_translations_1` FOREIGN KEY (`translation_method`) REFERENCES `#__neno_translation_methods` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+--
+-- Table structure for table `#__neno_content_element_translation_x_translation_methods`
+--
+
+CREATE TABLE `#__neno_content_element_translation_x_translation_methods` (
+  `id`                    INT(11) NOT NULL AUTO_INCREMENT,
+  `translation_id`        INT(11) NOT NULL,
+  `translation_method_id` INT(11) NOT NULL,
+  `ordering`              INT(11)          DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `translation_id` (`translation_id`, `translation_method_id`),
+  KEY `tr_fk_idx` (`translation_id`),
+  KEY `tmi_fk_idx` (`translation_method_id`),
+  CONSTRAINT `tmi_fk` FOREIGN KEY (`translation_method_id`) REFERENCES `#__neno_translation_methods` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `tr_fk` FOREIGN KEY (`translation_id`) REFERENCES `#__neno_content_element_translations` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 )
@@ -339,12 +361,13 @@ INSERT INTO `#__neno_translation_methods`
 VALUES (1, 'COM_NENO_TRANSLATION_METHOD_MANUAL', '0'), (2, 'COM_NENO_TRANSLATION_METHOD_MACHINE', '1,3'),
   (3, 'COM_NENO_TRANSLATION_METHOD_PROFESSIONAL', '1');
 
-INSERT INTO `#__neno_settings`
-VALUES (2, 'translate_automatically_professional', '0', 0, 0), (4, 'translate_automatically_machine', '1', 0, 0),
-  (5, 'api_server_url', 'http://localhost/neno-translate/api/v1/', 1, 0),
-  (6, 'license_code', '12547854796521547856932154785961', 0, 1), (7, 'translator', 'Google', 0, 1),
-  (8, 'translator_api_key', 'trnsl.1.1.20150213T133918Z.49d67bfc65b3ee2a.b4ccfa0eaee0addb2adcaf91c8a38d55764e50c0', 0,
-   1);
+INSERT INTO `#__neno_settings` VALUES (1, 'translate_automatically_professional', '0', 0, 0),
+  (2, 'translate_automatically_machine', '1', 0, 0),
+  (3, 'api_server_url', 'http://localhost/neno-translate/api/v1/', 1, 0),
+  (4, 'license_code', '', 0, 1), (5, 'translator', '', 0, 1),
+  (6, 'translator_api_key', '', 0, 1),
+  (7, 'source_language', 'en-GB', 1, 0), (8, 'schedule_task_option', 'ajax', 0, 1),
+  (9, 'hide_empty_strings', '1', 0, 1);
 
 INSERT INTO `#__neno_machine_translation_api_language_pairs`
 VALUES (1, 1, 'af', 'ar'), (2, 1, 'af', 'az'), (3, 1, 'af', 'be'), (4, 1, 'af', 'bg'), (5, 1, 'af', 'bn'),
