@@ -45,7 +45,18 @@ class NenoTask extends NenoObject
 	{
 		parent::__construct($data, $loadExtraData);
 
-		$this->taskData = json_decode($this->taskData, true);
+		if (is_string($this->taskData))
+		{
+			$this->taskData = json_decode($this->taskData, true);
+		}
+	}
+
+	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
+	{
+		$data = parent::toObject($allFields, $recursive, $convertToDatabase);
+		$data->task_data = json_encode($data->task_data);
+
+		return $data;
 	}
 
 
