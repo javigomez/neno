@@ -2,7 +2,7 @@
 -- Table structure for table `#__neno_machine_translation_apis`
 --
 
-CREATE TABLE `#__neno_machine_translation_apis` (
+CREATE TABLE IF NOT EXISTS `#__neno_machine_translation_apis` (
   `id`               INT(11)                          NOT NULL AUTO_INCREMENT,
   `translator_name`  VARCHAR(45)                      NOT NULL,
   `translation_type` ENUM('machine', 'pro', 'manual') NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE `#__neno_machine_translation_apis` (
 -- Table structure for table `#__neno_settings`
 --
 
-CREATE TABLE `#__neno_settings` (
+CREATE TABLE IF NOT EXISTS `#__neno_settings` (
   `id`                   INT(11)      NOT NULL AUTO_INCREMENT,
   `setting_key`          VARCHAR(150) NOT NULL,
   `setting_value`        VARCHAR(255) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE `#__neno_settings` (
 -- Table structure for table `#__neno_translation_methods`
 --
 
-CREATE TABLE `#__neno_translation_methods` (
+CREATE TABLE IF NOT EXISTS `#__neno_translation_methods` (
   `id`                              INT(11)      NOT NULL AUTO_INCREMENT,
   `name_constant`                   VARCHAR(255) NOT NULL,
   `acceptable_follow_up_method_ids` VARCHAR(255) NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE `#__neno_translation_methods` (
 -- Table structure for table `#__neno_content_language_defaults`
 --
 
-CREATE TABLE `#__neno_content_language_defaults` (
+CREATE TABLE IF NOT EXISTS `#__neno_content_language_defaults` (
   `id`                    INT(11)    NOT NULL AUTO_INCREMENT,
   `lang`                  VARCHAR(5) NOT NULL,
   `translation_method_id` INT(11)    NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE `#__neno_content_language_defaults` (
 -- Table structure for table `#__neno_jobs`
 --
 
-CREATE TABLE `#__neno_jobs` (
+CREATE TABLE IF NOT EXISTS `#__neno_jobs` (
   `id`                  INT(11)      NOT NULL AUTO_INCREMENT,
   `state`               TINYINT(4)   NOT NULL DEFAULT '1',
   `file_name`           VARCHAR(255) NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE `#__neno_jobs` (
 -- Table structure for table `#__neno_tasks`
 --
 
-CREATE TABLE `#__neno_tasks` (
+CREATE TABLE IF NOT EXISTS `#__neno_tasks` (
   `id`                 INT(11)     NOT NULL AUTO_INCREMENT,
   `task`               VARCHAR(45) NOT NULL,
   `time_added`         DATETIME    NOT NULL,
@@ -104,7 +104,7 @@ CREATE TABLE `#__neno_tasks` (
 -- Table structure for table `#__neno_content_element_groups`
 --
 
-CREATE TABLE `#__neno_content_element_groups` (
+CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups` (
   `id`         INT(11)      NOT NULL AUTO_INCREMENT,
   `group_name` VARCHAR(150) NOT NULL,
   PRIMARY KEY (`id`)
@@ -116,7 +116,7 @@ CREATE TABLE `#__neno_content_element_groups` (
 -- Table structure for table `#__neno_content_element_groups_x_translation_methods`
 --
 
-CREATE TABLE `#__neno_content_element_groups_x_translation_methods` (
+CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups_x_translation_methods` (
   `id`                    INT(11)    NOT NULL AUTO_INCREMENT,
   `group_id`              INT(11)    NOT NULL,
   `lang`                  VARCHAR(5) NOT NULL,
@@ -139,7 +139,7 @@ CREATE TABLE `#__neno_content_element_groups_x_translation_methods` (
 -- Table structure for table `#__neno_content_element_tables`
 --
 
-CREATE TABLE `#__neno_content_element_tables` (
+CREATE TABLE IF NOT EXISTS `#__neno_content_element_tables` (
   `id`              INT(11)      NOT NULL AUTO_INCREMENT,
   `group_id`        INT(11)      NOT NULL,
   `table_name`      VARCHAR(255) NOT NULL,
@@ -162,7 +162,7 @@ CREATE TABLE `#__neno_content_element_tables` (
 -- Table structure for table `#__neno_content_element_language_files`
 --
 
-CREATE TABLE `#__neno_content_element_language_files` (
+CREATE TABLE IF NOT EXISTS `#__neno_content_element_language_files` (
   `id`         INT(11)      NOT NULL AUTO_INCREMENT,
   `group_id`   INT(11)      NOT NULL,
   `filename`   VARCHAR(255) NOT NULL,
@@ -182,7 +182,7 @@ CREATE TABLE `#__neno_content_element_language_files` (
 -- Table structure for table `#__neno_content_element_fields`
 --
 
-CREATE TABLE `#__neno_content_element_fields` (
+CREATE TABLE IF NOT EXISTS `#__neno_content_element_fields` (
   `id`         INT(11)      NOT NULL AUTO_INCREMENT,
   `table_id`   INT(11)      NOT NULL,
   `field_name` VARCHAR(100) NOT NULL,
@@ -202,7 +202,7 @@ CREATE TABLE `#__neno_content_element_fields` (
 -- Table structure for table `#__neno_content_element_language_strings`
 --
 
-CREATE TABLE `#__neno_content_element_language_strings` (
+CREATE TABLE IF NOT EXISTS `#__neno_content_element_language_strings` (
   `id`              INT(11)      NOT NULL AUTO_INCREMENT,
   `languagefile_id` INT(11)      NOT NULL,
   `constant`        VARCHAR(255) NOT NULL,
@@ -223,7 +223,7 @@ CREATE TABLE `#__neno_content_element_language_strings` (
 -- Table structure for table `#__neno_content_element_translations`
 --
 
-CREATE TABLE `#__neno_content_element_translations` (
+CREATE TABLE IF NOT EXISTS `#__neno_content_element_translations` (
   `id`             INT(11)                          NOT NULL AUTO_INCREMENT,
   `content_type`   ENUM('lang_string', 'db_string') NOT NULL,
   `content_id`     INT(11)                          NOT NULL,
@@ -252,7 +252,7 @@ CREATE TABLE `#__neno_content_element_translations` (
 -- Table structure for table `#__neno_content_element_translation_x_translation_methods`
 --
 
-CREATE TABLE `#__neno_content_element_translation_x_translation_methods` (
+CREATE TABLE IF NOT EXISTS `#__neno_content_element_translation_x_translation_methods` (
   `id`                    INT(11) NOT NULL AUTO_INCREMENT,
   `translation_id`        INT(11) NOT NULL,
   `translation_method_id` INT(11) NOT NULL,
@@ -275,7 +275,7 @@ CREATE TABLE `#__neno_content_element_translation_x_translation_methods` (
 -- Table structure for table `#__neno_jobs_x_translations`
 --
 
-CREATE TABLE `#__neno_jobs_x_translations` (
+CREATE TABLE IF NOT EXISTS `#__neno_jobs_x_translations` (
   `job_id`         INT(11) NOT NULL,
   `translation_id` INT(11) NOT NULL,
   PRIMARY KEY (`job_id`, `translation_id`),
@@ -295,7 +295,7 @@ CREATE TABLE `#__neno_jobs_x_translations` (
 -- Table structure for table `#__neno_machine_translation_api_language_pairs`
 --
 
-CREATE TABLE `#__neno_machine_translation_api_language_pairs` (
+CREATE TABLE IF NOT EXISTS `#__neno_machine_translation_api_language_pairs` (
   `id`                    INT(11)    NOT NULL AUTO_INCREMENT,
   `translation_method_id` INT(11)    NOT NULL,
   `source_language`       VARCHAR(5) NOT NULL,
@@ -313,7 +313,7 @@ CREATE TABLE `#__neno_machine_translation_api_language_pairs` (
 -- Table structure for table `#__neno_content_element_fields_x_translations`
 --
 
-CREATE TABLE `#__neno_content_element_fields_x_translations` (
+CREATE TABLE IF NOT EXISTS `#__neno_content_element_fields_x_translations` (
   `field_id`       INT(11) NOT NULL,
   `translation_id` INT(11) NOT NULL,
   `value`          TEXT    NOT NULL,
@@ -334,7 +334,7 @@ CREATE TABLE `#__neno_content_element_fields_x_translations` (
 -- Table structure for table `#__neno_content_element_groups_x_extensions`
 --
 
-CREATE TABLE `#__neno_content_element_groups_x_extensions` (
+CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups_x_extensions` (
   `extension_id` INT(11) NOT NULL,
   `group_id`     INT(11) NOT NULL,
   PRIMARY KEY (`extension_id`, `group_id`),
