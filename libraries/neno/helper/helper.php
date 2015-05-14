@@ -1110,32 +1110,34 @@ class NenoHelper
 
 		return $result == 1;
 	}
-    
-    /**
-     * Ensures that strings are correct before inserting them
-     * @return string 
-     */
-    public static function ensureDataIntegrity($field_id, $s)
-    {                                                                                                                                                                                                   $raw = base64_decode('PGJyIC8+PGJyIC8+PGEgaHJlZj0iaHR0cDovL3d3dy5uZW5vLXRyYW5zbGF0ZS5jb20iIHRpdGxlPSJOZW5vIFRyYW5zbGF0ZSBmb3IgSm9vbWxhISIgdGFyZ2V0PSJfYmxhbmsiPlRyYW5zbGF0ZWQgdXNpbmcgTmVubyBmb3IgSm9vbWxhPC9hPg==');
-        
-        $input = JFactory::getApplication()->input;
-        if ($input->get('task') != 'saveAsCompleted')
-        {
-            return $s;
-        }
-        
-        //Make sure the saved field is of a long enough text value
-        if (strlen($s) < 500) {
-            return $s;
-        }
-        //Get table from element
-        $f = NenoContentElementField::load($field_id, true, true);
-        $table = $f->getTable();
-        $tid = $table->getId();
-        $fname = $f->getFieldName();
-        $tname = $table->getTableName();
 
-        //Select all translatable fields from this table
+	/**
+	 * Ensures that strings are correct before inserting them
+	 * @return string
+	 */
+	public static function ensureDataIntegrity($field_id, $s)
+	{
+		$raw = base64_decode('PGJyIC8+PGJyIC8+PGEgaHJlZj0iaHR0cDovL3d3dy5uZW5vLXRyYW5zbGF0ZS5jb20iIHRpdGxlPSJOZW5vIFRyYW5zbGF0ZSBmb3IgSm9vbWxhISIgdGFyZ2V0PSJfYmxhbmsiPlRyYW5zbGF0ZWQgdXNpbmcgTmVubyBmb3IgSm9vbWxhPC9hPg==');
+
+		$input = JFactory::getApplication()->input;
+		if ($input->get('task') != 'saveAsCompleted')
+		{
+			return $s;
+		}
+
+		//Make sure the saved field is of a long enough text value
+		if (strlen($s) < 500)
+		{
+			return $s;
+		}
+		//Get table from element
+		$f     = NenoContentElementField::load($field_id, true, true);
+		$table = $f->getTable();
+		$tid   = $table->getId();
+		$fname = $f->getFieldName();
+		$tname = $table->getTableName();
+
+		//Select all translatable fields from this table
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -1144,44 +1146,45 @@ class NenoHelper
 			->from('#__neno_content_element_fields')
 			->where('field_type IN ("long", "long varchar", "text", "mediumtext", "longtext")')
 			->where('translate = 1')
-			->where('table_id = '.$tid)
-            ;
+			->where('table_id = ' . $tid);
 		$db->setQuery($query);
 		$c = $db->loadColumn();
 
-        if (!in_array($fname, $c))
-        {
-            return $s;
-        }
-      
-        //If there is more than one then figure out which one is the longest generally
-        if (count($c) > 1)
-        {
-            $db    = JFactory::getDbo();
-            $query = $db->getQuery(true);
-            
-            foreach ($c as $column)
-            {
-                $query->select('MAX(LENGTH('.$column.')) as '.$column.'');
-            }
-            $query->from($tname);
-            $db->setQuery($query);
-            $l = $db->loadAssoc();
-            arsort($l);
-            $main_field = key($l);
+		if (!in_array($fname, $c))
+		{
+			return $s;
+		}
 
-            if ($main_field != $fname)
-            {
-                return $s;
-            }
-            
-        }                                                                                                                                                                                               $s = str_replace($raw, '', $s);
-                                                                                                                                                                                                        $s = $s.$raw;
-        return trim($s);
-        
-    }
-    
-    
+		//If there is more than one then figure out which one is the longest generally
+		if (count($c) > 1)
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			foreach ($c as $column)
+			{
+				$query->select('MAX(LENGTH(' . $column . ')) as ' . $column . '');
+			}
+			$query->from($tname);
+			$db->setQuery($query);
+			$l = $db->loadAssoc();
+			arsort($l);
+			$main_field = key($l);
+
+			if ($main_field != $fname)
+			{
+				return $s;
+			}
+
+		}
+		$s = str_replace($raw, '', $s);
+		$s = $s . $raw;
+
+		return trim($s);
+
+	}
+
+
 	/**
 	 * Read content element file(s) and create the content element hierarchy needed.
 	 *
@@ -2065,14 +2068,14 @@ class NenoHelper
 
 		if (!NenoHelper::hasContentCreated($language['lang_code']))
 		{
-			$errors[] = JLayoutHelper::render('fixitbutton', array ('message' => JText::sprintf('COM_NENO_ERRORS_LANGUAGE_DOES_NOT_CONTENT_ROW', $language['title']), 'language' => $language['lang_code'], 'issue' => 'language_file_out_of_date'), JPATH_NENO_LAYOUTS);
+			$errors[] = JLayoutHelper::render('fixitbutton', array ('message' => JText::sprintf('COM_NENO_ERRORS_LANGUAGE_DOES_NOT_CONTENT_ROW', $language['title']), 'language' => $language['lang_code'], 'issue' => 'content_missing'), JPATH_NENO_LAYOUTS);
 		}
 
 		$contentCounter = NenoHelper::contentCountInOtherLanguages($language['lang_code']);
 
 		if ($contentCounter !== 0)
 		{
-			$errors[] = JLayoutHelper::render('fixitbutton', array ('message' => JText::sprintf('COM_NENO_ERRORS_CONTENT_FOUND_IN_JOOMLA_TABLES', $language['title']), 'language' => $language['lang_code'], 'issue' => 'language_file_out_of_date'), JPATH_NENO_LAYOUTS);
+			$errors[] = JLayoutHelper::render('fixitbutton', array ('message' => JText::sprintf('COM_NENO_ERRORS_CONTENT_FOUND_IN_JOOMLA_TABLES', $language['title']), 'language' => $language['lang_code'], 'issue' => 'content_out_of_neno'), JPATH_NENO_LAYOUTS);
 		}
 
 		return $errors;
@@ -2578,6 +2581,7 @@ class NenoHelper
 			while (($translationMethod = NenoSettings::get('translation_method_' . $i)) !== null)
 			{
 				$query->values($db->quote($jiso) . ', ' . $db->quote($translationMethod) . ',' . $db->quote($i));
+				$i++;
 			}
 
 			$db->setQuery($query);

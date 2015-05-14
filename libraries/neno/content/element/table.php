@@ -342,6 +342,20 @@ class NenoContentElementTable extends NenoContentElement
 			{
 				$field->setTable($this);
 				$field->persist();
+
+				if ($field->getFieldName() === 'language')
+				{
+					$languages       = NenoHelper::getLanguages(false);
+					$defaultLanguage = JFactory::getLanguage()->getDefault();
+
+					foreach ($languages as $language)
+					{
+						if ($language->lang_code != $defaultLanguage)
+						{
+							$db->deleteContentElementsFromSourceTableToShadowTables($this->tableName, $language);
+						}
+					}
+				}
 			}
 
 			/* @var $field NenoContentElementField */

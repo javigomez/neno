@@ -86,10 +86,56 @@ class PlgSystemNeno extends JPlugin
 	 */
 	public function onBeforeRender()
 	{
-		if (NenoSettings::get('schedule_task_option', 'ajax') == 'ajax')
+		if (NenoSettings::get('schedule_task_option', 'ajax') == 'ajax' && JFactory::getApplication()->isSite())
 		{
 			$document = JFactory::getDocument();
 			$document->addScript(JUri::root() . '/media/neno/js/ajax_module.js');
+		}
+	}
+
+	public function onContentAfterSave($context, JTable $content, $isNew)
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db        = JFactory::getDbo();
+		$tableName = $content->getTableName();
+
+		/* @var $table NenoContentElementTable */
+		$table = NenoContentElementTable::load(array ('table_name' => $tableName));
+
+		if (!empty($table))
+		{
+			$fields = $table->getFields();
+
+			/* @var $field NenoContentElementField */
+			foreach ($fields as $field)
+			{
+				if ($field->isTranslatable())
+				{
+					$primaryKeyData = array ();
+
+					foreach ($content->getPrimaryKey() as $primaryKeyName => $primaryKeyValue)
+					{
+						$primaryKeyData[$primaryKeyName] = $primaryKeyValue;
+					}
+
+					$field->persistTranslations($primaryKeyData);
+				}
+			}
+
+			$languages       = NenoHelper::getLanguages(false);
+			$defaultLanguage = JFactory::getLanguage()->getDefault();
+
+			foreach ($languages as $language)
+			{
+				if ($language->lang_code != $defaultLanguage)
+				{
+					$shadowTable = $db->generateShadowTableName($tableName, $language->lang_code);
+					$properties  = $content->getProperties();
+					$query       = 'REPLACE INTO ' . $db->quoteName($shadowTable) . ' ' . implode(',', $db->quoteName(array_keys($properties))) . ' VALUES(' . $db->quote($properties) . ')';
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
 		}
 	}
 }
