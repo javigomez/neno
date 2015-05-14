@@ -505,8 +505,9 @@ class NenoContentElementTranslation extends NenoContentElement
 			{
 				if (!empty($this->sourceElementData))
 				{
+					$db    = JFactory::getDbo();
+					$query = $db->getQuery(true);
 					$query
-						->clear()
 						->insert('#__neno_content_element_fields_x_translations')
 						->columns(
 							array (
