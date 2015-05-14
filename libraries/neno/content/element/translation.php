@@ -695,10 +695,7 @@ class NenoContentElementTranslation extends NenoContentElement
             //Ensure data entegrity
             $methods = $this->getTranslationMethods();
             
-            echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$methods = ". print_r($this, true)."\n</pre>";
-
-            
-            if (in_array(1, $methods))
+            if (in_array(1, $methods) || true)
             {
                 $this->string = NenoHelper::ensureDataIntegrity($this->element->id, $this->string);
             }
