@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="library" version="3.0" method="upgrade">
+<extension type="library" version="3.0" method="install" overwrite="true">
     <name>Neno Library</name>
     <creationDate>XXX_DATE_XXX</creationDate>
     <copyright>Copyright (C) XXX_COPYRIGHT_YEAR_XXX. All rights reserved.</copyright>
