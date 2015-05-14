@@ -31,3 +31,18 @@
 .doc h3 {
     padding-top: 10px;
 }
+/**** REMOVE THIS RULE WHEN "LEARN MORE" MESSAGES ARE SET ****/
+.doc a {
+    display: none;
+}
+.default-method-selectors {
+    padding-top: 10px;
+}
+.default-method-selectors .control-label,
+.default-method-selectors .controls {
+    padding-top: 5px;
+}
+#languages-modal .modal-body {
+    max-height: 500px;
+    overflow-y: scroll;
+}
