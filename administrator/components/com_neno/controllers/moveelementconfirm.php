@@ -131,7 +131,7 @@ class NenoControllerMoveElementConfirm extends JControllerAdmin
         {
             foreach ($tables as $table_id)
             {
-                $table = NenoContentElementTable::load($table_id);
+                $table = NenoContentElementTable::load($table_id, true, true);
                 $table->setGroup($group);
                 $table->persist();
             }
