@@ -36,7 +36,7 @@ class NenoTaskWorkerDiscover extends NenoTaskWorker
 			->where(
 				array (
 					'e.type IN (' . implode(',', $extensions) . ')',
-					'e.name NOT LIKE \'com_neno\'',
+					'e.name NOT LIKE \'%neno\'',
 					'NOT EXISTS (SELECT 1 FROM #__neno_content_element_groups_x_extensions AS ge WHERE ge.extension_id = e.extension_id)'
 				)
 			)
