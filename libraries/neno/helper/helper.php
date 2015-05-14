@@ -2754,21 +2754,60 @@ class NenoHelper
 	public static function getServerInfo()
 	{
 		ob_start();
+		$phpInfo                   = array ();
+		$xml                       = new SimpleXMLElement(file_get_contents(JPATH_ADMINISTRATOR . '/components/com_neno/neno.xml'));
+		$phpInfo['neno_version']   = (string) $xml->version;
+		$phpInfo['neno_log']       = self::tailCustom(JPATH_ROOT . '/logs/neno_log.php', 100);
+		$phpInfo['joomla_version'] = JVERSION;
+		// Get extensions installed
+
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(
+				array (
+					'name',
+					'IF(enabled = 1,' . $db->quote('Enabled') . ',' . $db->quote('Disabled') . ') AS status'
+				)
+			)
+			->from('#__extensions');
+
+		$db->setQuery($query);
+		$phpInfo['extensions'] = $db->loadAssocList('name');
+		$phpInfo['phpinfo']    = array ();
 		phpinfo(11);
-		$phpInfo = array ('phpinfo' => array ());
+
 
 		if (preg_match_all('#(?:<h2>(?:<a name=".*?">)?(.*?)(?:</a>)?</h2>)|(?:<tr(?: class=".*?")?><t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>(?:<t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>(?:<t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>)?)?</tr>)#s', ob_get_clean(), $matches, PREG_SET_ORDER))
 		{
+			$directive = false;
+
 			foreach ($matches as $match)
 			{
+				if (!empty($match[2]) && $match[2] == 'Directive')
+				{
+					$directive = true;
+				}
+
 				if (strlen($match[1]))
 				{
 					$phpInfo[$match[1]] = array ();
 				}
 				elseif (isset($match[3]))
 				{
-					$keys1                           = array_keys($phpInfo);
-					$phpInfo[end($keys1)][$match[2]] = isset($match[4]) ? array ($match[3], $match[4]) : $match[3];
+					$keys1 = array_keys($phpInfo);
+
+					if ($directive)
+					{
+						$phpInfo[end($keys1)][$match[2]] = isset($match[4]) ? array ('Local Value' => $match[3], 'Master Value' => $match[4]) : $match[3];
+					}
+					else
+					{
+						$phpInfo[end($keys1)][$match[2]] = isset($match[4]) ? array ($match[3], $match[4]) : $match[3];
+					}
+
 				}
 				else
 				{
@@ -2779,27 +2818,6 @@ class NenoHelper
 
 			}
 		}
-
-		// Get extensions installed
-
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select(
-				array (
-					'name', 'element'
-				)
-			)
-			->from('#__extensions');
-
-		$db->setQuery($query);
-		$phpInfo['extensions']     = $db->loadAssocList();
-		$xml                       = new SimpleXMLElement(file_get_contents(JPATH_ADMINISTRATOR . '/components/com_neno/neno.xml'));
-		$phpInfo['neno_version']   = (string) $xml->version;
-		$phpInfo['joomla_version'] = JVERSION;
-		$phpInfo['neno_log']       = self::tailCustom(JPATH_ROOT . '/logs/neno_log.php', 100);
 
 		if (!empty($phpInfo))
 		{
