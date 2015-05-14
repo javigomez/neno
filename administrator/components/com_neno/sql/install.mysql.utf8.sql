@@ -351,13 +351,13 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups_x_extensions` (
   DEFAULT CHARSET = utf8;
 
 
-REPLACE INTO  `#__neno_machine_translation_apis` VALUES (1, 'Google', 'machine'), (3, 'Yandex', 'machine');
+INSERT IGNORE INTO  `#__neno_machine_translation_apis` VALUES (1, 'Google', 'machine'), (3, 'Yandex', 'machine');
 
-REPLACE INTO `#__neno_translation_methods`
+INSERT IGNORE INTO `#__neno_translation_methods`
 VALUES (1, 'COM_NENO_TRANSLATION_METHOD_MANUAL', '0'), (2, 'COM_NENO_TRANSLATION_METHOD_MACHINE', '1,3'),
   (3, 'COM_NENO_TRANSLATION_METHOD_PROFESSIONAL', '1');
 
-REPLACE INTO `#__neno_settings` VALUES (1, 'translate_automatically_professional', '0', 0, 0),
+INSERT IGNORE INTO `#__neno_settings` VALUES (1, 'translate_automatically_professional', '0', 0, 0),
   (2, 'translate_automatically_machine', '1', 0, 0),
   (3, 'api_server_url', 'http://localhost/neno-translate/api/v1/', 1, 0),
   (4, 'license_code', '', 0, 1), (5, 'translator', '', 0, 1),
@@ -365,7 +365,7 @@ REPLACE INTO `#__neno_settings` VALUES (1, 'translate_automatically_professional
   (7, 'source_language', 'en-GB', 1, 0), (8, 'schedule_task_option', 'ajax', 0, 1),
   (9, 'hide_empty_strings', '1', 0, 1), (10, 'installation_completed', '0', 0, 0);
 
-REPLACE INTO `#__neno_machine_translation_api_language_pairs`
+INSERT IGNORE INTO `#__neno_machine_translation_api_language_pairs`
 VALUES (1, 1, 'af', 'ar'), (2, 1, 'af', 'az'), (3, 1, 'af', 'be'), (4, 1, 'af', 'bg'), (5, 1, 'af', 'bn'),
   (6, 1, 'af', 'bs'), (7, 1, 'af', 'ca'), (8, 1, 'af', 'ceb'), (9, 1, 'af', 'cs'), (10, 1, 'af', 'cy'),
   (11, 1, 'af', 'da'), (12, 1, 'af', 'de'), (13, 1, 'af', 'el'), (14, 1, 'af', 'en'), (15, 1, 'af', 'eo'),
