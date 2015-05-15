@@ -244,6 +244,20 @@ class NenoControllerInstallation extends JControllerAdmin
 		$group = new NenoContentElementGroup(array ('group_name' => JText::_('COM_NENO_DO_NOT_TRANSLATE_GROUP_NAME')));
 		$group->persist();
 
+		$query
+			->clear()
+			->update('#__extensions')
+			->set('enabled = 1')
+			->where(
+				array (
+					'element LIKE ' . $db->quote('languagecode'),
+					'element LIKE ' . $db->quote('languagefilter')
+				), 'OR'
+			);
+
+		$db->setQuery($query);
+		$db->execute();
+
 		// Set installation as completed
 		NenoSettings::set('installation_completed', 1);
 
