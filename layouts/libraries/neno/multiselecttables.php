@@ -13,9 +13,11 @@ defined('JPATH_NENO') or die;
 
 $document = JFactory::getDocument();
 $tables   = $displayData['tables'];
+$files    = $displayData['files'];
 
-$isOverlay = isset($displayData->isOverlay);
-$elements  = $displayData['state']->get('filter.element', array());
+$isOverlay     = isset($displayData->isOverlay);
+$elements      = $displayData['state']->get('filter.element', array ());
+$filesSelected = $displayData['state']->get('filter.file', array ());
 ?>
 <?php foreach ($tables as $table): ?>
 	<?php $class = !empty($table->fields) ? 'cell-expand' : ''; ?>
@@ -59,4 +61,18 @@ $elements  = $displayData['state']->get('filter.element', array());
 			</td>
 		</tr>
 	<?php endforeach; ?>
+<?php endforeach; ?>
+<?php foreach ($files as $file): ?>
+	<tr class="row-table element-row collapsed" data-level="2"
+	    data-id="file-<?php echo $file->id; ?>"
+	    data-parent="group-<?php echo $file->group->id; ?>"
+	    data-label="<?php echo $file->table_name; ?>">
+		<td></td>
+		<td></td>
+		<td class="cell-check"><input
+				type="checkbox" <?php echo in_array($file->id, $filesSelected) ? 'checked="checked"' : ''; ?>/>
+		</td>
+		<td colspan="3"
+		    title="<?php echo $file->file_name; ?>"><?php echo $file->file_name; ?></td>
+	</tr>
 <?php endforeach; ?>

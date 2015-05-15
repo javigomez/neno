@@ -114,6 +114,17 @@ class NenoModelStrings extends JModelList
 
 		$this->setState('filter.element', $app->getUserState($this->context . '.filter.elements'));
 
+		// Language file filtering
+		$elements = $app->getUserStateFromRequest($this->context . '.filter.files', 'file', array ());
+
+		if (!empty($elements))
+		{
+			$app->setUserState($this->context . '.filter.files', $elements);
+			$this->setState('filter.group_id', array ());
+		}
+
+		$this->setState('filter.files', $app->getUserState($this->context . '.filter.files'));
+
 		// Field(s) filtering
 		$fields = $app->getUserStateFromRequest($this->context . '.field', 'field', array ());
 
@@ -249,6 +260,9 @@ class NenoModelStrings extends JModelList
 		/* @var $field array */
 		$field = $this->getState('filter.field', array ());
 
+		/* @var $file array */
+		$file = $this->getState('filter.file', array ());
+
 		$groupIdAdded = false;
 
 		if (!is_array($groups))
@@ -274,8 +288,12 @@ class NenoModelStrings extends JModelList
 			$queryWhereDb[] = 't.id IN (' . implode(', ', $element) . ')';
 
 			// Do not show any strings for this language file
-			$languageFileStrings->where('lf.id = 0');
+			if (empty($file))
+			{
+				$languageFileStrings->where('lf.id = 0');
+			}
 		}
+
 
 		if (!empty($field))
 		{
@@ -287,8 +305,22 @@ class NenoModelStrings extends JModelList
 			}
 
 			// Do not show any strings for this language file
-			$languageFileStrings->where('lf.id = 0');
+			if (empty($file))
+			{
+				$languageFileStrings->where('lf.id = 0');
+			}
+
 			$queryWhereDb[] = 'f.id IN (' . implode(', ', $field) . ')';
+		}
+
+		if (!empty($file))
+		{
+			$languageFileStrings->where('lf.id IN (' . implode(',', $file) . ')');
+
+			if (empty($field) && empty($element))
+			{
+				$queryWhereDb[] = 'f.id = 0 AND t.id = 0';
+			}
 		}
 
 		if (count($queryWhereDb))
