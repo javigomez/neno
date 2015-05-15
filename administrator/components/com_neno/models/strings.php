@@ -325,7 +325,7 @@ class NenoModelStrings extends JModelList
 		$query = parent::getListQuery();
 
 		$query
-			->select('*')
+			->select('DISTINCT *')
 			->from('((' . (string) $dbStrings . ') UNION (' . (string) $languageFileStrings . ')) AS a');
 
 		$search = $this->getState('filter.search');

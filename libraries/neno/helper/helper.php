@@ -1531,7 +1531,6 @@ class NenoHelper
 	public static function html2text($string, $truncate = null)
 	{
 		$string = htmlspecialchars($string);
-		//var_dump($string);
 		$ending = '';
 		if ($truncate)
 		{
