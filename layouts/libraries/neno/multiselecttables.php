@@ -66,7 +66,7 @@ $filesSelected = $displayData['state']->get('filter.file', array ());
 	<tr class="row-table element-row collapsed" data-level="2"
 	    data-id="file-<?php echo $file->id; ?>"
 	    data-parent="group-<?php echo $file->group->id; ?>"
-	    data-label="<?php echo $file->table_name; ?>">
+	    data-label="<?php echo $file->file_name; ?>">
 		<td></td>
 		<td></td>
 		<td class="cell-check"><input
