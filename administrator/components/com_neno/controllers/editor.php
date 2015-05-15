@@ -135,7 +135,7 @@ class NenoControllerEditor extends NenoControllerStrings
 	{
 		$input           = $this->input;
 		$translationId   = $input->getInt('id');
-		$translationText = $input->getHtml('text');
+		$translationText = $input->getRaw('text');
 
 		if ($this->saveTranslation($translationId, $translationText, NenoContentElementTranslation::TRANSLATED_STATE))
 		{
