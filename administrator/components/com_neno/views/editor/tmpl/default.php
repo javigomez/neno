@@ -50,6 +50,7 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/editor.css');
 
 
 <div id="j-main-container" class="span10">
+	<input type="hidden" name="default_translate_action" id="default_translate_action" value="<?php echo $this->defaultAction; ?>">
 	<div id="editor-wrapper">
 		<?php echo JLayoutHelper::render('editor', null, JPATH_NENO_LAYOUTS); ?>
 	</div>
