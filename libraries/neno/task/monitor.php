@@ -23,60 +23,51 @@ class NenoTaskMonitor
 	/**
 	 * Execute tasks
 	 *
+	 * @param   int $maximumTask Maximum number of task
+	 *
 	 * @return void
 	 */
-	public static function runTask()
+	public static function runTask($maximumTask = 0)
 	{
 		NenoLog::log('Sending translation job to execute', 2);
-
-		// Calculate execution time
-		self::calculateMaxExecutionTime();
-		$timeRemaining = self::$maxExecutionTime;
 
 		// Clean the queue
 		self::cleanUp();
 
-		// It means that there's no way to stop this process, let's execute just one task
-		if ($timeRemaining == 0)
+		if ($maximumTask == 0)
 		{
-			$task = self::fetchTask();
-			self::executeTask($task);
+			// Calculate execution time
+			self::calculateMaxExecutionTime();
+			$timeRemaining = self::$maxExecutionTime;
+
+			// It means that there's no way to stop this process, let's execute just one task
+			if ($timeRemaining == 0)
+			{
+				$task = self::fetchTask();
+				self::executeTask($task);
+			}
+			else
+			{
+				// Execute tasks until we spend all the time
+				while ($timeRemaining > 0)
+				{
+					$iniTime = time();
+					$task    = self::fetchTask();
+					self::executeTask($task);
+					$timeRemaining -= time() - $iniTime;
+				}
+			}
 		}
 		else
 		{
-			// Execute tasks until we spend all the time
-			while ($timeRemaining > 0)
+			for ($i = 0; $i < $maximumTask; $i++)
 			{
-				$iniTime = time();
-				$task    = self::fetchTask();
+				$task = self::fetchTask();
 				self::executeTask($task);
-				$timeRemaining -= time() - $iniTime;
 			}
 		}
-	}
 
-	/**
-	 * Calculate maximum execution time
-	 *
-	 * @return void
-	 */
-	protected static function calculateMaxExecutionTime()
-	{
-		if (self::$maxExecutionTime === null)
-		{
-			// Setting max_execution_time to 1 hour
-			$result = set_time_limit(3600);
 
-			$executionTime = 3600;
-
-			// If no value could be set, let's get the default one.
-			if ($result === false)
-			{
-				$executionTime = ini_get('max_execution_time');
-			}
-
-			self::$maxExecutionTime = $executionTime * 0.9;
-		}
 	}
 
 	/**
@@ -103,6 +94,30 @@ class NenoTaskMonitor
 
 		$db->setQuery($query);
 		$db->execute();
+	}
+
+	/**
+	 * Calculate maximum execution time
+	 *
+	 * @return void
+	 */
+	protected static function calculateMaxExecutionTime()
+	{
+		if (self::$maxExecutionTime === null)
+		{
+			// Setting max_execution_time to 1 hour
+			$result = set_time_limit(3600);
+
+			$executionTime = 3600;
+
+			// If no value could be set, let's get the default one.
+			if ($result === false)
+			{
+				$executionTime = ini_get('max_execution_time');
+			}
+
+			self::$maxExecutionTime = $executionTime * 0.9;
+		}
 	}
 
 	/**
