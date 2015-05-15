@@ -2234,6 +2234,7 @@ class NenoHelper
 		$query
 			->delete('#__neno_content_element_translations')
 			->where('language = ' . $db->quote($languageTag));
+		$db->setQuery($query);
 		$db->execute();
 
 		// Delete module
@@ -2246,6 +2247,7 @@ class NenoHelper
 					'module = ' . $db->quote('mod_menu')
 				)
 			);
+		$db->setQuery($query);
 		$db->execute();
 
 		// Delete menu items
@@ -2258,6 +2260,7 @@ class NenoHelper
 					'client_id = 0'
 				)
 			);
+		$db->setQuery($query);
 		$db->execute();
 
 		// Delete menu type
@@ -2265,6 +2268,7 @@ class NenoHelper
 			->clear()
 			->delete('#__menu_types')
 			->where('menutype NOT IN (SELECT menutype FROM #__menu)');
+		$db->setQuery($query);
 		$db->execute();
 
 		// Delete associations
@@ -2277,6 +2281,7 @@ class NenoHelper
 					'context = ' . $db->quote('com_menus.item')
 				)
 			);
+		$db->setQuery($query);
 		$db->execute();
 
 
@@ -2285,6 +2290,7 @@ class NenoHelper
 			->clear()
 			->delete('#__languages')
 			->where('lang_code = ' . $db->quote($languageTag));
+		$db->setQuery($query);
 		$db->execute();
 
 		// Drop all the shadow tables

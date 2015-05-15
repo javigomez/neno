@@ -295,7 +295,7 @@ class NenoController extends JControllerLegacy
 	public function removeLanguage()
 	{
 		$input    = $this->input;
-		$language = $input->post->getString('language');
+		$language = $input->getString('language');
 
 		if (NenoHelper::deleteLanguage($language))
 		{
