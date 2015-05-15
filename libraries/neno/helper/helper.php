@@ -2537,7 +2537,20 @@ class NenoHelper
 
 		if ($allSupported)
 		{
-			$languagesFound[] = array ('name' => 'English', 'iso' => 'en-GB');
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query
+				->select(
+					array (
+						'DISTINCT element AS iso',
+						'name'
+					)
+				)
+				->from('#__extensions')
+				->where('type = ' . $db->quote('language'))
+				->group('element');
+			$db->setQuery($query);
+			$languagesFound = array_merge(array ('name' => 'English', 'iso' => 'en-GB'), $db->loadAssocList(), $languagesFound);
 		}
 
 		return $languagesFound;
