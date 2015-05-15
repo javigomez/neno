@@ -78,7 +78,6 @@ class NenoControllerInstallation extends JControllerAdmin
 						$languagesData[$key]['placement']           = 'installation';
 						$languagesData[$key]['image']               = NenoHelper::getLanguageImage($knownLanguage['tag']);
 						$languagesData[$key]['published']           = NenoHelper::isLanguagePublished($knownLanguage['tag']);
-						$languagesData[$key]['translationMethods']  = NenoHelper::getLanguageDefault($languagesData[$key]['lang_code']);
 					}
 				}
 
