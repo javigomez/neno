@@ -63,8 +63,9 @@ $n                  = 0;
 		</span>
 
 		<div class="language-configuration-controls">
-			<button class="btn <?php echo empty($item['errors']) ? '' : 'disabled'; ?>"
+			<button class="btn remove-language-button <?php echo empty($item['errors']) ? '' : 'disabled'; ?>"
 			        title="<?php echo empty($item['errors']) ? '' : JText::_('COM_NENO_DASHBOARD_REMOVE_DISABLED'); ?>"
+			        data-language="<?php echo $item['lang_code']; ?>"
 			        type="button">
 				<span class="icon-trash"></span>
 				<?php echo JText::_('COM_NENO_DASHBOARD_REMOVE_BUTTON'); ?>
