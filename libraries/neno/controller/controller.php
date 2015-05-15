@@ -61,9 +61,10 @@ class NenoController extends JControllerLegacy
 		{
 			// Get working language
 			$workingLanguage       = NenoHelper::getWorkingLanguage();
+			$languages             = JFactory::getLanguage()->getKnownLanguages();
 			$showLanguagesDropDown = true;
 
-			if (empty($workingLanguage))
+			if (empty($workingLanguage) || !in_array($workingLanguage, array_keys($languages)))
 			{
 				$url = JRoute::_('index.php?option=com_neno&view=setworkinglang&next=' . $view, false);
 				$this->setRedirect($url);
