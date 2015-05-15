@@ -578,7 +578,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		$query = $this->getQuery(true);
 		$query
 			->delete($sourceTableName)
-			->where('language = ' . $language);
+			->where('language = ' . $this->quote($language));
 		$this->setQuery($query);
 		$this->execute();
 	}
