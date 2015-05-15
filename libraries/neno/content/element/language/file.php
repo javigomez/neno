@@ -51,6 +51,8 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	{
 		parent::__construct($data);
 
+		$data = (array) $data;
+
 		if (!empty($this->filename))
 		{
 			$languageFileData = explode('.', $this->filename);
