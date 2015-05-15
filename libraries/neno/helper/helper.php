@@ -1174,10 +1174,11 @@ class NenoHelper
 
 			foreach ($c as $column)
 			{
-				$query->select('MAX(LENGTH(' . $column . ')) as ' . $column . '');
+				$query->select('MAX(LENGTH(`' . $column . '`)) as `' . $column . '`');
 			}
 			$query->from($tname);
 			$db->setQuery($query);
+			
 			$l = $db->loadAssoc();
 			arsort($l);
 			$main_field = key($l);
@@ -1531,7 +1532,6 @@ class NenoHelper
 	public static function html2text($string, $truncate = null)
 	{
 		$string = htmlspecialchars($string);
-		//var_dump($string);
 		$ending = '';
 		if ($truncate)
 		{
@@ -2406,7 +2406,6 @@ class NenoHelper
 		/* @var $languageModel LanguagesModelLanguage */
 		$languageModel = JModelLegacy::getInstance('Language', 'LanguagesModel');
 		$icon          = self::getLanguageSupportedIcon($jiso);
-		$jisoParts     = explode('-', $jiso);
 
 		if (!is_string($languageName))
 		{

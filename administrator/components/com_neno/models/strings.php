@@ -203,7 +203,7 @@ class NenoModelStrings extends JModelList
 			)
 			->group(
 				array (
-					'tr1.original_text',
+					'tr1.string',
 					'tr1.state'
 				)
 			)
@@ -325,7 +325,7 @@ class NenoModelStrings extends JModelList
 		$query = parent::getListQuery();
 
 		$query
-			->select('*')
+			->select('DISTINCT *')
 			->from('((' . (string) $dbStrings . ') UNION (' . (string) $languageFileStrings . ')) AS a');
 
 		$search = $this->getState('filter.search');
