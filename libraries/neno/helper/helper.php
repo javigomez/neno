@@ -2781,7 +2781,7 @@ class NenoHelper
 			->order('setting_key ASC');
 
 		$db->setQuery($query);
-		$translation_methods_selected = $db->loadArray();
+		$translation_methods_selected = $db->loadObjectList();
 
 		return $translation_methods_selected;
 	}
