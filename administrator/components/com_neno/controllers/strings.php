@@ -212,7 +212,7 @@ class NenoControllerStrings extends JControllerAdmin
 			/* @var $model NenoModelStrings */
 			$model                 = $this->getModel();
 			$displayData['tables'] = NenoHelper::convertNenoObjectListToJObjectList($tables);
-			$displayData['files']  = $files;
+			$displayData['files']  = NenoHelper::convertNenoObjectListToJObjectList($files);
 			$displayData['state']  = $model->getState();
 			$tablesHTML            = JLayoutHelper::render('multiselecttables', $displayData, JPATH_NENO_LAYOUTS);
 			echo $tablesHTML;
