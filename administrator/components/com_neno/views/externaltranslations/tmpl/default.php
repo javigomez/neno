@@ -10,10 +10,6 @@
 
 // No direct access
 defined('_JEXEC') or die;
-
-echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$this = ". print_r($this->items, true)."\n</pre>";
-echo '<pre class="debug"><small>' . __file__ . ':' . __line__ . "</small>\n\$this = ". print_r($this->tcNeeded, true)."\n</pre>";
-
 if (!empty($this->extra_sidebar))
 {
 	$this->sidebar .= $this->extra_sidebar;
@@ -24,7 +20,7 @@ if (!empty($this->extra_sidebar))
 <style>
 	.translation-type, .information-box {
 		border: 1px solid #ccc;
-		margin: 30px 0;
+		margin: 10px 0;
 	}
 	
 	.translation-type .translation-type-header, .translation-type .translation-type-footer {
@@ -115,14 +111,16 @@ if (!empty($this->extra_sidebar))
 						<?php if ($item->translation_method_id == '2'): ?>
 							<div class="translation">
 								<div class="span3">
-									<?php echo $item->language; ?>
+                                    <img src="http://localhost/neno/media/mod_languages/images/<?php echo $item->image; ?>.gif" style="margin-bottom: 3px;">
+									<?php echo $item->title_native; ?>
 								</div>
 								<div class="span3">
 									<?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_WORDS', $item->words); ?>
 								</div>
 								<div class="span3">
-									<?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_PRICE'); ?> <?php echo $item->words; ?>
-									TC
+                                    <?php $pro_price_tc = $item->words; ?> 
+                                    <?php $pro_price_eur = number_format(ceil($pro_price_tc * 0.0005), 2, ',', '.'); ?> 
+									<?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_PRICE'); ?> <?php echo $pro_price_tc; ?> TC (€ <?php echo $pro_price_eur; ?>)
 								</div>
 								<div class="span3">
 									<button type="button" class="btn order-button"
@@ -160,14 +158,16 @@ if (!empty($this->extra_sidebar))
 						<?php if ($item->translation_method_id == '3'): ?>
 							<div class="translation">
 								<div class="span3">
-									<?php echo $item->language; ?>
+                                    <img src="http://localhost/neno/media/mod_languages/images/<?php echo $item->image; ?>.gif" style="margin-bottom: 3px;">
+									<?php echo $item->title_native; ?>
 								</div>
 								<div class="span3">
 									<?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_WORDS', $item->words); ?>
 								</div>
 								<div class="span3">
-									<?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_PRICE'); ?> <?php echo $item->words; ?>
-									TC
+                                    <?php $pro_price_tc = $item->words * 20; ?> 
+                                    <?php $pro_price_eur = number_format(ceil($pro_price_tc * 0.0005), 2, ',', '.'); ?> 
+									<?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_PRICE'); ?> <?php echo $pro_price_tc; ?> TC (€ <?php echo $pro_price_eur; ?>)
 								</div>
 								<div class="span3">
 									<button type="button" class="btn order-button"
@@ -194,16 +194,13 @@ if (!empty($this->extra_sidebar))
 		<div class="information-box span11 pull-right">
 			<div class="center">
 				<div>
-					<span>ICON</span>
-				</div>
-				<div>
 					<p class="center">
 						<?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_BUY_TC_TEXT', $this->tcNeeded); ?>
 					</p>
 				</div>
 				<div class="center">
 					<h3><?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_PRICE'); ?>
-						€<?php echo number_format(ceil($this->tcNeeded * 0.0005), 0, ',', '.'); ?> </h3>
+						&nbsp;€<?php echo number_format(ceil($this->tcNeeded * 0.0005), 2, ',', '.'); ?> </h3>
 				</div>
 				<div class="center">
 					<a href="#" class="btn btn-success">
@@ -212,25 +209,33 @@ if (!empty($this->extra_sidebar))
 				</div>
 			</div>
 		</div>
-		<div class="information-box span11 pull-right">
+        
+        <?php // Only show the jobs link if there are any jobs ?>
+        <?php if (NenoHelper::areThereAnyJobs()): ?>
+            <div class="information-box span11 pull-right alert alert-info">
+                <div class="center">
+                    <div>
+                        <p class="left">
+                            <?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_JOBS_INTRO'); ?>
+                            <br />
+                            <a href="<?php echo JRoute::_('index.php?option=com_neno&view=jobs'); ?>"><?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_JOBS_LINK'); ?></a>
+                        </p>
+                    </div>
+                </div>
+            </div>        
+        <?php endif; ?>
+        
+		<div class="information-box span11 pull-right alert alert-danger">
 			<div class="center">
 				<div>
-					<span>ICON</span>
-				</div>
-				<div>
 					<p class="left">
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-						labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-						laboris nisi ut aliquip ex ea commodo consequat.
-					</p>
-				</div>
-				<div>
-					<p>
-						Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
-						laudantium.
+                        This section is currently not complete. Please do not try to order any external translations or buy Translation Credit.
 					</p>
 				</div>
 			</div>
 		</div>
+        
+        
+        
 	</div>
 </div>
