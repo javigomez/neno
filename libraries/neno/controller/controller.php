@@ -24,7 +24,7 @@ class NenoController extends JControllerLegacy
 	 */
 	public function processTaskQueue()
 	{
-		NenoTaskMonitor::runTask();
+		NenoTaskMonitor::runTask(1);
 		JFactory::getApplication()->close();
 	}
 
