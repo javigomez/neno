@@ -1174,10 +1174,11 @@ class NenoHelper
 
 			foreach ($c as $column)
 			{
-				$query->select('MAX(LENGTH(' . $column . ')) as ' . $column . '');
+				$query->select('MAX(LENGTH(`' . $column . '`)) as `' . $column . '`');
 			}
 			$query->from($tname);
 			$db->setQuery($query);
+			
 			$l = $db->loadAssoc();
 			arsort($l);
 			$main_field = key($l);
