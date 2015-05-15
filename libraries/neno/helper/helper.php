@@ -2255,7 +2255,7 @@ class NenoHelper
 			->where(
 				array (
 					'language = ' . $db->quote($languageTag),
-					'client_id = 1'
+					'client_id = 0'
 				)
 			);
 		$db->execute();
