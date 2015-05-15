@@ -32,10 +32,16 @@ $filesSelected = $displayData['state']->get('filter.file', array ());
 			<?php endif; ?>
 		</td>
 		<td class="cell-check"><input
-				type="checkbox" <?php echo in_array($table->id, $elements) ? 'checked="checked"' : ''; ?>/>
+				type="checkbox"
+				id="input-table-<?php echo $table->id; ?>"
+				<?php echo in_array($table->id, $elements) ? 'checked="checked"' : ''; ?>/>
 		</td>
 		<td colspan="3"
-		    title="<?php echo $table->table_name; ?>"><?php echo $table->table_name; ?></td>
+		    title="<?php echo $table->table_name; ?>">
+			<label for="input-table-<?php echo $table->id; ?>">
+				<?php echo $table->table_name; ?>
+			</label>
+		</td>
 	</tr>
 	<?php foreach ($table->fields as $field): ?>
 		<tr class="row-field element-row hide" data-level="3" data-id="field-<?php echo $field->id; ?>"
@@ -45,8 +51,14 @@ $filesSelected = $displayData['state']->get('filter.file', array ());
 			<td></td>
 			<td></td>
 			<td></td>
-			<td class="cell-check"><input type="checkbox"/></td>
-			<td title="<?php echo $field->field_name; ?>"><?php echo $field->field_name; ?></td>
+			<td class="cell-check">
+				<input id="input-field-<?php echo $field->id; ?>" type="checkbox"/>
+			</td>
+			<td title="<?php echo $field->field_name; ?>">
+				<label for="input-field-<?php echo $field->id; ?>">
+					<?php echo $field->field_name; ?>
+				</label>
+			</td>
 		</tr>
 	<?php endforeach; ?>
 <?php endforeach; ?>

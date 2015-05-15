@@ -42,10 +42,16 @@ $isOverlay = isset($displayData->isOverlay);
 						</td>
 						<td class="cell-check">
 							<input
-								type="checkbox" <?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array())) ? 'checked="checked"' : ''; ?>/>
+								type="checkbox"
+								id="input-group-<?php echo $group->id; ?>"
+								<?php echo in_array($group->id, $displayData->modelState->get('filter.group_id', array())) ? 'checked="checked"' : ''; ?>/>
 						</td>
 						<td colspan="4"
-						    title="<?php echo $group->group_name; ?>"><?php echo $group->group_name; ?></td>
+						    title="<?php echo $group->group_name; ?>">
+							<label for="input-group-<?php echo $group->id; ?>">
+								<?php echo $group->group_name; ?>
+							</label>
+						</td>
 					</tr>
 				<?php endforeach; ?>
 			</table>
