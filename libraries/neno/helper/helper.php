@@ -2836,8 +2836,9 @@ class NenoHelper
 		$query = $db->getQuery(true);
 
 		$query
-			->select('*')
-			->from('#__neno_content_language_defaults')
+			->select('tm.*')
+			->from('#__neno_content_language_defaults AS ld')
+			->innerJoin('#__neno_translation_methods AS tm ON tm.id = ld.translation_method_id')
 			->where('lang = ' . $db->quote($languageTag));
 
 		$db->setQuery($query);

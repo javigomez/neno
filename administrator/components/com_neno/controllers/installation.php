@@ -61,21 +61,25 @@ class NenoControllerInstallation extends JControllerAdmin
 				break;
 			case 4:
 				$language                   = JFactory::getLanguage();
+				$default                    = NenoSettings::get('source_language');
 				$knownLanguages             = $language->getKnownLanguages();
 				$languagesData              = array ();
 				$defaultTranslationsMethods = NenoHelper::getDefaultTranslationMethods();
 
 				foreach ($knownLanguages as $key => $knownLanguage)
 				{
-					$languagesData[$key]                        = $knownLanguage;
-					$languagesData[$key]['lang_code']           = $knownLanguage['tag'];
-					$languagesData[$key]['title']               = $knownLanguage['name'];
-					$languagesData[$key]['translation_methods'] = $defaultTranslationsMethods;
-					$languagesData[$key]['errors']              = NenoHelper::getLanguageErrors($languagesData[$key]);
-					$languagesData[$key]['placement']           = 'installation';
-					$languagesData[$key]['image']               = NenoHelper::getLanguageImage($knownLanguage['tag']);
-					$languagesData[$key]['published']           = NenoHelper::isLanguagePublished($knownLanguage['tag']);
-					$languagesData[$key]['translationMethods']  = NenoHelper::getLanguageDefault($languagesData[$key]['lang_code']);
+					if ($knownLanguage['tag'] != $default)
+					{
+						$languagesData[$key]                        = $knownLanguage;
+						$languagesData[$key]['lang_code']           = $knownLanguage['tag'];
+						$languagesData[$key]['title']               = $knownLanguage['name'];
+						$languagesData[$key]['translation_methods'] = $defaultTranslationsMethods;
+						$languagesData[$key]['errors']              = NenoHelper::getLanguageErrors($languagesData[$key]);
+						$languagesData[$key]['placement']           = 'installation';
+						$languagesData[$key]['image']               = NenoHelper::getLanguageImage($knownLanguage['tag']);
+						$languagesData[$key]['published']           = NenoHelper::isLanguagePublished($knownLanguage['tag']);
+						$languagesData[$key]['translationMethods']  = NenoHelper::getLanguageDefault($languagesData[$key]['lang_code']);
+					}
 				}
 
 				$data->languages = $languagesData;

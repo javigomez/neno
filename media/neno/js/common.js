@@ -175,8 +175,10 @@ function loadMissingTranslationMethodSelectors() {
             jQuery(this).find('.translation-method-selector').each(function () {
                 selected_methods_string += '&selected_methods[]=' + jQuery(this).find(':selected').val();
             });
+            var lang = jQuery(this).closest('.method-selectors').data('language');
+            var otherParams = '&language=' + lang;
 
-            executeAjaxForTranslationMethodSelectors(n, selected_methods_string, jQuery(this).find('.translation-method-selector'));
+            executeAjaxForTranslationMethodSelectors(n, selected_methods_string, jQuery(this).find('.translation-method-selector'), otherParams);
         });
     }
     else {

@@ -91,7 +91,5 @@ JHtml::_('bootstrap.tooltip');
 		);
 	}
 
-	console.log("hola");
-
 	loadMissingTranslationMethodSelectors();
 </script>
