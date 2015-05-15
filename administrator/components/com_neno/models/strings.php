@@ -272,6 +272,7 @@ class NenoModelStrings extends JModelList
 			}
 
 			$queryWhereDb[] = 't.id IN (' . implode(', ', $element) . ')';
+			$languageFileStrings->where('lf.id IN (' . implode(',', $element) . ')');
 		}
 
 		if (!empty($field))
