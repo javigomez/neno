@@ -2774,8 +2774,9 @@ class NenoHelper
 		$query = $db->getQuery(true);
 
 		$query
-			->select('setting_value')
-			->from('#__neno_settings')
+			->select('tm.*')
+			->from('#__neno_settings AS s')
+			->innerJoin('#__neno_translation_methods AS tm ON tm.id = s.setting_value')
 			->where('setting_key LIKE ' . $db->quote('translation_method_%'))
 			->order('setting_key ASC');
 
