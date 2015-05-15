@@ -8,11 +8,11 @@ function loadTranslation(string) {
     var idString;
     if (jQuery.type(string) == 'object') {
         jQuery('.string-activated').removeClass('string-activated');
-        idString = string.data('id')
+        idString = string.data('id');
     } else {
         idString = string;
-        jQuery('div[data-id=' + string + ']').addClass('string-activated');
     }
+    jQuery('div[data-id=' + idString + ']').addClass('string-activated');
 
     // Get information
     jQuery.ajax({
