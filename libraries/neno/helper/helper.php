@@ -2406,7 +2406,6 @@ class NenoHelper
 		/* @var $languageModel LanguagesModelLanguage */
 		$languageModel = JModelLegacy::getInstance('Language', 'LanguagesModel');
 		$icon          = self::getLanguageSupportedIcon($jiso);
-		$jisoParts     = explode('-', $jiso);
 
 		if (!is_string($languageName))
 		{

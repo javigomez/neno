@@ -203,7 +203,7 @@ class NenoModelStrings extends JModelList
 			)
 			->group(
 				array (
-					'tr1.original_text',
+					'tr1.string',
 					'tr1.state'
 				)
 			)
