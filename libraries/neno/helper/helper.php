@@ -62,26 +62,16 @@ class NenoHelper
 		);
 
 		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_EXTERNAL_TRANSLATIONS'),
-			'index.php?option=com_neno&view=externaltranslations',
-			($vName == 'externaltranslations') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
 			JText::_('COM_NENO_NAV_LINK_EXTERNAL_GROUPSELEMENTS'),
 			'index.php?option=com_neno&view=groupselements',
 			($vName == 'groupselements') ? true : false
 		);
-
-		// Only show the jobs link if there are any jobs
-		if (self::areThereAnyJobs())
-		{
-			JHtmlSidebar::addEntry(
-				JText::_('COM_NENO_NAV_LINK_EXTERNAL_JOBS'),
-				'index.php?option=com_neno&view=jobs',
-				($vName == 'jobs') ? true : false
-			);
-		}
+        
+		JHtmlSidebar::addEntry(
+			JText::_('COM_NENO_NAV_LINK_EXTERNAL_TRANSLATIONS'),
+			'index.php?option=com_neno&view=externaltranslations',
+			($vName == 'externaltranslations') ? true : false
+		);
 
 		JHtmlSidebar::addEntry(
 			JText::_('COM_NENO_NAV_LINK_EXTERNAL_STRINGS'),

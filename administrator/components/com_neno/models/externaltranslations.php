@@ -58,12 +58,15 @@ class NenoModelExternalTranslations extends JModelList
 				array (
 					'SUM(word_counter) AS words',
 					'trtm.translation_method_id',
+					'l.title_native',
+					'l.image',
 					'language'
 				)
 			)
 			->from('#__neno_content_element_translations AS tr')
 			->innerJoin('#__neno_content_element_translation_x_translation_methods AS trtm ON trtm.translation_id = tr.id')
 			->innerJoin('#__neno_translation_methods AS tm ON trtm.translation_method_id = tm.id')
+			->leftJoin('#__languages AS l ON tr.language = l.lang_code')
 			->where(
 				array (
 					'state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE,
