@@ -60,7 +60,7 @@ class NenoContentElementLanguageFile extends NenoContentElement
 			$this->language = $languageFileData[0];
 		}
 
-		if (!empty($data['groupId']) && $loadParent)
+		if (!empty($data['groupId']))
 		{
 			$this->group = NenoContentElementGroup::load($data['groupId'], $loadExtraData);
 		}
