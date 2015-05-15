@@ -31,24 +31,17 @@ else
 {
 	$translations = $displayData;
 }
-
-
 ?>
-
-<style>
-</style>
 
 <script>
 	jQuery(document).ready(function () {
-		jQuery('.string').on('click', function () {
+		jQuery('.string').unbind('click').bind('click', function () {
 			loadTranslation(jQuery(this));
 		});
 	});
 </script>
 
-<?php if (empty($translations)): ?>
-	<?php echo JText::_('COM_NENO_EDITOR_STRINGS_NO_MATCHES'); ?>
-<?php else: ?>
+<?php if (!empty($translations)): ?>
 	<?php /* @var $translation stdClass */ ?>
 	<?php foreach ($translations as $translation): ?>
 		<div class="string" data-id="<?php echo $translation->id; ?>">

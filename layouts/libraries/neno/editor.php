@@ -100,7 +100,7 @@ $translation = $displayData;
 			<span class="icon-grey icon-arrow-right-2"></span>
 		</div>
 		<div class="span5 pull-right">
-			<textarea class="full-width translated-content"></textarea>
+			<textarea class="full-width translated-content"><?php echo !empty($translation) && $translation->state != NenoContentElementTranslation::NOT_TRANSLATED_STATE ? $translation->string : ''; ?></textarea>
 			<div class="clearfix"></div>
 			<div class="pull-left translated-by">
 				<?php echo JText::sprintf('COM_NENO_EDITOR_TRANSLATED_BY', NenoSettings::get('translator')); ?>
