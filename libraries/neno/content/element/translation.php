@@ -532,10 +532,12 @@ class NenoContentElementTranslation extends NenoContentElement
 				}
 			}
 
+			//
+
 			$this->originalText = $this->loadOriginalText();
 			parent::persist();
 
-			if ($this->state = self::TRANSLATED_STATE)
+			if ($this->state == self::TRANSLATED_STATE)
 			{
 				$this->moveTranslationToTarget($this->language);
 			}

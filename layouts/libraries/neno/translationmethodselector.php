@@ -21,6 +21,9 @@ if ($displayData !== null): ?>
 				data-selector-id="<?php echo $n; ?>">
 				<?php // Set a default for assigned method to avoid errors ?>
 				<?php if (empty($displayData['assigned_translation_methods'][$n]->id)): ?>
+					<?php if (empty($displayData['assigned_translation_methods'][$n])): ?>
+						<?php $displayData['assigned_translation_methods'][$n] = new stdClass; ?>
+					<?php endif; ?>
 					<?php $displayData['assigned_translation_methods'][$n]->id = 0; ?>
 				<?php endif; ?>
 				<option

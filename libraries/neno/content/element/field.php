@@ -120,7 +120,7 @@ class NenoContentElementField extends NenoContentElement
 							'tr.state'
 						)
 					)
-					->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 'tr'))
+					->from('#__neno_content_element_translations AS tr')
 					->where(
 						array (
 							'tr.content_type = ' . $db->quote('db_string'),
@@ -306,6 +306,23 @@ class NenoContentElementField extends NenoContentElement
 			$strings            = $this->getStrings($recordId);
 			$primaryKeyData     = $this->getTable()->getPrimaryKey();
 
+			/* @var $db NenoDatabaseDriverMysqlx */
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query
+				->select(
+					array (
+						'gtm.lang',
+						'gtm.translation_method_id',
+					)
+				)
+				->from('#__neno_content_element_tables AS t')
+				->innerJoin('#__neno_content_element_groups AS g ON t.group_id = g.id')
+				->innerJoin('#__neno_content_element_groups_x_translation_methods AS gtm ON gtm.group_id = g.id')
+				->where('t.id = ' . $this->table->getId());
+			$db->setQuery($query);
+			$translationmethods = $db->loadObjectListMultiIndex('lang');
+
 			if (!empty($strings))
 			{
 				foreach ($languages as $language)
@@ -319,7 +336,7 @@ class NenoContentElementField extends NenoContentElement
 							$commonData['string'] = $string['string'];
 
 							// If the string is empty or is a number, let's mark as translated.
-							if (empty($string['string']) || $string['string'] == (int) $string['string'] || $string['string'] == (float) $string['string'])
+							if (empty($string['string']) || is_numeric($string['string']))
 							{
 								$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
 							}
@@ -355,9 +372,20 @@ class NenoContentElementField extends NenoContentElement
 									$translation->persist();
 								}
 							}
-							else
+
+							$translationMethods = $translation->getTranslationMethods();
+
+							if (empty($translationMethods))
 							{
-								$translation->persist();
+								$translationMethodsTr = $translationmethods[$language->lang_code];
+
+								if (!empty($translationMethodsTr))
+								{
+									foreach ($translationMethodsTr as $translationMethodTr)
+									{
+										$translation->addTranslationMethod($translationMethodTr->translation_method_id);
+									}
+								}
 							}
 
 							$translation->persist();

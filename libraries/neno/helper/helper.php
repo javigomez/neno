@@ -66,7 +66,7 @@ class NenoHelper
 			'index.php?option=com_neno&view=groupselements',
 			($vName == 'groupselements') ? true : false
 		);
-        
+
 		JHtmlSidebar::addEntry(
 			JText::_('COM_NENO_NAV_LINK_EXTERNAL_TRANSLATIONS'),
 			'index.php?option=com_neno&view=externaltranslations',
@@ -567,6 +567,11 @@ class NenoHelper
 		}
 	}
 
+	/**
+	 * @param $extension
+	 *
+	 * @return bool
+	 */
 	public static function discoverExtension($extension)
 	{
 		// Check if this extension has been discovered already
@@ -586,7 +591,7 @@ class NenoHelper
 		$extensionName = self::getExtensionName($extension);
 		$languageFiles = self::getLanguageFiles($extensionName);
 		$tables        = self::getComponentTables($group, $extensionName);
-		$group->setAssignedTranslationMethods(array (1));
+		$group->setAssignedTranslationMethods(self::getTranslationMethodsForLanguages());
 
 		// If the group contains tables and/or language strings, let's save it
 		if (!empty($tables) || !empty($languageFiles))
@@ -944,6 +949,20 @@ class NenoHelper
 		return $result == 1;
 	}
 
+	public static function getTranslationMethodsForLanguages()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('*')
+			->from('#__neno_content_language_defaults');
+
+		$db->setQuery($query);
+
+		return $db->loadObjectList();
+	}
+
 	/**
 	 * Discover all the extensions that haven't been discovered yet
 	 *
@@ -993,7 +1012,9 @@ class NenoHelper
 				$otherGroup->addTable($table);
 			}
 
-			$otherGroup->persist();
+			$otherGroup
+				->setAssignedTranslationMethods(self::getTranslationMethodsForLanguages())
+				->persist();
 		}
 	}
 

@@ -195,17 +195,9 @@ class NenoContentElementGroup extends NenoContentElement
 						'tr.state'
 					)
 				)
-				->from($db->quoteName(NenoContentElementTable::getDbTable(), 't'))
-				->innerJoin(
-					$db->quoteName(NenoContentElementField::getDbTable(), 'f') .
-					' ON f.table_id = t.id'
-				)
-				->innerJoin(
-					$db->quoteName(NenoContentElementTranslation::getDbTable(), 'tr') .
-					' ON tr.content_id = f.id AND tr.content_type = ' .
-					$db->quote('db_string') .
-					' AND tr.language LIKE ' . $db->quote($workingLanguage)
-				)
+				->from('#__neno_content_element_tables AS t')
+				->innerJoin('#__neno_content_element_fields AS f ON f.table_id = t.id')
+				->innerJoin('#__neno_content_element_translations AS tr  ON tr.content_id = f.id AND tr.content_type = ' . $db->quote('db_string') . ' AND tr.language LIKE ' . $db->quote($workingLanguage))
 				->where('t.group_id = ' . $this->getId())
 				->group('tr.state');
 
@@ -485,29 +477,23 @@ class NenoContentElementGroup extends NenoContentElement
 						)
 					);
 
-				$languages       = NenoHelper::getLanguages();
-				$defaultLanguage = JFactory::getLanguage()->getDefault();
-
-				foreach ($languages as $language)
+				foreach ($this->assignedTranslationMethods as $assignedTranslationMethod)
 				{
-					if ($language->lang_code != $defaultLanguage)
-					{
-						$deleteQuery
-							->clear()
-							->delete('#__neno_content_element_groups_x_translation_methods')
-							->where(
-								array (
-									'group_id = ' . $this->id,
-									'lang = ' . $db->quote($language->lang_code)
-								)
-							);
+					$deleteQuery
+						->clear()
+						->delete('#__neno_content_element_groups_x_translation_methods')
+						->where(
+							array (
+								'group_id = ' . $this->id,
+								'lang = ' . $db->quote($assignedTranslationMethod->lang)
+							)
+						);
 
-						$db->setQuery($deleteQuery);
-						$db->execute();
+					$db->setQuery($deleteQuery);
+					$db->execute();
 
-						$insert = true;
-						$insertQuery->values($this->id . ',' . $db->quote($language->lang_code) . ', 1, 1');
-					}
+					$insert = true;
+					$insertQuery->values($this->id . ',' . $db->quote($assignedTranslationMethod->lang) . ', ' . $assignedTranslationMethod->translation_method_id . ', ' . $assignedTranslationMethod->ordering);
 				}
 
 				if ($insert)
