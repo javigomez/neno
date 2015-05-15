@@ -2393,12 +2393,13 @@ class NenoHelper
 			}
 		}
 
+
 		// Create content
 		$data = array (
 			'lang_code'    => $jiso,
 			'title'        => $languageName,
 			'title_native' => $languageName,
-			'sef'          => $jisoParts[0],
+			'sef'          => self::getSef($jiso),
 			'image'        => ($icon !== false) ? $icon : '',
 			'published'    => 1
 		);
@@ -2427,9 +2428,42 @@ class NenoHelper
 			{
 				return false;
 			}
+			else
+			{
+				$iconName = $iconName[0];
+			}
 		}
 
 		return $iconName;
+	}
+
+	/**
+	 * Get SEF prefix for a particular language
+	 *
+	 * @param   string $jiso Joomla ISO
+	 *
+	 * @return string
+	 */
+	public static function getSef($jiso)
+	{
+		$jisoParts = explode('-', $jiso);
+		$sef       = $jisoParts[0];
+		$db        = JFactory::getDbo();
+		$query     = $db->getQuery(true);
+		$query
+			->select('1')
+			->from('#__languages')
+			->where('sef = ' . $db->quote($sef));
+
+		$db->setQuery($query);
+		$exists = $db->loadResult() == 1;
+
+		if ($exists)
+		{
+			$sef = strtolower(str_replace('-', '_', $jiso));
+		}
+
+		return $sef;
 	}
 
 	/**
