@@ -17,10 +17,7 @@ $translation = $displayData;
 ?>
 <script>
 	jQuery(document).ready(function () {
-		jQuery('#copy-btn').on('click', function () {
-			jQuery('.translated-content').val(jQuery('.original-text').html().trim());
-			jQuery('.translated-by').hide();
-		});
+		jQuery('#copy-btn').on('click', copyOriginal);
 
 		jQuery('#translate-btn').on('click', translate);
 
@@ -32,8 +29,7 @@ $translation = $displayData;
 
 		var action = jQuery('#default_translate_action').val();
 		if (action == '1') {
-			jQuery('.translated-content').val(jQuery('.original-text').html().trim());
-			jQuery('.translated-by').hide();
+			copyOriginal();
 		} else if (action == '2') {
 			translate();
 		}

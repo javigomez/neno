@@ -247,3 +247,11 @@ function saveTranslationMethod(translationMethod, language, ordering) {
         }
     });
 }
+function copyOriginal() {
+    var original = jQuery('.original-text').html().trim();
+    original = original.replace(/<span class="highlighted-tag">|<\/span>/g, '');
+    original = original.replace(/&lt;/g, '<');
+    original = original.replace(/&gt;/g, '>');
+    jQuery('.translated-content').val(original);
+    jQuery('.translated-by').hide();
+}
