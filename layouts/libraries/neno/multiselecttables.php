@@ -66,13 +66,13 @@ $filesSelected = $displayData['state']->get('filter.file', array ());
 	<tr class="row-table element-row collapsed" data-level="2"
 	    data-id="file-<?php echo $file->id; ?>"
 	    data-parent="group-<?php echo $file->group->id; ?>"
-	    data-label="<?php echo $file->file_name; ?>">
+	    data-label="<?php echo $file->filename; ?>">
 		<td></td>
 		<td></td>
 		<td class="cell-check"><input
 				type="checkbox" <?php echo in_array($file->id, $filesSelected) ? 'checked="checked"' : ''; ?>/>
 		</td>
 		<td colspan="3"
-		    title="<?php echo $file->file_name; ?>"><?php echo $file->file_name; ?></td>
+		    title="<?php echo $file->filename; ?>"><?php echo $file->filename; ?></td>
 	</tr>
 <?php endforeach; ?>
