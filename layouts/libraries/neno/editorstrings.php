@@ -50,8 +50,8 @@ else
 			     title="<?php echo $translationStatesText[$translation->state]; ?>">
 			</div>
 			<div class="string-text"
-			     title="<?php echo JHtmlString::truncate($translation->original_text, 300); ?>">
-				<?php echo JHtmlString::truncate($translation->string, 32, false); ?>
+			     title="<?php echo NenoHelper::html2text($translation->original_text, 300); ?>">
+				<?php echo NenoHelper::html2text($translation->string, 32); ?>
 			</div>
 		</div>
 		<div class="clearfix"></div>

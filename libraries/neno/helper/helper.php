@@ -1550,7 +1550,16 @@ class NenoHelper
 				}
 			}
 
-			$string = implode(array_slice($parts, 0, $last_part)) . $ending;
+			if (count($parts) == 1)
+			{
+				$string = substr($string, 0, $truncate) . $ending;
+			}
+			else
+			{
+				$string = implode(array_slice($parts, 0, $last_part)) . $ending;
+			}
+
+
 		}
 
 		return $string;
