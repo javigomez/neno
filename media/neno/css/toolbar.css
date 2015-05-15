@@ -35,3 +35,12 @@
 #workingLangSelect .dropdown-toggle {
     margin-left: 5px;
 }
+.neno-no-button {
+    outline: 0;
+    background: none;
+    border: 0;
+    cursor: default;
+    font-size: 14px;
+    margin-right: 20px;
+}
+

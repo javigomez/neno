@@ -8,7 +8,6 @@ function loadTranslation(string) {
     var idString;
     if (jQuery.type(string) == 'object') {
         jQuery('.string-activated').removeClass('string-activated');
-
         idString = string.data('id')
     } else {
         idString = string;
