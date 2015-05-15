@@ -286,6 +286,8 @@ class NenoModelStrings extends JModelList
 				$groupIdAdded = true;
 			}
 
+			// Do not show any strings for this language file
+			$languageFileStrings->where('lf.id = 0');
 			$queryWhereDb[] = 'f.id IN (' . implode(', ', $field) . ')';
 		}
 
