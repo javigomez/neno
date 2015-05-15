@@ -7,8 +7,7 @@
     width: 15px !important;
 }
 .multiselect .cell-check input {
-    margin-top: 0;
-    margin-left: 3px;
+    margin-top: -6px;
 }
 .btn-toggle {
     width: 100% !important;

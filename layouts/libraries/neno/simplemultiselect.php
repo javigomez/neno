@@ -35,9 +35,10 @@ $isOverlay = isset($displayData['isOverlay']);
 					    data-parent="header">
 						<td class="cell-check">
 							<input value="<?php echo $datum; ?>"
+							       id="input-<?php echo $displayData['type'] . '-' . $datum; ?>"
 							       type="checkbox" <?php echo !empty($displayData['selected']) && in_array($datum, $displayData['selected']) ? 'checked=checked' : ''; ?>/>
 						</td>
-						<td title="<?php echo $label; ?>"><?php echo $label; ?></td>
+						<td title="<?php echo $label; ?>"><label for="input-<?php echo $displayData['type'] . '-' . $datum; ?>"><?php echo $label; ?></label></td>
 					</tr>
 				<?php endforeach; ?>
 				<?php if (count($displayData['data']) === 0): ?>
