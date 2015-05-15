@@ -51,13 +51,13 @@ class NenoModelDashboard extends JModelList
 				switch ($internalItem->state)
 				{
 					case NenoContentElementTranslation::TRANSLATED_STATE:
-						$untranslated = (int) $internalItem->word_count;
+						$translated = (int) $internalItem->word_count;
 						break;
 					case NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE:
-						$untranslated = (int) $internalItem->word_count;
+						$queued = (int) $internalItem->word_count;
 						break;
 					case NenoContentElementTranslation::SOURCE_CHANGED_STATE:
-						$untranslated = (int) $internalItem->word_count;
+						$changed = (int) $internalItem->word_count;
 						break;
 					case NenoContentElementTranslation::NOT_TRANSLATED_STATE:
 						$untranslated = (int) $internalItem->word_count;
