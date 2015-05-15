@@ -114,7 +114,7 @@ class NenoControllerEditor extends NenoControllerStrings
 		$translation
 			->setString($translationText)
 			->setState($changeState)
-			->addTranslationMethod(NenoContentElementTranslation::MANUAL_TRANSLATION_METHOD);
+			->addTranslationMethod(NenoContentElementTranslation::MANUAL_TRANSLATION_METHOD, 1);
 
 		if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
 		{
@@ -136,7 +136,7 @@ class NenoControllerEditor extends NenoControllerStrings
 		$input           = $this->input;
 		$translationId   = $input->getInt('id');
 		$translationText = $input->getHtml('text');
-        
+
 		if ($this->saveTranslation($translationId, $translationText, NenoContentElementTranslation::TRANSLATED_STATE))
 		{
 			/* @var $translation NenoContentElementTranslation */
@@ -150,7 +150,7 @@ class NenoControllerEditor extends NenoControllerStrings
 
 			$model   = $this->getModel();
 			$counter = $model->getSimilarTranslationsCounter($translationId, $translation->getLanguage(), $original_text);
-            
+
 			if ($counter != 0)
 			{
 				$data['message'] = JText::sprintf('COM_NENO_EDITOR_CONSOLIDATE_MESSAGE', $counter, NenoHelper::html2text($original_text, 200), NenoHelper::html2text($translationText, 200));

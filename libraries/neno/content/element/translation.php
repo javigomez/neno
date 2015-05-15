@@ -501,12 +501,13 @@ class NenoContentElementTranslation extends NenoContentElement
 		// Only execute this task when the translation is new and there are no records about how to find it.
 		if (parent::persist())
 		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
 			if ($isNew && $this->contentType == self::DB_STRING)
 			{
 				if (!empty($this->sourceElementData))
 				{
-					$db    = JFactory::getDbo();
-					$query = $db->getQuery(true);
 					$query
 						->insert('#__neno_content_element_fields_x_translations')
 						->columns(
@@ -532,7 +533,34 @@ class NenoContentElementTranslation extends NenoContentElement
 				}
 			}
 
-			//
+			$query
+				->clear()
+				->delete('#__neno_content_element_translation_x_translation_methods')
+				->where('translation_id = ' . $this->id);
+			$db->setQuery($query);
+			$db->execute();
+
+			if (!empty($this->translationMethods))
+			{
+				$query
+					->clear()
+					->insert('#__neno_content_element_translation_x_translation_methods')
+					->columns(
+						array (
+							'translation_id',
+							'translation_method_id',
+							'ordering'
+						)
+					);
+
+				foreach ($this->translationMethods as $key => $translationMethod)
+				{
+					$query->values($this->id . ',' . $translationMethod->id . ',' . ($key + 1));
+				}
+
+				$db->setQuery($query);
+				$db->execute();
+			}
 
 			$this->originalText = $this->loadOriginalText();
 			parent::persist();
@@ -641,7 +669,7 @@ class NenoContentElementTranslation extends NenoContentElement
 			list($fieldName, $tableName) = $row;
 
 			//Ensure data entegrity
-    		$this->string = NenoHelper::ensureDataIntegrity($this->element->id, $this->string);
+			$this->string = NenoHelper::ensureDataIntegrity($this->element->id, $this->string);
 
 			$query
 				->clear()
@@ -729,7 +757,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	 *
 	 * @return NenoContentElementTranslation
 	 */
-	public function addTranslationMethod($translationMethod)
+	public function addTranslationMethod($translationMethod, $ordering = null)
 	{
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -740,7 +768,7 @@ class NenoContentElementTranslation extends NenoContentElement
 		$db->setQuery($query);
 		$translationMethod = $db->loadObject();
 
-		if (!is_array($this->translationMethods))
+		if (!is_array($this->translationMethods) || empty($this->translationMethods))
 		{
 			$this->translationMethods = array ($translationMethod);
 		}
@@ -758,7 +786,15 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			if (!$found)
 			{
-				$this->translationMethods[] = $translationMethod;
+				if ($ordering == null)
+				{
+					$this->translationMethods[] = $translationMethod;
+				}
+				else
+				{
+					array_splice($this->translationMethods, $ordering - 1, 0, $translationMethod);
+				}
+
 			}
 		}
 
