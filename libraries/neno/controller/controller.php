@@ -288,6 +288,28 @@ class NenoController extends JControllerLegacy
 	}
 
 	/**
+	 * Install language
+	 *
+	 * @return void
+	 */
+	public function removeLanguage()
+	{
+		$input    = $this->input;
+		$language = $input->post->getString('language');
+
+		if (NenoHelper::deleteLanguage($language))
+		{
+			echo 'ok';
+		}
+		else
+		{
+			echo 'err';
+		}
+
+		JFactory::getApplication()->close();
+	}
+
+	/**
 	 * Get translation method selector
 	 *
 	 * @return void
