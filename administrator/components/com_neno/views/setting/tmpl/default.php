@@ -38,6 +38,12 @@ JHtml::_('formbehavior.chosen', 'select');
 							<?php echo $this->item->translator_list; ?>
 						<?php elseif ($this->item->setting_key === 'license_code'): ?>
 							<textarea name="jform[setting_value]"><?php echo $this->item->setting_value; ?></textarea>
+						<?php elseif ($this->item->setting_key === 'default_translate_action'): ?>
+							<select name="jform[setting_value]" id="default_translate_action">
+								<option value="0"><?php echo JText::_('COM_NENO_SETTINGS_SETTING_OPTION_DEFAULT_TRANSLATE_ACTION_NO'); ?></option>
+								<option value="1"><?php echo JText::_('COM_NENO_SETTINGS_SETTING_OPTION_DEFAULT_TRANSLATE_ACTION_COPY'); ?></option>
+								<option value="2"><?php echo JText::_('COM_NENO_SETTINGS_SETTING_OPTION_DEFAULT_TRANSLATE_ACTION_TRANSLATE'); ?></option>
+							</select>
 						<?php else: ?>
 							<input type="text" name="jform[setting_value]"
 							       value="<?php echo $this->item->setting_value; ?>"/>

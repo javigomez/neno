@@ -71,6 +71,11 @@ class NenoViewEditor extends JViewLegacy
 	protected $methods;
 
 	/**
+	 * @var int
+	 */
+	protected $defaultAction;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -87,6 +92,7 @@ class NenoViewEditor extends JViewLegacy
 		$this->items           = $this->get('Items');
 		$this->filterForm      = $this->get('FilterForm');
 		$this->activeFilters   = $this->get('ActiveFilters');
+		$this->defaultAction   = self::getDefaultTranslateAction();
 		$this->getGroupData();
 		$this->getStatuses();
 		$this->getTranslationMethods();
@@ -141,6 +147,16 @@ class NenoViewEditor extends JViewLegacy
 	protected function getTranslationMethods()
 	{
 		$this->methods = NenoHelper::getTranslationMethods();
+	}
+
+	/**
+	 * Load configuration setting for default action when loading a string
+	 *
+	 * @return int
+	 */
+	protected function getDefaultTranslateAction()
+	{
+		return NenoHelper::getDefaultTranslateAction();
 	}
 
 	/**

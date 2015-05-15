@@ -30,6 +30,13 @@ $translation = $displayData;
 
 		jQuery('#save-next-button').on('click', saveTranslationAndNext);
 
+		var action = jQuery('#default_translate_action').val();
+		if (action == '1') {
+			jQuery('.translated-content').val(jQuery('.original-text').html().trim());
+			jQuery('.translated-by').hide();
+		} else if (action == '2') {
+			translate();
+		}
 	});
 </script>
 
@@ -93,9 +100,7 @@ $translation = $displayData;
 			<span class="icon-grey icon-arrow-right-2"></span>
 		</div>
 		<div class="span5 pull-right">
-			<textarea
-				class="full-width translated-content"><?php echo empty($translation) ? '' : $translation->string; ?></textarea>
-
+			<textarea class="full-width translated-content"></textarea>
 			<div class="clearfix"></div>
 			<div class="pull-left translated-by">
 				<?php echo JText::sprintf('COM_NENO_EDITOR_TRANSLATED_BY', NenoSettings::get('translator')); ?>

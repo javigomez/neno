@@ -36,15 +36,6 @@ else
 ?>
 
 <style>
-	.string-activated {
-		/*border: 1px solid #ccc;*/
-		background-color: #ddd;
-	}
-
-	.string:hover {
-		cursor: pointer;
-		background-color: #eee;
-	}
 </style>
 
 <script>

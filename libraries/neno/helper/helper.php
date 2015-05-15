@@ -1470,6 +1470,27 @@ class NenoHelper
 	}
 
 	/**
+	 * Get configuration setting for default action when loading a string
+	 *
+	 * @return  int
+	 */
+	public static function getDefaultTranslateAction()
+	{
+		// Create a new query object.
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('setting_value')
+			->from('`#__neno_settings`')
+			->where('setting_key = "default_translate_action"');
+
+		$db->setQuery($query);
+
+		return $db->loadResult();
+	}
+
+	/**
 	 * Generate random string
 	 *
 	 * @param int $length String length
