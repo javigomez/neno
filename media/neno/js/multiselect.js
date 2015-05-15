@@ -171,15 +171,14 @@ function loadStrings(reset) {
     })
         .done(function (ret) {
             if (ret) {
+                var targetContainer = jQuery('#elements-wrapper');
                 if (document.adminForm.outputLayout.value == 'editorStrings') {
                     setFilterTags(document.adminForm);
                 }
-
                 if (reset == true) {
-                    jQuery('#elements-wrapper').empty();
+                    targetContainer.empty();
                 }
-
-                jQuery('#elements-wrapper').append(ret);
+                targetContainer.append(ret);
             }
         });
 }
