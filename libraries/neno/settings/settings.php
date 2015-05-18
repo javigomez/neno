@@ -87,8 +87,9 @@ class NenoSettings
 		{
 			if (!self::$settings[$settingName]['read_only'])
 			{
-				self::$settings[$settingName]['value'] = $settingValue;
-				$refresh                               = true;
+				self::$settings[$settingName]['value']     = $settingValue;
+				self::$settings[$settingName]['read_only'] = $readOnly;
+				$refresh                                   = true;
 			}
 		}
 

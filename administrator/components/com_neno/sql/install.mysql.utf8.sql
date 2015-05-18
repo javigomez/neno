@@ -363,7 +363,7 @@ INSERT IGNORE INTO `#__neno_settings` VALUES (1, 'translate_automatically_profes
   (3, 'api_server_url', 'http://localhost/neno-translate/api/v1/', 1, 0),
   (4, 'license_code', '', 0, 1), (5, 'translator', '', 0, 1),
   (6, 'translator_api_key', '', 0, 1),
-  (7, 'source_language', 'en-GB', 1, 0), (8, 'schedule_task_option', 'ajax', 0, 1),
+  (7, 'source_language', 'en-GB', 0, 1), (8, 'schedule_task_option', 'ajax', 0, 1),
   (9, 'hide_empty_strings', '1', 0, 1), (10, 'installation_completed', '0', 0, 0);
 
 INSERT IGNORE INTO `#__neno_machine_translation_api_language_pairs`

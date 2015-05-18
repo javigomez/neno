@@ -2550,7 +2550,7 @@ class NenoHelper
 				->where('type = ' . $db->quote('language'))
 				->group('element');
 			$db->setQuery($query);
-			$languagesFound = array_merge(array ('name' => 'English', 'iso' => 'en-GB'), $db->loadAssocList(), $languagesFound);
+			$languagesFound = array_merge($db->loadAssocList(), $languagesFound);
 		}
 
 		return $languagesFound;
