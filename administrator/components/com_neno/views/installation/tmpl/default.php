@@ -30,8 +30,17 @@ if (!empty($this->extra_sidebar))
 	function loadInstallationStep() {
 		jQuery.ajax({
 			url: 'index.php?option=com_neno&task=installation.loadInstallationStep',
+			dataType: 'json',
 			success: function (html) {
-				jQuery('.installation-form').empty().append(html);
+				jQuery('.installation-form').empty().append(html.installation_step);
+				if (html.jsidebar !== '') {
+					jQuery('#j-sidebar-container').empty().append(html.jsidebar);
+					jQuery('#j-main-container-installation').prop('id', 'j-main-container');
+					jQuery('#j-main-container').addClass('span10');
+					toggleSidebar(false);
+					jQuery('#j-sidebar-container').show();
+				}
+
 				bindEvents();
 			}
 		});
@@ -117,10 +126,14 @@ if (!empty($this->extra_sidebar))
 	}
 </script>
 
-<div id="j-sidebar-container" class="hide">
-	<?php echo $this->sidebar; ?>
-</div>
-<div id="j-main-container" class="span12">
+<style>
+	#j-sidebar-container {
+		display: none;
+	}
+</style>
+
+<div id="j-sidebar-container"></div>
+<div id="j-main-container-installation">
 	<div class="installation-form"></div>
 </div>
 <div class="modal hide fade" id="languages-modal">

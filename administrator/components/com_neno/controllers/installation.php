@@ -36,7 +36,15 @@ class NenoControllerInstallation extends JControllerAdmin
 			$layout = JLayoutHelper::render('installationstep' . $step, $this->getDataForStep($step), JPATH_NENO_LAYOUTS);
 		}
 
-		echo $layout;
+		$sidebar = '';
+
+		if ($step == 6)
+		{
+			NenoHelper::addSubmenu();
+			$sidebar = JHtmlSidebar::render();
+		}
+
+		echo json_encode(array ('installation_step' => $layout, 'jsidebar' => $sidebar));
 
 		JFactory::getApplication()->close();
 	}

@@ -31,8 +31,3 @@ JHtml::_('bootstrap.tooltip');
 
 	<?php echo JLayoutHelper::render('installationbottom', 5, JPATH_NENO_LAYOUTS); ?>
 </div>
-
-<script>
-	jQuery('#j-main-container').removeClass('span12').addClass('span10');
-	toggleSidebar(false);
-</script>
