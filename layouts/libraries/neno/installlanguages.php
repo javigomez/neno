@@ -46,6 +46,7 @@ $languages = $displayData->languages;
 					cell.html('<div class="icon-checkmark"></div>');
 					response.insertBefore('#add-languages-button');
 					bindEvents();
+					loadMissingTranslationMethodSelectors();
 				}
 			}
 		});

@@ -152,11 +152,12 @@ class NenoControllerInstallation extends JControllerAdmin
 	 */
 	public function getTranslationMethodSelector()
 	{
-		$input               = $this->input;
-		$n                   = $input->getInt('n', 0);
-		$selected_methods    = $input->get('selected_methods', array (), 'ARRAY');
-		$translation_methods = NenoHelper::loadTranslationMethods();
-		$app                 = JFactory::getApplication();
+		$input              = $this->input;
+		$n                  = $input->getInt('n', 0);
+		$selected_methods   = $input->get('selected_methods', array (), 'ARRAY');
+		$placement          = $input->getCmd('placement');
+		$translationMethods = $placement == 'general' ? NenoHelper::getDefaultTranslationMethods() : NenoHelper::loadTranslationMethods();
+		$app                = JFactory::getApplication();
 
 		// Ensure that we know what was selected for the previous selector
 		if (($n > 0 && !isset($selected_methods[$n - 1])) || ($n > 0 && $selected_methods[$n - 1] == 0))
@@ -174,27 +175,27 @@ class NenoControllerInstallation extends JControllerAdmin
 		if ($n > 0 && !empty($selected_methods))
 		{
 			$parent_method                   = $selected_methods[$n - 1];
-			$acceptable_follow_up_method_ids = $translation_methods[$parent_method]->acceptable_follow_up_method_ids;
+			$acceptable_follow_up_method_ids = $translationMethods[$parent_method]->acceptable_follow_up_method_ids;
 			$acceptable_follow_up_methods    = explode(',', $acceptable_follow_up_method_ids);
 
-			foreach ($translation_methods as $k => $translation_method)
+			foreach ($translationMethods as $k => $translation_method)
 			{
 				if (!in_array($k, $acceptable_follow_up_methods))
 				{
-					unset($translation_methods[$k]);
+					unset($translationMethods[$k]);
 				}
 			}
 		}
 
 		// If there are no translation methods left then return nothing
-		if (!count($translation_methods))
+		if (!count($translationMethods))
 		{
 			JFactory::getApplication()->close();
 		}
 
 		// Prepare display data
 		$displayData                                 = array ();
-		$displayData['translation_methods']          = $translation_methods;
+		$displayData['translation_methods']          = $translationMethods;
 		$displayData['assigned_translation_methods'] = NenoHelper::getTranslationMethods('dropdown');
 		$displayData['n']                            = $n;
 
