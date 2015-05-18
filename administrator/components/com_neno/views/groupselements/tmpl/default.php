@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
 
-//Include the CSS file
+// Include the CSS file
 JHtml::stylesheet('media/neno/css/admin.css');
 
 // Joomla Component Creator code to allow adding non select list filters
@@ -32,8 +32,8 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	.toggler {
 		cursor: pointer;
 		width: 18px;
-		border: 0px;
-		padding: 10px 0px 0px 0px !important;
+		border: 0;
+		padding: 10px 0 0 0 !important;
 
 	}
 
@@ -230,7 +230,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 			jQuery('[for="check-toggle-translate-' + id + '-1"]').removeClass('active btn-success');
 		}
         
-        //Show an alert that count no longer is acurate
+        //Show an alert that count no longer is accurate
         jQuery('#reload-notice').remove();
         jQuery('.navbar-fixed-top .navbar-inner').append('<div style="padding:10px 30px;" id="reload-notice"><div class="alert alert-warning"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_WARNING'); ?><a href="index.php?option=com_neno&view=groupselements" class="btn btn-info pull-right" style="height: 16px; font-size: 12px;margin-top:-4px"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_BTN'); ?></a></div></div>').height('92');
         jQuery('body').css('padding-top', '93px');
@@ -353,10 +353,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					<th class="table-groups-elements-label translation-methods"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_METHODS'); ?></th>
 					<th class="table-groups-elements-blank"></th>
 				</tr>
-
-				<?php // @var $group NenoContentElementGroup ?>
 				<?php foreach ($this->items as $group): ?>
-
 					<tr class="row-group" data-id="group-<?php echo $group->id; ?>">
 						<td class="toggler toggler-collapsed toggle-elements"><span class="icon-arrow-right-3"></span>
 						</td>
@@ -376,10 +373,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 						</td>
 						<td></td>
 					</tr>
-
 				<?php endforeach; ?>
-
-
 			</table>
 
 			<input type="hidden" name="task" value=""/>

@@ -69,4 +69,3 @@ class NenoControllerGroupElement extends JControllerForm
 		JFactory::getApplication()->close();
 	}
 }
-

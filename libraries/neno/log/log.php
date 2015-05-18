@@ -100,8 +100,6 @@ class NenoLog extends JLog
 	/**
 	 * Set Log method
 	 *
-	 * @param   integer $level Level of the log entry
-	 *
 	 * @return void
 	 */
 	public static function setLogMethod()

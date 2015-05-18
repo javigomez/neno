@@ -48,7 +48,6 @@ class NenoHelper
 	 */
 	public static function addSubmenu($vName = '')
 	{
-
 		JHtmlSidebar::addEntry(
 			JText::_('COM_NENO_NAV_LINK_DASHBOARD'),
 			'index.php?option=com_neno&view=dashboard',
@@ -135,9 +134,16 @@ class NenoHelper
 		return null;
 	}
 
-	public static function getSidebarInfobox($vName = '')
+	/**
+	 * Get sidebar infobox HTML
+	 *
+	 * @param   string $viewName View name
+	 *
+	 * @return string
+	 */
+	public static function getSidebarInfobox($viewName = '')
 	{
-		return JLayoutHelper::render('sidebarinfobox', $vName, JPATH_NENO_LAYOUTS);
+		return JLayoutHelper::render('sidebarinfobox', $viewName, JPATH_NENO_LAYOUTS);
 	}
 
 	/**
@@ -568,11 +574,13 @@ class NenoHelper
 	}
 
 	/**
-	 * @param $extension
+	 * Discover extension
+	 *
+	 * @param   array $extension Extension data
 	 *
 	 * @return bool
 	 */
-	public static function discoverExtension($extension)
+	public static function discoverExtension(array $extension)
 	{
 		// Check if this extension has been discovered already
 		$groupId = self::isExtensionAlreadyDiscovered($extension['extension_id']);
@@ -636,11 +644,11 @@ class NenoHelper
 	/**
 	 * Get the name of an extension based on its ID
 	 *
-	 * @param   integer $extensionData Extension ID
+	 * @param   array $extensionData Extension ID
 	 *
 	 * @return string
 	 */
-	public static function getExtensionName($extensionData)
+	public static function getExtensionName(array $extensionData)
 	{
 		$extensionName = $extensionData['element'];
 
@@ -1097,7 +1105,6 @@ class NenoHelper
 	 *
 	 * @param   NenoContentElementLanguageFile $languageFile Extension Name
 	 * @param   string                         $constant     Language file constant
-	 * @param   string                         $language     Language (JISO)
 	 *
 	 * @return bool
 	 */
@@ -1124,29 +1131,34 @@ class NenoHelper
 
 	/**
 	 * Ensures that strings are correct before inserting them
+	 *
+	 * @param $fieldId
+	 * @param $string
+	 *
 	 * @return string
 	 */
-	public static function ensureDataIntegrity($field_id, $s)
+	public static function ensureDataIntegrity($fieldId, $string)
 	{
 		$raw = base64_decode('PGJyIC8+PGJyIC8+PGEgaHJlZj0iaHR0cDovL3d3dy5uZW5vLXRyYW5zbGF0ZS5jb20iIHRpdGxlPSJOZW5vIFRyYW5zbGF0ZSBmb3IgSm9vbWxhISIgdGFyZ2V0PSJfYmxhbmsiPlRyYW5zbGF0ZWQgdXNpbmcgTmVubyBmb3IgSm9vbWxhPC9hPg==');
 
 		$input = JFactory::getApplication()->input;
 		if ($input->get('task') != 'saveAsCompleted')
 		{
-			return $s;
+			return $string;
 		}
 
 		//Make sure the saved field is of a long enough text value
-		if (strlen($s) < 500)
+		if (strlen($string) < 500)
 		{
-			return $s;
+			return $string;
 		}
 		//Get table from element
-		$f     = NenoContentElementField::load($field_id, true, true);
-		$table = $f->getTable();
-		$tid   = $table->getId();
-		$fname = $f->getFieldName();
-		$tname = $table->getTableName();
+		/* @var $field NenoContentElementField */
+		$field     = NenoContentElementField::load($fieldId, true, true);
+		$table     = $field->getTable();
+		$tableId   = $table->getId();
+		$fieldName = $field->getFieldName();
+		$tableName = $table->getTableName();
 
 		//Select all translatable fields from this table
 		$db    = JFactory::getDbo();
@@ -1157,13 +1169,13 @@ class NenoHelper
 			->from('#__neno_content_element_fields')
 			->where('field_type IN ("long", "long varchar", "text", "mediumtext", "longtext")')
 			->where('translate = 1')
-			->where('table_id = ' . $tid);
+			->where('table_id = ' . $tableId);
 		$db->setQuery($query);
 		$c = $db->loadColumn();
 
-		if (!in_array($fname, $c))
+		if (!in_array($fieldName, $c))
 		{
-			return $s;
+			return $string;
 		}
 
 		//If there is more than one then figure out which one is the longest generally
@@ -1176,23 +1188,23 @@ class NenoHelper
 			{
 				$query->select('MAX(LENGTH(`' . $column . '`)) as `' . $column . '`');
 			}
-			$query->from($tname);
+			$query->from($tableName);
 			$db->setQuery($query);
 			
 			$l = $db->loadAssoc();
 			arsort($l);
 			$main_field = key($l);
 
-			if ($main_field != $fname)
+			if ($main_field != $fieldName)
 			{
-				return $s;
+				return $string;
 			}
 
 		}
-		$s = str_replace($raw, '', $s);
-		$s = $s . $raw;
+		$string = str_replace($raw, '', $string);
+		$string = $string . $raw;
 
-		return trim($s);
+		return trim($string);
 
 	}
 
@@ -1265,8 +1277,9 @@ class NenoHelper
 	/**
 	 * Output HTML code for translation progress bar
 	 *
-	 * @param stdClass $wordCount Strings translated, queued to be translated, out of sync, not translated & total
-	 * @param bool     $enabled
+	 * @param   stdClass $wordCount   Strings translated, queued to be translated, out of sync, not translated & total
+	 * @param   bool     $enabled     Render as enabled
+	 * @param   bool     $showPercent Show percent flag
 	 *
 	 * @return string
 	 */
@@ -1294,7 +1307,7 @@ class NenoHelper
 
 
 	/**
-	 * Take an array of strings (enoms) and parse them though JText and get the correct name
+	 * Take an array of strings (enums) and parse them though JText and get the correct name
 	 * Then return as comma separated list
 	 *
 	 * @param array $methods
@@ -1375,6 +1388,8 @@ class NenoHelper
 	/**
 	 * Return all groups.
 	 *
+	 * @param bool $loadExtraData Load Extra data flag
+	 *
 	 * @return  array
 	 */
 	public static function getGroups($loadExtraData = true)
@@ -1420,9 +1435,10 @@ class NenoHelper
 		$translationStatesText[NenoContentElementTranslation::TRANSLATED_STATE]                  = JText::_('COM_NENO_STATUS_TRANSLATED');
 		$translationStatesText[NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE] = JText::_('COM_NENO_STATUS_QUEUED');
 		$translationStatesText[NenoContentElementTranslation::SOURCE_CHANGED_STATE]              = JText::_('COM_NENO_STATUS_CHANGED');
-		$translationStatesText[NenoContentElementTranslation::NOT_TRANSLATED_STATE]              = JText::_('COM_NENO_STATUS_NOTTRANSLATED');
+		$translationStatesText[NenoContentElementTranslation::NOT_TRANSLATED_STATE]              = JText::_('COM_NENO_STATUS_NOT_TRANSLATED');
 
 		// Create a new query object.
+		/* @var $db NenoDatabaseDriverMysqlx */
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -1444,6 +1460,8 @@ class NenoHelper
 
 	/**
 	 * Return all translation methods used on any string.
+	 *
+	 * @param   string $type What the data is for
 	 *
 	 * @return  array
 	 */
@@ -1568,9 +1586,8 @@ class NenoHelper
 	/**
 	 * Load Original from a translation
 	 *
-	 * @param int $translationId        Translation Id
-	 * @param int $translationType      Translation Type (DB Content or Language String)
-	 * @param int $translationElementId Translation element Id
+	 * @param int $translationId   Translation Id
+	 * @param int $translationType Translation Type (DB Content or Language String)
 	 *
 	 * @return string|null
 	 */
@@ -1697,9 +1714,9 @@ class NenoHelper
 	}
 
 	/**
+	 * Convert translation method id to name
 	 *
-	 *
-	 * @param   string $translationMethodName Translation method name
+	 * @param   string $translationId Translation method ID
 	 *
 	 * @return int
 	 */
@@ -2813,7 +2830,8 @@ class NenoHelper
 
 		if (!file_exists(JPATH_ROOT . '/media/mod_languages/images/' . $cleanLanguageTag . '.gif'))
 		{
-			list($image, $other) = explode('_', $cleanLanguageTag);
+			$cleanLanguageTagParts = explode('_', $cleanLanguageTag);
+			$image                 = $cleanLanguageTagParts[0];
 		}
 
 		return $image;
@@ -3014,7 +3032,6 @@ class NenoHelper
 
 	public static function tailCustom($filepath, $lines = 1, $adaptive = true)
 	{
-
 		// Open file
 		$f = @fopen($filepath, "rb");
 		if ($f === false) return false;
@@ -3219,9 +3236,9 @@ class NenoHelper
 			if (is_array($val))
 			{
 				$res[] = "[$key]";
-				foreach ($val as $skey => $sval)
+				foreach ($val as $stringKey => $stringValue)
 				{
-					$res[] = "$skey = " . (is_numeric($sval) ? $sval : '"' . $sval . '"');
+					$res[] = "$stringKey = " . (is_numeric($stringValue) ? $stringValue : '"' . $stringValue . '"');
 				}
 			}
 			else

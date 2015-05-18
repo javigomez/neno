@@ -97,7 +97,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	 *
 	 * @param   bool $new If the query should be new
 	 *
-	 * @return JDatabaseQuery|string
+	 * @return NenoDatabaseQueryMysqli|JDatabaseQuery
 	 */
 	public function getQuery($new = false)
 	{
@@ -205,7 +205,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	/**
 	 * Get the type of the SQL query
 	 *
-	 * @param    string $sql SQL Query
+	 * @param   string $sql SQL Query
 	 *
 	 * @return int
 	 *
@@ -394,10 +394,12 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		$app      = JFactory::getApplication();
 
 		// Check if the user is trying to insert something in the front-end in different language
-		if ($this->getQueryType((string) $this->sql) === self::INSERT_QUERY && $language->getTag() !== NenoSettings::get('source_language') && $app->isSite() && !$this->isNenoSql((string) $this->sql))
+		if ($this->getQueryType((string) $this->sql) === self::INSERT_QUERY
+			&& $language->getTag() !== NenoSettings::get('source_language')
+			&& $app->isSite() && !$this->isNenoSql((string) $this->sql))
 		{
 			$language->load('com_neno', JPATH_ADMINISTRATOR);
-			throw new Exception(JText::_('COM_NENO_CONTENT_IN_OTHER_LANGUAGES_ARE_NOT_ALLLOWED'));
+			throw new Exception(JText::_('COM_NENO_CONTENT_IN_OTHER_LANGUAGES_ARE_NOT_ALLOWED'));
 		}
 		else
 		{

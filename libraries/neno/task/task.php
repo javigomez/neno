@@ -41,6 +41,12 @@ class NenoTask extends NenoObject
 	 */
 	protected $taskData;
 
+	/**
+	 * Constructor
+	 *
+	 * @param   mixed $data          Task data
+	 * @param   bool  $loadExtraData Load Extra data flag
+	 */
 	public function __construct($data, $loadExtraData = true)
 	{
 		parent::__construct($data, $loadExtraData);
@@ -51,14 +57,22 @@ class NenoTask extends NenoObject
 		}
 	}
 
+	/**
+	 * To object method
+	 *
+	 * @param   bool $allFields         Convert all the fields
+	 * @param   bool $recursive         If the method should be run recursive
+	 * @param   bool $convertToDatabase Convert to database naming
+	 *
+	 * @return stdClass
+	 */
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
-		$data = parent::toObject($allFields, $recursive, $convertToDatabase);
+		$data            = parent::toObject($allFields, $recursive, $convertToDatabase);
 		$data->task_data = json_encode($data->task_data);
 
 		return $data;
 	}
-
 
 	/**
 	 * Generate an id for a new record

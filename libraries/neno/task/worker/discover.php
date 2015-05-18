@@ -50,6 +50,5 @@ class NenoTaskWorkerDiscover extends NenoTaskWorker
 		}
 
 		return true;
-
 	}
 }

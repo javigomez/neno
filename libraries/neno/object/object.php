@@ -239,17 +239,17 @@ abstract class NenoObject
 
 		if ($this->isNew())
 		{
-			$id = $this->generateId();
-			$data->set('id', $id);
-			$result = $db->insertObject(self::getDbTable(), $data, 'id');
+			$id       = $this->generateId();
+			$data->id = $id;
+			$result   = $db->insertObject(self::getDbTable(), $data, 'id');
 
 			// Just assign an id if it's null
 			if (empty($id))
 			{
-				$data->set('id', $db->insertid());
+				$data->id = $db->insertid();
 			}
 
-			$this->id = $data->get('id');
+			$this->id = $data->id;
 		}
 		else
 		{
@@ -266,11 +266,11 @@ abstract class NenoObject
 	 * @param   bool $recursive         Make this method recursive
 	 * @param   bool $convertToDatabase If the variables should be converted to database
 	 *
-	 * @return JObject
+	 * @return stdClass
 	 */
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
-		$data = new JObject;
+		$data = new stdClass;
 
 		// Getting all the properties marked as 'protected'
 		$properties = $this->getProperties($allFields);
@@ -284,7 +284,7 @@ abstract class NenoObject
 
 				if ($this->{$property} instanceof NenoObject)
 				{
-					$data->set($propertyConverted, $this->{$property}->toObject($allFields, false));
+					$data->{$propertyConverted} = $this->{$property}->toObject($allFields, false);
 				}
 				elseif (is_array($this->{$property}))
 				{
@@ -302,15 +302,15 @@ abstract class NenoObject
 						}
 					}
 
-					$data->set($propertyConverted, $dataArray);
+					$data->{$propertyConverted} = $dataArray;
 				}
 				elseif ($this->{$property} instanceof Datetime)
 				{
-					$data->set($propertyConverted, $this->{$property}->format('Y-m-d H:i:s'));
+					$data->{$propertyConverted} = $this->{$property}->format('Y-m-d H:i:s');
 				}
 				else
 				{
-					$data->set($propertyConverted, $this->{$property});
+					$data->{$propertyConverted} = $this->{$property};
 				}
 			}
 		}
@@ -389,7 +389,7 @@ abstract class NenoObject
 	/**
 	 * Prepare this data to be presented into the view
 	 *
-	 * @return JObject
+	 * @return stdClass
 	 */
 	public function prepareDataForView()
 	{

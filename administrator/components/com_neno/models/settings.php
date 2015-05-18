@@ -74,9 +74,9 @@ class NenoModelSettings extends JModelList
 	/**
 	 * Method to auto-populate the model state.
 	 *
-	 * Note. Calling getState in this method will result in recursion.
+	 * @return void
 	 */
-	protected function populateState($ordering = null, $direction = null)
+	protected function populateState()
 	{
 		// List state information.
 		parent::populateState('a.setting_key', 'asc');

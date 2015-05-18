@@ -47,7 +47,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 		});
 
 		jQuery(".remove-language-button").off('click').on('click', function () {
-			var result = confirm("<?php echo JText::_('COM_NENO_DASHBOARD_REMOVING_LANGUAGE_MESSAGE_1') ?>\n\n<?php echo JText::_('COM_NENO_DASHBOARD_REMOVING_LANGUAGE_MESSAGE_2'); ?>")
+			var result = confirm("<?php echo JText::_('COM_NENO_DASHBOARD_REMOVING_LANGUAGE_MESSAGE_1') ?>\n\n<?php echo JText::_('COM_NENO_DASHBOARD_REMOVING_LANGUAGE_MESSAGE_2'); ?>");
 
 			if (result) {
 				jQuery(this).closest('.language-wrapper').slideUp();

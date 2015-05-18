@@ -1,10 +1,18 @@
 <?php
 
 /**
- * Created by PhpStorm.
- * User: victor
- * Date: 21/04/15
- * Time: 16:28
+ * @package     Neno
+ * @subpackage  Helper
+ *
+ * @copyright   Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+defined('JPATH_NENO') or die;
+
+/**
+ * Class NenoHelperApi
+ *
+ * @since  1.0
  */
 class NenoHelperApi
 {
@@ -48,15 +56,20 @@ class NenoHelperApi
 
 		if (!empty($apiEndpoint) && !empty($licenseCode))
 		{
-			$apiResponse = self::$httpClient->get($apiEndpoint . $apiCall, array ('Authorization' => $licenseCode));
+			$method = strtolower($method);
 
-			if ($apiResponse->code == 200)
+			if (method_exists(self::$httpClient, $method))
 			{
-				$data = json_decode($apiResponse->body, true);
+				$apiResponse = self::$httpClient->{$method}($apiEndpoint . $apiCall, array ('Authorization' => $licenseCode));
 
-				if (!empty($data['response']))
+				if ($apiResponse->code == 200)
 				{
-					return $data['response'];
+					$data = json_decode($apiResponse->body, true);
+
+					if (!empty($data['response']))
+					{
+						return $data['response'];
+					}
 				}
 			}
 

@@ -28,10 +28,8 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
                         <?php foreach ($this->groups as $group): ?>
                             <option value="<?php echo $group->id; ?>"><?php echo $group->group_name; ?></option>
                         <?php endforeach; ?>
-
                     </select>
                 </div>
-                
             </fieldset>
         </div>
     </div>

@@ -177,7 +177,7 @@ class NenoContentElementLanguageString extends NenoContentElement
 	 * @param   bool $recursive         Convert this method in recursive
 	 * @param   bool $convertToDatabase Convert property names to database
 	 *
-	 * @return JObject
+	 * @return stdClass
 	 */
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
@@ -185,7 +185,7 @@ class NenoContentElementLanguageString extends NenoContentElement
 
 		if (!empty($this->languageFile))
 		{
-			$data->set('languagefile_id', $this->languageFile->getId());
+			$data->languagefile_id = $this->languageFile->getId();
 		}
 
 		if ($this->timeAdded instanceof DateTime)
@@ -195,7 +195,6 @@ class NenoContentElementLanguageString extends NenoContentElement
 
 		return $data;
 	}
-
 
 	/**
 	 * Get the time when the string
@@ -268,7 +267,7 @@ class NenoContentElementLanguageString extends NenoContentElement
 						{
 							$commonData['state'] = NenoContentElementTranslation::NOT_TRANSLATED_STATE;
 						}
-						
+
 						$commonData['language'] = $language->lang_code;
 						$translation            = new NenoContentElementTranslation($commonData);
 

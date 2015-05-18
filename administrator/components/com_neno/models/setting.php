@@ -66,7 +66,6 @@ class NenoModelSetting extends JModelAdmin
 		if (empty($data))
 		{
 			$data = $this->getItem();
-
 		}
 
 		return $data;
@@ -75,7 +74,7 @@ class NenoModelSetting extends JModelAdmin
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param null $pk
+	 * @param   null $pk Primary key value
 	 *
 	 * @return mixed
 	 */

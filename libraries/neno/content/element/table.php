@@ -48,7 +48,9 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param   mixed $data Table data
+	 * @param   mixed $data          Table data
+	 * @param   bool  $loadExtraData Load Extra data flag
+	 * @param   bool  $loadParent    Load parent flag
 	 */
 	public function __construct($data, $loadExtraData = true, $loadParent = false)
 	{
@@ -85,6 +87,8 @@ class NenoContentElementTable extends NenoContentElement
 
 	/**
 	 * Get the fields related to this table
+	 *
+	 * @param   bool $loadExtraData Load Extra data flag for fields
 	 *
 	 * @return array
 	 */
@@ -375,7 +379,7 @@ class NenoContentElementTable extends NenoContentElement
 	 * @param   bool $recursive         Convert this method in recursive
 	 * @param   bool $convertToDatabase Convert property names to database
 	 *
-	 * @return JObject
+	 * @return stdClass
 	 */
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
@@ -383,13 +387,13 @@ class NenoContentElementTable extends NenoContentElement
 
 		if (!empty($this->group) && $convertToDatabase)
 		{
-			$object->set('group_id', $this->group->getId());
+			$object->group_id = $this->group->getId();
 		}
 
 		// If it's an array, let's json it!
 		if (is_array($this->primaryKey) && $convertToDatabase)
 		{
-			$object->set('primary_key', json_encode($this->primaryKey));
+			$object->primary_key = json_encode($this->primaryKey);
 		}
 
 		return $object;

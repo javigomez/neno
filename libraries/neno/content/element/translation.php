@@ -69,50 +69,62 @@ class NenoContentElementTranslation extends NenoContentElement
 	 * @var integer
 	 */
 	public $charactersCounter;
+
 	/**
 	 * @var int
 	 */
 	public $translationMethods;
+
 	/**
 	 * @var string
 	 */
 	protected $originalText;
+
 	/**
 	 * @var integer
 	 */
 	protected $contentType;
+
 	/**
 	 * @var NenoContentElement
 	 */
 	protected $element;
+
 	/**
 	 * @var string
 	 */
 	protected $language;
+
 	/**
 	 * @var integer
 	 */
 	protected $state;
+
 	/**
 	 * @var string
 	 */
 	protected $string;
+
 	/**
 	 * @var DateTime
 	 */
 	protected $timeAdded;
+
 	/**
 	 * @var DateTime
 	 */
 	protected $timeRequested;
+
 	/**
 	 * @var Datetime
 	 */
 	protected $timeChanged;
+
 	/**
 	 * @var DateTime
 	 */
 	protected $timeCompleted;
+
 	/**
 	 * @var int
 	 */
@@ -121,7 +133,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param   mixed $data Element data
+	 * @param   mixed $data          Element data
+	 * @param   bool  $loadExtraData Load extra data flag
+	 * @param   bool  $loadParent    Load parent flag
 	 */
 	public function __construct($data, $loadExtraData = true, $loadParent = false)
 	{
@@ -240,9 +254,9 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * Get translation using its source data, language and contentId
 	 *
-	 * @param array  $sourceElementData
-	 * @param string $language
-	 * @param int    $contentId
+	 * @param   array  $sourceElementData Source element data
+	 * @param   string $language          Language tag
+	 * @param   int    $contentId         Content Id
 	 *
 	 * @return NenoContentElementTranslation
 	 */
@@ -362,7 +376,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	 * @param   bool $recursive         Convert this method in recursive
 	 * @param   bool $convertToDatabase Convert property names to database
 	 *
-	 * @return JObject
+	 * @return stdClass
 	 */
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
@@ -370,11 +384,11 @@ class NenoContentElementTranslation extends NenoContentElement
 
 		if ($this->element instanceof NenoObject)
 		{
-			$data->set('content_id', $this->element->getId());
+			$data->content_id = $this->element->getId();
 		}
 		elseif (!empty($this->element))
 		{
-			$data->set('content_id', $this->element->id);
+			$data->content_id = $this->element->id;
 		}
 
 		return $data;
@@ -639,8 +653,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * Move the translation to its place in the shadow table
 	 *
-	 * @param   string $language Language of the shadow table
-	 *
 	 * @return bool
 	 */
 	public function moveTranslationToTarget()
@@ -668,7 +680,7 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			list($fieldName, $tableName) = $row;
 
-			//Ensure data entegrity
+			// Ensure data integrity
 			$this->string = NenoHelper::ensureDataIntegrity($this->element->id, $this->string);
 
 			$query
@@ -754,6 +766,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	 * Set the translation method
 	 *
 	 * @param   string $translationMethod Translation method
+	 * @param   int    $ordering          Ordering for that translation method
 	 *
 	 * @return NenoContentElementTranslation
 	 */
@@ -775,6 +788,7 @@ class NenoContentElementTranslation extends NenoContentElement
 		else
 		{
 			$found = false;
+
 			foreach ($this->translationMethods as $translationMethodAdded)
 			{
 				if ($translationMethodAdded->id === $translationMethod->id)
@@ -794,7 +808,6 @@ class NenoContentElementTranslation extends NenoContentElement
 				{
 					array_splice($this->translationMethods, $ordering - 1, 0, $translationMethod);
 				}
-
 			}
 		}
 
@@ -892,6 +905,8 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
+	 * @param   bool $breadcrumb Load breadcrumb
+	 *
 	 * @return JObject
 	 */
 	public function prepareDataForView($breadcrumb = false)
@@ -939,7 +954,6 @@ class NenoContentElementTranslation extends NenoContentElement
 			$db->setQuery($query);
 			$data->breadcrumbs = $db->loadRow();
 		}
-
 
 		return $data;
 	}

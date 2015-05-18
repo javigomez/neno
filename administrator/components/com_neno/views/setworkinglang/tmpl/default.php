@@ -12,12 +12,17 @@
 defined('_JEXEC') or die;
 
 ?>
-<h2>Please select the language you would like to work with</h2>
+	<h2>Please select the language you would like to work with</h2>
 
-<div class="clearfix">
-    <?php foreach ($this->langs as $lang): ?>
-        <a class="btn btn-large span2" href="index.php?option=com_neno&task=setworkinglang&lang=<?php echo $lang->lang_code; ?>"><h2><img src="../media/mod_languages/images/<?php echo $lang->image; ?>.gif" /> <?php echo $lang->title_native; ?></h2></a>
-    <?php endforeach; ?>
-</div>
+	<div class="clearfix">
+		<?php foreach ($this->langs as $lang): ?>
+			<a class="btn btn-large span2"
+			   href="index.php?option=com_neno&task=setworkinglang&lang=<?php echo $lang->lang_code; ?>">
+				<h2>
+					<img
+						src="<?php JUri::root(); ?>/media/mod_languages/images/<?php echo $lang->image; ?>.gif"/> <?php echo $lang->title_native; ?>
+				</h2>
+			</a>
+		<?php endforeach; ?>
+	</div>
 <?php
-

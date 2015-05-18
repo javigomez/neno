@@ -244,13 +244,22 @@ class NenoJob extends NenoObject
 		return false;
 	}
 
+	/**
+	 * To object method
+	 *
+	 * @param   bool $allFields         Convert all the fields
+	 * @param   bool $recursive         If the method should be run recursive
+	 * @param   bool $convertToDatabase Convert to database naming
+	 *
+	 * @return stdClass
+	 */
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
 		$data = parent::toObject($allFields, $recursive, $convertToDatabase);
 
 		if (is_object($this->translationMethod))
 		{
-			$data->set('translation_method', $this->translationMethod->id);
+			$data->translation_method = $this->translationMethod->id;
 		}
 
 		return $data;

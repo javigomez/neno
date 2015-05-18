@@ -23,6 +23,13 @@ class NenoViewInstallation extends JViewLegacy
 	 */
 	public $sidebar;
 
+	/**
+	 * Render view
+	 *
+	 * @param   null|string $tpl Template name
+	 *
+	 * @return mixed
+	 */
 	public function display($tpl = null)
 	{
 		NenoHelper::addSubmenu('');

@@ -35,14 +35,17 @@ class NenoContentElementGroup extends NenoContentElement
 	 * @var array
 	 */
 	public $languageFiles;
+
 	/**
 	 * @var
 	 */
 	public $extensions;
+
 	/**
 	 * @var string
 	 */
 	protected $groupName;
+
 	/**
 	 * @var array
 	 */
@@ -51,7 +54,8 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param   mixed $data Group data
+	 * @param   mixed $data          Group data
+	 * @param   bool  $loadExtraData Load extra data flag
 	 */
 	public function __construct($data, $loadExtraData = true)
 	{
@@ -262,7 +266,8 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * Get a group object
 	 *
-	 * @param   integer $groupId Group Id
+	 * @param   integer $groupId       Group Id
+	 * @param   bool    $loadExtraData Load extra data flag
 	 *
 	 * @return NenoContentElementGroup
 	 */
@@ -477,7 +482,7 @@ class NenoContentElementGroup extends NenoContentElement
 						)
 					);
 
-				foreach ($this->assignedTranslationMethods as $assignedTranslationMethod)
+				foreach ($this->assignedTranslationMethods as $translationMethod)
 				{
 					$deleteQuery
 						->clear()
@@ -485,7 +490,7 @@ class NenoContentElementGroup extends NenoContentElement
 						->where(
 							array (
 								'group_id = ' . $this->id,
-								'lang = ' . $db->quote($assignedTranslationMethod->lang)
+								'lang = ' . $db->quote($translationMethod->lang)
 							)
 						);
 
@@ -493,7 +498,9 @@ class NenoContentElementGroup extends NenoContentElement
 					$db->execute();
 
 					$insert = true;
-					$insertQuery->values($this->id . ',' . $db->quote($assignedTranslationMethod->lang) . ', ' . $assignedTranslationMethod->translation_method_id . ', ' . $assignedTranslationMethod->ordering);
+					$insertQuery->values(
+						$this->id . ',' . $db->quote($translationMethod->lang) . ', ' . $translationMethod->translation_method_id . ', ' . $translationMethod->ordering
+					);
 				}
 
 				if ($insert)

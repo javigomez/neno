@@ -12,8 +12,8 @@ defined('JPATH_BASE') or die;
 
 JFormHelper::loadFieldClass('list');
 
-
 /**
+ *
  */
 class JFormFieldGroup extends JFormFieldList
 {

@@ -10,6 +10,7 @@
 
 // No direct access
 defined('_JEXEC') or die;
+
 if (!empty($this->extra_sidebar))
 {
 	$this->sidebar .= $this->extra_sidebar;

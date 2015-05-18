@@ -64,8 +64,10 @@ class NenoContentElementField extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param   mixed   $data              Field data
-	 * @param   boolean $fetchTranslations If the translation have to be loaded
+	 * @param   mixed $data              Field data
+	 * @param   bool  $loadExtraData     Load extra data flag
+	 * @param   bool  $loadParent        Load parent flag
+	 * @param   bool  $fetchTranslations If the translation have to be loaded
 	 */
 	public function __construct($data, $loadExtraData = true, $loadParent = false, $fetchTranslations = false)
 	{
@@ -264,7 +266,7 @@ class NenoContentElementField extends NenoContentElement
 	 * @param   bool $recursive         Convert this method in recursive
 	 * @param   bool $convertToDatabase Convert property names to database
 	 *
-	 * @return JObject
+	 * @return stdClass
 	 */
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
@@ -273,11 +275,11 @@ class NenoContentElementField extends NenoContentElement
 		// If the table property is not null and it's an instance of NenoObject, let's use the getId method
 		if (!empty($this->table) && $this->table instanceof NenoObject && $convertToDatabase)
 		{
-			$object->set('table_id', $this->table->getId());
+			$object->table_id = $this->table->getId();
 		}
 		elseif (!empty($this->table) && $convertToDatabase)
 		{
-			$object->set('table_id', $this->table->id);
+			$object->table_id = $this->table->id;
 		}
 
 		return $object;
@@ -285,6 +287,8 @@ class NenoContentElementField extends NenoContentElement
 
 	/**
 	 * Persist all the translations
+	 *
+	 * @param   int|null $recordId Record id to just load that row
 	 *
 	 * @return void
 	 */
@@ -410,6 +414,8 @@ class NenoContentElementField extends NenoContentElement
 
 	/**
 	 * Get all the strings related to this field
+	 *
+	 * @param   int|null $recordId Record id to just load that row
 	 *
 	 * @return array
 	 */

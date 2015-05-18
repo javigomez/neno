@@ -33,7 +33,6 @@ class NenoViewDashboard extends JViewLegacy
 	 */
 	protected $sidebar;
 
-
 	/**
 	 * Display the view
 	 *
@@ -61,13 +60,11 @@ class NenoViewDashboard extends JViewLegacy
 		$toolbar = JToolbar::getInstance();
 		$toolbar->addButtonPath(JPATH_NENO . '/button');
 		$toolbar->appendButton('TC', $this->get('TCAvailable'));
-        
+
 		$this->sidebar = JHtmlSidebar::render();
 
 		$this->extra_sidebar = NenoHelper::getSidebarInfobox('dashboard');
-        
-        
+
 		parent::display($tpl);
 	}
-
 }

@@ -19,14 +19,17 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	 * @var stdClass
 	 */
 	public $wordCount;
+
 	/**
 	 * @var NenoContentElementGroup
 	 */
 	protected $group;
+
 	/**
 	 * @var string
 	 */
 	protected $filename;
+
 	/**
 	 * @var string
 	 */
@@ -45,7 +48,9 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	/**
 	 * Constructor
 	 *
-	 * @param   mixed $data Data
+	 * @param   mixed $data          File data
+	 * @param   bool  $loadExtraData Load extra data flag
+	 * @param   bool  $loadParent    Load parent flag
 	 */
 	public function __construct($data, $loadExtraData = true, $loadParent = false)
 	{
@@ -132,7 +137,6 @@ class NenoContentElementLanguageFile extends NenoContentElement
 
 		$wordCount->total = $wordCount->untranslated + $wordCount->queued + $wordCount->changed + $wordCount->translated;
 		$this->wordCount  = $wordCount;
-
 	}
 
 	/**
@@ -148,7 +152,7 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	/**
 	 * Set language
 	 *
-	 * @param string $language Language
+	 * @param   string $language Language
 	 *
 	 * @return $this
 	 */
@@ -314,7 +318,7 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	 * @param   bool $recursive         Convert this method in recursive
 	 * @param   bool $convertToDatabase Convert property names to database
 	 *
-	 * @return JObject
+	 * @return stdClass
 	 */
 	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
 	{
@@ -322,7 +326,7 @@ class NenoContentElementLanguageFile extends NenoContentElement
 
 		if (!empty($this->group) && $convertToDatabase)
 		{
-			$object->set('group_id', $this->group->getId());
+			$object->group_id = $this->group->getId();
 		}
 
 		return $object;

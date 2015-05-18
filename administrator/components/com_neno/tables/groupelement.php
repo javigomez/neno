@@ -13,9 +13,9 @@ class NenoTableGroupElement extends JTable
 	/**
 	 * Constructor
 	 *
-	 * @param JDatabase A database connector object
+	 * @param   JDatabase $db A database connector object
 	 */
-	public function __construct(&$db)
+	public function __construct($db)
 	{
 		parent::__construct('#__neno_content_element_groups', 'id', $db);
 	}

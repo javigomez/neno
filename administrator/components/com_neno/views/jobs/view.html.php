@@ -95,15 +95,12 @@ class NenoViewJobs extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=strings');
 
 		$toolbar = JToolbar::getInstance();
 		$toolbar->addButtonPath(JPATH_NENO . '/button');
 		$toolbar->appendButton('TC', $this->get('TCAvailable'));
-        
-		$this->extra_sidebar = '';
 	}
 
 	/**

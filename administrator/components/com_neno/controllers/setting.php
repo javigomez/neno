@@ -31,4 +31,3 @@ class NenoControllerSetting extends JControllerForm
 		parent::__construct($config);
 	}
 }
-

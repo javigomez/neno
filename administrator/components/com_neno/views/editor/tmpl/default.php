@@ -20,6 +20,7 @@ if (!empty($this->extra_sidebar))
 {
 	$this->sidebar .= $this->extra_sidebar;
 }
+
 $document = JFactory::getDocument();
 $document->addStyleSheet(JUri::root() . '/media/neno/css/editor.css');
 ?>
@@ -73,4 +74,4 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/editor.css');
         </div>
     </div>
 </div>
-</form>
+</div>

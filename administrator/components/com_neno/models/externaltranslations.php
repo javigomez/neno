@@ -28,6 +28,11 @@ class NenoModelExternalTranslations extends JModelList
 		return NenoHelperApi::getTCAvailable();
 	}
 
+	/**
+	 * Get TC needed
+	 *
+	 * @return int
+	 */
 	public function getTCNeeded()
 	{
 		$db    = JFactory::getDbo();

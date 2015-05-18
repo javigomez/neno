@@ -35,7 +35,6 @@ class NenoViewGroupsElements extends JViewLegacy
 	 */
 	protected $sidebar;
 
-
 	/**
 	 * Display the view
 	 *

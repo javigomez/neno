@@ -66,8 +66,6 @@ class NenoTaskMonitor
 				self::executeTask($task);
 			}
 		}
-
-
 	}
 
 	/**

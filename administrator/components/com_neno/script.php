@@ -49,7 +49,7 @@ class com_NenoInstallerScript
 	 *
 	 * @return bool False if something happens
 	 */
-	public function uninstall($parent)
+	public function uninstall()
 	{
 		JFolder::delete(JPATH_ROOT . '/layouts/libraries/neno');
 		JFolder::delete(JPATH_ROOT . '/media/neno');

@@ -14,6 +14,7 @@ JFormHelper::loadFieldClass('list');
 
 
 /**
+ *
  */
 class JFormFieldTranslationStatus extends JFormFieldList
 {
