@@ -2902,22 +2902,33 @@ class NenoHelper
 	 * Get language default translation methods
 	 *
 	 * @param   string $languageTag Language tag
+	 * @param   int    $ordering    Ordering
 	 *
 	 * @return array
 	 */
-	public static function getLanguageDefault($languageTag)
+	public static function getLanguageDefault($languageTag, $ordering = 0)
 	{
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query
-			->select('tm.*')
+			->select(
+				array (
+					'DISTINCT tm.*',
+					'(ordering - 1) AS ordering'
+				)
+			)
 			->from('#__neno_content_language_defaults AS ld')
 			->innerJoin('#__neno_translation_methods AS tm ON tm.id = ld.translation_method_id')
-			->where('lang = ' . $db->quote($languageTag));
+			->where(
+				array (
+					'lang = ' . $db->quote($languageTag),
+					'ld.ordering > ' . $ordering
+				)
+			);
 
 		$db->setQuery($query);
-		$translationMethods = $db->loadObjectList();
+		$translationMethods = $db->loadObjectList('ordering');
 
 		return $translationMethods;
 	}

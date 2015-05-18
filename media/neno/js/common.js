@@ -154,8 +154,15 @@ function fixIssue() {
 }
 
 function loadMissingTranslationMethodSelectors(listSelector, placement) {
-    if (typeof listSelector == 'undefined') {
-        listSelector = '.method-selectors';
+    if (typeof listSelector != 'string') {
+        var parent = jQuery('.translation-method-selector-container').parent();
+
+        if (typeof parent.prop('id') == 'undefined' || parent.prop('id') == '') {
+            listSelector = '.method-selectors';
+        }
+        else {
+            listSelector = '#' + parent.prop('id');
+        }
     }
 
     if (typeof placement == 'undefined') {
@@ -194,6 +201,7 @@ function loadMissingTranslationMethodSelectors(listSelector, placement) {
         });
     }
     else {
+
         //If we are loading because of changing a selector, remove all children
         var selector_id = jQuery(this).data('selector-id');
         var n = jQuery(this).closest(listSelector).find('.translation-method-selector-container').length;
@@ -207,7 +215,11 @@ function loadMissingTranslationMethodSelectors(listSelector, placement) {
         }
         var selected_methods_string = '&selected_methods[]=' + jQuery(this).find(':selected').val();
         var lang = jQuery(this).closest(listSelector).data('language');
-        var otherParams = '&language=' + lang;
+        var otherParams = '';
+
+        if (typeof lang != 'undefined') {
+            otherParams = '&language=' + lang;
+        }
         saveTranslationMethod(jQuery(this).find(':selected').val(), lang, selector_id + 1);
         executeAjaxForTranslationMethodSelectors(listSelector, placement, n, selected_methods_string, jQuery(this), otherParams);
     }

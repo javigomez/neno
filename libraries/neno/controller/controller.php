@@ -373,7 +373,7 @@ class NenoController extends JControllerLegacy
 		else
 		{
 			$lang                                        = $input->getString('language');
-			$displayData['assigned_translation_methods'] = NenoHelper::getLanguageDefault($lang);
+			$displayData['assigned_translation_methods'] = NenoHelper::getLanguageDefault($lang, $n);
 		}
 
 		$selectorHTML = JLayoutHelper::render('translationmethodselector', $displayData, JPATH_NENO_LAYOUTS);
