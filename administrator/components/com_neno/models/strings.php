@@ -261,7 +261,7 @@ class NenoModelStrings extends JModelList
 		$field = $this->getState('filter.field', array ());
 
 		/* @var $file array */
-		$file = $this->getState('filter.file', array ());
+		$file = $this->getState('filter.files', array ());
 
 		$groupIdAdded = false;
 
