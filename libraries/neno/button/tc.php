@@ -34,11 +34,11 @@ class JToolbarButtonTC extends JToolbarButton
 	/**
 	 * Render the button
 	 *
-	 * @param   array $definition Definition
+	 * @param   array &$definition Definition
 	 *
 	 * @return string
 	 */
-	public function render($definition)
+	public function render(&$definition)
 	{
 		$data         = new stdClass;
 		$data->button = JText::sprintf('COM_NENO_TRANSLATION_CREDIT_TOOLBAR_FAKE_BUTTON', number_format($definition[1], 0, ',', '.'));
