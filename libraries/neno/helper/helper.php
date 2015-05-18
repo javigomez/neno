@@ -1055,6 +1055,7 @@ class NenoHelper
 					'TABLE_SCHEMA = ' . $db->quote($database),
 					'REPLACE(dbt.table_name, ' . $db->quote($dbPrefix) . ', ' . $db->quote('#__') . ') NOT LIKE ' . $db->quote('#\_\_neno_%'),
 					'REPLACE(dbt.table_name, ' . $db->quote($dbPrefix) . ', ' . $db->quote('#__') . ') NOT LIKE ' . $db->quote('#\_\_\_%'),
+					'REPLACE(dbt.table_name, ' . $db->quote($dbPrefix) . ', ' . $db->quote('#__') . ') NOT IN (' . implode(',', $db->quote(self::getJoomlaTablesWithNoContent())) . ')',
 					'NOT EXISTS ( ' . (string) $subQuery . ')'
 				)
 			);
@@ -1063,6 +1064,29 @@ class NenoHelper
 		$tablesNotDiscovered = $db->loadArray();
 
 		return $tablesNotDiscovered;
+	}
+
+	/**
+	 * Get a list of tables that should not be included into Neno
+	 *
+	 * @return array
+	 */
+	public static function getJoomlaTablesWithNoContent()
+	{
+		return array (
+			'#__assets',
+			'#__associations',
+			'#__core_log_searches',
+			'#__menu',
+			'#__menu_types',
+			'#__session',
+			'#__messages_cfg',
+			'#__schemas',
+			'#__ucm_base',
+			'#__updates',
+			'#__update_sites',
+			'#__update_sites_extensions'
+		);
 	}
 
 	/**

@@ -356,7 +356,7 @@ class NenoContentElementTable extends NenoContentElement
 					{
 						if ($language->lang_code != $defaultLanguage)
 						{
-							$db->deleteContentElementsFromSourceTableToShadowTables($this->tableName, $language);
+							$db->deleteContentElementsFromSourceTableToShadowTables($this->tableName, $language->lang_code);
 						}
 					}
 				}
