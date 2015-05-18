@@ -265,12 +265,21 @@ function setFilterTags(form) {
     }
 
     for (s in status) {
+        if (String(status[s]).indexOf('status') !== 0) {
+            continue;
+        }
         printFilterTag(status[s], jQuery('[data-id="' + status[s] + '"]').attr('data-label'));
     }
     for (m in method) {
+        if (String(method[m]).indexOf('method') !== 0) {
+            continue;
+        }
         printFilterTag(method[m], jQuery('[data-id="' + method[m] + '"]').attr('data-label'));
     }
     for (ge in groupsElements) {
+        if (String(groupsElements[ge]).indexOf('group') !== 0 && String(groupsElements[ge]).indexOf('table') !== 0 && String(groupsElements[ge]).indexOf('field') !== 0) {
+            continue;
+        }
         var row = jQuery('[data-id="' + groupsElements[ge] + '"]');
         var label = '';
         if (row.attr('data-parent') && row.attr('data-parent') != 'header') {
