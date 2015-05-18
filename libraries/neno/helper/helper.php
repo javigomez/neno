@@ -2563,16 +2563,18 @@ class NenoHelper
 	public static function findLanguages($allSupported = false)
 	{
 		$enGbExtensionId = self::getEnGbExtensionId();
-		$languagesFound  = array ();
+		NenoLog::log('en-GB Extension ID ' . $enGbExtensionId);
+		$languagesFound = array ();
 
 		if (!empty($enGbExtensionId))
 		{
-			$updater = JUpdater::getInstance();
-
 			// Find updates for languages
+			$updater = JUpdater::getInstance();
 			$updater->findUpdates($enGbExtensionId);
-			$updateSiteId   = self::getLanguagesUpdateSite($enGbExtensionId);
-			$updates        = self::getUpdates($updateSiteId);
+			$updateSiteId = self::getLanguagesUpdateSite($enGbExtensionId);
+			NenoLog::log('UpdateSiteID: ' . $updateSiteId);
+			$updates = self::getUpdates($updateSiteId);
+			NenoLog::log('Updates: ' . json_encode($updateSiteId));
 			$languagesFound = $updates;
 		}
 
@@ -2609,7 +2611,8 @@ class NenoHelper
 		$extType  = 'language';
 		$extElem  = 'en-GB';
 
-		$extQuery->select($db->quoteName('extension_id'))
+		$extQuery
+			->select($db->quoteName('extension_id'))
 			->from($db->quoteName('#__extensions'))
 			->where($db->quoteName('type') . ' = ' . $db->quote($extType))
 			->where($db->quoteName('element') . ' = ' . $db->quote($extElem))
@@ -2632,7 +2635,8 @@ class NenoHelper
 		$db        = JFactory::getDbo();
 		$siteQuery = $db->getQuery(true);
 
-		$siteQuery->select($db->quoteName('update_site_id'))
+		$siteQuery
+			->select($db->quoteName('update_site_id'))
 			->from($db->quoteName('#__update_sites_extensions'))
 			->where($db->quoteName('extension_id') . ' = ' . $enGbExtensionId);
 
