@@ -44,7 +44,11 @@ class NenoController extends JControllerLegacy
 
 		if (NenoSettings::get('installation_completed') != 1 && NenoSettings::get('installation_status') != 6 && $view != 'installation' && $view != 'debug' && $app->isAdmin())
 		{
-			$app->enqueueMessage(JText::_('COM_NENO_INSTALLATION_ERROR'), 'error');
+			if ($view != 'dashboard')
+			{
+				$app->enqueueMessage(JText::_('COM_NENO_INSTALLATION_ERROR'), 'error');
+			}
+
 			$app->redirect('index.php?option=com_neno&view=installation');
 		}
 
