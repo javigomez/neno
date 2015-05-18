@@ -55,9 +55,8 @@ class NenoControllerInstallation extends JControllerAdmin
 		switch ($step)
 		{
 			case 1:
-				$language            = JFactory::getLanguage();
 				$languages           = NenoHelper::findLanguages(true);
-				$data->select_widget = JHtml::_('select.genericlist', $languages, 'source_language', null, 'iso', 'name', $language->getDefault());
+				$data->select_widget = JHtml::_('select.genericlist', $languages, 'source_language', null, 'iso', 'name', NenoSettings::get('source_language'));
 				break;
 			case 4:
 				$language                   = JFactory::getLanguage();

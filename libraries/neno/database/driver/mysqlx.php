@@ -163,7 +163,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	public function languageHasChanged()
 	{
 		$input           = JFactory::getApplication()->input;
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$defaultLanguage = NenoSettings::get('source_language');
 		$lang            = $input->getString('lang', $defaultLanguage);
 		$currentLanguage = JLanguage::getInstance($lang);
 
@@ -394,7 +394,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		$app      = JFactory::getApplication();
 
 		// Check if the user is trying to insert something in the front-end in different language
-		if ($this->getQueryType((string) $this->sql) === self::INSERT_QUERY && $language->getTag() !== $language->getDefault() && $app->isSite() && !$this->isNenoSql((string) $this->sql))
+		if ($this->getQueryType((string) $this->sql) === self::INSERT_QUERY && $language->getTag() !== NenoSettings::get('source_language') && $app->isSite() && !$this->isNenoSql((string) $this->sql))
 		{
 			$language->load('com_neno', JPATH_ADMINISTRATOR);
 			throw new Exception(JText::_('COM_NENO_CONTENT_IN_OTHER_LANGUAGES_ARE_NOT_ALLLOWED'));
@@ -508,7 +508,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	 */
 	public function deleteShadowTables($tableName)
 	{
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$defaultLanguage = NenoSettings::get('source_language');
 		$knownLanguages  = NenoHelper::getLanguages();
 
 		foreach ($knownLanguages as $knownLanguage)
@@ -531,7 +531,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	 */
 	public function createShadowTables($tableName, $copyContent = true)
 	{
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$defaultLanguage = NenoSettings::get('source_language');
 		$knownLanguages  = NenoHelper::getLanguages();
 
 		foreach ($knownLanguages as $knownLanguage)
@@ -592,7 +592,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	 */
 	public function copyContentElementsUsingJoomlaLanguageField($tableName)
 	{
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$defaultLanguage = NenoSettings::get('source_language');
 		$knownLanguages  = NenoHelper::getLanguages();
 		$columns         = array_keys($this->getTableColumns($tableName));
 

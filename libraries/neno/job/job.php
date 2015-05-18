@@ -160,7 +160,7 @@ class NenoJob extends NenoObject
 		if (!empty($translationObjects))
 		{
 			$jobData = array (
-				'fromLanguage'      => JFactory::getLanguage()->getDefault(),
+				'fromLanguage'      => NenoSettings::get('source_language'),
 				'toLanguage'        => $toLanguage,
 				'state'             => self::JOB_STATE_GENERATED,
 				'createdTime'       => new DateTime,

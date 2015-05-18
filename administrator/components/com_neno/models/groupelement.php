@@ -150,7 +150,7 @@ class NenoModelGroupElement extends JModelAdmin
 	{
 		$languages       = NenoHelper::getLanguages(false);
 		$workingLanguage = NenoHelper::getWorkingLanguage();
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$defaultLanguage = NenoSettings::get('source_language');
 
 		foreach ($languages as $key => $language)
 		{

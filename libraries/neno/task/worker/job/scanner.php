@@ -26,7 +26,7 @@ class NenoTaskWorkerJobScanner extends NenoTaskWorker
 	public function run($taskData)
 	{
 		$languages       = NenoHelper::getLanguages();
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$defaultLanguage = NenoSettings::get('source_language');
 		$profiler        = new JProfiler;
 
 		foreach ($languages as $language)

@@ -242,7 +242,7 @@ class NenoHelper
 	{
 		// Load all published languages
 		$languages       = self::getLanguages($published);
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$defaultLanguage = NenoSettings::get('source_language');
 
 		// Create a simple array
 		$arr = array ();
@@ -692,7 +692,7 @@ class NenoHelper
 	public static function getLanguageFiles($extensionName)
 	{
 		jimport('joomla.filesystem.folder');
-		$defaultLanguage     = JFactory::getLanguage()->getDefault();
+		$defaultLanguage     = NenoSettings::get('source_language');
 		$languageFilePattern = preg_quote($defaultLanguage) . '\.' . $extensionName . '\.(((\w)*\.)^sys)?ini';
 		$languageFilesPath   = JFolder::files(JPATH_ROOT . "/language/$defaultLanguage/", $languageFilePattern);
 		$languageFiles       = array ();
@@ -1749,7 +1749,7 @@ class NenoHelper
 		$db              = JFactory::getDbo();
 		$query           = $db->getQuery(true);
 		$languages       = NenoHelper::getLanguages();
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$defaultLanguage = NenoSettings::get('source_language');
 
 		// Delete all the menus trashed
 		$query
@@ -2202,7 +2202,7 @@ class NenoHelper
 	{
 		$db              = JFactory::getDbo();
 		$query           = $db->getQuery(true);
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$defaultLanguage = NenoSettings::get('source_language');
 		$content         = 0;
 
 		if ($language !== $defaultLanguage)

@@ -104,7 +104,7 @@ class NenoModelDashboard extends JModelList
 			)
 			->from('#__languages AS l')
 			->leftJoin('#__neno_content_element_translations AS tr ON tr.language = l.lang_code')
-			->where('l.lang_code <> ' . $db->quote(JFactory::getLanguage()->getDefault()))
+			->where('l.lang_code <> ' . $db->quote(NenoSettings::get('source_language')))
 			->group(
 				array (
 					'l.lang_code',

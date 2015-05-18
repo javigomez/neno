@@ -123,7 +123,7 @@ class PlgSystemNeno extends JPlugin
 			}
 
 			$languages       = NenoHelper::getLanguages(false);
-			$defaultLanguage = JFactory::getLanguage()->getDefault();
+			$defaultLanguage = NenoSettings::get('source_language');
 
 			foreach ($languages as $language)
 			{

@@ -32,7 +32,7 @@ class NenoControllerEditor extends NenoControllerStrings
 		$input           = $app->input;
 		$text            = html_entity_decode($input->getHtml('text'));
 		$workingLanguage = NenoHelper::getWorkingLanguage();
-		$defaultLanguage = JFactory::getLanguage()->getDefault();
+		$defaultLanguage = NenoSettings::get('source_language');
 		$translator      = NenoSettings::get('translator');
 
 		try

@@ -250,7 +250,7 @@ class NenoContentElementLanguageString extends NenoContentElement
 				);
 
 				$languages          = NenoHelper::getLanguages();
-				$defaultLanguage    = JFactory::getLanguage()->getDefault();
+				$defaultLanguage    = NenoSettings::get('source_language');
 				$this->translations = array ();
 
 				foreach ($languages as $language)

@@ -301,7 +301,7 @@ class NenoContentElementField extends NenoContentElement
 			);
 
 			$languages          = NenoHelper::getLanguages();
-			$defaultLanguage    = JFactory::getLanguage()->getDefault();
+			$defaultLanguage    = NenoSettings::get('source_language');
 			$this->translations = array ();
 			$strings            = $this->getStrings($recordId);
 			$primaryKeyData     = $this->getTable()->getPrimaryKey();
