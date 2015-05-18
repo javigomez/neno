@@ -102,6 +102,7 @@ if (!empty($this->extra_sidebar))
 					break;
 			}
 		});
+		jQuery('#system-message-container').empty();
 		jQuery.ajax({
 			url: 'index.php?option=com_neno&task=installation.processInstallationStep',
 			type: 'POST',
