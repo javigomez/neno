@@ -45,38 +45,78 @@ class PlgSystemNeno extends JPlugin
 	/**
 	 * Event triggered before uninstall an extension
 	 *
-	 * @param   integer $extensionId Extension ID
+	 * @param   int $extensionId Extension ID
 	 *
 	 * @return void
 	 */
 	public function onExtensionBeforeUninstall($extensionId)
 	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('group_id')
+			->from('#__neno_content_element_groups_x_extensions')
+			->where('extension_id = ' . (int) $extensionId);
+
+		$db->setQuery($query);
+		$groupId = $db->loadResult();
+
+		if (!empty($groupId))
+		{
+			/* @var $group NenoContentElementGroup */
+			$group = NenoContentElementGroup::load($groupId);
+
+			$group->remove();
+		}
 	}
 
 	/**
 	 * Event triggered after install an extension
 	 *
 	 * @param   JInstaller $installer   Installer instance
-	 * @param   integer    $extensionId Extension Id
+	 * @param   int        $extensionId Extension Id
 	 *
 	 * @return void
 	 */
 	public function onExtensionAfterInstall($installer, $extensionId)
 	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
+		$query
+			->select('*')
+			->from('#__extensions')
+			->where('extension_id = ' . (int) $extensionId);
+
+		$db->setQuery($query);
+		$extensionData = $db->loadAssoc();
+
+		NenoHelper::discoverExtension($extensionData);
 	}
 
 	/**
 	 * Event triggered after update an extension
 	 *
 	 * @param   JInstaller $installer   Installer instance
-	 * @param   integer    $extensionId Extension Id
+	 * @param   int        $extensionId Extension Id
 	 *
 	 * @return void
 	 */
 	public function onExtensionAfterUpdate($installer, $extensionId)
 	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
+		$query
+			->select('*')
+			->from('#__extensions')
+			->where('extension_id = ' . (int) $extensionId);
+
+		$db->setQuery($query);
+		$extensionData = $db->loadAssoc();
+
+		NenoHelper::discoverExtension($extensionData);
 	}
 
 	/**
