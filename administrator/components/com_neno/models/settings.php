@@ -41,6 +41,69 @@ class NenoModelSettings extends JModelList
 	}
 
 	/**
+	 * Get items
+	 *
+	 * @return array
+	 */
+	public function getItems()
+	{
+		$items = parent::getItems();
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		foreach ($items as $item)
+		{
+			switch ($item->setting_key)
+			{
+				case 'translation_method_1':
+				case 'translation_method_2':
+					$query
+						->clear()
+						->select(
+							array (
+								'id',
+								'name_constant'
+							)
+						)
+						->from('#__neno_translation_methods');
+
+					$db->setQuery($query);
+					$values = $db->loadObjectList();
+
+					$item->dropdown = JHtml::_('select.genericlist', $values, $item->setting_key, null, 'id', 'name_constant', $item->setting_value, false, true);
+
+					break;
+				case 'schedule_task_option':
+					$values         = array (
+						array ('value' => 'ajax', 'text' => 'COM_NENO_INSTALLATION_TASK_OPTION_AJAX_MODULE_TITLE'),
+						array ('value' => 'cron', 'text' => 'COM_NENO_INSTALLATION_TASK_OPTION_CRON_TITLE'),
+						array ('value' => 'disabled', 'text' => 'COM_NENO_INSTALLATION_TASK_OPTION_DISABLE_TITLE'),
+					);
+					$item->dropdown = JHtml::_('select.genericlist', $values, $item->setting_key, null, 'value', 'text', $item->setting_value, false, true);
+					break;
+				case 'translator':
+					$query
+						->clear()
+						->select(
+							array (
+								'translator_name AS value',
+								'translator_name AS text',
+							)
+						)
+						->from('#__neno_machine_translation_apis');
+					$db->setQuery($query);
+					$values = $db->loadObjectList();
+
+					$item->dropdown = JHtml::_('select.genericlist', $values, $item->setting_key, null, 'value', 'text', $item->setting_value, false, true);
+					break;
+
+			}
+		}
+
+		return $items;
+	}
+
+	/**
 	 * Build an SQL query to load the list data.
 	 *
 	 * @return    JDatabaseQuery
@@ -56,8 +119,12 @@ class NenoModelSettings extends JModelList
 		$query
 			->select('a.*')
 			->from('#__neno_settings AS a')
-			->where('a.show_settings_screen = 1');
-
+			->where(
+				array (
+					'a.setting_key NOT LIKE ' . $db->quote('%installation%'),
+					'a.setting_key NOT LIKE ' . $db->quote('%setup%')
+				)
+			);
 
 		// Add the list ordering clause.
 		$orderCol       = $this->state->get('list.ordering');

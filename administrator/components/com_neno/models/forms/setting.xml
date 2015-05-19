@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<form>
-    <fields>
-        <field name="id" type="hidden"/>
-        <field name="setting_key" type="hidden"/>
-        <field name="setting_value" type="text"/>
-    </fields>
-</form>

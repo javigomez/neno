@@ -16,18 +16,25 @@ defined('_JEXEC') or die;
  *
  * @since  1.0
  */
-class NenoControllerSetting extends JControllerForm
+class NenoControllerSettings extends JControllerAdmin
 {
 	/**
-	 * Constructor
+	 * Save a setting
 	 *
-	 * @param   array $config Constructor configuration
-	 *
-	 * @throws Exception
+	 * @return void
 	 */
-	public function __construct($config = array ())
+	public function saveSetting()
 	{
-		$this->view_list = 'settings';
-		parent::__construct($config);
+		$input = $this->input;
+
+		$setting  = $input->getString('setting');
+		$newValue = $input->getString('value');
+
+		if (NenoSettings::set($setting, $newValue))
+		{
+			echo 'ok';
+		}
+
+		JFactory::getApplication()->close();
 	}
 }
