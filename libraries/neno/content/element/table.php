@@ -212,30 +212,6 @@ class NenoContentElementTable extends NenoContentElement
 	}
 
 	/**
-	 * Check if the table is translatable
-	 *
-	 * @return boolean
-	 */
-	public function isTranslate()
-	{
-		return $this->translate;
-	}
-
-	/**
-	 * Mark this table as translatable/untranslatable
-	 *
-	 * @param   boolean $translate Translation status
-	 *
-	 * @return $this
-	 */
-	public function setTranslate($translate)
-	{
-		$this->translate = $translate;
-
-		return $this;
-	}
-
-	/**
 	 * Get the group that contains this table
 	 *
 	 * @return NenoContentElementGroup
@@ -351,8 +327,10 @@ class NenoContentElementTable extends NenoContentElement
 			/* @var $field NenoContentElementField */
 			foreach ($this->fields as $field)
 			{
-				$field->setTable($this);
-				$field->persist();
+				$field
+					->setTable($this)
+					->setTranslate($field->isTranslatable() && $this->isTranslate())
+					->persist();
 
 				if ($field->getFieldName() === 'language')
 				{
@@ -408,6 +386,30 @@ class NenoContentElementTable extends NenoContentElement
 	public function setTableName($tableName)
 	{
 		$this->tableName = $tableName;
+
+		return $this;
+	}
+
+	/**
+	 * Check if the table is translatable
+	 *
+	 * @return boolean
+	 */
+	public function isTranslate()
+	{
+		return $this->translate;
+	}
+
+	/**
+	 * Mark this table as translatable/untranslatable
+	 *
+	 * @param   boolean $translate Translation status
+	 *
+	 * @return $this
+	 */
+	public function setTranslate($translate)
+	{
+		$this->translate = $translate;
 
 		return $this;
 	}
