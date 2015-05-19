@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS `#__neno_settings` (
   `id`            INT(11)      NOT NULL AUTO_INCREMENT,
   `setting_key`   VARCHAR(150) NOT NULL,
   `setting_value` VARCHAR(255) NOT NULL,
-  `read_only`     TINYINT(1)   NOT NULL DEFAULT '0'
-    PRIMARY KEY (`id`),
+  `read_only`     TINYINT(1)   NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
   UNIQUE KEY `setting_key_UNIQUE` (`setting_key`)
 )
   ENGINE = InnoDB
