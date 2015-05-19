@@ -20,7 +20,7 @@ defined('_JEXEC') or die;
 			   href="index.php?option=com_neno&task=setworkinglang&lang=<?php echo $lang->lang_code; ?>">
 				<h2>
 					<img
-						src="<?php JUri::root(); ?>/media/mod_languages/images/<?php echo $lang->image; ?>.gif"/> <?php echo $lang->title_native; ?>
+						src="<?php echo JUri::root(); ?>/media/mod_languages/images/<?php echo $lang->image; ?>.gif"/> <?php echo $lang->title_native; ?>
 				</h2>
 			</a>
 		<?php endforeach; ?>
