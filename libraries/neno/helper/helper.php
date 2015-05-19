@@ -609,6 +609,10 @@ class NenoHelper
 				->setTables($tables)
 				->persist();
 		}
+		else
+		{
+			defined('NENO_INSTALLATION') ? NenoHelper::setSetupState(0, 'Content not detected on  ' . $group->getGroupName() . '. Skipping.', 1, 'warning') : '';
+		}
 
 		return true;
 	}
@@ -883,7 +887,7 @@ class NenoHelper
 				$tableData = array (
 					'tableName'  => $tableName,
 					'primaryKey' => $db->getPrimaryKey($tableName),
-					'translate'  => true,
+					'translate'  => self::isTranslatable($tableName),
 					'group'      => $group
 				);
 
@@ -957,6 +961,28 @@ class NenoHelper
 		return $result == 1;
 	}
 
+	/**
+	 * Check if a table is translatable
+	 *
+	 * @param   string $tableName Table name
+	 *
+	 * @return bool
+	 */
+	protected static function isTranslatable($tableName)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('COUNT(*) AS counter')
+			->from($db->quoteName($tableName));
+
+		$db->setQuery($query);
+		$counter = (int) $db->loadResult();
+
+		return $counter <= 500;
+	}
+
 	public static function getTranslationMethodsForLanguages()
 	{
 		$db    = JFactory::getDbo();
@@ -969,6 +995,69 @@ class NenoHelper
 		$db->setQuery($query);
 
 		return $db->loadObjectList();
+	}
+
+	/**
+	 * Set setup state
+	 *
+	 * @param   int    $percent Completed percent
+	 * @param   string $message Message
+	 * @param   int    $level   Level
+	 * @param   string $type    Message type
+	 *
+	 * @return void
+	 */
+	public static function setSetupState($percent, $message, $level = 1, $type = 'info')
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->insert('#__neno_installation_messages')
+			->columns(
+				array (
+					'message',
+					'type',
+					'percent',
+					'level'
+				)
+			)
+			->values($db->quote($message) . ',' . $db->quote($type) . ',' . (int) $percent . ',' . (int) $level);
+
+		$db->setQuery($query);
+		$db->execute();
+	}
+
+	/**
+	 * Get the latest message
+	 *
+	 * @return array|null
+	 */
+	public static function getSetupState()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->select('*')
+			->from('#__neno_installation_messages')
+			->where('fetched = 0')
+			->order('id ASC');
+		$db->setQuery($query);
+		$messages = $db->loadAssocList('id');
+
+		if (!empty($messages))
+		{
+			$query
+				->clear()
+				->update('#__neno_installation_messages')
+				->set('fetched = 1')
+				->where('id IN (' . implode(',', array_keys($messages)) . ')');
+			$db->setQuery($query);
+			$db->execute();
+			$messages = array_values($messages);
+		}
+
+		return $messages;
 	}
 
 	/**
@@ -1214,7 +1303,7 @@ class NenoHelper
 			}
 			$query->from($tableName);
 			$db->setQuery($query);
-			
+
 			$l = $db->loadAssoc();
 			arsort($l);
 			$main_field = key($l);
@@ -1231,7 +1320,6 @@ class NenoHelper
 		return trim($string);
 
 	}
-
 
 	/**
 	 * Read content element file(s) and create the content element hierarchy needed.
@@ -1329,7 +1417,6 @@ class NenoHelper
 
 	}
 
-
 	/**
 	 * Take an array of strings (enums) and parse them though JText and get the correct name
 	 * Then return as comma separated list
@@ -1350,7 +1437,6 @@ class NenoHelper
 
 		return implode(', ', $methods);
 	}
-
 
 	/**
 	 * Get client list in text/value format for a select field

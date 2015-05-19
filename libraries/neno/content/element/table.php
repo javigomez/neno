@@ -333,6 +333,7 @@ class NenoContentElementTable extends NenoContentElement
 	 */
 	public function persist()
 	{
+		defined('NENO_INSTALLATION') ? NenoHelper::setSetupState(0, 'Parsing ' . $this->group->getGroupName() . ' > ' . $this->getTableName(), 2) : '';
 		$result = parent::persist();
 
 		if ($result)
@@ -368,14 +369,47 @@ class NenoContentElementTable extends NenoContentElement
 				}
 			}
 
-			/* @var $field NenoContentElementField */
-			foreach ($this->fields as $field)
+			// Only persist tables that are translatable.
+			if ($this->translate)
 			{
-				$field->persistTranslations();
+				/* @var $field NenoContentElementField */
+				foreach ($this->fields as $field)
+				{
+					defined('NENO_INSTALLATION') ? NenoHelper::setSetupState(0, 'Parsing ' . $this->group->getGroupName() . ' > ' . $this->getTableName() . ' > ' . $field->getFieldName(), 3) : '';
+					$field->persistTranslations();
+				}
+			}
+			else
+			{
+				defined('NENO_INSTALLATION') ? NenoHelper::setSetupState(0, 'Skipped ' . $this->group->getGroupName() . '.' . $this->getTableName() . ' because it has more than 500 records. ', 2, 'error') : '';
 			}
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Get Table name
+	 *
+	 * @return string
+	 */
+	public function getTableName()
+	{
+		return $this->tableName;
+	}
+
+	/**
+	 * Set Table name
+	 *
+	 * @param   string $tableName Table name
+	 *
+	 * @return $this
+	 */
+	public function setTableName($tableName)
+	{
+		$this->tableName = $tableName;
+
+		return $this;
 	}
 
 	/**
@@ -433,30 +467,6 @@ class NenoContentElementTable extends NenoContentElement
 		$db->deleteShadowTables($this->getTableName());
 
 		return parent::remove();
-	}
-
-	/**
-	 * Get Table name
-	 *
-	 * @return string
-	 */
-	public function getTableName()
-	{
-		return $this->tableName;
-	}
-
-	/**
-	 * Set Table name
-	 *
-	 * @param   string $tableName Table name
-	 *
-	 * @return $this
-	 */
-	public function setTableName($tableName)
-	{
-		$this->tableName = $tableName;
-
-		return $this;
 	}
 
 	/**

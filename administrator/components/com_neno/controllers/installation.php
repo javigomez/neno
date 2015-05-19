@@ -152,18 +152,24 @@ class NenoControllerInstallation extends JControllerAdmin
 	 */
 	public function finishingSetup()
 	{
-		ini_set('max_execution_time', 600);
-		$this->setSetupState(0, 'Generating menus');
-		NenoHelper::createMenuStructure();
-		$this->setSetupState(10, 'Discover extensions');
-
+		define('NENO_INSTALLATION', 1);
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
+		// Clear all the previous messages
+		$query->delete('#__neno_installation_messages');
+		$db->setQuery($query);
+		$db->execute();
+
+		ini_set('max_execution_time', 600);
+		NenoHelper::setSetupState(0, 'Generating menus');
+		NenoHelper::createMenuStructure();
+		NenoHelper::setSetupState(10, 'Discovering extensions');
 		$extensions = $db->quote(NenoHelper::whichExtensionsShouldBeTranslated());
 
 		$query
+			->clear()
 			->select('e.*')
 			->from('`#__extensions` AS e')
 			->where(
@@ -181,14 +187,14 @@ class NenoControllerInstallation extends JControllerAdmin
 
 		foreach ($extensions as $extension)
 		{
-			$this->setSetupState($currentPercent, 'Parsing ' . $extension['name']);
+			NenoHelper::setSetupState($currentPercent, 'Parsing ' . $extension['name']);
 			NenoHelper::discoverExtension($extension);
 			$currentPercent = $currentPercent + $percentPerExtension;
 		}
 
-		$this->setSetupState(95, 'Parsing Other tables');
+		NenoHelper::setSetupState(95, 'Parsing Other tables');
 		NenoHelper::groupingTablesNotDiscovered();
-		$this->setSetupState(100, 'Installation completed');
+		NenoHelper::setSetupState(100, 'Installation completed');
 
 		$group = new NenoContentElementGroup(array ('group_name' => JText::_('COM_NENO_DO_NOT_TRANSLATE_GROUP_NAME')));
 		$group->persist();
@@ -216,28 +222,15 @@ class NenoControllerInstallation extends JControllerAdmin
 	}
 
 	/**
-	 * Set setup state
-	 *
-	 * @param   int    $percent Completed percent
-	 * @param   string $message
-	 *
-	 * @return void
-	 */
-	protected function setSetupState($percent, $message)
-	{
-		NenoSettings::set('setup_message', $message);
-		NenoSettings::set('setup_percent', $percent);
-	}
-
-	/**
 	 * Fetch setup status
 	 *
 	 * @return void
 	 */
 	public function getSetupStatus()
 	{
-		echo json_encode(array ('message' => NenoSettings::get('setup_message'), 'percent' => NenoSettings::get('setup_percent')));
-		exit;
+		$setupState = NenoHelper::getSetupState();
+		echo json_encode($setupState);
+		JFactory::getApplication()->close();
 	}
 
 	/**
