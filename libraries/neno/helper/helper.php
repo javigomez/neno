@@ -2164,6 +2164,8 @@ class NenoHelper
 	}
 
 	/**
+	 * Check if a language file is out of date
+	 *
 	 * @param string $languageTag Language Tag
 	 *
 	 * @return bool
@@ -2176,13 +2178,12 @@ class NenoHelper
 		$query
 			->select(
 				array (
-					'us.location',
+					'u.version',
 					'e.manifest_cache'
 				)
 			)
 			->from('#__extensions AS e')
-			->innerJoin('#__update_sites_extensions AS upe ON e.extension_id = upe.extension_id')
-			->innerJoin('#__update_sites AS us ON upe.update_site_id = us.update_site_id')
+			->innerJoin('#__updates AS u ON u.element = e.element')
 			->where('e.element = ' . $db->quote('pkg_' . $languageTag));
 
 		$db->setQuery($query);
@@ -2190,21 +2191,9 @@ class NenoHelper
 
 		if (!empty($extensionData))
 		{
-			$xml = file_get_contents($extensionData['location']);
+			$manifestCacheData = json_decode($extensionData['manifest_cache'], true);
 
-			if (!empty($xml))
-			{
-				$xml     = new SimpleXMLElement($xml);
-				$xpath   = 'extension[@element="pkg_' . $languageTag . '"]/@version';
-				$version = $xml->xpath($xpath);
-
-				if (!empty($version))
-				{
-					$manifestCacheData = json_decode($extensionData['manifest_cache'], true);
-
-					return version_compare((string) $version[0]->version, $manifestCacheData['version']) == 1;
-				}
-			}
+			return version_compare($extensionData['version'], $manifestCacheData['version']) == 1;
 		}
 
 		return false;
