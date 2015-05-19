@@ -396,10 +396,23 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		// Check if the user is trying to insert something in the front-end in different language
 		if ($this->getQueryType((string) $this->sql) === self::INSERT_QUERY
 			&& $language->getTag() !== NenoSettings::get('source_language')
-			&& $app->isSite() && !$this->isNenoSql((string) $this->sql))
+			&& $app->isSite() && !$this->isNenoSql((string) $this->sql)
+		)
 		{
-			$language->load('com_neno', JPATH_ADMINISTRATOR);
-			throw new Exception(JText::_('COM_NENO_CONTENT_IN_OTHER_LANGUAGES_ARE_NOT_ALLOWED'));
+			$tables = null;
+			preg_match('/insert into (\w+)/', $this->sql, $tables);
+
+			if (empty($tables))
+			{
+				/* @var $table NenoContentElementTable */
+				$table = NenoContentElementTable::load(array ('table_name' => $tables[1]));
+
+				if (!empty($table) && $table->isTranslate())
+				{
+					$language->load('com_neno', JPATH_ADMINISTRATOR);
+					throw new Exception(JText::_('COM_NENO_CONTENT_IN_OTHER_LANGUAGES_ARE_NOT_ALLOWED'));
+				}
+			}
 		}
 		else
 		{
@@ -412,10 +425,10 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 			catch (RuntimeException $ex)
 			{
 				NenoLog::log($ex->getMessage(), NenoLog::PRIORITY_ERROR);
-
-				return false;
 			}
 		}
+
+		return false;
 	}
 
 	/**
