@@ -34,11 +34,6 @@ class NenoViewSettings extends JViewLegacy
 	protected $sidebar;
 
 	/**
-	 * @var JPagination
-	 */
-	protected $pagination;
-
-	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template

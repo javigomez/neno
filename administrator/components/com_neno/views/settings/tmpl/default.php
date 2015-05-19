@@ -23,8 +23,6 @@ if (!empty($this->extra_sidebar))
 
 $user          = JFactory::getUser();
 $userId        = $user->get('id');
-$listOrder     = $this->state->get('list.ordering');
-$listDirection = $this->state->get('list.direction');
 ?>
 
 <script>
@@ -86,10 +84,10 @@ $listDirection = $this->state->get('list.direction');
 		<table class="table table-striped" id="typeList">
 			<tr>
 				<th class='left'>
-					<?php echo JHtml::_('grid.sort', 'COM_NENO_SETTINGS_KEY', 'a.setting_key', $listDirection, $listOrder); ?>
+					<?php echo JText::_('COM_NENO_SETTINGS_KEY'); ?>
 				</th>
 				<th class='left'>
-					<?php echo JHtml::_('grid.sort', 'COM_NENO_SETTINGS_VALUE', 'a.setting_value', $listDirection, $listOrder); ?>
+					<?php echo JText::_('COM_NENO_SETTINGS_VALUE'); ?>
 				</th>
 			</tr>
 			<?php foreach ($this->items as $i => $item) : ?>
@@ -128,17 +126,10 @@ $listDirection = $this->state->get('list.direction');
 					</td>
 				</tr>
 			<?php endforeach; ?>
-			<tr>
-				<td colspan="5">
-					<?php echo $this->pagination->getListFooter(); ?>
-				</td>
-			</tr>
 		</table>
 
 		<input type="hidden" name="task" value=""/>
 		<input type="hidden" name="boxchecked" value="0"/>
-		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>"/>
-		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirection; ?>"/>
 		<?php echo JHtml::_('form.token'); ?>
 
 	</div>

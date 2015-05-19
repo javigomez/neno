@@ -47,6 +47,7 @@ class NenoModelSettings extends JModelList
 	 */
 	public function getItems()
 	{
+		$this->setState('list.limit', 0);
 		$items = parent::getItems();
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
