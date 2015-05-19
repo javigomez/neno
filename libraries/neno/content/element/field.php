@@ -288,7 +288,7 @@ class NenoContentElementField extends NenoContentElement
 	/**
 	 * Persist all the translations
 	 *
-	 * @param   int|null $recordId Record id to just load that row
+	 * @param   array|null $recordId Record id to just load that row
 	 *
 	 * @return void
 	 */
@@ -415,7 +415,7 @@ class NenoContentElementField extends NenoContentElement
 	/**
 	 * Get all the strings related to this field
 	 *
-	 * @param   int|null $recordId Record id to just load that row
+	 * @param   array|null $recordId Record id to just load that row
 	 *
 	 * @return array
 	 */

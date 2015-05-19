@@ -93,6 +93,15 @@ class PlgSystemNeno extends JPlugin
 		}
 	}
 
+	/**
+	 * This method will be executed once the content is save
+	 *
+	 * @param   string $context Save context
+	 * @param   JTable $content JTable class of the content
+	 * @param   bool   $isNew   If the record is new or not
+	 *
+	 * @return void
+	 */
 	public function onContentAfterSave($context, JTable $content, $isNew)
 	{
 		/* @var $db NenoDatabaseDriverMysqlx */
@@ -100,11 +109,11 @@ class PlgSystemNeno extends JPlugin
 		$tableName = $content->getTableName();
 
 		/* @var $table NenoContentElementTable */
-		$table = NenoContentElementTable::load(array ('table_name' => $tableName));
+		$table = NenoContentElementTable::load(array ('table_name' => $tableName), false);
 
 		if (!empty($table))
 		{
-			$fields = $table->getFields();
+			$fields = $table->getFields(false, true);
 
 			/* @var $field NenoContentElementField */
 			foreach ($fields as $field)
