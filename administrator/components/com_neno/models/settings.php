@@ -97,7 +97,14 @@ class NenoModelSettings extends JModelList
 
 					$item->dropdown = JHtml::_('select.genericlist', $values, $item->setting_key, null, 'value', 'text', $item->setting_value, false, true);
 					break;
-
+				case 'default_translate_action':
+					$values         = array (
+						array ('value' => '0', 'text' => 'COM_NENO_SETTINGS_SETTING_OPTION_DEFAULT_TRANSLATE_ACTION_NO'),
+						array ('value' => '1', 'text' => 'COM_NENO_SETTINGS_SETTING_OPTION_DEFAULT_TRANSLATE_ACTION_COPY'),
+						array ('value' => '2', 'text' => 'COM_NENO_SETTINGS_SETTING_OPTION_DEFAULT_TRANSLATE_ACTION_TRANSLATE'),
+					);
+					$item->dropdown = JHtml::_('select.genericlist', $values, $item->setting_key, null, 'value', 'text', $item->setting_value, false, true);
+					break;
 			}
 		}
 

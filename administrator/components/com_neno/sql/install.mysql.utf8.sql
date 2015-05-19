@@ -16,12 +16,11 @@ CREATE TABLE IF NOT EXISTS `#__neno_machine_translation_apis` (
 --
 
 CREATE TABLE IF NOT EXISTS `#__neno_settings` (
-  `id`                   INT(11)      NOT NULL AUTO_INCREMENT,
-  `setting_key`          VARCHAR(150) NOT NULL,
-  `setting_value`        VARCHAR(255) NOT NULL,
-  `read_only`            TINYINT(1)   NOT NULL DEFAULT '0',
-  `show_settings_screen` TINYINT(1)   NOT NULL,
-  PRIMARY KEY (`id`),
+  `id`            INT(11)      NOT NULL AUTO_INCREMENT,
+  `setting_key`   VARCHAR(150) NOT NULL,
+  `setting_value` VARCHAR(255) NOT NULL,
+  `read_only`     TINYINT(1)   NOT NULL DEFAULT '0'
+    PRIMARY KEY (`id`),
   UNIQUE KEY `setting_key_UNIQUE` (`setting_key`)
 )
   ENGINE = InnoDB
@@ -358,13 +357,13 @@ INSERT IGNORE INTO `#__neno_translation_methods`
 VALUES (1, 'COM_NENO_TRANSLATION_METHOD_MANUAL', '0', 0), (2, 'COM_NENO_TRANSLATION_METHOD_MACHINE', '1,3', 1),
   (3, 'COM_NENO_TRANSLATION_METHOD_PROFESSIONAL', '0', 200);
 
-INSERT IGNORE INTO `#__neno_settings` VALUES (1, 'translate_automatically_professional', '0', 0, 0),
-  (2, 'translate_automatically_machine', '1', 0, 0),
-  (3, 'api_server_url', 'http://localhost/neno-translate/api/v1/', 1, 0),
-  (4, 'license_code', '', 0, 1), (5, 'translator', '', 0, 1),
-  (6, 'translator_api_key', '', 0, 1),
-  (7, 'source_language', 'en-GB', 0, 1), (8, 'schedule_task_option', 'ajax', 0, 1),
-  (9, 'hide_empty_strings', '1', 0, 1), (10, 'installation_completed', '0', 0, 0);
+INSERT IGNORE INTO `#__neno_settings` VALUES (1, 'translate_automatically_professional', '0', 0),
+  (2, 'translate_automatically_machine', '1', 0),
+  (3, 'api_server_url', 'http://localhost/neno-translate/api/v1/', 1),
+  (4, 'license_code', '', 0), (5, 'translator', '', 0),
+  (6, 'translator_api_key', '', 0),
+  (7, 'source_language', 'en-GB', 0), (8, 'schedule_task_option', 'ajax', 0),
+  (9, 'hide_empty_strings', '1', 0), (10, 'installation_completed', '0', 0), (11, 'default_translate_action', '0', 0);
 
 INSERT IGNORE INTO `#__neno_machine_translation_api_language_pairs`
 VALUES (1, 1, 'af', 'ar'), (2, 1, 'af', 'az'), (3, 1, 'af', 'be'), (4, 1, 'af', 'bg'), (5, 1, 'af', 'bn'),
