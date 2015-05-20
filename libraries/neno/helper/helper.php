@@ -989,7 +989,13 @@ class NenoHelper
 		$query = $db->getQuery(true);
 
 		$query
-			->select('*')
+			->select(
+				array(
+					'lang',
+					'translation_method_id',
+					'ordering'
+				)
+			)
 			->from('#__neno_content_language_defaults');
 
 		$db->setQuery($query);
