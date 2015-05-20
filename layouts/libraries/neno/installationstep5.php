@@ -9,15 +9,22 @@ JHtml::_('bootstrap.tooltip');
 <style>
 	#task-messages {
 		height: 500px;
-		overflow: scroll;
+		overflow: auto;
+        background-color: #f5f5f5;
+        padding: 20px;
+        color: #808080;
 	}
 
-	.alert-level-2 {
-		margin-left: 10px;;
+
+    
+	.log-level-2 {
+		margin-left: 20px;
+        font-weight: bold;
+        margin-top: 16px;
 	}
 
-	.alert-level-3 {
-		margin-left: 20px;;
+	.log-level-3 {
+		margin-left: 40px;
 	}
 </style>
 
@@ -29,11 +36,11 @@ JHtml::_('bootstrap.tooltip');
 		<div class="progress progress-striped active" id="progress-bar">
 			<div class="bar" style="width: 0%;"></div>
 		</div>
+		<p><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_FINISH_SETUP_MESSAGE'); ?></p>
 
 		<div id="task-messages">
 
 		</div>
-		<p><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_FINISH_SETUP_MESSAGE'); ?></p>
 	</div>
 
 	<?php echo JLayoutHelper::render('installationbottom', 4, JPATH_NENO_LAYOUTS); ?>
@@ -57,7 +64,18 @@ JHtml::_('bootstrap.tooltip');
 			dataType: 'json',
 			success: function (data) {
 				for (var i = 0; i < data.length; i++) {
-					jQuery('#task-messages').append('<div class="alert alert-level-' + data[i].level + ' alert-' + data[i].type + '">' + data[i].message + '</div>');
+                    var log_line = jQuery('#installation-status-' + data[i].level).clone().removeAttr('id').html(data[i].message);
+                    if (data[i].level == 1) {
+                        log_line.addClass('alert-' + data[i].type);
+                    }
+					jQuery('#task-messages').append(log_line);
+                    
+                    //Scroll to bottom
+                    jQuery("#task-messages").stop().animate({
+                        scrollTop:jQuery("#task-messages")[0].scrollHeight - jQuery("#task-messages").height()
+                    },400);               
+                    
+					//jQuery('#task-messages').append('<div class="alert alert-level-' + data[i].level + ' alert-' + data[i].type + '">' + data[i].message + '</div>');
 				}
 
 				if (data[data.length - 1].percent != 0) {
@@ -69,3 +87,10 @@ JHtml::_('bootstrap.tooltip');
 
 
 </script>
+
+<div class="hidden">
+    <!-- Different HTML to show depending on log level -->
+    <div id="installation-status-1" class="alert"></div>
+    <div id="installation-status-2" class="log-level-2"></div>
+    <div id="installation-status-3" class="log-level-3"></div>
+</div>
