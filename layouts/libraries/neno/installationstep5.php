@@ -59,7 +59,10 @@ JHtml::_('bootstrap.tooltip');
 				for (var i = 0; i < data.length; i++) {
 					jQuery('#task-messages').append('<div class="alert alert-level-' + data[i].level + ' alert-' + data[i].type + '">' + data[i].message + '</div>');
 				}
-				jQuery('#progress-bar .bar').width(data[data.length - 1].percent + '%');
+
+				if (data[data.length - 1].percent != 0) {
+					jQuery('#progress-bar .bar').width(data[data.length - 1].percent + '%');
+				}
 			}
 		});
 	}
