@@ -56,12 +56,14 @@ JHtml::_('bootstrap.tooltip');
 			url: 'index.php?option=com_neno&task=installation.getSetupStatus',
 			dataType: 'json',
 			success: function (data) {
+				var percent = 0;
 				for (var i = 0; i < data.length; i++) {
+					percent = data[i].percent;
 					jQuery('#task-messages').append('<div class="alert alert-level-' + data[i].level + ' alert-' + data[i].type + '">' + data[i].message + '</div>');
 				}
 
-				if (data[data.length - 1].percent != 0) {
-					jQuery('#progress-bar .bar').width(data[data.length - 1].percent + '%');
+				if (percent != 0) {
+					jQuery('#progress-bar .bar').width(percent + '%');
 				}
 			}
 		});
