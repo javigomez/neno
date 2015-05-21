@@ -35,7 +35,7 @@ abstract class NenoTranslateApi extends JHttp
 			// Try to load the adapter object
 			$class = 'NenoTranslateApi' . ucfirst($apiName);
 
-			if (!class_exists($class))
+			if (!class_exists($class) || empty($apiName))
 			{
 				throw new UnexpectedValueException('Unable to load api', 500);
 			}

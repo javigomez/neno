@@ -86,7 +86,8 @@ $translation = $displayData;
 			</div>
 			<div class="clearfix"></div>
 			<div>
-				<button id="translate-btn" class="btn btn-big" type="button">
+				<button id="translate-btn" class="btn btn-big"
+				        type="button" <?php echo (NenoSettings::get('translator') == '' || NenoSettings::get('translator_api_key') == '') ? 'disabled' : ''; ?>>
 					<span class="icon-screen big-icon"></span>
 					<span class="normal-text big-line-height">
 						<?php echo JText::_('COM_NENO_EDITOR_COPY_AND_TRANSLATE_BUTTON'); ?>
@@ -96,7 +97,9 @@ $translation = $displayData;
 			<span class="icon-grey icon-arrow-right-2"></span>
 		</div>
 		<div class="span5 pull-right">
-			<textarea class="full-width translated-content"><?php echo !empty($translation) && ($translation->state != NenoContentElementTranslation::NOT_TRANSLATED_STATE || $translation->string !== $translation->original_text) ? $translation->string : ''; ?></textarea>
+			<textarea
+				class="full-width translated-content"><?php echo !empty($translation) && ($translation->state != NenoContentElementTranslation::NOT_TRANSLATED_STATE || $translation->string !== $translation->original_text) ? $translation->string : ''; ?></textarea>
+
 			<div class="clearfix"></div>
 			<div class="pull-left translated-by">
 				<?php echo JText::sprintf('COM_NENO_EDITOR_TRANSLATED_BY', NenoSettings::get('translator')); ?>
