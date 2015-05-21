@@ -133,7 +133,7 @@ class NenoModelGroupElement extends JModelAdmin
 				$db->execute();
 			}
 
-			NenoHelper::consolidateTranslationMethods($groupId);
+			NenoHelper::consolidateTranslationMethods($groupId, empty($data['translation_methods']) || $data['translation_methods'][0] == 0);
 
 			return true;
 		}
