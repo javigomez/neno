@@ -11,7 +11,7 @@
 // No direct access
 defined('JPATH_NENO') or die;
 
-require_once JPATH_LIBRARIES.'/neno/helper/data.php';
+require_once JPATH_LIBRARIES . '/neno/helper/data.php';
 
 /**
  * Neno helper.
@@ -249,7 +249,7 @@ class NenoHelper
 	public static function getTargetLanguages($published = true)
 	{
 		// Load all published languages
-		$languages       = self::getLanguages($published);
+		$languages       = JFactory::getLanguage()->getKnownLanguages();
 		$defaultLanguage = NenoSettings::get('source_language');
 
 		// Create a simple array
@@ -265,42 +265,6 @@ class NenoHelper
 		}
 
 		return $arr;
-	}
-
-	/**
-	 * Load all published languages on the site
-	 *
-	 * @param   boolean $published Weather or not only the published language should be loaded
-	 *
-	 * @return array objectList
-	 */
-	public static function getLanguages($published = true)
-	{
-		$cacheId   = NenoCache::getCacheId(__FUNCTION__, func_get_args());
-		$cacheData = NenoCache::getCacheData($cacheId);
-
-		if ($cacheData === null)
-		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
-
-			$query
-				->select('*')
-				->from('#__languages')
-				->order('ordering');
-
-			if ($published)
-			{
-				$query->where('published = 1');
-			}
-
-			$db->setQuery($query);
-			$rows      = $db->loadObjectList('lang_code');
-			$cacheData = $rows;
-			NenoCache::setCacheData($cacheId, $cacheData);
-		}
-
-		return $cacheData;
 	}
 
 	/**
@@ -1256,7 +1220,6 @@ class NenoHelper
 		return $result == 1;
 	}
 
-
 	/**
 	 * Read content element file(s) and create the content element hierarchy needed.
 	 *
@@ -2054,6 +2017,42 @@ class NenoHelper
 		// Once we finish restructuring menus, let's rebuild them
 		$menuTable = new JTableMenu($db);
 		$menuTable->rebuild();
+	}
+
+	/**
+	 * Load all published languages on the site
+	 *
+	 * @param   boolean $published Weather or not only the published language should be loaded
+	 *
+	 * @return array objectList
+	 */
+	public static function getLanguages($published = true)
+	{
+		$cacheId   = NenoCache::getCacheId(__FUNCTION__, func_get_args());
+		$cacheData = NenoCache::getCacheData($cacheId);
+
+		if ($cacheData === null)
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query
+				->select('*')
+				->from('#__languages')
+				->order('ordering');
+
+			if ($published)
+			{
+				$query->where('published = 1');
+			}
+
+			$db->setQuery($query);
+			$rows      = $db->loadObjectList('lang_code');
+			$cacheData = $rows;
+			NenoCache::setCacheData($cacheId, $cacheData);
+		}
+
+		return $cacheData;
 	}
 
 	/**

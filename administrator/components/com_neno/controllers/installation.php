@@ -121,10 +121,7 @@ class NenoControllerInstallation extends JControllerAdmin
 
 		if ($moveForward)
 		{
-			if (NenoSettings::set('installation_status', $step + 1))
-			{
-				echo 'jla';
-			}
+			NenoSettings::set('installation_status', $step + 1);
 		}
 		else
 		{
@@ -341,9 +338,12 @@ class NenoControllerInstallation extends JControllerAdmin
 				// Set installation as completed
 				NenoSettings::set('installation_completed', 1);
 				$finished = true;
-
-				echo 'ok';
 			}
+		}
+
+		if ($finished)
+		{
+			echo 'ok';
 		}
 
 		JFactory::getApplication()->close();
