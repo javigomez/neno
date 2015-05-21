@@ -186,7 +186,7 @@ class PlgSystemNeno extends JPlugin
 				{
 					$shadowTable = $db->generateShadowTableName($tableName, $language->lang_code);
 					$properties  = $content->getProperties();
-					$query       = 'REPLACE INTO ' . $db->quoteName($shadowTable) . ' ' . implode(',', $db->quoteName(array_keys($properties))) . ' VALUES(' . $db->quote($properties) . ')';
+					$query       = 'REPLACE INTO ' . $db->quoteName($shadowTable) . ' (' . implode(',', $db->quoteName(array_keys($properties))) . ') VALUES(' . implode(',', $db->quote($properties)) . ')';
 					$db->setQuery($query);
 					$db->execute();
 				}
