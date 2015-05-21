@@ -92,7 +92,10 @@ class PlgSystemNeno extends JPlugin
 		$db->setQuery($query);
 		$extensionData = $db->loadAssoc();
 
-		NenoHelper::discoverExtension($extensionData);
+		if (!empty($extensionData))
+		{
+			NenoHelper::discoverExtension($extensionData);
+		}
 	}
 
 	/**
@@ -116,7 +119,10 @@ class PlgSystemNeno extends JPlugin
 		$db->setQuery($query);
 		$extensionData = $db->loadAssoc();
 
-		NenoHelper::discoverExtension($extensionData);
+		if (!empty($extensionData))
+		{
+			NenoHelper::discoverExtension($extensionData);
+		}
 	}
 
 	/**
