@@ -2675,7 +2675,10 @@ class NenoHelper
 				)
 			)
 			->from('#__updates AS u')
-			->where('u.update_site_id = ' . (int) $updateSiteId)
+			->where(
+				array ('u.update_site_id = ' . (int) $updateSiteId),
+				'REPLACE(element, \'pkg_\', \'\') NOT IN(' . implode(',', $db->quote(array_keys(JFactory::getLanguage()->getKnownLanguages()))) . ')'
+			)
 			->group('u.element');
 
 		$db->setQuery($query);
