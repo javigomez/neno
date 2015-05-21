@@ -165,7 +165,12 @@ class NenoContentElementTable extends NenoContentElement
 					$db->quote('db_string') .
 					' AND tr.language LIKE ' . $db->quote($workingLanguage)
 				)
-				->where('f.table_id = ' . $this->getId())
+				->where(
+					array (
+						'f.table_id = ' . $this->getId(),
+						'f.translate = 1'
+					)
+				)
 				->group('tr.state');
 
 			$db->setQuery($query);
@@ -309,8 +314,15 @@ class NenoContentElementTable extends NenoContentElement
 	 */
 	public function persist()
 	{
-		defined('NENO_INSTALLATION') ? NenoHelper::setSetupState(0, 'Parsing ' . $this->group->getGroupName() . ' > ' . $this->getTableName(), 2) : '';
 		$result = parent::persist();
+
+		if (defined('NENO_INSTALLATION'))
+		{
+			NenoHelper::setSetupState(
+				0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getTableName()), 2
+			);
+			NenoSettings::set('discovering_table', $this->id);
+		}
 
 		if ($result)
 		{
@@ -353,14 +365,38 @@ class NenoContentElementTable extends NenoContentElement
 				/* @var $field NenoContentElementField */
 				foreach ($this->fields as $field)
 				{
-					defined('NENO_INSTALLATION') ? NenoHelper::setSetupState(0, 'Parsing ' . $this->group->getGroupName() . ' > ' . $this->getTableName() . ' > ' . $field->getFieldName(), 3) : '';
+					if (defined('NENO_INSTALLATION'))
+					{
+						NenoHelper::setSetupState(
+							0,
+							JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD', $this->group->getGroupName(), $this->getTableName(), $field->getFieldName()),
+							3
+						);
+						NenoSettings::set('discovering_field', $field->id);
+					}
+
 					$field->persistTranslations();
+
+					if (defined('NENO_INSTALLATION'))
+					{
+						NenoSettings::set('discovering_field', null);
+					}
 				}
 			}
 			else
 			{
-				defined('NENO_INSTALLATION') ? NenoHelper::setSetupState(0, 'Skipped ' . $this->group->getGroupName() . '.' . $this->getTableName() . ' because it has more than 500 records. ', 2, 'error') : '';
+				if (defined('NENO_INSTALLATION'))
+				{
+					NenoHelper::setSetupState(
+						0, JText::_('COM_NENO_INSTALLATION_MESSAGE_TABLE_TOO_MANY_RECORDS', $this->group->getGroupName(), $this->getTableName()), 2, 'error'
+					);
+				}
 			}
+		}
+
+		if (defined('NENO_INSTALLATION'))
+		{
+			NenoSettings::set('discovering_table', null);
 		}
 
 		return $result;

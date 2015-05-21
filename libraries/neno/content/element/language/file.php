@@ -296,6 +296,14 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	{
 		if (parent::persist())
 		{
+			if (defined('NENO_INSTALLATION'))
+			{
+				NenoSettings::set('discovering_languagefile', $this->id);
+				NenoHelper::setSetupState(
+					0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getFilename()), 2
+				);
+			}
+
 			if (!empty($this->languageStrings))
 			{
 				/* @var $languageString NenoContentElementLanguageString */
@@ -305,6 +313,11 @@ class NenoContentElementLanguageFile extends NenoContentElement
 						->setLanguageFile($this)
 						->persist();
 				}
+			}
+
+			if (defined('NENO_INSTALLATION'))
+			{
+				NenoSettings::set('discovering_languagefile', null);
 			}
 		}
 

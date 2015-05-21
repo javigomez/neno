@@ -89,7 +89,22 @@ class NenoSettings
 			{
 				self::$settings[$settingName]['value']     = $settingValue;
 				self::$settings[$settingName]['read_only'] = $readOnly;
-				$refresh                                   = true;
+
+				if ($settingValue === null)
+				{
+					$db    = JFactory::getDbo();
+					$query = $db->getQuery(true);
+					$query
+						->delete('#__neno_settings')
+						->where('setting_key = ' . $db->quote($settingName));
+					$db->setQuery($query);
+					$db->execute();
+					self::loadSettingsFromDb();
+				}
+				else
+				{
+					return self::saveSettingsToDb();
+				}
 			}
 		}
 
@@ -106,25 +121,36 @@ class NenoSettings
 	 *
 	 * @return bool
 	 */
-	private static function saveSettingsToDb()
+	private static function saveSettingsToDb($setting = null)
 	{
 		$db = JFactory::getDbo();
 
 		/* @var $query NenoDatabaseQueryMysqli */
 		$query = $db->getQuery(true);
-		$query
-			->replace('#__neno_settings')
-			->columns(
-				array (
-					'setting_key',
-					'setting_value',
-					'read_only'
-				)
-			);
 
-		foreach (self::$settings as $settingName => $settingData)
+		if ($setting === null)
 		{
-			$query->values($db->quote($settingName) . ',' . $db->quote($settingData['value']) . ',' . $db->quote($settingData['read_only']));
+			$query
+				->replace('#__neno_settings')
+				->columns(
+					array (
+						'setting_key',
+						'setting_value',
+						'read_only'
+					)
+				);
+
+			foreach (self::$settings as $settingName => $settingData)
+			{
+				$query->values($db->quote($settingName) . ',' . $db->quote($settingData['value']) . ',' . $db->quote($settingData['read_only']));
+			}
+		}
+		else
+		{
+			$query
+				->update('#__neno_settings')
+				->set('setting_value = ' . $db->quote(self::$settings[$setting]['value']))
+				->where('setting_key = ' . $db->quote($setting));
 		}
 
 		$db->setQuery($query);

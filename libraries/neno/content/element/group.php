@@ -202,7 +202,13 @@ class NenoContentElementGroup extends NenoContentElement
 				->from('#__neno_content_element_tables AS t')
 				->innerJoin('#__neno_content_element_fields AS f ON f.table_id = t.id')
 				->innerJoin('#__neno_content_element_translations AS tr  ON tr.content_id = f.id AND tr.content_type = ' . $db->quote('db_string') . ' AND tr.language LIKE ' . $db->quote($workingLanguage))
-				->where('t.group_id = ' . $this->getId())
+				->where(
+					array (
+						't.group_id = ' . $this->getId(),
+						't.translate = 1',
+						'f.translate = 1'
+					)
+				)
 				->group('tr.state');
 
 			$db->setQuery($query);
@@ -424,7 +430,13 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function persist()
 	{
+		NenoHelper::setSetupState(0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP', $this->groupName));
 		$result = parent::persist();
+
+		if (defined('NENO_INSTALLATION'))
+		{
+			NenoSettings::set('discovering_group', $this->id);
+		}
 
 		// Check if the saving process has been completed successfully
 		if ($result)
@@ -529,6 +541,11 @@ class NenoContentElementGroup extends NenoContentElement
 					$table->persist();
 				}
 			}
+		}
+
+		if (defined('NENO_INSTALLATION'))
+		{
+			NenoSettings::set('discovering_group', null);
 		}
 
 		$this->setContentElementIntoCache();

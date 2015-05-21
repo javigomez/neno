@@ -54,12 +54,15 @@ class NenoContentElementLanguageString extends NenoContentElement
 	/**
 	 * Constructor
 	 *
-	 * @param   mixed $data Language string data
+	 * @param   mixed $data          Language string data
+	 * @param   bool  $loadExtraData If extra data should be loaded
+	 * @param   bool  $loadParent    If the parent should be loaded
 	 */
-	public function __construct($data)
+	public function __construct($data, $loadExtraData = false, $loadParent = false)
 	{
 		parent::__construct($data);
 		$this->translations = null;
+		$data               = (array) $data;
 
 		if ($this->isNew())
 		{
@@ -72,54 +75,11 @@ class NenoContentElementLanguageString extends NenoContentElement
 				$this->timeAdded = new DateTime($this->timeAdded);
 			}
 		}
-	}
 
-	/**
-	 * Get the constant that identifies the string
-	 *
-	 * @return string
-	 */
-	public function getConstant()
-	{
-		return $this->constant;
-	}
-
-	/**
-	 * Set the constant that identifies the string
-	 *
-	 * @param   string $constant Constant
-	 *
-	 * @return $this
-	 */
-	public function setConstant($constant)
-	{
-		$this->constant = $constant;
-
-		return $this;
-	}
-
-	/**
-	 * Get group
-	 *
-	 * @return NenoContentElementGroup
-	 */
-	public function getLanguageFile()
-	{
-		return $this->languageFile;
-	}
-
-	/**
-	 * Set group
-	 *
-	 * @param   NenoContentElementLanguageFile $languageFile Language file
-	 *
-	 * @return $this
-	 */
-	public function setLanguageFile(NenoContentElementLanguageFile $languageFile)
-	{
-		$this->languageFile = $languageFile;
-
-		return $this;
+		if ($loadParent)
+		{
+			$this->languageFile = NenoContentElementLanguageFile::load($data['languagefileId'], $loadExtraData, $loadParent);
+		}
 	}
 
 	/**
@@ -229,6 +189,16 @@ class NenoContentElementLanguageString extends NenoContentElement
 	{
 		$persistResult = parent::persist();
 
+		if (defined('NENO_INSTALLATION'))
+		{
+			NenoHelper::setSetupState(
+				0,
+				JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD', $this->getLanguageFile()->getGroup()->getGroupName(), $this->getLanguageFile()->getFilename(), $this->getConstant()),
+				3
+			);
+			NenoSettings::set('discovering_languagestring', $this->id);
+		}
+
 		if ($persistResult)
 		{
 			// If it doesn't have translations
@@ -302,7 +272,60 @@ class NenoContentElementLanguageString extends NenoContentElement
 			}
 		}
 
+		if (defined('NENO_INSTALLATION'))
+		{
+			NenoSettings::set('discovering_languagestring', null);
+		}
+
 		return $persistResult;
+	}
+
+	/**
+	 * Get language file
+	 *
+	 * @return NenoContentElementLanguagefile
+	 */
+	public function getLanguageFile()
+	{
+		return $this->languageFile;
+	}
+
+	/**
+	 * Set group
+	 *
+	 * @param   NenoContentElementLanguageFile $languageFile Language file
+	 *
+	 * @return $this
+	 */
+	public function setLanguageFile(NenoContentElementLanguageFile $languageFile)
+	{
+		$this->languageFile = $languageFile;
+
+		return $this;
+	}
+
+	/**
+	 * Get the constant that identifies the string
+	 *
+	 * @return string
+	 */
+	public function getConstant()
+	{
+		return $this->constant;
+	}
+
+	/**
+	 * Set the constant that identifies the string
+	 *
+	 * @param   string $constant Constant
+	 *
+	 * @return $this
+	 */
+	public function setConstant($constant)
+	{
+		$this->constant = $constant;
+
+		return $this;
 	}
 
 	/**

@@ -611,8 +611,14 @@ class NenoHelper
 		}
 		else
 		{
-			defined('NENO_INSTALLATION') ? NenoHelper::setSetupState(0, 'Content not detected on  ' . $group->getGroupName() . '. Skipping.', 1, 'warning') : '';
+			$group->persist();
+
+			if (defined('NENO_INSTALLATION'))
+			{
+				self::setSetupState(0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_CONTENT_NOT_DETECTED', $group->getGroupName()), 1, 'warning');
+			}
 		}
+
 
 		return true;
 	}
@@ -990,7 +996,7 @@ class NenoHelper
 
 		$query
 			->select(
-				array(
+				array (
 					'lang',
 					'translation_method_id',
 					'ordering'
@@ -1521,7 +1527,13 @@ class NenoHelper
 
 			$query
 				->select('g.id')
-				->from('`#__neno_content_element_groups` AS g');
+				->from('`#__neno_content_element_groups` AS g')
+				->where(
+					array (
+						'EXISTS (SELECT 1 FROM #__neno_content_element_tables AS t WHERE t.group_id = g.id)',
+						'EXISTS (SELECT 1 FROM #__neno_content_element_language_files AS lf WHERE lf.group_id = g.id)',
+					)
+					, 'OR');
 
 			$db->setQuery($query);
 			$groups = $db->loadObjectList();
