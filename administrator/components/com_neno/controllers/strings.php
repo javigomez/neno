@@ -37,7 +37,7 @@ class NenoControllerStrings extends JControllerAdmin
 		$filterMethods  = array ();
 		$filterStatus   = array ();
 		$outputLayout   = strtolower($input->getString('outputLayout'));
-		$filterSearch   = strtolower($input->getString('filter_search'));
+		$filterSearch   = strtolower($input->get('filter_search', '', 'RAW'));
 		$app            = JFactory::getApplication();
 
 		NenoLog::log('Processing filtered json data for getStrings', 3);

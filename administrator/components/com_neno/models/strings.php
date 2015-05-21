@@ -96,7 +96,7 @@ class NenoModelStrings extends JModelList
 			$app->setUserState($this->context . '.filter.elements', array ());
 		}
 
-		$search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '', 'string');
+		$search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '', 'raw');
 
 		if (!empty($search))
 		{
