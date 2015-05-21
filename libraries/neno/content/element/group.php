@@ -254,7 +254,7 @@ class NenoContentElementGroup extends NenoContentElement
 		$query = $db->getQuery(true);
 
 		$query
-			->select('tm.*')
+			->select('DISTINCT tm.*')
 			->from('#__neno_content_element_groups_x_translation_methods AS gt')
 			->innerJoin('#__neno_translation_methods AS tm ON gt.translation_method_id = tm.id')
 			->where(

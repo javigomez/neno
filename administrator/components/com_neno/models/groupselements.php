@@ -49,21 +49,6 @@ class NenoModelGroupsElements extends JModelList
 	}
 
 	/**
-	 * Get all the existing tables in the database
-	 *
-	 * @param   string|null $type Extension type or null no filter will be applied.
-	 *
-	 * @return array
-	 */
-	public function getExtensionsByType($type = null)
-	{
-		$this->setState('extension.type', $type);
-		$extensions = $this->getItems();
-
-		return $extensions;
-	}
-
-	/**
 	 * {@inheritdoc}
 	 *
 	 * @return array
