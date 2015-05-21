@@ -1,6 +1,7 @@
 UPDATE `#__extensions`
 SET `enabled` = 0
 WHERE `type` = 'plugin' AND `folder` = 'system' AND element = 'neno';
+DROP TABLE IF EXISTS `#__neno_installation_messages`;
 DROP TABLE IF EXISTS `#__neno_content_element_groups_x_extensions`;
 DROP TABLE IF EXISTS `#__neno_content_element_fields_x_translations`;
 DROP TABLE IF EXISTS `#__neno_machine_translation_api_language_pairs`;

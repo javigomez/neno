@@ -11,6 +11,20 @@ CREATE TABLE IF NOT EXISTS `#__neno_machine_translation_apis` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
+CREATE TABLE IF NOT EXISTS `#__neno_installation_messages` (
+  `id`      INT(11)     NOT NULL AUTO_INCREMENT,
+  `message` TEXT        NOT NULL,
+  `type`    VARCHAR(50) NOT NULL,
+  `percent` INT(11)     NOT NULL,
+  `level`   SMALLINT(6) NOT NULL,
+  `fetched` TINYINT(1)  NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `level` (`level`, `fetched`),
+  KEY `fetched` (`fetched`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
 --
 -- Table structure for table `#__neno_settings`
 --
@@ -123,6 +137,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups_x_translation_methods
   `translation_method_id` INT(11)    NOT NULL,
   `ordering`              TINYINT(1) NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `group_id` (`group_id`,`lang`,`translation_method_id`,`ordering`),
   KEY `content_elements_preset_group_idx` (`group_id`),
   KEY `fk_preset_idx` (`translation_method_id`),
   CONSTRAINT `fk_preset` FOREIGN KEY (`translation_method_id`) REFERENCES `#__neno_translation_methods` (`id`)
@@ -211,7 +226,9 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_language_strings` (
   `time_changed`    DATETIME     NOT NULL,
   `time_deleted`    DATETIME     NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `languagefile_id` (`languagefile_id`, `constant`),
   KEY `fk_#__neno_content_element_idx` (`languagefile_id`),
+  KEY `constant` (`constant`),
   CONSTRAINT `fk_#__neno_content_element_l1` FOREIGN KEY (`languagefile_id`) REFERENCES `#__neno_content_element_language_files` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
