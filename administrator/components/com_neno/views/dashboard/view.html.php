@@ -34,6 +34,11 @@ class NenoViewDashboard extends JViewLegacy
 	protected $sidebar;
 
 	/**
+	 * @var bool
+	 */
+	protected $canInstallLanguages;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -46,8 +51,9 @@ class NenoViewDashboard extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->state = $this->get('State');
-		$this->items = $this->get('Items');
+		$this->state               = $this->get('State');
+		$this->items               = $this->get('Items');
+		$this->canInstallLanguages = $this->get('IsPossibleToInstallLanguage');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))

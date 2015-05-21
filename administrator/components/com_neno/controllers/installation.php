@@ -88,7 +88,14 @@ class NenoControllerInstallation extends JControllerAdmin
 					}
 				}
 
-				$data->languages = $languagesData;
+				$data->languages           = $languagesData;
+				$data->canInstallLanguages = true;
+				$memoryDetails             = NenoHelper::getMemoryDetails();
+
+				if (!empty($memoryDetails))
+				{
+					$data->canInstallLanguages = $memoryDetails['free_space'] == 0 || $memoryDetails['free_space'] > $memoryDetails['current_data_space'];
+				}
 
 				break;
 			case 5:
