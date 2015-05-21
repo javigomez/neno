@@ -992,12 +992,13 @@ class NenoHelper
 		$query
 			->select(
 				array (
-					'lang',
+					'DISTINCT lang',
 					'translation_method_id',
 					'ordering'
 				)
 			)
-			->from('#__neno_content_language_defaults');
+			->from('#__neno_content_language_defaults')
+			->where('lang <> \'\'');
 
 		$db->setQuery($query);
 
