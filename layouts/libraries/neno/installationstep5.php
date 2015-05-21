@@ -29,15 +29,38 @@ JHtml::_('bootstrap.tooltip');
 <div class="installation-step">
 	<div class="installation-body span12">
 		<div class="error-messages"></div>
-		<h2><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_TITLE'); ?></h2>
+		<div id="installation-wrapper" class="hide">
+			<h2><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_TITLE'); ?></h2>
 
-		<div class="progress progress-striped active" id="progress-bar">
-			<div class="bar" style="width: 0%;"></div>
+			<div class="progress progress-striped active" id="progress-bar">
+				<div class="bar" style="width: 0%;"></div>
+			</div>
+			<p><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_FINISH_SETUP_MESSAGE'); ?></p>
+
+			<div id="task-messages">
+
+			</div>
 		</div>
-		<p><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_FINISH_SETUP_MESSAGE'); ?></p>
+		<div id="warning-message">
+			<div class="alert"><?php echo JText::_('COM_NENO_INSTALLATION_WARNING_MESSAGE_TITLE'); ?></div>
+			<p><?php echo JText::_('COM_NENO_INSTALLATION_WARNING_MESSAGE_P1'); ?></p>
 
-		<div id="task-messages">
+			<?php if (!empty($displayData->tablesFound)): ?>
+				<p><?php echo JText::_('COM_NENO_INSTALLATION_WARNING_MESSAGE_P2'); ?></p>
+				<ul>
+					<?php foreach ($displayData->tablesFound as $tableFound): ?>
+						<li><?php echo JText::sprintf('COM_NENO_INSTALLATION_WARNING_MESSAGE_TABLE_MESSAGE', $tableFound->table, $tableFound->counter, $tableFound->language); ?></li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
 
+			<label class="checkbox">
+				<input type="checkbox"
+				       id="backup-created-checkbox"><?php echo JText::_('COM_NENO_INSTALLATION_WARNING_MESSAGE_CHECKBOX_MESSAGE'); ?>
+			</label>
+			<button type="button" class="btn" id="proceed-button" disabled>
+				<?php echo JText::_('COM_NENO_INSTALLATION_WARNING_MESSAGE_PROCEED_BUTTON'); ?>
+			</button>
 		</div>
 	</div>
 
@@ -45,16 +68,27 @@ JHtml::_('bootstrap.tooltip');
 </div>
 
 <script>
-	jQuery.ajax({
-		url: 'index.php?option=com_neno&task=installation.getPreviousMessages',
-		success: function (messages) {
-			printMessages(messages);
-			interval = setInterval(checkStatus, 2000);
+	jQuery('#proceed-button').on('click', function () {
+
+		if (jQuery('#backup-created-checkbox').prop('checked')) {
+			jQuery('#warning-message').slideToggle(400, function () {
+				jQuery('#installation-wrapper').slideToggle();
+			});
+			jQuery.ajax({
+				url: 'index.php?option=com_neno&task=installation.getPreviousMessages',
+				success: function (messages) {
+					printMessages(messages);
+					interval = setInterval(checkStatus, 2000);
+				}
+			});
 		}
+
+		sendDiscoveringStep();
 	});
 
-	sendDiscoveringStep();
-
+	jQuery('#backup-created-checkbox').on('click', function () {
+		jQuery('#proceed-button').attr('disabled', !jQuery(this).prop('checked'));
+	});
 
 	function sendDiscoveringStep() {
 		jQuery.ajax({
@@ -92,8 +126,6 @@ JHtml::_('bootstrap.tooltip');
 			jQuery("#task-messages").stop().animate({
 				scrollTop: jQuery("#task-messages")[0].scrollHeight - jQuery("#task-messages").height()
 			}, 400);
-
-			//jQuery('#task-messages').append('<div class="alert alert-level-' + data[i].level + ' alert-' + data[i].type + '">' + data[i].message + '</div>');
 		}
 
 		if (percent != 0) {

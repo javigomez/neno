@@ -91,6 +91,67 @@ class NenoControllerInstallation extends JControllerAdmin
 				$data->languages = $languagesData;
 
 				break;
+			case 5:
+				/* @var $db NenoDatabaseDriverMysqlx */
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
+
+				/* @var $config \Joomla\Registry\Registry */
+				$config = JFactory::getConfig();
+
+				$query
+					->select('DISTINCT TABLE_NAME')
+					->from('INFORMATION_SCHEMA.COLUMNS')
+					->where(
+						array (
+							'COLUMN_NAME = ' . $db->quote('language'),
+							'TABLE_SCHEMA = ' . $db->quote($config->get('db')),
+							'TABLE_NAME NOT LIKE ' . $db->quote('%neno%'),
+							'TABLE_NAME NOT LIKE ' . $db->quote('%\_\_%'),
+							'TABLE_NAME NOT LIKE ' . $db->quote('%menu'),
+						)
+					);
+
+				$db->setQuery($query);
+				$tables = $db->loadArray();
+
+				$tablesFound = array ();
+
+				foreach ($tables as $table)
+				{
+					$sourceLanguage      = NenoSettings::get('source_language');
+					$sourceLanguageParts = explode('-', $sourceLanguage);
+					$query
+						->clear()
+						->select(
+							array (
+								'COUNT(*) AS counter',
+								'language',
+								$db->quote($table) . ' AS `table`'
+							)
+						)
+						->from($db->quoteName($table))
+						->where(
+							array (
+								'language <> ' . $db->quote('*'),
+								'language <> ' . $db->quote(''),
+								'language <> ' . $db->quote($sourceLanguage),
+								'language <> ' . $db->quote($sourceLanguageParts[0]),
+							)
+						)
+						->group('language');
+
+					$db->setQuery($query);
+					$recordsFound = $db->loadObjectList();
+
+					if (!empty($recordsFound))
+					{
+						$tablesFound = array_merge($tablesFound, $recordsFound);
+					}
+				}
+
+				$data->tablesFound = $tablesFound;
+				break;
 		}
 
 		return $data;
