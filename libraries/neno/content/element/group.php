@@ -263,6 +263,7 @@ class NenoContentElementGroup extends NenoContentElement
 					'lang = ' . $db->quote(NenoHelper::getWorkingLanguage())
 				)
 			)
+			->group('ordering')
 			->order('ordering ASC');
 
 		$db->setQuery($query);
