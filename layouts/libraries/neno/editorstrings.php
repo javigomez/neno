@@ -51,7 +51,7 @@ else
 			</div>
 			<div class="string-text"
 			     title="<?php echo NenoHelper::html2text($translation->original_text, 300); ?>">
-				<?php echo NenoHelper::html2text($translation->string, 32); ?>
+				<?php echo JHtmlString::truncate(strip_tags($translation->string), 50, false); ?>
 			</div>
 		</div>
 		<div class="clearfix"></div>
