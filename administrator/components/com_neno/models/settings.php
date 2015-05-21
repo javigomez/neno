@@ -130,7 +130,8 @@ class NenoModelSettings extends JModelList
 			->where(
 				array (
 					'a.setting_key NOT LIKE ' . $db->quote('%installation%'),
-					'a.setting_key NOT LIKE ' . $db->quote('%setup%')
+					'a.setting_key NOT LIKE ' . $db->quote('%setup%'),
+					'a.setting_key NOT LIKE ' . $db->quote('%discovering%')
 				)
 			);
 
