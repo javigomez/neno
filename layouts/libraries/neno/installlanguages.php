@@ -28,7 +28,7 @@ $languages = $displayData->languages;
 	jQuery("[data-language]").click(function () {
 		var button = jQuery(this);
 		button.hide();
-		button.parent().append('<div class="loading"></div>')
+		button.parent().append('<div class="loading loading-iso-' + button.attr('data-language') + '"></div>')
 		jQuery.ajax({
 			beforeSend: onBeforeAjax,
 			url: 'index.php?option=com_neno&task=installLanguage',
@@ -47,6 +47,7 @@ $languages = $displayData->languages;
 					response.insertBefore('#add-languages-button');
 					bindEvents();
 					loadMissingTranslationMethodSelectors();
+					jQuery('.loading-iso-' + iso).removeClass('loading').addClass('icon-checkmark');
 				}
 			}
 		});

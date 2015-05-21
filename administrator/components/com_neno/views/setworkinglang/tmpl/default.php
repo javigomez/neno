@@ -12,16 +12,19 @@
 defined('_JEXEC') or die;
 
 ?>
-	<h2>Please select the language you would like to work with</h2>
+	<h2><?php echo JText::_('COM_NENO_SETTINGS_SET_WORKING_LANGUAGE'); ?></h2>
 
 	<div class="clearfix">
 		<?php foreach ($this->langs as $lang): ?>
 			<a class="btn btn-large span2"
 			   href="index.php?option=com_neno&task=setworkinglang&lang=<?php echo $lang->lang_code; ?>">
-				<h2>
-					<img
-						src="<?php echo JUri::root(); ?>/media/mod_languages/images/<?php echo $lang->image; ?>.gif"/> <?php echo $lang->title_native; ?>
-				</h2>
+				<h4>
+					<?php
+					if (file_exists(JPATH_SITE . '/media/mod_languages/images/' . $lang->image . '.gif')): ?>
+						<img src="<?php echo JUri::root() . 'media/mod_languages/images/' . $lang->image . '.gif'; ?>"/>
+					<?php endif; ?>
+					<?php echo $lang->title_native; ?>
+				</h4>
 			</a>
 		<?php endforeach; ?>
 	</div>

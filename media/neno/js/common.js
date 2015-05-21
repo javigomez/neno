@@ -259,6 +259,7 @@ function executeAjaxForTranslationMethodSelectors(listSelector, placement, n, se
                 container.height(
                     container.height() - 26
                 );
+                container.removeClass('expanded');
             }
         }
     });

@@ -36,8 +36,10 @@ $n                  = 0;
 		</div>
 	<?php endif; ?>
 	<h4>
-		<img
-			src="<?php echo JUri::root() . 'media/mod_languages/images/' . $item['image'] . '.gif'; ?>"/>
+		<?php
+		if (file_exists(JPATH_SITE . '/media/mod_languages/images/' . $item['image'] . '.gif')): ?>
+			<img src="<?php echo JUri::root() . 'media/mod_languages/images/' . $item['image'] . '.gif'; ?>"/>
+		<?php endif; ?>
 		<?php echo $item['title']; ?>
 	</h4>
 	<?php if ($item['placement'] == 'dashboard'): ?>
@@ -87,7 +89,7 @@ $n                  = 0;
 				</label>
 			</fieldset>
 			<div class="method-selectors" data-language="<?php echo $item['lang_code']; ?>">
-				<?php $displayData = array (); ?>
+				<?php $displayData = array(); ?>
 				<?php $displayData['n'] = $n; ?>
 				<?php $displayData['assigned_translation_methods'] = $item['translationMethods']; ?>
 				<?php $displayData['translation_methods'] = $translationMethods; ?>
