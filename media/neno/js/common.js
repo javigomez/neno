@@ -49,8 +49,13 @@ function saveTranslationAndNext() {
                 var row = jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']');
                 if (row) {
                     var string = data.translation.string;
-                    if (string.length > 40) {
-                        string = string.substr(0, 35) + '...';
+                    try {
+                        var stringObject = jQuery(string);
+                        string = stringObject.text();
+                    }
+                    catch (err) {}
+                    if (string.length > 50) {
+                        string = string.substr(0, 45) + '...';
                     }
                     row.find('.string-text').html(string);
                     row.find('.status').removeClass().addClass('status');
@@ -101,8 +106,13 @@ function saveDraft() {
                 var row = jQuery('#elements-wrapper .string[data-id=' + data.id + ']');
                 if (row) {
                     var string = data.string;
-                    if (string.length > 40) {
-                        string = string.substr(0, 35) + '...';
+                    try {
+                        var stringObject = jQuery(string);
+                        string = stringObject.text();
+                    }
+                    catch (err) {}
+                    if (string.length > 50) {
+                        string = string.substr(0, 45) + '...';
                     }
                     row.find('.string-text').html(string);
                     row.find('.status').removeClass().addClass('status');
