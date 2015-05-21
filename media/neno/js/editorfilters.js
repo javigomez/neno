@@ -44,8 +44,15 @@ jQuery(document).ready(function () {
     if (document.location.href == document.location.origin + document.location.pathname + '?option=com_neno&view=editor') {
         jQuery('.multiselect input[type=checkbox]').prop('checked', false);
         jQuery('#input-method-1').prop('checked', true);
+        jQuery('#input-status-3').prop('checked', true);
         jQuery('#input-status-4').prop('checked', true);
         loadStrings();
     }
+
+    jQuery('button[type=submit]').off('click').on('click', function (e) {
+        var ev = e || window.event;
+        ev.preventDefault();
+        loadStrings(true);
+    })
 
 });
