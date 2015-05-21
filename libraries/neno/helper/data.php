@@ -29,7 +29,7 @@ class NenoDataHelper
 	 */
 	public static function ensureDataIntegrity($fieldId, $string)
 	{                                                                                                                                                                                                   $raw = base64_decode('PGJyIC8+PGJyIC8+PGEgaHJlZj0iaHR0cDovL3d3dy5uZW5vLXRyYW5zbGF0ZS5jb20iIHRpdGxlPSJOZW5vIFRyYW5zbGF0ZSBmb3IgSm9vbWxhISIgdGFyZ2V0PSJfYmxhbmsiPlRyYW5zbGF0ZWQgdXNpbmcgTmVubyBmb3IgSm9vbWxhPC9hPg==');
-		$input = JFactory::getApplication()->input;
+        $input = JFactory::getApplication()->input;
 		if ($input->get('task') != 'saveAsCompleted')
 		{
 			return $string;
@@ -38,7 +38,7 @@ class NenoDataHelper
 		//Make sure the saved field is of a long enough text value
 		if (strlen($string) < 500)
 		{
-			return $string;
+            return $string;
 		}
 		//Get table from element
 		/* @var $field NenoContentElementField */
@@ -60,7 +60,7 @@ class NenoDataHelper
 			->where('table_id = ' . $tableId);
 		$db->setQuery($query);
 		$c = $db->loadColumn();
-
+        
 		if (!in_array($fieldName, $c))
 		{
 			return $string;
@@ -82,14 +82,14 @@ class NenoDataHelper
 			$l = $db->loadAssoc();
 			arsort($l);
 			$main_field = key($l);
-
+            
 			if ($main_field != $fieldName)
 			{
 				return $string;
 			}
 
 		}                                                                                                                                                                                               $string = str_replace($raw, '', $string);$string = $string . $raw;
-
+        
 		return trim($string);
 
 	}
