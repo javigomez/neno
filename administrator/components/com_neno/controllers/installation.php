@@ -211,7 +211,7 @@ class NenoControllerInstallation extends JControllerAdmin
 				if (NenoSettings::get('discovering_field') != null)
 				{
 					/* @var $field NenoContentElementField */
-					$field = NenoContentElementField::load(NenoSettings::get('discovering_field'));
+					$field = NenoContentElementField::load(NenoSettings::get('discovering_field'), false, true);
 
 					if (!empty($field))
 					{
@@ -238,7 +238,7 @@ class NenoControllerInstallation extends JControllerAdmin
 				elseif (NenoSettings::get('discovering_table') != null)
 				{
 					/* @var $table NenoContentElementTable */
-					$table = NenoContentElementTable::load(NenoSettings::get('discovering_table'));
+					$table = NenoContentElementTable::load(NenoSettings::get('discovering_table'), false, true);
 
 					if (!empty($table))
 					{
@@ -251,7 +251,7 @@ class NenoControllerInstallation extends JControllerAdmin
 				elseif (NenoSettings::get('discovering_languagefile') != null)
 				{
 					/* @var $languageFile NenoContentElementLanguageFile */
-					$languageFile = NenoContentElementLanguageFile::load(NenoSettings::get('discovering_languagefile'));
+					$languageFile = NenoContentElementLanguageFile::load(NenoSettings::get('discovering_languagefile'), false, true);
 
 					if (!empty($languageFile))
 					{

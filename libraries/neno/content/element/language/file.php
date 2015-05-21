@@ -239,7 +239,7 @@ class NenoContentElementLanguageFile extends NenoContentElement
 					$languageString = NenoContentElementLanguageString::load(array ('constant' => $constant));
 
 					// If it's not, let's create it
-					if (empty($languageString) && !$onlyNew)
+					if (empty($languageString))
 					{
 						$languageString = new NenoContentElementLanguageString(
 							array (
@@ -250,7 +250,10 @@ class NenoContentElementLanguageFile extends NenoContentElement
 						);
 					}
 
-					$this->languageStrings[] = $languageString;
+					if (($languageString->isNew() && $onlyNew) || !$onlyNew)
+					{
+						$this->languageStrings[] = $languageString;
+					}
 				}
 
 				return true;
