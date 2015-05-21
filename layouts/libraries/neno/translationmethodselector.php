@@ -23,7 +23,7 @@ if ($displayData !== null): ?>
 					<?php if (empty($displayData['assigned_translation_methods'][$n])): ?>
 						<?php $displayData['assigned_translation_methods'][$n] = new stdClass; ?>
 					<?php endif; ?>
-					<?php $displayData['assigned_translation_methods'][$n]->id = 0; ?>
+					<?php $displayData['assigned_translation_methods'][$n]->id = 1; ?>
 				<?php endif; ?>
 				<option value="0"><?php echo JText::_('COM_NENO_TRANSLATION_METHOD_NONE'); ?></option>
 				<?php foreach ($displayData['translation_methods'] as $translation_method): ?>
