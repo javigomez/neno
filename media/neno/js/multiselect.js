@@ -155,10 +155,14 @@ function loadStrings(reset) {
     }
 
     jQuery('#multiselect-value').val(checkedGroupsElements);
+    jQuery.urlParam = function (name) {
+        var results = new RegExp('[\?&amp;]' + name + '=([^&amp;#]*)').exec(window.location.href);
+        return results[1] || 0;
+    };
     jQuery.ajax({
         beforeSend: onBeforeAjax,
         type: "POST",
-        url: "index.php?option=com_neno&task=strings.getStrings",
+        url: "index.php?option=com_neno&task=" + jQuery.urlParam('view') + ".getStrings",
         data: {
             jsonGroupsElements: JSON.stringify(checkedGroupsElements),
             filter_search: search,
