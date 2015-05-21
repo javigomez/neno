@@ -214,9 +214,11 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	/**
 	 * Load the strings from the language file
 	 *
+	 * @param   bool $onlyNew Get only new records
+	 *
 	 * @return bool True on success, false otherwise
 	 */
-	public function loadStringsFromFile()
+	public function loadStringsFromFile($onlyNew = false)
 	{
 		$filePath = $this->getFilePath();
 
@@ -233,13 +235,20 @@ class NenoContentElementLanguageFile extends NenoContentElement
 				// Loop through all the strings
 				foreach ($strings as $constant => $string)
 				{
-					$languageString = new NenoContentElementLanguageString(
-						array (
-							'constant'   => $constant,
-							'string'     => $string,
-							'time_added' => new DateTime
-						)
-					);
+					// If this language string exists already, let's load it
+					$languageString = NenoContentElementLanguageString::load(array ('constant' => $constant));
+
+					// If it's not, let's create it
+					if (empty($languageString) && !$onlyNew)
+					{
+						$languageString = new NenoContentElementLanguageString(
+							array (
+								'constant'   => $constant,
+								'string'     => $string,
+								'time_added' => new DateTime
+							)
+						);
+					}
 
 					$this->languageStrings[] = $languageString;
 				}
@@ -312,6 +321,7 @@ class NenoContentElementLanguageFile extends NenoContentElement
 					$languageString
 						->setLanguageFile($this)
 						->persist();
+
 				}
 			}
 

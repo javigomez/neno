@@ -191,14 +191,8 @@ class NenoControllerInstallation extends JControllerAdmin
 		define('NENO_INSTALLATION', 1);
 
 		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query
-			->clear()
-			->delete('#__neno_installation_messages')
-			->where('id < (SELECT MAX(id) FROM #__neno_installation_messages WHERE level=1 AND fetched = 1)');
-		$db->setQuery($query);
-		//$db->execute();
+		$db       = JFactory::getDbo();
+		$query    = $db->getQuery(true);
 		$finished = NenoSettings::get('installation_completed') == 1;
 
 		// Do until timeout
@@ -228,12 +222,15 @@ class NenoControllerInstallation extends JControllerAdmin
 				}
 				elseif (NenoSettings::get('discovering_languagestring') != null)
 				{
-					/* @var $languageString NenoContentElementLanguageString */
-					$languageString = NenoContentElementLanguageString::load(NenoSettings::get('discovering_languagestring'), false, true);
-
-					if (!empty($languageString))
+					if (NenoSettings::get('discovering_languagestring') != '')
 					{
-						$languageString->persist();
+						/* @var $languageString NenoContentElementLanguageString */
+						$languageString = NenoContentElementLanguageString::load(NenoSettings::get('discovering_languagestring'), false, true);
+
+						if (!empty($languageString))
+						{
+							$languageString->persist();
+						}
 					}
 
 					NenoSettings::set('discovering_languagestring', null);
@@ -258,7 +255,7 @@ class NenoControllerInstallation extends JControllerAdmin
 
 					if (!empty($languageFile))
 					{
-						$languageFile->loadStringsFromFile();
+						$languageFile->loadStringsFromFile(true);
 						$languageFile->persist();
 					}
 

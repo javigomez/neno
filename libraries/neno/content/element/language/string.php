@@ -187,16 +187,20 @@ class NenoContentElementLanguageString extends NenoContentElement
 	 */
 	public function persist()
 	{
+		$isNew         = $this->isNew();
 		$persistResult = parent::persist();
 
 		if (defined('NENO_INSTALLATION'))
 		{
-			NenoHelper::setSetupState(
-				0,
-				JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD', $this->getLanguageFile()->getGroup()->getGroupName(), $this->getLanguageFile()->getFilename(), $this->getConstant()),
-				3
-			);
-			NenoSettings::set('discovering_languagestring', $this->id);
+			if ($isNew)
+			{
+				NenoHelper::setSetupState(
+					0,
+					JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD', $this->getLanguageFile()->getGroup()->getGroupName(), $this->getLanguageFile()->getFilename(), $this->getConstant()),
+					3
+				);
+				NenoSettings::set('discovering_languagestring', $this->id);
+			}
 		}
 
 		if ($persistResult)
