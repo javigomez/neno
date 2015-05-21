@@ -2742,7 +2742,7 @@ class NenoHelper
 			return self::createContentRow($jiso, $languageData);
 		}
 
-		return true;
+		return self::isLanguageInstalled($jiso);
 	}
 
 	/**
