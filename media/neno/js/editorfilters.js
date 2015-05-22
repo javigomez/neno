@@ -46,7 +46,7 @@ jQuery(document).ready(function () {
         jQuery('#input-method-1').prop('checked', true);
         jQuery('#input-status-3').prop('checked', true);
         jQuery('#input-status-4').prop('checked', true);
-        loadStrings();
+        loadStrings(true);
     }
 
     jQuery('button[type=submit]').off('click').on('click', function (e) {

@@ -12,6 +12,8 @@ jQuery(document).ready(function () {
     jQuery('.expanded').each(function () {
         loadHierarchy(jQuery(this));
     });
+
+    loadStrings(true);
 });
 
 function loadHierarchy(row) {
@@ -65,12 +67,12 @@ function bindEvents() {
         jQuery("input[name='limitstart']").val(0);
         jQuery('#elements-wrapper').html('');
         checkUncheckFamilyCheckboxes(jQuery(this));
-        loadStrings();
+        loadStrings(true);
     });
     jQuery('#status-multiselect input[type=checkbox], #method-multiselect input[type=checkbox]').unbind('click').click(function () {
         jQuery("input[name='limitstart']").val(0);
         jQuery('#elements-wrapper').html('');
-        loadStrings();
+        loadStrings(true);
     });
 }
 
@@ -180,9 +182,12 @@ function loadStrings(reset) {
                     setFilterTags(document.adminForm);
                 }
                 if (reset == true) {
-                    targetContainer.empty();
+                    targetContainer.html(ret);
+                    loadTranslation(targetContainer.find('.string').first());
+                } else {
+                    targetContainer.append(ret);
                 }
-                targetContainer.append(ret);
+
             }
         });
 }
@@ -313,9 +318,7 @@ function printFilterTag(type, label) {
         if (type == 'search') {
             jQuery('#filter_search').val('');
         }
-        jQuery("input[name='limitstart']").val(0);
-        jQuery('#elements-wrapper').html('');
-        loadStrings();
+        loadStrings(true);
         jQuery(this).parent().remove();
     });
 }
