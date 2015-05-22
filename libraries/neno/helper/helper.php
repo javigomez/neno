@@ -1335,17 +1335,17 @@ class NenoHelper
             return true;
         }
         
-        $license_text = base64_decode($license);
-        $license_parts = explode('|', $license_text);
+        $licenseText = base64_decode($license);
+        $licenseParts = explode('|', $licenseText);
 
-        if (count($license_parts) != 4)
+        if (count($licenseParts) != 4)
         {
             return false;
         }
         
-        if ($license_parts[3] != self::getThisDomain() && self::getThisDomain() != 'localhost')
+        if ($licenseParts[3] != self::getThisDomain() && self::getThisDomain() != 'localhost')
         {
-            
+            return false;
         }
         
         return true;
@@ -1353,9 +1353,11 @@ class NenoHelper
 
     
     
-    public static function getThisDomain() {
+    public static function getThisDomain() 
+    {
         
-        
+        $url = new \Purl\Url($_SERVER['HTTP_HOST']);
+        return $url->registerableDomain;
         
     }
     
