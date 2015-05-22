@@ -1315,6 +1315,38 @@ class NenoHelper
 
 		return !empty($plugin);
 	}
+    
+    
+    /**
+     * Check if a license is valid and display an error if invalid
+     * @param string $license
+     * @return string error message if there is one
+     */
+    public static function isLicenseValid($license='') 
+    {
+        if (empty($license))
+        {
+            $license = NenoSettings::get('license_code', '');
+        }
+        
+        //If we do not have a license then return true
+        if (empty($license))
+        {
+            return true;
+        }
+        
+        $license_text = base64_decode($license);
+        $licese_parts = explode('|', $license_text);
+        if (count($license_parts) != 4)
+        {
+            return false;
+        }
+        
+        
+        
+    }
+
+    
 
 	/**
 	 * Output HTML code for translation progress bar
