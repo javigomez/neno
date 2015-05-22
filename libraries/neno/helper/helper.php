@@ -864,12 +864,13 @@ class NenoHelper
 	/**
 	 * Get all the tables of the component that matches with the Joomla naming convention.
 	 *
-	 * @param   NenoContentElementGroup $group        Component name
-	 * @param   string                  $tablePattern Table Pattern
+	 * @param   NenoContentElementGroup $group             Component name
+	 * @param   string                  $tablePattern      Table Pattern
+	 * @param   bool                    $includeDiscovered Included tables that have been discovered already
 	 *
 	 * @return array
 	 */
-	public static function getComponentTables(NenoContentElementGroup $group, $tablePattern = null)
+	public static function getComponentTables(NenoContentElementGroup $group, $tablePattern = null, $includeDiscovered = true)
 	{
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db     = JFactory::getDbo();
@@ -881,6 +882,7 @@ class NenoHelper
 		{
 			// Get Table name
 			$tableName = self::unifyTableName($tables[$i]);
+			$table     = null;
 
 			if (!self::isTableAlreadyDiscovered($tableName))
 			{
@@ -911,7 +913,7 @@ class NenoHelper
 					$table->addField($field);
 				}
 			}
-			else
+			elseif ($includeDiscovered)
 			{
 				$table = NenoContentElementTable::load(array ('table_name' => $tableName, 'group_id' => $group->getId()));
 			}
@@ -1315,52 +1317,51 @@ class NenoHelper
 
 		return !empty($plugin);
 	}
-    
-    
-    /**
-     * Check if a license is valid and display an error if invalid
-     * @param string $license
-     * @return string error message if there is one
-     */
-    public static function isLicenseValid($license='') 
-    {
-        if (empty($license))
-        {
-            $license = NenoSettings::get('license_code', '');
-        }
-        
-        //If we do not have a license then return true
-        if (empty($license))
-        {
-            return true;
-        }
-        
+
+
+	/**
+	 * Check if a license is valid and display an error if invalid
+	 *
+	 * @param string $license
+	 *
+	 * @return string error message if there is one
+	 */
+	public static function isLicenseValid($license = '')
+	{
+		if (empty($license))
+		{
+			$license = NenoSettings::get('license_code', '');
+		}
+
+		//If we do not have a license then return true
+		if (empty($license))
+		{
+			return true;
+		}
+
         $licenseText = base64_decode($license);
         $licenseParts = explode('|', $licenseText);
 
         if (count($licenseParts) != 4)
-        {
-            return false;
-        }
-        
-        if ($licenseParts[3] != self::getThisDomain() && self::getThisDomain() != 'localhost')
-        {
-            return false;
-        }
-        
-        return true;
-    }
+		{
+			return false;
+		}
 
-    
-    
-    public static function getThisDomain() 
-    {
-        
-        $url = new \Purl\Url($_SERVER['HTTP_HOST']);
-        return $url->registerableDomain;
-        
-    }
-    
+        if ($licenseParts[3] != self::getThisDomain() && self::getThisDomain() != 'localhost')
+		{
+            return false;
+		}
+
+		return true;
+	}
+
+
+        public static function getThisDomain() 
+        {
+          $url = new \Purl\Url($_SERVER['HTTP_HOST']);
+          return $url->registerableDomain;
+	}
+
 
 	/**
 	 * Output HTML code for translation progress bar
