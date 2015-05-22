@@ -1085,7 +1085,27 @@ class NenoHelper
 
 		if (!empty($tablesNotDiscovered))
 		{
-			$otherGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
+			// Check if this group exists already
+			$query = $db->getQuery(true);
+			$query
+				->select('g.id')
+				->from('#__neno_content_element_groups AS g')
+				->where('NOT EXISTS (SELECT 1 FROM #__neno_content_element_groups_x_extensions AS ge WHERE ge.group_id = g.id)');
+
+			$db->setQuery($query);
+			$groupId = $db->loadResult();
+
+			$otherGroup = null;
+
+			if (!empty($groupId))
+			{
+				/* @var $otherGroup NenoContentElementGroup */
+				$otherGroup = NenoContentElementGroup::load($groupId);
+			}
+			else
+			{
+				$otherGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
+			}
 
 			foreach ($tablesNotDiscovered as $tableNotDiscovered)
 			{
@@ -1126,7 +1146,9 @@ class NenoHelper
 	}
 
 	/**
+	 * Get tables that haven't been discovered yet
 	 *
+	 * @return array
 	 */
 	protected static function getTablesNotDiscovered()
 	{
@@ -1339,27 +1361,28 @@ class NenoHelper
 			return true;
 		}
 
-        $licenseText = base64_decode($license);
-        $licenseParts = explode('|', $licenseText);
+		$licenseText  = base64_decode($license);
+		$licenseParts = explode('|', $licenseText);
 
-        if (count($licenseParts) != 4)
+		if (count($licenseParts) != 4)
 		{
 			return false;
 		}
 
-        if ($licenseParts[3] != self::getThisDomain() && self::getThisDomain() != 'localhost')
+		if ($licenseParts[3] != self::getThisDomain() && self::getThisDomain() != 'localhost')
 		{
-            return false;
+			return false;
 		}
 
 		return true;
 	}
 
 
-        public static function getThisDomain() 
-        {
-          $url = new \Purl\Url($_SERVER['HTTP_HOST']);
-          return $url->registerableDomain;
+	public static function getThisDomain()
+	{
+		$url = new \Purl\Url($_SERVER['HTTP_HOST']);
+
+		return $url->registerableDomain;
 	}
 
 
