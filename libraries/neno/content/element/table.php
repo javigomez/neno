@@ -96,7 +96,7 @@ class NenoContentElementTable extends NenoContentElement
 	 */
 	public function getFields($loadExtraData = false, $onlyTranslatable = false, $onlyFieldsWithNoTranslations = false)
 	{
-		if ($this->fields === null)
+		if ($this->fields === null || $onlyFieldsWithNoTranslations)
 		{
 			$this->fields = array ();
 
