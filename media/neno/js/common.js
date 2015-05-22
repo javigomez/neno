@@ -67,10 +67,6 @@ function saveTranslationAndNext() {
                 text: text
             },
             success: function (data) {
-                var row = jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']');
-                if (row) {
-                    updateEditorString(row, data.translation);
-                }
                 if (typeof data.message != 'undefined') {
                     jQuery('#consolidate-modal .modal-body p').html(data.message);
                     jQuery('#consolidate-button').off('click').data('translation', translationId).on('click', function () {
@@ -84,12 +80,16 @@ function saveTranslationAndNext() {
                                 url: 'index.php?option=com_neno&task=editor.consolidateTranslation',
                                 success: function () {
                                     jQuery('#consolidate-modal').modal('hide');
-                                    loadStrings(true);
                                 }
                             }
                         );
                     });
                     jQuery('#consolidate-modal').modal('show');
+                    jQuery('#consolidate-button').focus();
+                }
+                var row = jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']');
+                if (row) {
+                    updateEditorString(row, data.translation);
                 }
                 if (row && row == jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']')) {
                     loadNextTranslation();
