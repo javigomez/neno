@@ -67,7 +67,10 @@ class PlgSystemNeno extends JPlugin
 			/* @var $group NenoContentElementGroup */
 			$group = NenoContentElementGroup::load($groupId);
 
-			$group->remove();
+			if (!empty($group))
+			{
+				$group->remove();
+			}
 		}
 	}
 
@@ -92,7 +95,7 @@ class PlgSystemNeno extends JPlugin
 		$db->setQuery($query);
 		$extensionData = $db->loadAssoc();
 
-		if (!empty($extensionData))
+		if (!empty($extensionData) && strpos($extensionData['element'], 'neno') === false)
 		{
 			NenoHelper::discoverExtension($extensionData);
 		}
@@ -119,7 +122,7 @@ class PlgSystemNeno extends JPlugin
 		$db->setQuery($query);
 		$extensionData = $db->loadAssoc();
 
-		if (!empty($extensionData))
+		if (!empty($extensionData) && strpos($extensionData['element'], 'neno') === false)
 		{
 			NenoHelper::discoverExtension($extensionData);
 		}
