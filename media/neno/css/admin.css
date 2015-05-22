@@ -32,3 +32,17 @@
 .translation-progress-bar .bar-disabled div {
     background-color: #CACACA;
 }
+.loading {
+    background: url('../images/loading_mini.gif') center left no-repeat;
+    height: 14px;
+    width: 14px;
+    margin-top: 7px;
+    margin-left: 23px;
+}
+.icon-checkmark {
+    color: #65D074;
+    height: 14px;
+    width: 14px;
+    margin-top: 7px;
+    margin-left: 23px;
+}
