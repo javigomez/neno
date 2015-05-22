@@ -37,11 +37,15 @@ if (!NenoHelper::isDatabaseDriverEnabled())
 	$app->setUserState('com_plugins.plugins.filter.search', 'neno');
 	$app->redirect('index.php?option=com_plugins');
 }
-else if (!NenoHelper::isLicenseValid())
+else
 {
-	$app = JFactory::getApplication();
-	$app->enqueueMessage(JText::_('COM_NENO_ERROR_IN_LICENSE'), 'warning');    
-}
+	$licenseWarning = NenoHelperLicense::getLicenseWarning();
+    if (!empty($licenseWarning))
+    {
+        $app = JFactory::getApplication();
+        $app->enqueueMessage($licenseWarning, 'warning');    
+    }
+}    
 
 
 

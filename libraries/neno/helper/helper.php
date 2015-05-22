@@ -11,8 +11,6 @@
 // No direct access
 defined('JPATH_NENO') or die;
 
-require_once JPATH_LIBRARIES . '/neno/helper/data.php';
-
 /**
  * Neno helper.
  *
@@ -1317,51 +1315,6 @@ class NenoHelper
 
 		return !empty($plugin);
 	}
-
-
-	/**
-	 * Check if a license is valid and display an error if invalid
-	 *
-	 * @param string $license
-	 *
-	 * @return string error message if there is one
-	 */
-	public static function isLicenseValid($license = '')
-	{
-		if (empty($license))
-		{
-			$license = NenoSettings::get('license_code', '');
-		}
-
-		//If we do not have a license then return true
-		if (empty($license))
-		{
-			return true;
-		}
-
-        $licenseText = base64_decode($license);
-        $licenseParts = explode('|', $licenseText);
-
-        if (count($licenseParts) != 4)
-		{
-			return false;
-		}
-
-        if ($licenseParts[3] != self::getThisDomain() && self::getThisDomain() != 'localhost')
-		{
-            return false;
-		}
-
-		return true;
-	}
-
-
-        public static function getThisDomain() 
-        {
-          $url = new \Purl\Url($_SERVER['HTTP_HOST']);
-          return $url->registerableDomain;
-	}
-
 
 	/**
 	 * Output HTML code for translation progress bar

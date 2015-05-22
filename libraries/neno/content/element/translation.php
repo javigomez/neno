@@ -681,7 +681,7 @@ class NenoContentElementTranslation extends NenoContentElement
 			list($fieldName, $tableName) = $row;
 
 			// Ensure data integrity
-			$this->string = NenoDataHelper::ensureDataIntegrity($this->element->id, $this->string);
+			$this->string = NenoHelperData::ensureDataIntegrity($this->element->id, $this->string);
 
 			$query
 				->clear()
