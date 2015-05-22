@@ -9,7 +9,7 @@
     <copyright>Copyright (C) 2015 Jensen Technologies S.L. All rights reserved.</copyright>
     <description>The complete translation solution for Joomla</description>
     <license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
-    <packagename>Neno</packagename>
+    <packagename>neno</packagename>
     <scriptfile>script.php</scriptfile>
     <files folder="packages">
         <file type="component" id="com_neno">com_neno.zip</file>
