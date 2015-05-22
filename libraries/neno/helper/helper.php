@@ -1466,13 +1466,25 @@ class NenoHelper
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
+			$subquery1 = $db->getQuery(true);
+			$subquery1
+				->select('1')
+				->from(' #__neno_content_element_tables AS t')
+				->where('t.group_id = g.id');
+			$subquery2 = $db->getQuery(true);
+			$subquery2
+				->select('1')
+				->from('#__neno_content_element_language_files AS lf')
+				->where('lf.group_id = g.id');
+
 			$query
 				->select('g.id')
 				->from('`#__neno_content_element_groups` AS g')
 				->where(
 					array (
-						'EXISTS (SELECT 1 FROM #__neno_content_element_tables AS t WHERE t.group_id = g.id)',
-						'EXISTS (SELECT 1 FROM #__neno_content_element_language_files AS lf WHERE lf.group_id = g.id)',
+						'EXISTS (' . (string) $subquery1 . ')',
+						'EXISTS (' . (string) $subquery2 . ')',
+						'(NOT EXISTS (' . (string) $subquery1 . ') AND NOT EXISTS (' . (string) $subquery2 . ') AND NOT EXISTS(SELECT 1 FROM #__neno_content_element_groups_x_extensions AS ge WHERE g.id = ge.group_id))'
 					)
 					, 'OR');
 
