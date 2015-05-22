@@ -1336,16 +1336,28 @@ class NenoHelper
         }
         
         $license_text = base64_decode($license);
-        $licese_parts = explode('|', $license_text);
+        $license_parts = explode('|', $license_text);
+
         if (count($license_parts) != 4)
         {
             return false;
         }
         
+        if ($license_parts[3] != self::getThisDomain() && self::getThisDomain() != 'localhost')
+        {
+            
+        }
+        
+        return true;
+    }
+
+    
+    
+    public static function getThisDomain() {
+        
         
         
     }
-
     
 
 	/**
