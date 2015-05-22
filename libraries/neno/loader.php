@@ -43,6 +43,7 @@ class NenoLoader
 		JLoader::registerPrefix('Neno', JPATH_NENO);
 		JLoader::registerNamespace('Purl', JPATH_NENO . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'purl');
 		JLoader::registerNamespace('Pdp', JPATH_NENO . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'php-domain' . DIRECTORY_SEPARATOR . 'src');
+		require_once JPATH_NENO . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'php-domain' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'pdp-parse-url.php';
 
 		if ($includeJs)
 		{
