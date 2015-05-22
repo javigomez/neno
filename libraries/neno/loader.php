@@ -41,6 +41,7 @@ class NenoLoader
 	{
 		// Registering Neno libraries prefix
 		JLoader::registerPrefix('Neno', JPATH_NENO);
+		JLoader::registerNamespace('Purl', JPATH_NENO . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'purl');
 
 		if ($includeJs)
 		{
