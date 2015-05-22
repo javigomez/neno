@@ -90,6 +90,7 @@ function saveTranslationAndNext() {
                         );
                     });
                     jQuery('#consolidate-modal').modal('show');
+                    jQuery('#consolidate-button').focus();
                 }
                 if (row && row == jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']')) {
                     loadNextTranslation();

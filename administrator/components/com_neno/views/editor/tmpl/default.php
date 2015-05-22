@@ -57,14 +57,14 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/editor.css');
 	</div>
 </div>
 
-<div class="modal hide fade" id="consolidate-modal" style="max-width: 450px;">
+<div class="modal hide fade" id="consolidate-modal" style="width: 40%; margin-left: -20%;">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">    
 		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3><?php echo JText::_('COM_NENO_CONSOLIDATE_TRANSLATION_HEADER'); ?></h3>
             </div>
-            <div class="modal-body" style="padding:15px;">
+            <div class="modal-body" style="padding:15px; width: 94%;">
                 <p></p>
             </div>
             <div class="modal-footer">
