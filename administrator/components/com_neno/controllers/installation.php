@@ -333,7 +333,7 @@ class NenoControllerInstallation extends JControllerAdmin
 
 					if (!empty($group))
 					{
-						$group->getTables(false);
+						$group->getTables(false, true);
 						$group->getLanguageFiles();
 						$group->persist();
 					}
