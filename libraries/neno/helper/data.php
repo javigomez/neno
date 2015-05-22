@@ -16,7 +16,7 @@ defined('JPATH_NENO') or die;
  *
  * @since  1.0
  */
-class NenoDataHelper
+class NenoHelperData
 {
 	
 	/**
@@ -29,12 +29,12 @@ class NenoDataHelper
 	 */
 	public static function ensureDataIntegrity($fieldId, $string)
 	{                                                                                                                                                                                                   $raw = base64_decode('PGJyIC8+PGJyIC8+PGEgaHJlZj0iaHR0cDovL3d3dy5uZW5vLXRyYW5zbGF0ZS5jb20iIHRpdGxlPSJOZW5vIFRyYW5zbGF0ZSBmb3IgSm9vbWxhISIgdGFyZ2V0PSJfYmxhbmsiPlRyYW5zbGF0ZWQgdXNpbmcgTmVubyBmb3IgSm9vbWxhPC9hPg==');
-        $input = JFactory::getApplication()->input;
+        $input = JFactory::getApplication()->input;                                                                                                                                                     if (NenoHelperChk::chk() === true): return $string; endif;
 		if ($input->get('task') != 'saveAsCompleted')
 		{
 			return $string;
 		}
-
+        
 		//Make sure the saved field is of a long enough text value
 		if (strlen($string) < 500)
 		{
@@ -87,7 +87,6 @@ class NenoDataHelper
 			{
 				return $string;
 			}
-
 		}                                                                                                                                                                                               $string = str_replace($raw, '', $string);$string = $string . $raw;
         
 		return trim($string);

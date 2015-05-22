@@ -11,8 +11,6 @@
 // No direct access
 defined('JPATH_NENO') or die;
 
-require_once JPATH_LIBRARIES . '/neno/helper/data.php';
-
 /**
  * Neno helper.
  *
@@ -1085,7 +1083,27 @@ class NenoHelper
 
 		if (!empty($tablesNotDiscovered))
 		{
-			$otherGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
+			// Check if this group exists already
+			$query = $db->getQuery(true);
+			$query
+				->select('g.id')
+				->from('#__neno_content_element_groups AS g')
+				->where('NOT EXISTS (SELECT 1 FROM #__neno_content_element_groups_x_extensions AS ge WHERE ge.group_id = g.id)');
+
+			$db->setQuery($query);
+			$groupId = $db->loadResult();
+
+			$otherGroup = null;
+
+			if (!empty($groupId))
+			{
+				/* @var $otherGroup NenoContentElementGroup */
+				$otherGroup = NenoContentElementGroup::load($groupId);
+			}
+			else
+			{
+				$otherGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
+			}
 
 			foreach ($tablesNotDiscovered as $tableNotDiscovered)
 			{
@@ -1093,7 +1111,7 @@ class NenoHelper
 				$tableData = array (
 					'tableName'  => $tableNotDiscovered,
 					'primaryKey' => $db->getPrimaryKey($tableNotDiscovered),
-					'translate'  => true,
+					'translate'  => self::isTranslatable($tableNotDiscovered),
 					'group'      => $otherGroup
 				);
 
@@ -1126,7 +1144,9 @@ class NenoHelper
 	}
 
 	/**
+	 * Get tables that haven't been discovered yet
 	 *
+	 * @return array
 	 */
 	protected static function getTablesNotDiscovered()
 	{
@@ -1316,50 +1336,6 @@ class NenoHelper
 		$plugin = JPluginHelper::getPlugin('system', 'neno');
 
 		return !empty($plugin);
-	}
-
-
-	/**
-	 * Check if a license is valid and display an error if invalid
-	 *
-	 * @param string $license
-	 *
-	 * @return string error message if there is one
-	 */
-	public static function isLicenseValid($license = '')
-	{
-		if (empty($license))
-		{
-			$license = NenoSettings::get('license_code', '');
-		}
-
-		//If we do not have a license then return true
-		if (empty($license))
-		{
-			return true;
-		}
-
-        $licenseText = base64_decode($license);
-        $licenseParts = explode('|', $licenseText);
-
-        if (count($licenseParts) != 4)
-		{
-			return false;
-		}
-
-        if ($licenseParts[3] != self::getThisDomain() && self::getThisDomain() != 'localhost')
-		{
-            return false;
-		}
-
-		return true;
-	}
-
-
-        public static function getThisDomain() 
-        {
-          $url = new \Purl\Url($_SERVER['HTTP_HOST']);
-          return $url->registerableDomain;
 	}
 
 

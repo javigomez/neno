@@ -72,11 +72,25 @@ class NenoControllerInstallation extends JControllerAdmin
 				$knownLanguages             = $language->getKnownLanguages();
 				$languagesData              = array ();
 				$defaultTranslationsMethods = NenoHelper::getDefaultTranslationMethods();
+				$db                         = JFactory::getDbo();
+				$query                      = $db->getQuery(true);
+				$query
+					->insert('#__neno_content_language_defaults')
+					->columns(
+						array (
+							'lang',
+							'translation_method_id',
+							'ordering'
+						)
+					);
+
+				$insert = false;
 
 				foreach ($knownLanguages as $key => $knownLanguage)
 				{
 					if ($knownLanguage['tag'] != $default)
 					{
+						$insert                                    = true;
 						$languagesData[$key]                       = $knownLanguage;
 						$languagesData[$key]['lang_code']          = $knownLanguage['tag'];
 						$languagesData[$key]['title']              = $knownLanguage['name'];
@@ -85,7 +99,18 @@ class NenoControllerInstallation extends JControllerAdmin
 						$languagesData[$key]['placement']          = 'installation';
 						$languagesData[$key]['image']              = NenoHelper::getLanguageImage($knownLanguage['tag']);
 						$languagesData[$key]['published']          = NenoHelper::isLanguagePublished($knownLanguage['tag']);
+
+						foreach ($defaultTranslationsMethods as $ordering => $defaultTranslationsMethod)
+						{
+							$query->values($db->quote($knownLanguage['tag'] . ',' . $defaultTranslationsMethod->id . ',' . ($ordering + 1)));
+						}
 					}
+				}
+
+				if ($insert)
+				{
+					$db->setQuery($query);
+					$db->execute();
 				}
 
 				$data->languages           = $languagesData;

@@ -73,11 +73,11 @@ class NenoContentElementGroup extends NenoContentElement
 		{
 			$this->getExtensionIdList();
 			$this->getElementCount();
+			$this->calculateExtraData();
 
 			if ($loadExtraData)
 			{
 				$this->getWordCount();
-				$this->calculateExtraData();
 			}
 		}
 	}
@@ -129,6 +129,36 @@ class NenoContentElementGroup extends NenoContentElement
 		}
 
 		return $this->elementCount;
+	}
+
+	/**
+	 * Calculate language string statistics
+	 *
+	 * @return void
+	 */
+	public function calculateExtraData()
+	{
+		$this->assignedTranslationMethods = array ();
+
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('DISTINCT tm.*')
+			->from('#__neno_content_element_groups_x_translation_methods AS gt')
+			->innerJoin('#__neno_translation_methods AS tm ON gt.translation_method_id = tm.id')
+			->where(
+				array (
+					'group_id = ' . $this->id,
+					'lang = ' . $db->quote(NenoHelper::getWorkingLanguage())
+				)
+			)
+			->group('ordering')
+			->order('ordering ASC');
+
+		$db->setQuery($query);
+		$this->assignedTranslationMethods = $db->loadObjectList();
 	}
 
 	/**
@@ -238,36 +268,6 @@ class NenoContentElementGroup extends NenoContentElement
 		}
 
 		return $this->wordCount;
-	}
-
-	/**
-	 * Calculate language string statistics
-	 *
-	 * @return void
-	 */
-	public function calculateExtraData()
-	{
-		$this->assignedTranslationMethods = array ();
-
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('DISTINCT tm.*')
-			->from('#__neno_content_element_groups_x_translation_methods AS gt')
-			->innerJoin('#__neno_translation_methods AS tm ON gt.translation_method_id = tm.id')
-			->where(
-				array (
-					'group_id = ' . $this->id,
-					'lang = ' . $db->quote(NenoHelper::getWorkingLanguage())
-				)
-			)
-			->group('ordering')
-			->order('ordering ASC');
-
-		$db->setQuery($query);
-		$this->assignedTranslationMethods = $db->loadObjectList();
 	}
 
 	/**
