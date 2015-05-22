@@ -76,6 +76,7 @@ class NenoViewGroupsElements extends JViewLegacy
 	protected function addToolbar()
 	{
 
+		JToolbarHelper::addNew('addGroup', JText::_('COM_NENO_VIEW_GROUPSELEMENTS_BTN_ADD_GROUP'));
 		JToolbarHelper::custom('moveelementconfirm.show', 'move', 'move', JText::_('COM_NENO_VIEW_GROUPSELEMENTS_BTN_MOVE_ELEMENTS'), true);
 
 		$toolbar = JToolbar::getInstance();

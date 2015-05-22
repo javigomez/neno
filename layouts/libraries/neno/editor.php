@@ -15,98 +15,176 @@ $document    = JFactory::getDocument();
 $translation = $displayData;
 
 ?>
-<script>
-	jQuery(document).ready(function () {
-		jQuery('#copy-btn').on('click', copyOriginal);
+	<script>
+		jQuery(document).ready(function () {
+			jQuery('#copy-btn').on('click', copyOriginal);
 
-		jQuery('#translate-btn').on('click', translate);
+			<?php if (NenoSettings::get('translator') == '' || NenoSettings::get('translator_api_key') == ''): ?>
 
-		jQuery('#skip-button').on('click', loadNextTranslation);
+			jQuery('#translate-btn').on('click', function () {
+				jQuery('#translatorKeyModal').modal('show');
+			});
 
-		jQuery('#draft-button').on('click', saveDraft);
+			jQuery('#saveTranslatorKey').off('click').on('click', function () {
+				var translator = jQuery('#translator').val();
+				var translatorKey = jQuery('#translator_api_key').val();
+				jQuery.ajax({
+						beforeSend: onBeforeAjax,
+						type: 'POST',
+						data: {
+							translator: translator,
+							translatorKey: translatorKey
+						},
+						url: 'index.php?option=com_neno&task=editor.saveTranslatorConfig',
+						success: function () {
+							jQuery('#saveTranslatorKey').modal('hide');
+							window.location.reload();
+						}
+					}
+				);
+			});
 
-		jQuery('#save-next-button').on('click', saveTranslationAndNext);
+			var options = {
+				html: true,
+				placement: "right"
+			}
+			jQuery('.settings-tooltip').tooltip(options);
 
-		var action = jQuery('#default_translate_action').val();
-		if (action == '1') {
-			copyOriginal();
-		} else if (action == '2') {
-			translate();
-		}
-	});
-</script>
+			<?php else: ?>
 
-<div>
-	<div class="span12">
-		<div class="span6 breadcrumbs">
-			<?php echo empty($translation) ? '' : implode(' <span class="gt icon-arrow-right"></span>', $translation->breadcrumbs); ?>
-		</div>
-		<div class="span6 pull-right">
-			<div class="pull-right right-buttons">
-				<button id="skip-button" class="btn btn-big" type="button"
-				        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
-					<span class="icon-next big-icon"></span>
+			jQuery('#translate-btn').on('click', translate);
+
+			<?php endif; ?>
+
+			jQuery('#skip-button').on('click', loadNextTranslation);
+
+			jQuery('#draft-button').on('click', saveDraft);
+
+			jQuery('#save-next-button').on('click', saveTranslationAndNext);
+
+			var action = jQuery('#default_translate_action').val();
+			if (action == '1') {
+				copyOriginal();
+			}
+				<?php if (NenoSettings::get('translator') != '' && NenoSettings::get('translator_api_key') != ''): ?>
+			else if (action == '2') {
+				translate();
+			}
+			<?php endif; ?>
+		});
+	</script>
+
+	<div>
+		<div class="span12">
+			<div class="span6 breadcrumbs">
+				<?php echo empty($translation) ? '' : implode(' <span class="gt icon-arrow-right"></span>', $translation->breadcrumbs); ?>
+			</div>
+			<div class="span6 pull-right">
+				<div class="pull-right right-buttons">
+					<button id="skip-button" class="btn btn-big" type="button"
+					        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+						<span class="icon-next big-icon"></span>
 					<span
 						class="normal-text big-line-height"><?php echo JText::_('COM_NENO_EDITOR_SKIP_BUTTON'); ?></span>
-				</button>
-				<button id="draft-button" class="btn btn-big" type="button"
-				        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
-					<span class="icon-briefcase big-icon"></span>
-					<span class="normal-text"><?php echo JText::_('COM_NENO_EDITOR_SAVE_AS_DRAFT_BUTTON'); ?></span>
-					<span class="small-text">Ctrl+S</span>
-				</button>
-				<button id="save-next-button" class="btn btn-big btn-success" type="button"
-				        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
-					<span class="icon-checkmark big-icon"></span>
-					<span class="normal-text"><?php echo JText::_('COM_NENO_EDITOR_SAVE_AND_NEXT_BUTTON'); ?></span>
-					<span class="small-text">Ctrl+Enter</span>
-				</button>
+					</button>
+					<button id="draft-button" class="btn btn-big" type="button"
+					        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+						<span class="icon-briefcase big-icon"></span>
+						<span class="normal-text"><?php echo JText::_('COM_NENO_EDITOR_SAVE_AS_DRAFT_BUTTON'); ?></span>
+						<span class="small-text">Ctrl+S</span>
+					</button>
+					<button id="save-next-button" class="btn btn-big btn-success" type="button"
+					        data-id="<?php echo empty($translation) ? '' : $translation->id; ?>">
+						<span class="icon-checkmark big-icon"></span>
+						<span class="normal-text"><?php echo JText::_('COM_NENO_EDITOR_SAVE_AND_NEXT_BUTTON'); ?></span>
+						<span class="small-text">Ctrl+Enter</span>
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
-<div>
 	<div>
-		<div class="span5">
-			<div class="uneditable-input full-width original-text">
-				<?php echo empty($translation) ? '' : NenoHelper::highlightHTMLTags(NenoHelper::html2text($translation->original_text)); ?>
+		<div>
+			<div class="span5">
+				<div class="uneditable-input full-width original-text">
+					<?php echo empty($translation) ? '' : NenoHelper::highlightHTMLTags(NenoHelper::html2text($translation->original_text)); ?>
+				</div>
+				<div class="clearfix"></div>
+				<div class="pull-right last-modified">
+					<?php echo empty($translation) ? '' : JText::sprintf('COM_NENO_EDITOR_LAST_MODIFIED', $translation->time_added) ?>
+				</div>
 			</div>
-			<div class="clearfix"></div>
-			<div class="pull-right last-modified">
-				<?php echo empty($translation) ? '' : JText::sprintf('COM_NENO_EDITOR_LAST_MODIFIED', $translation->time_added) ?>
-			</div>
-		</div>
-		<div class="central-buttons">
-			<div>
-				<button id="copy-btn" class="btn btn-big" type="button">
-					<span class="icon-copy big-icon"></span>
+			<div class="central-buttons">
+				<div>
+					<button id="copy-btn" class="btn btn-big" type="button">
+						<span class="icon-copy big-icon"></span>
 					<span
 						class="normal-text big-line-height"><?php echo JText::_('COM_NENO_EDITOR_COPY_BUTTON'); ?></span>
-				</button>
-			</div>
-			<div class="clearfix"></div>
-			<div>
-				<button id="translate-btn" class="btn btn-big"
-				        type="button" <?php echo (NenoSettings::get('translator') == '' || NenoSettings::get('translator_api_key') == '') ? 'disabled' : ''; ?>>
-					<span class="icon-screen big-icon"></span>
+					</button>
+				</div>
+				<div class="clearfix"></div>
+				<div>
+					<button id="translate-btn" class="btn btn-big" type="button">
+						<span class="icon-screen big-icon"></span>
 					<span class="normal-text big-line-height">
 						<?php echo JText::_('COM_NENO_EDITOR_COPY_AND_TRANSLATE_BUTTON'); ?>
 					</span>
-				</button>
+					</button>
+				</div>
+				<span class="icon-grey icon-arrow-right-2"></span>
 			</div>
-			<span class="icon-grey icon-arrow-right-2"></span>
-		</div>
-		<div class="span5 pull-right">
+			<div class="span5 pull-right">
 			<textarea
 				class="full-width translated-content"><?php echo !empty($translation) && ($translation->state != NenoContentElementTranslation::NOT_TRANSLATED_STATE || $translation->string !== $translation->original_text) ? $translation->string : ''; ?></textarea>
 
-			<div class="clearfix"></div>
-			<div class="pull-left translated-by">
-				<?php echo JText::sprintf('COM_NENO_EDITOR_TRANSLATED_BY', NenoSettings::get('translator')); ?>
-			</div>
-			<div class="pull-right last-modified">
-				<?php echo empty($translation) ? '' : JText::sprintf('COM_NENO_EDITOR_LAST_MODIFIED', $translation->time_changed !== '0000-00-00 00:00:00' ? $translation->time_changed : JText::_('COM_NENO_EDITOR_NEVER')) ?>
+				<div class="clearfix"></div>
+				<div class="pull-left translated-by">
+					<?php echo JText::sprintf('COM_NENO_EDITOR_TRANSLATED_BY', NenoSettings::get('translator')); ?>
+				</div>
+				<div class="pull-right last-modified">
+					<?php echo empty($translation) ? '' : JText::sprintf('COM_NENO_EDITOR_LAST_MODIFIED', $translation->time_changed !== '0000-00-00 00:00:00' ? $translation->time_changed : JText::_('COM_NENO_EDITOR_NEVER')) ?>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
+<?php if (NenoSettings::get('translator') == '' || NenoSettings::get('translator_api_key') == ''): ?>
+	<!-- Modal for translator API key -->
+	<div id="translatorKeyModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="translatorKey"
+	     aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3 id="myModalLabel">&nbsp;</h3>
+		</div>
+		<div class="modal-body">
+			<p><?php echo JText::_('COM_NENO_EDITOR_NO_TRANSLATOR_MESSAGE'); ?></p>
+			<br/>
+			<br/>
+			<table class="full-width">
+				<tr>
+					<td class='setting-label'>
+						<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_TRANSLATOR'); ?>
+						<span class="settings-tooltip" data-toggle="tooltip"
+						      title='<?php echo JText::_('COM_NENO_SETTINGS_SETTING_INFO_TRANSLATOR'); ?>'>[?]</span>
+					</td>
+					<td class=''>
+						<?php echo NenoHelper::getTranslatorsSelect(); ?>
+					</td>
+				</tr>
+				<tr>
+					<td class='setting-label'>
+						<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_TRANSLATOR_API_KEY'); ?>
+					</td>
+					<td class=''>
+						<input type="text" name="translator_api_key" id="translator_api_key"
+						       class="input-setting input-large"
+						       value=""/>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_MODAL_GROUPFORM_BTN_CLOSE'); ?></button>
+			<button class="btn btn-primary" id="saveTranslatorKey"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_MODAL_GROUPFORM_BTN_SAVE'); ?></button>
+		</div>
+	</div>
+<?php endif; ?>

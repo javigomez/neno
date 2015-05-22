@@ -142,7 +142,7 @@ class NenoControllerEditor extends NenoControllerStrings
 			/* @var $translation NenoContentElementTranslation */
 			$translation = NenoContentElementTranslation::load($translationId, false);
 
-			$data = array (
+			$data = array(
 				'translation' => $translation->prepareDataForView()
 			);
 
@@ -171,7 +171,7 @@ class NenoControllerEditor extends NenoControllerStrings
 	 *
 	 * @return NenoModelEditor
 	 */
-	public function getModel($name = 'Editor', $prefix = 'NenoModel', $config = array ())
+	public function getModel($name = 'Editor', $prefix = 'NenoModel', $config = array())
 	{
 		return parent::getModel($name, $prefix, $config);
 	}
@@ -191,5 +191,15 @@ class NenoControllerEditor extends NenoControllerStrings
 			$model = $this->getModel();
 			$model->consolidateTranslations($translationId);
 		}
+	}
+
+	public function saveTranslatorConfig()
+	{
+		$input         = $this->input;
+		$translator    = $input->post->getString('translator');
+		$translatorKey = $input->post->getString('translatorKey');
+
+		NenoSettings::set('translator', $translator);
+		NenoSettings::set('translator_api_key', $translatorKey);
 	}
 }

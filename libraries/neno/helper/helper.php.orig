@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 <?php
 
 /**
@@ -3500,3 +3502,4 @@ class NenoHelper
 		return JFactory::getDbo()->quote($value);
 	}
 }
+>>>>>>> origin/master

@@ -209,9 +209,14 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		$selected_methods = $input->get('selected_methods', array (), 'ARRAY');
 
 		$translation_methods = NenoHelper::loadTranslationMethods();
-
-		$group = NenoContentElementGroup::load($group_id)->prepareDataForView();
-
+        
+        if (!empty($group_id)) {
+            $group = NenoContentElementGroup::load($group_id)->prepareDataForView();
+        } else {
+            $group = new stdClass;
+            $group->assigned_translation_methods = array();
+        }
+        
 		// Ensure that we know what was selected for the previous selector
 		if (($n > 0 && !isset($selected_methods[$n - 1])) || ($n > 0 && $selected_methods[$n - 1] == 0))
 		{
