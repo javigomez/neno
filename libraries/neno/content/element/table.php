@@ -426,7 +426,7 @@ class NenoContentElementTable extends NenoContentElement
 				if (defined('NENO_INSTALLATION'))
 				{
 					NenoHelper::setSetupState(
-						0, JText::_('COM_NENO_INSTALLATION_MESSAGE_TABLE_TOO_MANY_RECORDS', $this->group->getGroupName(), $this->getTableName()), 2, 'error'
+						0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_TABLE_TOO_MANY_RECORDS', $this->group->getGroupName(), $this->getTableName()), 2, 'error'
 					);
 				}
 			}
