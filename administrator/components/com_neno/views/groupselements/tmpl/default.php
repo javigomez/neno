@@ -271,9 +271,12 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	}
 
 
-	function showModalGroupForm() {
-
-		var id = getGroupIdFromChildElement(jQuery(this));
+	function showModalGroupForm(isNew) {
+        if (isNew  === true) {
+            var id = 0;
+        } else {
+            var id = getGroupIdFromChildElement(jQuery(this));
+        }
 
 		//Load group form html
 		jQuery.ajax({
@@ -305,7 +308,19 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 		return id_parts[1];
 
 	}
-
+    
+    //Catch the joomla submit
+    var originalJoomla = Joomla.submitbutton;
+    Joomla.submitbutton = function(task) {
+        if (task === 'addGroup') {
+            showModalGroupForm(true);
+        } else {
+            //Submit as normal
+            originalJoomla.apply(this, arguments);
+        }
+        
+    }
+    
 
 </script>
 

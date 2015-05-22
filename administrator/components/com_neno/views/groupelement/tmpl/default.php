@@ -38,7 +38,7 @@ JHtml::_('formbehavior.chosen', 'select');
 							<div class="controls">
 								<label class="checkbox">
 									<input type="checkbox" name="jform[languages][]"
-									       value="<?php echo $language->lang_code; ?>"> <?php echo $language->title; ?>
+                                           value="<?php echo $language->lang_code; ?>" checked="checked"> <?php echo $language->title; ?>
 								</label>
 							</div>
 						<?php endforeach; ?>
