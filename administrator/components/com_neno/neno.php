@@ -40,7 +40,7 @@ if (!NenoHelper::isDatabaseDriverEnabled())
 else if (!NenoHelper::isLicenseValid())
 {
 	$app = JFactory::getApplication();
-	$app->enqueueMessage('Your license code is incorrect or not created for this domain', 'warning');    
+	$app->enqueueMessage(JText::_('COM_NENO_ERROR_IN_LICENSE'), 'warning');    
 }
 
 
