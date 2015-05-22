@@ -1113,7 +1113,7 @@ class NenoHelper
 				$tableData = array (
 					'tableName'  => $tableNotDiscovered,
 					'primaryKey' => $db->getPrimaryKey($tableNotDiscovered),
-					'translate'  => true,
+					'translate'  => self::isTranslatable($tableNotDiscovered),
 					'group'      => $otherGroup
 				);
 
