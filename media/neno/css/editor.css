@@ -98,3 +98,25 @@ button .normal-text {
 .highlighted-tag {
     color: #87AEC5;
 }
+.modal {
+    width: 40% !important;
+    margin-left: -20% !important;
+}
+.modal-body {
+    padding: 15px !important;
+    width: 94% !important;
+}
+.modal-header {
+    border: none !important;
+}
+.full-width {
+    width: 100%;
+}
+.settings-tooltip {
+    font-size: 0.75em;
+    font-weight: bold;
+    cursor: pointer;
+}
+td.setting-label {
+    width: 50% !important;
+}

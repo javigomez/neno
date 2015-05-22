@@ -3475,4 +3475,22 @@ class NenoHelper
 	{
 		return JFactory::getDbo()->quote($value);
 	}
+
+	public static function getTranslatorsSelect() {
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->clear()
+			->select(
+				array (
+					'translator_name AS value',
+					'translator_name AS text',
+				)
+			)
+			->from('#__neno_machine_translation_apis');
+		$db->setQuery($query);
+		$values = $db->loadObjectList();
+
+		return JHtml::_('select.genericlist', $values, 'translator', null, 'value', 'text', null, false, true);
+	}
 }
