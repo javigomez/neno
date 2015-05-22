@@ -88,28 +88,66 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * Get the fields related to this table
 	 *
-	 * @param   bool $loadExtraData    Load Extra data flag for fields
-	 * @param   bool $onlyTranslatable Returns only the
+	 * @param   bool $loadExtraData                Load Extra data flag for fields
+	 * @param   bool $onlyTranslatable             Returns only the translatable fields
+	 * @param   bool $onlyFieldsWithNoTranslations Returns only fields with no translations
 	 *
 	 * @return array
 	 */
-	public function getFields($loadExtraData = false, $onlyTranslatable = false)
+	public function getFields($loadExtraData = false, $onlyTranslatable = false, $onlyFieldsWithNoTranslations = false)
 	{
 		if ($this->fields === null)
 		{
 			$this->fields = array ();
-			$fieldsInfo   = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $this->getId(), true);
 
-			for ($i = 0; $i < count($fieldsInfo); $i++)
+			if ($onlyFieldsWithNoTranslations)
 			{
-				$fieldInfo        = $fieldsInfo[$i];
-				$fieldInfo->table = $this;
-				$field            = new NenoContentElementField($fieldInfo, $loadExtraData);
+				/* @var $db NenoDatabaseDriverMysqlx */
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
+				$query
+					->select('f.id')
+					->from('#__neno_content_element_fields AS f')
+					->where(
+						array (
+							'f.table_id = ' . $this->getId(),
+							'NOT EXISTS (SELECT 1 FROM #__neno_content_element_translations AS tr WHERE tr.content_id = f.id AND tr.content_type = ' . $db->quote('db_string') . ')'
+						)
+					);
 
-				// Insert the field only if the $onlyTranslatable flag is off or if the flag is on and the field is translatable
-				if (($field->isTranslatable() && $onlyTranslatable) || !$onlyTranslatable)
+				if ($onlyTranslatable)
 				{
-					$this->fields[] = $field;
+					$query->where('f.translate = 1');
+				}
+
+				$db->setQuery($query);
+				$fields = $db->loadArray();
+
+				foreach ($fields as $field)
+				{
+					$field = NenoContentElementField::load($field);
+
+					if (!empty($field))
+					{
+						$this->fields[] = $field;
+					}
+				}
+			}
+			else
+			{
+				$fieldsInfo = self::getElementsByParentId(NenoContentElementField::getDbTable(), 'table_id', $this->getId(), true);
+
+				for ($i = 0; $i < count($fieldsInfo); $i++)
+				{
+					$fieldInfo        = $fieldsInfo[$i];
+					$fieldInfo->table = $this;
+					$field            = new NenoContentElementField($fieldInfo, $loadExtraData);
+
+					// Insert the field only if the $onlyTranslatable flag is off or if the flag is on and the field is translatable
+					if (($field->isTranslatable() && $onlyTranslatable) || !$onlyTranslatable)
+					{
+						$this->fields[] = $field;
+					}
 				}
 			}
 		}

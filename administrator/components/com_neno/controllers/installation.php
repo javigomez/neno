@@ -307,7 +307,7 @@ class NenoControllerInstallation extends JControllerAdmin
 
 					if (!empty($table))
 					{
-						$table->getFields();
+						$table->getFields(false, true, true);
 						$table->persist();
 					}
 
