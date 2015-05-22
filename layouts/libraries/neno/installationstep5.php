@@ -55,10 +55,10 @@ JHtml::_('bootstrap.tooltip');
 			<?php endif; ?>
 
 			<label class="checkbox">
-				<input type="checkbox"
+				<input type="checkbox" class="no-data"
 				       id="backup-created-checkbox"><?php echo JText::_('COM_NENO_INSTALLATION_WARNING_MESSAGE_CHECKBOX_MESSAGE'); ?>
 			</label>
-			<button type="button" class="btn" id="proceed-button" disabled>
+			<button type="button" class="btn no-data" id="proceed-button" disabled>
 				<?php echo JText::_('COM_NENO_INSTALLATION_WARNING_MESSAGE_PROCEED_BUTTON'); ?>
 			</button>
 		</div>

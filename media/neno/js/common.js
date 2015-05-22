@@ -32,10 +32,31 @@ function loadNextTranslation() {
     }
 }
 
+function updateEditorString(row, data) {
+    if (jQuery('#input-status-' + data.state).prop('checked')) {
+        var string = data.string;
+        var statuses = ['', 'translated', 'queued', 'changed', 'not-translated'];
+        try {
+            var stringObject = jQuery(string);
+            string = stringObject.text();
+        }
+        catch (err) {
+        }
+        if (string.length > 50) {
+            string = string.substr(0, 45) + '...';
+        }
+        row.find('.string-text').html(string);
+        row.find('.status').removeClass().addClass('status');
+        row.find('.status').addClass(statuses[data.state]);
+    } else {
+        loadNextTranslation();
+        row.remove();
+    }
+}
+
 function saveTranslationAndNext() {
     var text = jQuery('.translated-content').val();
     var translationId = jQuery('#save-next-button').data('id');
-    var statuses = ['', 'translated', 'queued', 'changed', 'not-translated'];
     jQuery.ajax({
             beforeSend: onBeforeAjax,
             type: 'POST',
@@ -46,22 +67,6 @@ function saveTranslationAndNext() {
                 text: text
             },
             success: function (data) {
-                var row = jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']');
-                if (row) {
-                    var string = data.translation.string;
-                    try {
-                        var stringObject = jQuery(string);
-                        string = stringObject.text();
-                    }
-                    catch (err) {}
-                    if (string.length > 50) {
-                        string = string.substr(0, 45) + '...';
-                    }
-                    row.find('.string-text').html(string);
-                    row.find('.status').removeClass().addClass('status');
-                    row.find('.status').addClass(statuses[data.translation.state]);
-                }
-
                 if (typeof data.message != 'undefined') {
                     jQuery('#consolidate-modal .modal-body p').html(data.message);
                     jQuery('#consolidate-button').off('click').data('translation', translationId).on('click', function () {
@@ -75,15 +80,20 @@ function saveTranslationAndNext() {
                                 url: 'index.php?option=com_neno&task=editor.consolidateTranslation',
                                 success: function () {
                                     jQuery('#consolidate-modal').modal('hide');
-                                    loadStrings(true);
                                 }
                             }
                         );
                     });
                     jQuery('#consolidate-modal').modal('show');
+                    jQuery('#consolidate-button').focus();
                 }
-
-                loadNextTranslation();
+                var row = jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']');
+                if (row) {
+                    updateEditorString(row, data.translation);
+                }
+                if (row && row == jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']')) {
+                    loadNextTranslation();
+                }
             }
         }
     );
@@ -92,7 +102,6 @@ function saveTranslationAndNext() {
 function saveDraft() {
     var text = jQuery('.translated-content').val();
     var translationId = jQuery('#draft-button').data('id');
-    var statuses = ['', 'translated', 'queued', 'changed', 'not-translated'];
     jQuery.ajax({
             beforeSend: onBeforeAjax,
             type: 'POST',
@@ -105,18 +114,7 @@ function saveDraft() {
             success: function (data) {
                 var row = jQuery('#elements-wrapper .string[data-id=' + data.id + ']');
                 if (row) {
-                    var string = data.string;
-                    try {
-                        var stringObject = jQuery(string);
-                        string = stringObject.text();
-                    }
-                    catch (err) {}
-                    if (string.length > 50) {
-                        string = string.substr(0, 45) + '...';
-                    }
-                    row.find('.string-text').html(string);
-                    row.find('.status').removeClass().addClass('status');
-                    row.find('.status').addClass(statuses[data.state]);
+                    updateEditorString(row, data);
                 }
             }
         }

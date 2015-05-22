@@ -402,7 +402,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 			$tables = null;
 			preg_match('/insert into (\w+)/', $this->sql, $tables);
 
-			if (empty($tables))
+			if (!empty($tables))
 			{
 				/* @var $table NenoContentElementTable */
 				$table = NenoContentElementTable::load(array ('table_name' => $tables[1]));

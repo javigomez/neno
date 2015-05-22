@@ -1083,7 +1083,27 @@ class NenoHelper
 
 		if (!empty($tablesNotDiscovered))
 		{
-			$otherGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
+			// Check if this group exists already
+			$query = $db->getQuery(true);
+			$query
+				->select('g.id')
+				->from('#__neno_content_element_groups AS g')
+				->where('NOT EXISTS (SELECT 1 FROM #__neno_content_element_groups_x_extensions AS ge WHERE ge.group_id = g.id)');
+
+			$db->setQuery($query);
+			$groupId = $db->loadResult();
+
+			$otherGroup = null;
+
+			if (!empty($groupId))
+			{
+				/* @var $otherGroup NenoContentElementGroup */
+				$otherGroup = NenoContentElementGroup::load($groupId);
+			}
+			else
+			{
+				$otherGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
+			}
 
 			foreach ($tablesNotDiscovered as $tableNotDiscovered)
 			{
@@ -1091,7 +1111,7 @@ class NenoHelper
 				$tableData = array (
 					'tableName'  => $tableNotDiscovered,
 					'primaryKey' => $db->getPrimaryKey($tableNotDiscovered),
-					'translate'  => true,
+					'translate'  => self::isTranslatable($tableNotDiscovered),
 					'group'      => $otherGroup
 				);
 
@@ -1124,7 +1144,9 @@ class NenoHelper
 	}
 
 	/**
+	 * Get tables that haven't been discovered yet
 	 *
+	 * @return array
 	 */
 	protected static function getTablesNotDiscovered()
 	{
@@ -1315,6 +1337,7 @@ class NenoHelper
 
 		return !empty($plugin);
 	}
+
 
 	/**
 	 * Output HTML code for translation progress bar

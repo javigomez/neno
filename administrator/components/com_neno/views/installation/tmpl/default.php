@@ -98,20 +98,22 @@ if (!empty($this->extra_sidebar))
 		var data = {};
 
 		allInputs.each(function () {
-			switch (jQuery(this).prop('tagName').toLowerCase()) {
-				case 'select':
-					data[jQuery(this).prop('name')] = jQuery(this).find('option:selected').val();
-					break;
-				case 'input':
-					switch (jQuery(this).prop('type')) {
-						case 'checkbox':
-							data[jQuery(this).prop('name')] = jQuery(this).is(':checked').val();
-							break;
-						default:
-							data[jQuery(this).prop('name')] = jQuery(this).val();
-							break;
-					}
-					break;
+			if (!jQuery(this).hasClass('no-data')) {
+				switch (jQuery(this).prop('tagName').toLowerCase()) {
+					case 'select':
+						data[jQuery(this).prop('name')] = jQuery(this).find('option:selected').val();
+						break;
+					case 'input':
+						switch (jQuery(this).prop('type')) {
+							case 'checkbox':
+								data[jQuery(this).prop('name')] = jQuery(this).is(':checked').val();
+								break;
+							default:
+								data[jQuery(this).prop('name')] = jQuery(this).val();
+								break;
+						}
+						break;
+				}
 			}
 		});
 		jQuery('#system-message-container').empty();
