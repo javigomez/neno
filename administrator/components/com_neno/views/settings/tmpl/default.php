@@ -21,15 +21,42 @@ if (!empty($this->extra_sidebar))
 	$this->sidebar .= $this->extra_sidebar;
 }
 
-$user          = JFactory::getUser();
-$userId        = $user->get('id');
+$user   = JFactory::getUser();
+$userId = $user->get('id');
+
+$options = array();
+
+foreach ($this->items as $item)
+{
+	$options[$item->setting_key] = $item;
+}
 ?>
+
+<style>
+	.settings-tooltip {
+		font-size: 0.75em;
+		font-weight: bold;
+		vertical-align: super;
+		cursor: pointer;
+	}
+	td.setting-label {
+		width: 40% !important;
+	}
+	table td {
+		border: none !important;
+	}
+</style>
 
 <script>
 	jQuery(document).ready(function () {
 		jQuery('select').on('change', saveSetting);
 		jQuery(".input-setting").on('blur', saveSetting);
 		jQuery('fieldset.radio').on('change', saveSetting);
+		var options = {
+			html: true,
+			placement: "right"
+		}
+		jQuery('.settings-tooltip').tooltip(options);
 	});
 
 	function saveSetting() {
@@ -81,51 +108,160 @@ $userId        = $user->get('id');
 		<?php echo $this->sidebar; ?>
 	</div>
 	<div id="j-main-container" class="span10">
-		<table class="table table-striped" id="typeList">
+		<h2><?php echo JText::_('COM_NENO_SETTINGS_GENERAL'); ?></h2>
+		<table class="table full-width" id="typeListGeneral">
 			<tr>
-				<th class='left'>
-					<?php echo JText::_('COM_NENO_SETTINGS_KEY'); ?>
-				</th>
-				<th class='left'>
-					<?php echo JText::_('COM_NENO_SETTINGS_VALUE'); ?>
-				</th>
+				<?php $item = $options['license_code']; ?>
+				<td class='left setting-label'>
+					<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
+					<span class="settings-tooltip" data-toggle="tooltip" title='<?php echo JText::_('COM_NENO_SETTINGS_SETTING_INFO_' . strtoupper($item->setting_key)); ?>'>[?]</span>
+				</td>
+				<td class=''>
+					<textarea name="<?php echo $item->setting_key; ?>"
+					          class="input-setting input-xxlarge"><?php echo $item->setting_value; ?></textarea>
+				</td>
 			</tr>
-			<?php foreach ($this->items as $i => $item) : ?>
-				<?php $canEdit = $user->authorise('core.edit', 'com_neno') && $item->read_only == 0; ?>
-				<tr class="row<?php echo $i % 2; ?>">
-					<td>
-						<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
-					</td>
-					<td>
-						<?php if (isset($item->dropdown)): ?>
-							<?php echo $item->dropdown; ?>
-						<?php elseif (is_numeric($item->setting_value) && ($item->setting_value == 1 || $item->setting_value == 0)): ?>
-							<fieldset id="<?php echo $item->setting_key; ?>" class="radio btn-group btn-group-yesno">
-								<input type="radio" id="<?php echo $item->setting_key; ?>0"
-								       name="<?php echo $item->setting_key; ?>" value="1"
-									<?php echo ($item->setting_value) ? 'checked="checked"' : ''; ?>>
-								<label for="<?php echo $item->setting_key; ?>0" class="btn">
-									<?php echo JText::_('JYES'); ?>
-								</label>
-								<input type="radio" id="<?php echo $item->setting_key; ?>1"
-								       name="<?php echo $item->setting_key; ?>" value="0"
-									<?php echo ($item->setting_value) ? '' : 'checked="checked"'; ?>>
-								<label for="<?php echo $item->setting_key; ?>1" class="btn">
-									<?php echo JText::_('JNO'); ?>
-								</label>
-							</fieldset>
-						<?php else: ?>
-							<?php if ($canEdit): ?>
-								<input type="text" name="<?php echo $item->setting_key; ?>"
-								       class="input-setting input-xxlarge"
-								       value="<?php echo $item->setting_value; ?>"/>
-							<?php else: ?>
-								<span class="input-xxlarge uneditable-input"><?php echo $item->setting_value; ?></span>
-							<?php endif; ?>
-						<?php endif; ?>
-					</td>
-				</tr>
-			<?php endforeach; ?>
+			<tr>
+				<?php $item = $options['translation_method_1']; ?>
+				<td class='setting-label'>
+					<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
+				</td>
+				<td class=''>
+					<?php echo $item->dropdown; ?>
+				</td>
+			</tr>
+			<tr>
+				<?php $item = $options['translator']; ?>
+				<td class='setting-label'>
+					<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
+					<span class="settings-tooltip" data-toggle="tooltip" title='<?php echo JText::_('COM_NENO_SETTINGS_SETTING_INFO_' . strtoupper($item->setting_key)); ?>'>[?]</span>
+				</td>
+				<td class=''>
+					<?php echo $item->dropdown; ?>
+				</td>
+			</tr>
+			<tr>
+				<?php $item = $options['translator_api_key']; ?>
+				<td class='setting-label'>
+					<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
+				</td>
+				<td class=''>
+					<input type="text" name="<?php echo $item->setting_key; ?>"
+					       class="input-setting input-xxlarge"
+					       value="<?php echo $item->setting_value; ?>"/>
+				</td>
+			</tr>
+		</table>
+		
+		<h2><?php echo JText::_('COM_NENO_SETTINGS_TRANSLATE'); ?></h2>
+		<table class="table full-width" id="typeListTranslate">
+			<tr>
+				<?php $item = $options['hide_empty_strings']; ?>
+				<td class='left setting-label'>
+					<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
+				</td>
+				<td class=''>
+					<fieldset id="<?php echo $item->setting_key; ?>" class="radio btn-group btn-group-yesno">
+						<input type="radio" id="<?php echo $item->setting_key; ?>0"
+						       name="<?php echo $item->setting_key; ?>" value="1"
+							<?php echo ($item->setting_value) ? 'checked="checked"' : ''; ?>>
+						<label for="<?php echo $item->setting_key; ?>0" class="btn">
+							<?php echo JText::_('JYES'); ?>
+						</label>
+						<input type="radio" id="<?php echo $item->setting_key; ?>1"
+						       name="<?php echo $item->setting_key; ?>" value="0"
+							<?php echo ($item->setting_value) ? '' : 'checked="checked"'; ?>>
+						<label for="<?php echo $item->setting_key; ?>1" class="btn">
+							<?php echo JText::_('JNO'); ?>
+						</label>
+					</fieldset>
+				</td>
+			</tr>
+			<tr>
+				<?php $item = $options['default_translate_action']; ?>
+				<td class='left setting-label'>
+					<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
+				</td>
+				<td class=''>
+					<fieldset id="<?php echo $item->setting_key; ?>" class="radio btn-group btn-group-yesno">
+						<input type="radio" id="<?php echo $item->setting_key; ?>0"
+						       name="<?php echo $item->setting_key; ?>" value="1"
+							<?php echo ($item->setting_value) ? 'checked="checked"' : ''; ?>>
+						<label for="<?php echo $item->setting_key; ?>0" class="btn">
+							<?php echo JText::_('JYES'); ?>
+						</label>
+						<input type="radio" id="<?php echo $item->setting_key; ?>1"
+						       name="<?php echo $item->setting_key; ?>" value="0"
+							<?php echo ($item->setting_value) ? '' : 'checked="checked"'; ?>>
+						<label for="<?php echo $item->setting_key; ?>1" class="btn">
+							<?php echo JText::_('JNO'); ?>
+						</label>
+					</fieldset>
+				</td>
+			</tr>
+		</table>
+		<br/>
+		<h2><?php echo JText::_('COM_NENO_SETTINGS_SCHEDULED'); ?></h2>
+		<table class="table full-width" id="typeListScheduled">
+			<tr>
+				<?php $item = $options['schedule_task_option']; ?>
+				<td class='setting-label'>
+					<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
+				</td>
+				<td class=''>
+					<?php echo $item->dropdown; ?>
+				</td>
+			</tr>
+			<tr>
+				<?php $item = $options['schedule_task_option']; ?>
+				<td class='left' colspan="2">
+					<h4><?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_TRANSLATE_AUTOMATICALLY_TITLE'); ?></h4>
+				</td>
+			</tr>
+			<tr>
+				<?php $item = $options['translate_automatically_machine']; ?>
+				<td class='left setting-label'>
+					&bullet; <?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
+				</td>
+				<td class=''>
+					<fieldset id="<?php echo $item->setting_key; ?>" class="radio btn-group btn-group-yesno">
+						<input type="radio" id="<?php echo $item->setting_key; ?>0"
+						       name="<?php echo $item->setting_key; ?>" value="1"
+							<?php echo ($item->setting_value) ? 'checked="checked"' : ''; ?>>
+						<label for="<?php echo $item->setting_key; ?>0" class="btn">
+							<?php echo JText::_('JYES'); ?>
+						</label>
+						<input type="radio" id="<?php echo $item->setting_key; ?>1"
+						       name="<?php echo $item->setting_key; ?>" value="0"
+							<?php echo ($item->setting_value) ? '' : 'checked="checked"'; ?>>
+						<label for="<?php echo $item->setting_key; ?>1" class="btn">
+							<?php echo JText::_('JNO'); ?>
+						</label>
+					</fieldset>
+				</td>
+			</tr>
+			<tr>
+				<?php $item = $options['translate_automatically_professional']; ?>
+				<td class='left setting-label'>
+					&bullet; <?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
+				</td>
+				<td class=''>
+					<fieldset id="<?php echo $item->setting_key; ?>" class="radio btn-group btn-group-yesno">
+						<input type="radio" id="<?php echo $item->setting_key; ?>0"
+						       name="<?php echo $item->setting_key; ?>" value="1"
+							<?php echo ($item->setting_value) ? 'checked="checked"' : ''; ?>>
+						<label for="<?php echo $item->setting_key; ?>0" class="btn">
+							<?php echo JText::_('JYES'); ?>
+						</label>
+						<input type="radio" id="<?php echo $item->setting_key; ?>1"
+						       name="<?php echo $item->setting_key; ?>" value="0"
+							<?php echo ($item->setting_value) ? '' : 'checked="checked"'; ?>>
+						<label for="<?php echo $item->setting_key; ?>1" class="btn">
+							<?php echo JText::_('JNO'); ?>
+						</label>
+					</fieldset>
+				</td>
+			</tr>
 		</table>
 
 		<input type="hidden" name="task" value=""/>
