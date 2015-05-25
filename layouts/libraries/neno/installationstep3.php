@@ -3,56 +3,48 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
+$items = $displayData->languages;
 
 ?>
 
+<style>
+</style>
+
 <div class="installation-step">
 	<div class="installation-body span12">
-
 		<div class="error-messages"></div>
-		<h2><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_TITLE'); ?></h2>
+		<h2><?php echo JText::_('COM_NENO_INSTALLATION_TARGET_LANGUAGES_TITLE'); ?></h2>
 
-		<div class="span6 default-method-selectors">
-			<p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_MESSAGE'); ?></p>
+		<p><?php echo JText::_('COM_NENO_INSTALLATION_TARGET_LANGUAGES_MESSAGE'); ?></p>
 
-			<div id="translation-method-selectors">
-				<?php $displayData = array (); ?>
-				<?php $displayData['n'] = 0; ?>
-				<?php $displayData['assigned_translation_methods'] = NenoHelper::getDefaultTranslationMethods(); ?>
-				<?php $displayData['translation_methods'] = NenoHelper::getTranslationMethods('dropdown'); ?>
-				<?php echo JLayoutHelper::render('translationmethodselector', $displayData, JPATH_NENO_LAYOUTS); ?>
-			</div>
-		</div>
-		<div class="span6 doc">
-			<p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_P1'); ?></p>
+		<?php foreach ($items as $item): ?>
+			<?php echo JLayoutHelper::render('languageconfiguration', $item, JPATH_NENO_LAYOUTS); ?>
+		<?php endforeach; ?>
 
-			<p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_P2'); ?></p>
+		<button type="button" class="btn btn-primary"
+		        id="add-languages-button" <?php echo $displayData->canInstallLanguages ? '' : 'disabled'; ?>>
+			<?php echo JText::_('COM_NENO_INSTALLATION_TARGET_LANGUAGES_ADD_LANGUAGE_BUTTON'); ?>
+		</button>
 
-			<p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_P3'); ?></p>
-
-			<h3><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_MANUAL_TRANSLATION_TITLE'); ?></h3>
-
-			<p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_MANUAL_TRANSLATION_MESSAGE'); ?></p>
-
-			<h3><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_MACHINE_TRANSLATION_TITLE'); ?></h3>
-
-			<p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_MACHINE_TRANSLATION_MESSAGE'); ?></p>
-
-			<h3><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_PROFESSIONAL_TRANSLATION_TITLE'); ?></h3>
-
-			<p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_PROFESSIONAL_TRANSLATION_MESSAGE'); ?></p>
-		</div>
-		<div class="span12">
-			<button type="button" class="btn btn-success next-step-button">
-				<?php echo JText::_('COM_NENO_INSTALLATION_NEXT'); ?>
-			</button>
-
-		</div>
+		<button type="button" class="btn btn-success next-step-button">
+			<?php echo JText::_('COM_NENO_INSTALLATION_NEXT'); ?>
+		</button>
 	</div>
 
-	<?php echo JLayoutHelper::render('installationbottom', 2, JPATH_NENO_LAYOUTS); ?>
+	<?php echo JLayoutHelper::render('installationbottom', 3, JPATH_NENO_LAYOUTS); ?>
 </div>
 
 <script>
-	loadMissingTranslationMethodSelectors('#translation-method-selectors', 'general');
+	jQuery('#add-languages-button').click(function () {
+		jQuery.ajax({
+			beforeSend: onBeforeAjax,
+			url: 'index.php?option=com_neno&task=showInstallLanguagesModal&placement=installation',
+			success: function (html) {
+				jQuery('#languages-modal .modal-body').empty().append(html);
+				jQuery('#languages-modal .modal-header h3').html("<?php echo JText::_('COM_NENO_INSTALLATION_TARGET_LANGUAGES_LANGUAGE_MODAL_TITLE'); ?>");
+				jQuery('#languages-modal').modal('show');
+			}
+		});
+	});
+	loadMissingTranslationMethodSelectors();
 </script>

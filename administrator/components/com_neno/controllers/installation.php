@@ -66,7 +66,7 @@ class NenoControllerInstallation extends JControllerAdmin
 				$languages           = NenoHelper::findLanguages(true);
 				$data->select_widget = JHtml::_('select.genericlist', $languages, 'source_language', null, 'iso', 'name', NenoSettings::get('source_language'));
 				break;
-			case 4:
+			case 3:
 				$language                   = JFactory::getLanguage();
 				$default                    = NenoSettings::get('source_language');
 				$knownLanguages             = $language->getKnownLanguages();
@@ -123,7 +123,7 @@ class NenoControllerInstallation extends JControllerAdmin
 				}
 
 				break;
-			case 5:
+			case 4:
 				/* @var $db NenoDatabaseDriverMysqlx */
 				$db    = JFactory::getDbo();
 				$query = $db->getQuery(true);
@@ -516,40 +516,11 @@ class NenoControllerInstallation extends JControllerAdmin
 	}
 
 	/**
-	 * Validate installation step 2
-	 *
-	 * @return bool
-	 */
-	protected function validateStep2()
-	{
-		$input       = $this->input;
-		$tasksOption = $input->getWord('schedule_task_option');
-		$app         = JFactory::getApplication();
-
-		if (!empty($tasksOption))
-		{
-			// If the option selected is AJAX, let's enable the module
-			if ($tasksOption === 'ajax')
-			{
-				// Do something
-			}
-
-			NenoSettings::set('schedule_task_option', $tasksOption);
-
-			return true;
-		}
-
-		$app->enqueueMessage('COM_NENO_INSTALLATION_ERROR');
-
-		return false;
-	}
-
-	/**
 	 * Validate installation step 3
 	 *
 	 * @return bool
 	 */
-	protected function validateStep3()
+	protected function validateStep2()
 	{
 		$input = $this->input;
 		$app   = JFactory::getApplication();
