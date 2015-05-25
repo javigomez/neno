@@ -179,14 +179,14 @@ class NenoHelper
 	 */
 	public static function setAdminTitle($showLanguageDropDown = false)
 	{
-		$app = JFactory::getApplication();
-        $view = $app->input->getCmd('view', '');
-        
-        $document = $app->getDocument();
-        $currentTitle = $document->getTitle();
-        $document->setTitle($currentTitle . ' - ' . JText::_('COM_NENO_TITLE_'.strtoupper($view)));
-        
-        
+		$app  = JFactory::getApplication();
+		$view = $app->input->getCmd('view', '');
+
+		$document     = $app->getDocument();
+		$currentTitle = $document->getTitle();
+		$document->setTitle($currentTitle . ' - ' . JText::_('COM_NENO_TITLE_' . strtoupper($view)));
+
+
 		// If there is a language constant then start with that
 		$displayData = array (
 			'view' => $view
@@ -2645,9 +2645,29 @@ class NenoHelper
 		$enGbExtensionId = self::getEnGbExtensionId();
 		NenoLog::log('en-GB Extension ID ' . $enGbExtensionId);
 		$languagesFound = array ();
+		$db             = JFactory::getDbo();
+		$query          = $db->getQuery(true);
 
 		if (!empty($enGbExtensionId))
 		{
+			// Let's enable it if it's disabled
+			$query
+				->select('a.update_site_id')
+				->from('#__update_sites AS a')
+				->innerJoin('#__update_sites_extensions AS b ON a.update_site_id = b.update_site_id')
+				->where('b.extension_id = ' . (int) $enGbExtensionId);
+			$db->setQuery($query);
+			$updateId = $db->loadResult();
+
+			if (!empty($updateId))
+			{
+				$query
+					->clear()
+					->update('#__update_sites')
+					->set('enabled = 1')
+					->where('update_site_id = ' . (int) $updateId);
+			}
+			
 			// Find updates for languages
 			$updater = JUpdater::getInstance();
 			$updater->findUpdates($enGbExtensionId);
@@ -2660,9 +2680,8 @@ class NenoHelper
 
 		if ($allSupported)
 		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
 			$query
+				->clear()
 				->select(
 					array (
 						'DISTINCT element AS iso',
