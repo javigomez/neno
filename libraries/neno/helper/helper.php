@@ -2491,12 +2491,13 @@ class NenoHelper
 	/**
 	 * Create content row
 	 *
-	 * @param   string $jiso
-	 * @param   mixed  $languageName
+	 * @param   string $jiso           Joomla ISO
+	 * @param   mixed  $languageName   Language name
+	 * @param   bool   $publishContent Publish content
 	 *
 	 * @return bool
 	 */
-	public static function createContentRow($jiso, $languageName = null)
+	public static function createContentRow($jiso, $languageName = null, $publishContent = true)
 	{
 		JLoader::register('LanguagesModelLanguage', JPATH_ADMINISTRATOR . '/components/com_languages/models/language.php');
 		/* @var $languageModel LanguagesModelLanguage */
@@ -2526,7 +2527,6 @@ class NenoHelper
 			}
 		}
 
-
 		// Create content
 		$data = array (
 			'lang_code'    => $jiso,
@@ -2534,7 +2534,7 @@ class NenoHelper
 			'title_native' => $languageName,
 			'sef'          => self::getSef($jiso),
 			'image'        => ($icon !== false) ? $icon : '',
-			'published'    => 1
+			'published'    => $publishContent
 		);
 
 		return $languageModel->save($data);
@@ -2725,11 +2725,12 @@ class NenoHelper
 	/**
 	 * Installs a language and create necessary data.
 	 *
-	 * @param integer $languageId Language id
+	 * @param   integer $languageId     Language id
+	 * @param   bool    $publishContent Publish language content
 	 *
 	 * @return bool
 	 */
-	public static function installLanguage($languageId)
+	public static function installLanguage($languageId, $publishContent = true)
 	{
 		// Loading language
 		$language = JFactory::getLanguage();
@@ -2774,7 +2775,7 @@ class NenoHelper
 			$db->setQuery($query);
 			$db->execute();
 
-			return self::createContentRow($jiso, $languageData);
+			return self::createContentRow($jiso, $languageData, $publishContent);
 		}
 
 		return self::isLanguageInstalled($jiso);
@@ -3438,6 +3439,25 @@ class NenoHelper
 		return $db->loadAssoc();
 	}
 
+	public static function getTranslatorsSelect()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->clear()
+			->select(
+				array (
+					'translator_name AS value',
+					'translator_name AS text',
+				)
+			)
+			->from('#__neno_machine_translation_apis');
+		$db->setQuery($query);
+		$values = $db->loadObjectList();
+
+		return JHtml::_('select.genericlist', $values, 'translator', null, 'value', 'text', null, false, true);
+	}
+
 	/**
 	 * Get a list of menu items associated to the one passed by argument
 	 *
@@ -3462,23 +3482,5 @@ class NenoHelper
 	private static function escapeString($value)
 	{
 		return JFactory::getDbo()->quote($value);
-	}
-
-	public static function getTranslatorsSelect() {
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query
-			->clear()
-			->select(
-				array (
-					'translator_name AS value',
-					'translator_name AS text',
-				)
-			)
-			->from('#__neno_machine_translation_apis');
-		$db->setQuery($query);
-		$values = $db->loadObjectList();
-
-		return JHtml::_('select.genericlist', $values, 'translator', null, 'value', 'text', null, false, true);
 	}
 }

@@ -208,7 +208,7 @@ class NenoController extends JControllerLegacy
 		$language  = $input->post->getString('language');
 		$placement = $input->post->getCmd('placement');
 
-		if (NenoHelper::installLanguage($updateId))
+		if (NenoHelper::installLanguage($updateId, $placement != 'dashboard'))
 		{
 			/* @var $db NenoDatabaseDriverMysqlx */
 			$db    = JFactory::getDbo();
@@ -279,6 +279,12 @@ class NenoController extends JControllerLegacy
 				$item->wordCount->untranslated = $untranslated;
 				$item->wordCount->total        = $translated + $queued + $changed + $untranslated;
 				$item->placement               = $placement;
+			}
+
+			// If the language was installed from the dashboard, let's add a task to set all the shadow tables structure
+			if ($placement == 'dashboard')
+			{
+				NenoTaskMonitor::addTask('language', array ('language' => $item->lang_code));
 			}
 
 			echo JLayoutHelper::render('languageconfiguration', get_object_vars($item), JPATH_NENO_LAYOUTS);

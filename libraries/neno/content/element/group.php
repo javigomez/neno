@@ -817,4 +817,48 @@ class NenoContentElementGroup extends NenoContentElement
 
 		return $this;
 	}
+
+	/**
+	 * Generate the content for a particular language
+	 *
+	 * @param string $languageTag Language tag
+	 *
+	 * @return bool True on success
+	 */
+	public function generateContentForLanguage($languageTag)
+	{
+		$tables = $this->getTables();
+
+		if (!empty($tables))
+		{
+			/* @var $table NenoContentElementTable */
+			foreach ($tables as $table)
+			{
+				$fields = $table->getFields(false, true);
+
+				/* @var $field NenoContentElementField */
+				foreach ($fields as $field)
+				{
+					$field->persistTranslations(null, $languageTag);
+				}
+			}
+		}
+
+		$languageFiles = $this->getLanguageFiles();
+
+		if (!empty($languageFiles))
+		{
+			/* @var $languageFile NenoContentElementLanguageFile */
+			foreach ($languageFiles as $languageFile)
+			{
+				$languageStrings = $languageFile->getLanguageStrings();
+
+				/* @var $languageString NenoContentElementLanguageString */
+				foreach ($languageStrings as $languageString)
+				{
+					$languageString->persistTranslations($languageTag);
+				}
+			}
+		}
+	}
 }

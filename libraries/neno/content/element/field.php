@@ -288,11 +288,12 @@ class NenoContentElementField extends NenoContentElement
 	/**
 	 * Persist all the translations
 	 *
-	 * @param   array|null $recordId Record id to just load that row
+	 * @param   array|null  $recordId Record id to just load that row
+	 * @param   string\null $language Language tag
 	 *
 	 * @return void
 	 */
-	public function persistTranslations($recordId = null)
+	public function persistTranslations($recordId = null, $language = null)
 	{
 		if ($this->translate)
 		{
@@ -304,7 +305,17 @@ class NenoContentElementField extends NenoContentElement
 				'timeAdded'   => new DateTime
 			);
 
-			$languages          = NenoHelper::getLanguages();
+			if ($language != null)
+			{
+				$languageData            = new stdClass;
+				$languageData->lang_code = $language;
+				$languages               = array ($languageData);
+			}
+			else
+			{
+				$languages = NenoHelper::getLanguages();
+			}
+
 			$defaultLanguage    = NenoSettings::get('source_language');
 			$this->translations = array ();
 			$strings            = $this->getStrings($recordId);

@@ -205,75 +205,7 @@ class NenoContentElementLanguageString extends NenoContentElement
 
 		if ($persistResult)
 		{
-			// If it doesn't have translations
-			if (empty($this->translations))
-			{
-				$this->translations = NenoContentElementTranslation::getTranslations($this);
-			}
-
-			if (empty($this->translations))
-			{
-				$commonData = array (
-					'contentType' => NenoContentElementTranslation::LANG_STRING,
-					'element'     => $this,
-					'contentId'   => $this->getId(),
-					'state'       => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
-					'string'      => $this->getString(),
-					'timeAdded'   => new DateTime
-				);
-
-				$languages          = NenoHelper::getLanguages();
-				$defaultLanguage    = NenoSettings::get('source_language');
-				$this->translations = array ();
-
-				foreach ($languages as $language)
-				{
-					if ($defaultLanguage !== $language->lang_code)
-					{
-						// If the string is empty or is a number, let's mark as translated.
-						$string = $this->getString();
-
-						// If the string is empty or is a number, let's mark as translated.
-						if (empty($string['string']) || is_numeric($string['string']))
-						{
-							$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
-						}
-						else
-						{
-							$commonData['state'] = NenoContentElementTranslation::NOT_TRANSLATED_STATE;
-						}
-
-						$commonData['language'] = $language->lang_code;
-						$translation            = new NenoContentElementTranslation($commonData);
-
-						// If the translation does not exists already, let's add it
-						if (!$translation->existsAlready())
-						{
-							$translation->persist();
-							$this->translations[] = $translation;
-						}
-					}
-				}
-			}
-			elseif ($this->hasChanged)
-			{
-				for ($i = 0; $i < count($this->translations); $i++)
-				{
-					/* @var $translation NenoContentElementTranslation */
-					$translation = $this->translations[$i];
-
-					// If the state is queued or translate, let's mark it as out of sync
-					if (in_array(
-						$translation->getState(),
-						array (NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE, NenoContentElementTranslation::TRANSLATED_STATE)
-					))
-					{
-						$translation->setState(NenoContentElementTranslation::SOURCE_CHANGED_STATE);
-					}
-
-					$this->translations[$i] = $translation;
-				}
-			}
+			$this->persistTranslations();
 		}
 
 		if (defined('NENO_INSTALLATION'))
@@ -330,6 +262,96 @@ class NenoContentElementLanguageString extends NenoContentElement
 		$this->constant = $constant;
 
 		return $this;
+	}
+
+	/**
+	 * Persist translations
+	 *
+	 * @param   string|null $language A language tag to persist only for language, null to persist on all the language known
+	 *
+	 * @return bool True on success
+	 */
+	public function persistTranslations($language = null)
+	{
+		// If it doesn't have translations
+		if (empty($this->translations))
+		{
+			$this->translations = NenoContentElementTranslation::getTranslations($this);
+		}
+
+		if (empty($this->translations))
+		{
+			$commonData = array (
+				'contentType' => NenoContentElementTranslation::LANG_STRING,
+				'element'     => $this,
+				'contentId'   => $this->getId(),
+				'state'       => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
+				'string'      => $this->getString(),
+				'timeAdded'   => new DateTime
+			);
+
+			if ($language != null)
+			{
+				$languageData            = new stdClass;
+				$languageData->lang_code = $language;
+				$languages               = array ($languageData);
+			}
+			else
+			{
+				$languages = NenoHelper::getLanguages();
+			}
+
+			$defaultLanguage    = NenoSettings::get('source_language');
+			$this->translations = array ();
+
+			foreach ($languages as $language)
+			{
+				if ($defaultLanguage !== $language->lang_code)
+				{
+					// If the string is empty or is a number, let's mark as translated.
+					$string = $this->getString();
+
+					// If the string is empty or is a number, let's mark as translated.
+					if (empty($string['string']) || is_numeric($string['string']))
+					{
+						$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
+					}
+					else
+					{
+						$commonData['state'] = NenoContentElementTranslation::NOT_TRANSLATED_STATE;
+					}
+
+					$commonData['language'] = $language->lang_code;
+					$translation            = new NenoContentElementTranslation($commonData);
+
+					// If the translation does not exists already, let's add it
+					if (!$translation->existsAlready())
+					{
+						$translation->persist();
+						$this->translations[] = $translation;
+					}
+				}
+			}
+		}
+		elseif ($this->hasChanged)
+		{
+			for ($i = 0; $i < count($this->translations); $i++)
+			{
+				/* @var $translation NenoContentElementTranslation */
+				$translation = $this->translations[$i];
+
+				// If the state is queued or translate, let's mark it as out of sync
+				if (in_array(
+					$translation->getState(),
+					array (NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE, NenoContentElementTranslation::TRANSLATED_STATE)
+				))
+				{
+					$translation->setState(NenoContentElementTranslation::SOURCE_CHANGED_STATE);
+				}
+
+				$this->translations[$i] = $translation;
+			}
+		}
 	}
 
 	/**

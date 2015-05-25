@@ -212,6 +212,104 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	}
 
 	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function persist()
+	{
+		if (parent::persist())
+		{
+			if (defined('NENO_INSTALLATION'))
+			{
+				NenoSettings::set('discovering_languagefile', $this->id);
+				NenoHelper::setSetupState(
+					0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getFilename()), 2
+				);
+			}
+
+			if (!empty($this->languageStrings))
+			{
+				/* @var $languageString NenoContentElementLanguageString */
+				foreach ($this->languageStrings as $languageString)
+				{
+					$languageString
+						->setLanguageFile($this)
+						->persist();
+
+				}
+			}
+
+			if (defined('NENO_INSTALLATION'))
+			{
+				NenoSettings::set('discovering_languagefile', null);
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get filename
+	 *
+	 * @return string
+	 */
+	public function getFilename()
+	{
+		return $this->filename;
+	}
+
+	/**
+	 * Set filename
+	 *
+	 * @param   string $filename Filename
+	 *
+	 * @return $this
+	 */
+	public function setFilename($filename)
+	{
+		$this->filename = $filename;
+
+		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param   bool $allFields         Allows to show all the fields
+	 * @param   bool $recursive         Convert this method in recursive
+	 * @param   bool $convertToDatabase Convert property names to database
+	 *
+	 * @return stdClass
+	 */
+	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
+	{
+		$object = parent::toObject($allFields, $recursive, $convertToDatabase);
+
+		if (!empty($this->group) && $convertToDatabase)
+		{
+			$object->group_id = $this->group->getId();
+		}
+
+		return $object;
+	}
+
+	/**
+	 * Get language strings
+	 *
+	 * @return array
+	 */
+	public function getLanguageStrings()
+	{
+		if ($this->languageStrings == null)
+		{
+			$this->loadStringsFromFile();
+		}
+
+		return $this->languageStrings;
+	}
+
+	/**
 	 * Load the strings from the language file
 	 *
 	 * @param   bool $onlyNew Get only new records
@@ -273,88 +371,5 @@ class NenoContentElementLanguageFile extends NenoContentElement
 		$filePath = JPATH_ROOT . "/language/$this->language/" . $this->getFileName();
 
 		return $filePath;
-	}
-
-	/**
-	 * Get filename
-	 *
-	 * @return string
-	 */
-	public function getFilename()
-	{
-		return $this->filename;
-	}
-
-	/**
-	 * Set filename
-	 *
-	 * @param   string $filename Filename
-	 *
-	 * @return $this
-	 */
-	public function setFilename($filename)
-	{
-		$this->filename = $filename;
-
-		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return bool
-	 */
-	public function persist()
-	{
-		if (parent::persist())
-		{
-			if (defined('NENO_INSTALLATION'))
-			{
-				NenoSettings::set('discovering_languagefile', $this->id);
-				NenoHelper::setSetupState(
-					0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getFilename()), 2
-				);
-			}
-
-			if (!empty($this->languageStrings))
-			{
-				/* @var $languageString NenoContentElementLanguageString */
-				foreach ($this->languageStrings as $languageString)
-				{
-					$languageString
-						->setLanguageFile($this)
-						->persist();
-
-				}
-			}
-
-			if (defined('NENO_INSTALLATION'))
-			{
-				NenoSettings::set('discovering_languagefile', null);
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @param   bool $allFields         Allows to show all the fields
-	 * @param   bool $recursive         Convert this method in recursive
-	 * @param   bool $convertToDatabase Convert property names to database
-	 *
-	 * @return stdClass
-	 */
-	public function toObject($allFields = false, $recursive = false, $convertToDatabase = true)
-	{
-		$object = parent::toObject($allFields, $recursive, $convertToDatabase);
-
-		if (!empty($this->group) && $convertToDatabase)
-		{
-			$object->group_id = $this->group->getId();
-		}
-
-		return $object;
 	}
 }
