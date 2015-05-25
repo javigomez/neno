@@ -44,7 +44,7 @@ $n                  = 0;
 	</h4>
 	<?php if ($item['placement'] == 'dashboard'): ?>
 		<?php echo NenoHelper::renderWordCountProgressBar($item['wordCount'], true, true) ?>
-		<a class="btn"
+		<a class="btn <?php echo $item->isInstalled == false ? 'not-ready' : ''; ?>"
 		   href="<?php echo JRoute::_('index.php?option=com_neno&task=setWorkingLang&lang=' . $item['lang_code'] . '&next=editor'); ?>">
 			<?php echo JText::_('COM_NENO_DASHBOARD_TRANSLATE_BUTTON'); ?>
 		</a>
@@ -89,7 +89,7 @@ $n                  = 0;
 				</label>
 			</fieldset>
 			<div class="method-selectors" data-language="<?php echo $item['lang_code']; ?>">
-				<?php $displayData = array(); ?>
+				<?php $displayData = array (); ?>
 				<?php $displayData['n'] = $n; ?>
 				<?php $displayData['assigned_translation_methods'] = $item['translationMethods']; ?>
 				<?php $displayData['translation_methods'] = $translationMethods; ?>

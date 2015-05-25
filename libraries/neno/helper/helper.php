@@ -289,9 +289,39 @@ class NenoHelper
 		}
 
 		$db->setQuery($query);
-		$rows = $db->loadObjectList('lang_code');
+		$languages = $db->loadObjectList('lang_code');
 
-		return $rows;
+		foreach ($languages as $key => $language)
+		{
+			$languages[$key]->isInstalled = self::isCompletelyInstall($language->lang_code);
+		}
+
+		return $languages;
+	}
+
+	/**
+	 * Check if the language is completely installed
+	 *
+	 * @param string $language Language tag
+	 *
+	 * @return bool
+	 */
+	public static function isCompletelyInstall($language)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->select('1')
+			->from('#__neno_tasks')
+			->where(
+				array (
+					'task_data LIKE ' . $db->quote('%' . $language . '%'),
+					'task = ' . $db->quote('language')
+				)
+			);
+		$db->setQuery($query);
+
+		return $db->loadResult() == 1;
 	}
 
 	/**
@@ -1272,7 +1302,6 @@ class NenoHelper
 		return $result == 1;
 	}
 
-
 	/**
 	 * Read content element file(s) and create the content element hierarchy needed.
 	 *
@@ -1337,7 +1366,6 @@ class NenoHelper
 
 		return !empty($plugin);
 	}
-
 
 	/**
 	 * Output HTML code for translation progress bar
