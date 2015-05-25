@@ -253,6 +253,14 @@ class NenoController extends JControllerLegacy
 				$item->errors             = NenoHelper::getLanguageErrors((array) $language[0]);
 				$item->translationMethods = NenoHelper::getLanguageDefault($item->lang_code);
 
+				// If the language was installed from the dashboard, let's add a task to set all the shadow tables structure
+				if ($placement == 'dashboard')
+				{
+					NenoTaskMonitor::addTask('language', array ('language' => $item->lang_code));
+				}
+				
+				$item->isInstalled = NenoHelper::isCompletelyInstall($language[0]->lang_code);
+
 				foreach ($language as $internalItem)
 				{
 					switch ($internalItem->state)
@@ -279,12 +287,6 @@ class NenoController extends JControllerLegacy
 				$item->wordCount->untranslated = $untranslated;
 				$item->wordCount->total        = $translated + $queued + $changed + $untranslated;
 				$item->placement               = $placement;
-			}
-
-			// If the language was installed from the dashboard, let's add a task to set all the shadow tables structure
-			if ($placement == 'dashboard')
-			{
-				NenoTaskMonitor::addTask('language', array ('language' => $item->lang_code));
 			}
 
 			echo JLayoutHelper::render('languageconfiguration', get_object_vars($item), JPATH_NENO_LAYOUTS);
