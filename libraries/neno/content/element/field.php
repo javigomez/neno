@@ -576,43 +576,6 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
-	 * Get translation method used.
-	 *
-	 * @return array
-	 */
-	public function getTranslationMethodUsed()
-	{
-		if ($this->translationMethodUsed === null)
-		{
-			$this->calculateExtraData();
-		}
-
-		return $this->translationMethodUsed;
-	}
-
-	/**
-	 * Calculate language string statistics
-	 *
-	 * @return void
-	 */
-	protected function calculateExtraData()
-	{
-		$this->translationMethodUsed = array ();
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('DISTINCT translation_method')
-			->from($db->quoteName(NenoContentElementTranslation::getDbTable(), 't'))
-			->leftJoin($db->quoteName(NenoContentElementLanguageString::getDbTable(), 'l') . ' ON t.content_id = l.id')
-			->where('content_type = ' . $db->quote(NenoContentElementTranslation::LANG_STRING));
-
-		$db->setQuery($query);
-		$this->translationMethodUsed = $db->loadArray();
-	}
-
-	/**
 	 * Remove all the translations associated to this field
 	 *
 	 * @return void

@@ -413,16 +413,24 @@ class NenoContentElementTranslation extends NenoContentElement
 			foreach ($this->sourceElementData as $index => $sourceData)
 			{
 				/* @var $field NenoContentElementField */
-				$field      = $sourceData['field'];
-				$fieldValue = $sourceData['value'];
-				$query
-					->innerJoin('#__neno_content_element_fields_x_translations AS ft' . $index . ' ON ft' . $index . '.translation_id = tr.id')
-					->where(
-						array (
-							'ft' . $index . '.field_id = ' . $field->getId(),
-							'ft' . $index . '.value = ' . $db->quote($fieldValue)
-						)
-					);
+				$field = $sourceData['field'];
+
+				if (!empty($field))
+				{
+					$fieldValue = $sourceData['value'];
+					$query
+						->innerJoin('#__neno_content_element_fields_x_translations AS ft' . $index . ' ON ft' . $index . '.translation_id = tr.id')
+						->where(
+							array (
+								'ft' . $index . '.field_id = ' . $field->getId(),
+								'ft' . $index . '.value = ' . $db->quote($fieldValue)
+							)
+						);
+				}
+				else
+				{
+					return false;
+				}
 			}
 
 			$query->where(
