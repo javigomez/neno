@@ -108,8 +108,11 @@ if (!empty($this->extra_sidebar))
 					</p>
 				</div>
 				<div class="translation-type-content">
+                    <?php $machineTranslationsAvailable = false; ?>
 					<?php foreach ($this->items as $key => $item): ?>
 						<?php if ($item->translation_method_id == '2'): ?>
+                            <?php $machineTranslationsAvailable = true; ?>
+                            <?php echo "Yup"; ?>
 							<div class="translation">
 								<div class="span3">
                                     <img src="http://localhost/neno/media/mod_languages/images/<?php echo $item->image; ?>.gif" style="margin-bottom: 3px;">
@@ -134,6 +137,9 @@ if (!empty($this->extra_sidebar))
 							<?php unset($this->items[$key]); ?>
 						<?php endif; ?>
 					<?php endforeach; ?>
+                    <?php if ($machineTranslationsAvailable === false): ?>
+                        <div class="alert alert-info"><?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_NO_TRANSLATIONS_AVAILABLE', JRoute::_('index.php?option=com_neno&view=groupselements')); ?></div>
+                    <?php endif; ?>
 				</div>
 				<div class="translation-type-footer">
 					<input type="checkbox" class="translate_automatically_setting"
@@ -155,8 +161,10 @@ if (!empty($this->extra_sidebar))
 					</p>
 				</div>
 				<div class="translation-type-content">
+                    <?php $professionalTranslationsAvailable = false; ?>
 					<?php foreach ($this->items as $key => $item): ?>
 						<?php if ($item->translation_method_id == '3'): ?>
+                            <?php $professionalTranslationsAvailable = true; ?>
 							<div class="translation">
 								<div class="span3">
                                     <img src="http://localhost/neno/media/mod_languages/images/<?php echo $item->image; ?>.gif" style="margin-bottom: 3px;">
@@ -181,6 +189,9 @@ if (!empty($this->extra_sidebar))
 							</div>
 						<?php endif; ?>
 					<?php endforeach; ?>
+                    <?php if ($professionalTranslationsAvailable === false): ?>
+                        <div class="alert alert-info"><?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_NO_TRANSLATIONS_AVAILABLE', JRoute::_('index.php?option=com_neno&view=groupselements')); ?></div>
+                    <?php endif; ?>
 				</div>
 				<div class="translation-type-footer">
 					<input type="checkbox" class="translate_automatically_setting"
