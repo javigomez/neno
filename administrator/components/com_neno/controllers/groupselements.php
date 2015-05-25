@@ -155,7 +155,38 @@ class NenoControllerGroupsElements extends JControllerAdmin
 			$field->setTranslate($translateStatus);
 			if ($field->persist() === false)
 			{
-				echo "Error saving new state!";
+				NenoLog::log('Error saving new state!', NenoLog::PRIORITY_ERROR);
+			}
+
+		}
+
+		JFactory::getApplication()->close();
+	}
+
+
+	/**
+	 *
+	 */
+	public function toggleContentElementTable()
+	{
+		NenoLog::log('Method toggleContentElementTable of NenoControllerGroupsElements called', 3);
+
+		$input = JFactory::getApplication()->input;
+
+		$tableId         = $input->getInt('tableId');
+		$translateStatus = $input->getBool('translateStatus');
+
+		/* @var $table NenoContentElementTable */
+		$table = NenoContentElementTable::getTableById($tableId);
+
+		// If the table exists, let's work with it.
+		if ($table !== false)
+		{
+
+			$table->setTranslate($translateStatus);
+			if ($table->persist() === false)
+			{
+				NenoLog::log('Error saving new state!', NenoLog::PRIORITY_ERROR);
 			}
 
 		}

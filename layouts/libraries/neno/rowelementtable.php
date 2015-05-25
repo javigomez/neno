@@ -25,7 +25,9 @@ if ($displayData === null): ?>
 			<tr class="row-table" data-id="table-<?php echo $table->id; ?>"
 			    data-parent="<?php echo $table->group->id; ?>">
 				<td></td>
-				<td class="toggler toggler-collapsed toggle-fields"><span class="icon-arrow-right-3"></span></td>
+				<td class="<?php echo ($table->translate) ? 'toggler toggler-collapsed ' : '' ?>toggle-fields">
+					<span class="<?php echo ($table->translate) ? 'icon-arrow-right-3' : '' ?>"></span>
+				</td>
 				<td class="cell-check"><input type="checkbox" name="tables[]" value="<?php echo $table->id; ?>"/></td>
 				<td colspan="2"><?php echo $table->table_name; ?></td>
 				<td class="type-icon"><span
@@ -34,12 +36,27 @@ if ($displayData === null): ?>
 				<td class="translation-progress-bar">
 					<?php echo NenoHelper::renderWordCountProgressBar($table->word_count, 1); ?>
 				</td>
-				<td>
-					<?php echo NenoHelper::renderTranslationMethodsAsCSV($displayData['group']->assigned_translation_methods); ?>
+				<td class="toggle-translate-table">
+					<fieldset id="check-toggle-translate-table-<?php echo $table->id; ?>"
+					          class="radio btn-group btn-group-yesno" data-field="<?php echo $table->id; ?>">
+						<input class="check-toggle-translate-table-radio" type="radio"
+						       id="check-toggle-translate-table-<?php echo $table->id; ?>-1"
+						       name="jform[check-toggle-translate-table]"
+						       value="1" <?php echo ($table->translate) ? 'checked="checked"' : ''; ?>>
+						<label for="check-toggle-translate-table-<?php echo $table->id; ?>-1"
+						       class="btn btn-small <?php echo ($table->translate) ? 'active btn-success' : ''; ?>">Translate</label>
+						<input class="check-toggle-translate-table-radio" type="radio"
+						       id="check-toggle-translate-table-<?php echo $table->id; ?>-0"
+						       name="jform[check-toggle-translate-table]"
+						       value="0" <?php echo (!$table->translate) ? 'checked="checked"' : ''; ?>>
+						<label for="check-toggle-translate-table-<?php echo $table->id; ?>-0"
+						       class="btn btn-small <?php echo (!$table->translate) ? 'active btn-danger' : ''; ?>">Don't
+							translate</label>
+					</fieldset>
 				</td>
 				<td>
 					<a href="index.php?option=com_neno&task=groupelement.downloadContentElementFile&table_id=<?php echo $table->id; ?>"
-					   class="btn">
+					   class="btn btn-small">
 						<span class="icon-download"></span>
 						<?php echo JText::_('COM_NENO_GROUPELEMENT_DOWNLOAD_CE_FILE'); ?>
 					</a>
@@ -68,13 +85,13 @@ if ($displayData === null): ?>
 								       name="jform[check-toggle-translate]"
 								       value="1" <?php echo ($field->translate) ? 'checked="checked"' : ''; ?>>
 								<label for="check-toggle-translate-<?php echo $field->id; ?>-1"
-								       class="btn <?php echo ($field->translate) ? 'active btn-success' : ''; ?>">Translate</label>
+								       class="btn btn-small <?php echo ($field->translate) ? 'active btn-success' : ''; ?>">Translate</label>
 								<input class="check-toggle-translate-radio" type="radio"
 								       id="check-toggle-translate-<?php echo $field->id; ?>-0"
 								       name="jform[check-toggle-translate]"
 								       value="0" <?php echo (!$field->translate) ? 'checked="checked"' : ''; ?>>
 								<label for="check-toggle-translate-<?php echo $field->id; ?>-0"
-								       class="btn <?php echo (!$field->translate) ? 'active btn-danger' : ''; ?>">Don't
+								       class="btn btn-small <?php echo (!$field->translate) ? 'active btn-danger' : ''; ?>">Don't
 									translate</label>
 							</fieldset>
 						</td>
@@ -92,7 +109,7 @@ if ($displayData === null): ?>
 			<tr class="row-table" data-id="row-<?php echo $file->filename; ?>"
 			    data-parent="<?php echo $displayData['group']->id; ?>">
 				<td></td>
-				<td class="toggler toggler-collapsed toggle-fields"><span class="icon-arrow-right-3"></span></td>
+				<td></td>
 				<td class="cell-check"><input type="checkbox" name="files[]" value="<?php echo $file->id; ?>"/></td>
 				<td colspan="2" style="white-space: nowrap;"><?php echo $file->filename; ?></td>
 				<td class="type-icon"><span
