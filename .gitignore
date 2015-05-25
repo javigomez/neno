@@ -27,6 +27,7 @@
 /administrator/components/com_templates/*
 /administrator/components/com_users/*
 /administrator/components/com_weblinks/*
+/administrator/components/com_chronoforms5/*
 /administrator/components/index.html
 /administrator/help/*
 /administrator/includes/*
@@ -474,6 +475,8 @@
 *com_ajax*
 *com_config*
 *com_banners*
+*com_chronoforms*
+*cegcore*
 *mod_stats_admin*
 /bin/*
 /plugins/capcha/*
