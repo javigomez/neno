@@ -73,12 +73,6 @@ class NenoHelper
 		);
 
 		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_EXTERNAL_STRINGS'),
-			'index.php?option=com_neno&view=strings',
-			($vName == 'strings') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
 			JText::_('COM_NENO_NAV_LINK_EXTERNAL_SETTINGS'),
 			'index.php?option=com_neno&view=settings',
 			($vName == 'settings') ? true : false
@@ -1179,7 +1173,7 @@ class NenoHelper
 
 		if (!empty($tablesNotDiscovered))
 		{
-			$doNotTranslateGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
+			$doNotTranslateGroup = new NenoContentElementGroup(array ('group_name' => 'Do not translate'));
 			$tablesIgnored       = self::getDoNotTranslateTables();
 
 			foreach ($tablesIgnored as $tableIgnored)
