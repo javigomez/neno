@@ -45,7 +45,7 @@ class NenoModelDashboard extends JModelList
 			$item->title     = $language[0]->title;
 			$item->image     = $language[0]->image;
 			$item->errors    = NenoHelper::getLanguageErrors((array) $language[0]);
-			$item->isInstall = NenoHelper::isCompletelyInstall($item->lang_code);
+			$item->isInstalled = NenoHelper::isCompletelyInstall($item->lang_code);
 
 			foreach ($language as $internalItem)
 			{

@@ -297,9 +297,12 @@ class NenoHelper
 		$db->setQuery($query);
 		$languages = $db->loadObjectList('lang_code');
 
-		foreach ($languages as $key => $language)
+		if (!empty($languages))
 		{
-			$languages[$key]->isInstalled = self::isCompletelyInstall($language->lang_code);
+			foreach ($languages as $key => $language)
+			{
+				$languages[$key]->isInstalled = self::isCompletelyInstall($language->lang_code);
+			}
 		}
 
 		return $languages;

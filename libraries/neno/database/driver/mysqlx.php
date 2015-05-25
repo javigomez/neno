@@ -190,6 +190,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 			'/#__languages/',
 			'/#__update(.*)/',
 			'/#__assets/',
+			'/#__languages/',
 			'/#___/'
 		);
 
