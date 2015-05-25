@@ -918,41 +918,45 @@ class NenoHelper
 		for ($i = 0; $i < count($tables); $i++)
 		{
 			// Get Table name
-			$tableName = self::unifyTableName($tables[$i]);
-			$table     = null;
+			$tableName     = self::unifyTableName($tables[$i]);
+			$table         = null;
+			$tablesIgnored = self::getDoNotTranslateTables();
 
-			if (!self::isTableAlreadyDiscovered($tableName))
+			if (!in_array($tableName, $tablesIgnored))
 			{
-				// Create an array with the table information
-				$tableData = array (
-					'tableName'  => $tableName,
-					'primaryKey' => $db->getPrimaryKey($tableName),
-					'translate'  => self::isTranslatable($tableName),
-					'group'      => $group
-				);
-
-				// Create ContentElement object
-				$table = new NenoContentElementTable($tableData);
-
-				// Get all the columns a table contains
-				$fields = $db->getTableColumns($table->getTableName());
-
-				foreach ($fields as $fieldName => $fieldType)
+				if (!self::isTableAlreadyDiscovered($tableName))
 				{
-					$fieldData = array (
-						'fieldName' => $fieldName,
-						'fieldType' => $fieldType,
-						'translate' => NenoContentElementField::isTranslatableType($fieldType),
-						'table'     => $table
+					// Create an array with the table information
+					$tableData = array (
+						'tableName'  => $tableName,
+						'primaryKey' => $db->getPrimaryKey($tableName),
+						'translate'  => self::isTranslatable($tableName),
+						'group'      => $group
 					);
 
-					$field = new NenoContentElementField($fieldData);
-					$table->addField($field);
+					// Create ContentElement object
+					$table = new NenoContentElementTable($tableData);
+
+					// Get all the columns a table contains
+					$fields = $db->getTableColumns($table->getTableName());
+
+					foreach ($fields as $fieldName => $fieldType)
+					{
+						$fieldData = array (
+							'fieldName' => $fieldName,
+							'fieldType' => $fieldType,
+							'translate' => NenoContentElementField::isTranslatableType($fieldType),
+							'table'     => $table
+						);
+
+						$field = new NenoContentElementField($fieldData);
+						$table->addField($field);
+					}
 				}
-			}
-			elseif ($includeDiscovered)
-			{
-				$table = NenoContentElementTable::load(array ('table_name' => $tableName, 'group_id' => $group->getId()));
+				elseif ($includeDiscovered)
+				{
+					$table = NenoContentElementTable::load(array ('table_name' => $tableName, 'group_id' => $group->getId()));
+				}
 			}
 
 			if (!empty($table))
@@ -976,6 +980,59 @@ class NenoHelper
 		$prefix = JFactory::getDbo()->getPrefix();
 
 		return '#__' . str_replace(array ($prefix, '#__'), '', $tableName);
+	}
+
+	/**
+	 * Get all the tables that should be ignored
+	 *
+	 * @return array
+	 */
+	public static function getDoNotTranslateTables()
+	{
+		return array (
+			'#__contentitem_tag_map',
+			'#__content_frontpage',
+			'#__content_rating',
+			'#__content_types',
+			'#__finder_links',
+			'#__finder_links_terms0',
+			'#__finder_links_terms1',
+			'#__finder_links_terms2',
+			'#__finder_links_terms3',
+			'#__finder_links_terms4',
+			'#__finder_links_terms5',
+			'#__finder_links_terms6',
+			'#__finder_links_terms7',
+			'#__finder_links_terms8',
+			'#__finder_links_terms9',
+			'#__finder_links_termsa',
+			'#__finder_links_termsb',
+			'#__finder_links_termsc',
+			'#__finder_links_termsd',
+			'#__finder_links_termse',
+			'#__finder_links_termsf',
+			'#__finder_taxonomy',
+			'#__finder_taxonomy_map',
+			'#__finder_types',
+			'#__messages',
+			'#__messages_cfg',
+			'#__modules_menu',
+			'#__postinstall_messages',
+			'#__redirect_links',
+			'#__users',
+			'#__banner_clients',
+			'#__banner_tracks',
+			'#__extensions',
+			'#__overrider',
+			'#__template_styles',
+			'#__ucm_history',
+			'#__usergroups',
+			'#__user_keys',
+			'#__user_notes',
+			'#__user_profiles',
+			'#__user_usergroup_map',
+			'#__viewlevels'
+		);
 	}
 
 	/**
@@ -1112,7 +1169,7 @@ class NenoHelper
 	 *
 	 * @return void
 	 */
-	public static function groupingTablesNotDiscovered()
+	public static function createDoNotTranslateGroup()
 	{
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db = JFactory::getDbo();
@@ -1122,36 +1179,17 @@ class NenoHelper
 
 		if (!empty($tablesNotDiscovered))
 		{
-			// Check if this group exists already
-			$query = $db->getQuery(true);
-			$query
-				->select('g.id')
-				->from('#__neno_content_element_groups AS g')
-				->where('NOT EXISTS (SELECT 1 FROM #__neno_content_element_groups_x_extensions AS ge WHERE ge.group_id = g.id)');
+			$doNotTranslateGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
+			$tablesIgnored       = self::getDoNotTranslateTables();
 
-			$db->setQuery($query);
-			$groupId = $db->loadResult();
-
-			$otherGroup = null;
-
-			if (!empty($groupId))
-			{
-				/* @var $otherGroup NenoContentElementGroup */
-				$otherGroup = NenoContentElementGroup::load($groupId);
-			}
-			else
-			{
-				$otherGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
-			}
-
-			foreach ($tablesNotDiscovered as $tableNotDiscovered)
+			foreach ($tablesIgnored as $tableIgnored)
 			{
 				// Create an array with the table information
 				$tableData = array (
-					'tableName'  => $tableNotDiscovered,
-					'primaryKey' => $db->getPrimaryKey($tableNotDiscovered),
-					'translate'  => self::isTranslatable($tableNotDiscovered),
-					'group'      => $otherGroup
+					'tableName'  => $tableIgnored,
+					'primaryKey' => $db->getPrimaryKey($tableIgnored),
+					'translate'  => 0,
+					'group'      => $doNotTranslateGroup
 				);
 
 				// Create ContentElement object
@@ -1173,12 +1211,10 @@ class NenoHelper
 					$table->addField($field);
 				}
 
-				$otherGroup->addTable($table);
+				$doNotTranslateGroup->addTable($table);
 			}
 
-			$otherGroup
-				->setAssignedTranslationMethods(self::getTranslationMethodsForLanguages())
-				->persist();
+			$doNotTranslateGroup->persist();
 		}
 	}
 
@@ -1245,6 +1281,81 @@ class NenoHelper
 			'#__update_sites',
 			'#__update_sites_extensions'
 		);
+	}
+
+	public static function groupingTablesNotDiscovered()
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db = JFactory::getDbo();
+
+		// Get all the tables that haven't been detected using naming convention.
+		$tablesNotDiscovered = self::getTablesNotDiscovered();
+
+		if (!empty($tablesNotDiscovered))
+		{
+			// Check if this group exists already
+			$query = $db->getQuery(true);
+			$query
+				->select('g.id')
+				->from('#__neno_content_element_groups AS g')
+				->where('NOT EXISTS (SELECT 1 FROM #__neno_content_element_groups_x_extensions AS ge WHERE ge.group_id = g.id)');
+
+			$db->setQuery($query);
+			$groupId = $db->loadResult();
+
+			$otherGroup = null;
+
+			if (!empty($groupId))
+			{
+				/* @var $otherGroup NenoContentElementGroup */
+				$otherGroup = NenoContentElementGroup::load($groupId);
+			}
+			else
+			{
+				$otherGroup = new NenoContentElementGroup(array ('group_name' => 'Other'));
+			}
+
+			$tablesIgnored = self::getDoNotTranslateTables();
+
+			foreach ($tablesNotDiscovered as $tableNotDiscovered)
+			{
+				if (!in_array($tableNotDiscovered, $tablesIgnored))
+				{
+					// Create an array with the table information
+					$tableData = array (
+						'tableName'  => $tableNotDiscovered,
+						'primaryKey' => $db->getPrimaryKey($tableNotDiscovered),
+						'translate'  => self::isTranslatable($tableNotDiscovered),
+						'group'      => $otherGroup
+					);
+
+					// Create ContentElement object
+					$table = new NenoContentElementTable($tableData);
+
+					// Get all the columns a table contains
+					$fields = $db->getTableColumns($table->getTableName());
+
+					foreach ($fields as $fieldName => $fieldType)
+					{
+						$fieldData = array (
+							'fieldName' => $fieldName,
+							'fieldType' => $fieldType,
+							'translate' => NenoContentElementField::isTranslatableType($fieldType),
+							'table'     => $table
+						);
+
+						$field = new NenoContentElementField($fieldData);
+						$table->addField($field);
+					}
+
+					$otherGroup->addTable($table);
+				}
+			}
+
+			$otherGroup
+				->setAssignedTranslationMethods(self::getTranslationMethodsForLanguages())
+				->persist();
+		}
 	}
 
 	/**

@@ -421,8 +421,7 @@ class NenoControllerInstallation extends JControllerAdmin
 			}
 			elseif (NenoSettings::get('do_not_translate_group') != 1) // Check if DoNotTranslate group has been created
 			{
-				$group = new NenoContentElementGroup(array ('group_name' => JText::_('COM_NENO_DO_NOT_TRANSLATE_GROUP_NAME')));
-				$group->persist();
+				NenoHelper::createDoNotTranslateGroup();
 				NenoSettings::set('do_not_translate_group', 1);
 			}
 			elseif (NenoSettings::get('publishing_plugins') != 1) // Check if plugins have been enabled
