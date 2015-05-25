@@ -191,7 +191,8 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 			'/#__update(.*)/',
 			'/#__assets/',
 			'/#__languages/',
-			'/#___/'
+			'/#___/',
+			'/#__menu/'
 		);
 
 		foreach ($ignoredQueryRegex as $queryRegex)
