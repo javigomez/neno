@@ -180,10 +180,16 @@ class NenoHelper
 	public static function setAdminTitle($showLanguageDropDown = false)
 	{
 		$app = JFactory::getApplication();
-
+        $view = $app->input->getCmd('view', '');
+        
+        $document = $app->getDocument();
+        $currentTitle = $document->getTitle();
+        $document->setTitle($currentTitle . ' - ' . JText::_('COM_NENO_TITLE_'.strtoupper($view)));
+        
+        
 		// If there is a language constant then start with that
 		$displayData = array (
-			'view' => $app->input->getCmd('view', '')
+			'view' => $view
 		);
 
 		if ($showLanguageDropDown)
