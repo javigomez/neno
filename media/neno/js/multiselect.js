@@ -183,7 +183,9 @@ function loadStrings(reset) {
                 }
                 if (reset == true) {
                     targetContainer.html(ret);
-                    loadTranslation(targetContainer.find('.string').first());
+                    if (targetContainer.find('.string').length) {
+                        loadTranslation(targetContainer.find('.string').first());
+                    }
                 } else {
                     targetContainer.append(ret);
                 }
