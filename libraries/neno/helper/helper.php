@@ -327,7 +327,7 @@ class NenoHelper
 			);
 		$db->setQuery($query);
 
-		return $db->loadResult() == 1;
+		return $db->loadResult() != 1;
 	}
 
 	/**
@@ -2667,7 +2667,7 @@ class NenoHelper
 					->set('enabled = 1')
 					->where('update_site_id = ' . (int) $updateId);
 			}
-			
+
 			// Find updates for languages
 			$updater = JUpdater::getInstance();
 			$updater->findUpdates($enGbExtensionId);
