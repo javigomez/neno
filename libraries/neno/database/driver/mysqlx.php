@@ -144,9 +144,10 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		{
 			// Get query type
 			$queryType = $this->getQueryType($sql);
+			$app       = JFactory::getApplication();
 
 			// If the query is a select statement let's get the sql query using its shadow table name
-			if ($queryType === self::SELECT_QUERY && JFactory::getApplication()->isSite())
+			if ($queryType === self::SELECT_QUERY && $app->isSite())
 			{
 				$sql = $this->replaceTableNameStatements($sql);
 			}
@@ -188,7 +189,8 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 			'/#__schemas/',
 			'/#__languages/',
 			'/#__update(.*)/',
-			'/#__assets/'
+			'/#__assets/',
+			'/#___/'
 		);
 
 		foreach ($ignoredQueryRegex as $queryRegex)
@@ -243,18 +245,24 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	/**
 	 * Replace all the table names with shadow tables names
 	 *
-	 * @param   string $sql SQL Query
+	 * @param   string $sql                 SQL Query
+	 * @param   string $languageTagSelected Language tag selected
 	 *
 	 * @return string
 	 */
-	protected function replaceTableNameStatements($sql)
+	protected function replaceTableNameStatements($sql, $languageTagSelected = null)
 	{
 		/* @var $config Joomla\Registry\Registry */
-		$config              = JFactory::getConfig();
-		$databasePrefix      = $config->get('dbprefix');
-		$pattern             = '/(#__|' . preg_quote($databasePrefix) . ')(\w+)/';
-		$matches             = null;
-		$languageTagSelected = $this->getLanguageTagSelected();
+		$config         = JFactory::getConfig();
+		$databasePrefix = $config->get('dbprefix');
+		$pattern        = '/(#__|' . preg_quote($databasePrefix) . ')(\w+)/';
+		$matches        = null;
+
+		if ($languageTagSelected == null)
+		{
+			$languageTagSelected = $this->getLanguageTagSelected();
+		}
+
 
 		if (preg_match_all($pattern, $sql, $matches))
 		{
@@ -418,7 +426,22 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		{
 			try
 			{
-				$result = parent::execute();
+				// Get query type
+				$queryType = $this->getQueryType((string) $this->sql);
+				$result    = parent::execute();
+
+				// If the query is creating/modifying/deleting a record, let's do the same on the shadow tables
+				if (($queryType === self::INSERT_QUERY || $queryType === self::DELETE_QUERY || $queryType === self::UPDATE_QUERY || $queryType === self::REPLACE_QUERY) && $app->isAdmin() && $this->hasToBeParsed((string) $this->sql))
+				{
+					$sql       = $this->sql;
+					$languages = NenoHelper::getTargetLanguages();
+
+					foreach ($languages as $language)
+					{
+						$newSql = $this->replaceTableNameStatements((string) $sql, $language->lang_code);
+						$this->executeQuery($newSql, false);
+					}
+				}
 
 				return $result;
 			}
