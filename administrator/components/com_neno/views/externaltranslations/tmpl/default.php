@@ -112,7 +112,6 @@ if (!empty($this->extra_sidebar))
 					<?php foreach ($this->items as $key => $item): ?>
 						<?php if ($item->translation_method_id == '2'): ?>
                             <?php $machineTranslationsAvailable = true; ?>
-                            <?php echo "Yup"; ?>
 							<div class="translation">
 								<div class="span3">
                                     <img src="http://localhost/neno/media/mod_languages/images/<?php echo $item->image; ?>.gif" style="margin-bottom: 3px;">
