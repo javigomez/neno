@@ -8,7 +8,7 @@ JHtml::_('bootstrap.tooltip');
 
 <style>
 	#task-messages {
-		height: 500px;
+		height: 200px;
 		background-color: #f5f5f5;
 		padding: 20px;
 		color: #808080;
@@ -23,6 +23,9 @@ JHtml::_('bootstrap.tooltip');
 
 	.log-level-3 {
 		margin-left: 40px;
+	}
+	#proceed-button {
+		margin-top: 15px;
 	}
 </style>
 
@@ -115,17 +118,24 @@ JHtml::_('bootstrap.tooltip');
 
 	function printMessages(messages) {
 		var percent = 0;
+		var scroll = 1;
+		var container = jQuery("#task-messages");
 		for (var i = 0; i < messages.length; i++) {
 			var log_line = jQuery('#installation-status-' + messages[i].level).clone().removeAttr('id').html(messages[i].message);
 			if (messages[i].level == 1) {
 				log_line.addClass('alert-' + messages[i].type);
 			}
-			jQuery('#task-messages').append(log_line);
+			//Check if scroll is already at the bottom of the container
+			scroll = container.scrollTop == container[0].scrollHeight - container.height());
+
+			container.append(log_line);
 
 			//Scroll to bottom
-			jQuery("#task-messages").stop().animate({
-				scrollTop: jQuery("#task-messages")[0].scrollHeight - jQuery("#task-messages").height()
-			}, 400);
+			if (scroll) {
+				container.stop().animate({
+					scrollTop: container[0].scrollHeight - container.height()
+				}, 100);
+			}
 		}
 
 		if (percent != 0) {

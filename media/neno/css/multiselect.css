@@ -67,3 +67,6 @@
 .simple-multiselect .menu-multiselect{
     overflow: hidden;
 }
+.multiselect td {
+    white-space: nowrap;
+}
