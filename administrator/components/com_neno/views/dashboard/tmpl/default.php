@@ -95,7 +95,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 		</div>
 		<div class="modal-body"></div>
 		<div class="modal-footer">
-			<a href="#" class="btn"><?php echo JText::_('JCLOSE'); ?></a>
+			<a href="#" class="btn" data-dismiss="modal"><?php echo JText::_('JCLOSE'); ?></a>
 		</div>
 	</div>
 </form>
