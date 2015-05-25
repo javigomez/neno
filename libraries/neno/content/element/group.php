@@ -439,7 +439,9 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function persist()
 	{
-		NenoHelper::setSetupState(0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP', $this->groupName));
+		$currentPercent = NenoSettings::get('percentPerExtension') + NenoSettings::get('currentPercent');
+		NenoSettings::set('currentPercent', $currentPercent);
+		NenoHelper::setSetupState($currentPercent, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP', $this->groupName));
 		$result = parent::persist();
 
 		if (defined('NENO_INSTALLATION'))
