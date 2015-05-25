@@ -439,7 +439,12 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 					foreach ($languages as $language)
 					{
 						$newSql = $this->replaceTableNameStatements((string) $sql, $language->lang_code);
-						$this->executeQuery($newSql, false);
+
+						// Execute query if they are different.
+						if ($newSql != $sql)
+						{
+							$this->executeQuery($newSql, false);
+						}
 					}
 				}
 
