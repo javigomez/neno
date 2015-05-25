@@ -32,14 +32,14 @@
     <administration>
         <menu img="components/com_neno/assets/images/s_com_neno.png">COM_NENO</menu>
         <submenu>
+            <menu link="option=com_neno&amp;view=dashboard" view="dashboard" alt="neno/dashboard">
+                COM_NENO_TITLE_DASHBOARD
+            </menu>
             <menu link="option=com_neno&amp;view=groupselements" view="groupselements" alt="neno/groupselements">
                 COM_NENO_TITLE_GROUPSELEMENTS
             </menu>
             <menu link="option=com_neno&amp;view=editor" view="editor" alt="neno/editor">
                 COM_NENO_TITLE_EDITOR
-            </menu>
-            <menu link="option=com_neno&amp;view=strings" view="strings" alt="neno/strings">
-                COM_NENO_TITLE_STRINGS
             </menu>
             <menu link="option=com_neno&amp;view=jobs" view="jobs" alt="neno/jobs">
                 COM_NENO_TITLE_JOBS
