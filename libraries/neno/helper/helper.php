@@ -2271,7 +2271,7 @@ class NenoHelper
 	{
 		$db       = JFactory::getDbo();
 		$query    = $db->getQuery(true);
-		$menuType = 'mainmenu-' . strtolower($language);
+		$menuType = $defaultMenuType['params']['menutype'] . strtolower($language);
 
 		$query
 			->select('1')
@@ -2280,6 +2280,12 @@ class NenoHelper
 
 		$db->setQuery($query);
 		$exists = $db->loadResult() == 1;
+
+		// Create module menu
+		JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
+
+		/* @var $moduleModel ModulesModelModule */
+		$moduleModel = JModelLegacy::getInstance('Module', 'ModulesModel');
 
 		if (!$exists)
 		{
@@ -2296,64 +2302,56 @@ class NenoHelper
 
 			$db->setQuery($query);
 			$db->execute();
-		}
 
+			$newMenuType               = get_object_vars($defaultMenuType);
+			$previousId                = $newMenuType['id'];
+			$newMenuType['id']         = null;
+			$newMenuType['language']   = $language;
+			$newMenuType['title']      = $newMenuType['title'] . '-' . $language;
+			$newMenuType['published']  = 1;
+			$newMenuType['client_id']  = 0;
+			$newMenuType['access']     = 1;
+			$newMenuType['module']     = 'mod_menu';
+			$newMenuType['assigned']   = self::getModuleAssignments($previousId);
+			$newMenuType['assignment'] = 1;
 
-		// Create module menu
-		JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
-
-		/* @var $moduleModel ModulesModelModule */
-		$moduleModel               = JModelLegacy::getInstance('Module', 'ModulesModel');
-		$newMenuType               = get_object_vars($defaultMenuType);
-		$previousId                = $newMenuType['id'];
-		$newMenuType['id']         = null;
-		$newMenuType['language']   = $language;
-		$newMenuType['title']      = $newMenuType['title'] . '-' . $language;
-		$newMenuType['published']  = 1;
-		$newMenuType['client_id']  = 0;
-		$newMenuType['access']     = 1;
-		$newMenuType['module']     = 'mod_menu';
-		$newMenuType['assigned']   = self::getModuleAssignments($previousId);
-		$newMenuType['assignment'] = 1;
-
-		if (empty($newMenuType['params']))
-		{
-			$newMenuType['params'] = array ();
-		}
-
-		$newMenuType['params']['menutype'] = $menuType;
-
-		if ($moduleModel->save($newMenuType))
-		{
-			$moduleId = $moduleModel->getState('module.id');
-
-			// For some reason the module id is not in the state, let's try to find it
-			if (empty($moduleId))
+			if (empty($newMenuType['params']))
 			{
-				$query
-					->clear()
-					->select('id')
-					->from('#__modules')
-					->where(
-						array (
-							'language = ' . $db->quote($language),
-							'module = ' . $db->quote('mod_menu'),
-							'params LIKE ' . $db->quote('%' . $menuType . '%')
-						)
-					);
-
-				$db->setQuery($query);
-				$moduleId = (int) $db->loadResult();
+				$newMenuType['params'] = array ();
 			}
 
-			/* @var $item JObject */
-			$item = $moduleModel->getItem($moduleId);
-			$item = (object) $item->getProperties();
+			$newMenuType['params']['menutype'] = $menuType;
 
-			return $item;
+			if ($moduleModel->save($newMenuType))
+			{
+				$moduleId = $moduleModel->getState('module.id');
+			}
 		}
 
-		return false;
+		// For some reason the module id is not in the state, let's try to find it
+		if (empty($moduleId))
+		{
+			$query
+				->clear()
+				->select('id')
+				->from('#__modules')
+				->where(
+					array (
+						'language = ' . $db->quote($language),
+						'module = ' . $db->quote('mod_menu'),
+						'params LIKE ' . $db->quote('%' . $menuType . '%')
+					)
+				);
+
+			$db->setQuery($query);
+			$moduleId = (int) $db->loadResult();
+		}
+
+		/* @var $item JObject */
+		$item = $moduleModel->getItem($moduleId);
+		$item = (object) $item->getProperties();
+
+		return $item;
 	}
 
 	/**
