@@ -2298,17 +2298,18 @@ class NenoHelper
 		JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
 
 		/* @var $moduleModel ModulesModelModule */
-		$moduleModel              = JModelLegacy::getInstance('Module', 'ModulesModel');
-		$newMenuType              = get_object_vars($defaultMenuType);
-		$previousId               = $newMenuType['id'];
-		$newMenuType['id']        = null;
-		$newMenuType['language']  = $language;
-		$newMenuType['title']     = JText::sprintf('COM_NENO_MAIN_MENU_TITLE', $language);
-		$newMenuType['published'] = 1;
-		$newMenuType['client_id'] = 0;
-		$newMenuType['access']    = 1;
-		$newMenuType['module']    = 'mod_menu';
-		$newMenuType['assigned']  = self::getModuleAssignments($previousId);
+		$moduleModel               = JModelLegacy::getInstance('Module', 'ModulesModel');
+		$newMenuType               = get_object_vars($defaultMenuType);
+		$previousId                = $newMenuType['id'];
+		$newMenuType['id']         = null;
+		$newMenuType['language']   = $language;
+		$newMenuType['title']      = JText::sprintf('COM_NENO_MAIN_MENU_TITLE', $language);
+		$newMenuType['published']  = 1;
+		$newMenuType['client_id']  = 0;
+		$newMenuType['access']     = 1;
+		$newMenuType['module']     = 'mod_menu';
+		$newMenuType['assigned']   = self::getModuleAssignments($previousId);
+		$newMenuType['assignment'] = 1;
 
 		if (empty($newMenuType['params']))
 		{
