@@ -165,10 +165,6 @@ class NenoModelStrings extends JModelList
 
 		$this->setState('filter.translator_type', $app->getUserState($this->context . '.filter.translator_type'));
 
-		// Offset
-		$this->setState('limit', $app->getUserStateFromRequest('limit', 20));
-		$this->setState('limitStart', $app->getUserStateFromRequest('limitStart', 0));
-
 		// List state information.
 		parent::populateState('a.id', 'asc');
 	}
@@ -355,10 +351,6 @@ class NenoModelStrings extends JModelList
 			$languageFileStrings->where('tr2.string <> ' . $db->quote(''));
 		}
 
-
-		$limit  = $this->getState('limit', 20);
-		$offset = $this->getState('limitStart', 0);
-
 		$query = parent::getListQuery();
 
 		$query
@@ -382,8 +374,6 @@ class NenoModelStrings extends JModelList
 		{
 			$query->order($db->escape($orderCol . ' ' . $orderDirection));
 		}
-
-		$query->setLimit($limit, $offset);
 
 		return $query;
 	}

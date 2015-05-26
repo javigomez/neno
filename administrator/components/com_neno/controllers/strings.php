@@ -62,6 +62,8 @@ class NenoControllerStrings extends JControllerAdmin
 		$input->set('group', $filterGroups);
 		$input->set('table', $filterElements);
 		$input->set('field', $filterField);
+		$input->set('list', array ('limit' => $input->get('limit'), 'start' => $input->get('limitStart')));
+		$input->set('limitstart', $input->get('limitStart'));
 
 		$filterJson  = $input->getString('jsonMethod');
 		$filterArray = json_decode($filterJson);
