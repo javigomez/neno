@@ -67,7 +67,6 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 		display: none;
 	}
 
-	/*.table-groups-elements .cell-check,*/
 	.table-groups-elements .cell-expand,
 	.table-groups-elements .cell-collapse {
 		width: 15px;
@@ -109,12 +108,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	.table-groups-elements .row-field {
 		background-color: white;
 	}
-
-	.toggle-translate .btn-group > .btn {
-		font-size: 11px;
-		line-height: 8px;
-	}
-
+	
 </style>
 
 <script type="text/javascript">
@@ -130,19 +124,22 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	function bindEvents() {
 
 		// Bind load elements
-		jQuery('.toggle-elements').off().on('click', toggleElementVisibility);
+		jQuery('.toggle-elements').off('click').on('click', toggleElementVisibility);
 
 		// Bind toggle fields
-		jQuery('.toggle-fields').off().on('click', toggleFieldVisibility);
+		jQuery('.toggler.toggle-fields').off('click').on('click', toggleFieldVisibility);
 
 		//Bind checking and unchecking checkboxes
-		jQuery('#table-groups-elements input[type=checkbox]').off().on('click', checkUncheckFamilyCheckboxes);
+		jQuery('#table-groups-elements input[type=checkbox]').off('click').on('click', checkUncheckFamilyCheckboxes);
+
+		//Attach the field translate state toggler
+		jQuery('.check-toggle-translate-radio').off('change').on('change', changeFieldTranslateState);
 
 		//Attach the translate state toggler
-		jQuery('.check-toggle-translate-radio').off().on('click', changeFieldTranslateState);
+		jQuery('.check-toggle-translate-table-radio').off('change').on('change', changeTableTranslateState);
 
 		//Bind modal clicks
-		jQuery('.modalgroupform').off().on('click', showModalGroupForm);
+		jQuery('.modalgroupform').off('click').on('click', showModalGroupForm);
 
 	}
 
@@ -241,6 +238,50 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 			}
 		);
 	}
+
+
+	function changeTableTranslateState() {
+
+		var id = jQuery(this).parent('fieldset').attr('data-field');
+		var status = jQuery(this).val();
+		var row = jQuery('.row-table[data-id="table-' + id + '"]');
+		var toggler = row.find('.toggle-fields');
+
+		if (status == 1) {
+			row.find('.bar').removeClass('bar-disabled');
+			jQuery('[for="check-toggle-translate-table-' + id + '-1"]').addClass('active btn-success');
+			jQuery('[for="check-toggle-translate-table-' + id + '-0"]').removeClass('active btn-danger');
+
+			//Add field toggler
+			toggler.off('click').on('click', toggleFieldVisibility);
+			toggler.addClass('toggler toggler-collapsed');
+			toggler.find('span').addClass('icon-arrow-right-3');
+		} else {
+			row.find('.bar').addClass('bar-disabled');
+			jQuery('[for="check-toggle-translate-table-' + id + '-0"]').addClass('active btn-danger');
+			jQuery('[for="check-toggle-translate-table-' + id + '-1"]').removeClass('active btn-success');
+
+			//Remove fields
+			if (toggler.hasClass('toggler-expanded')) {
+				toggler.click();
+			}
+			toggler.off('click');
+			toggler.removeClass('toggler toggler-collapsed');
+			toggler.find('span').removeClass();
+		}
+
+        //Show an alert that count no longer is accurate
+        jQuery('#reload-notice').remove();
+        jQuery('.navbar-fixed-top .navbar-inner').append('<div style="padding:10px 30px;" id="reload-notice"><div class="alert alert-warning"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_WARNING'); ?><a href="index.php?option=com_neno&view=groupselements" class="btn btn-info pull-right" style="height: 16px; font-size: 12px;margin-top:-4px"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_BTN'); ?></a></div></div>').height('92');
+        jQuery('body').css('padding-top', '93px');
+
+		jQuery.ajax({
+				beforeSend: onBeforeAjax,
+				url: 'index.php?option=com_neno&task=groupselements.toggleContentElementTable&tableId=' + id + '&translateStatus=' + status
+			}
+		);
+	}
+
 
 	/**
 	 * Check and uncheck checkboxes
