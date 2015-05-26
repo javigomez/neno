@@ -2063,7 +2063,8 @@ class NenoHelper
 			->group('language');
 
 		$db->setQuery($query);
-		$menus = $db->loadObjectList();
+		$menus        = $db->loadObjectList();
+		$defaultMenus = clone $menus;
 
 		// If there's no menu created, let's create one
 		if (empty($menus))
@@ -2157,39 +2158,37 @@ class NenoHelper
 							}
 						}
 
-						if (empty($menus[$language->lang_code]))
+						foreach ($defaultMenus as $defaultMenu)
 						{
-							$menus[$language->lang_code] = self::createMenu($language->lang_code, $menus[$defaultLanguage]);
-						}
+							$menu     = self::createMenu($language->lang_code, $defaultMenu);
+							$menus[]  = $menu;
+							$newAlias = JFilterOutput::stringURLSafe($menuItem->alias . '-' . $language->lang_code);
 
-						$menu     = $menus[$language->lang_code];
-						$newAlias = JFilterOutput::stringURLSafe($menuItem->alias . '-' . $language->lang_code);
+							$query
+								->clear()
+								->select('id')
+								->from('#__menu')
+								->where('alias = ' . $db->quote($newAlias));
 
+							$db->setQuery($query);
+							$menuId = $db->loadResult();
 
-						$query
-							->clear()
-							->select('id')
-							->from('#__menu')
-							->where('alias = ' . $db->quote($newAlias));
+							if (!empty($menuId) && !in_array($menuId, $alreadyAssociated))
+							{
+								$associations[]      = $menuId;
+								$alreadyAssociated[] = $menuId;
+							}
+							else
+							{
+								$newMenuItem = clone $menuItem;
+								unset($newMenuItem->id);
+								$newMenuItem->menutype = $menu->params['menutype'];
+								$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
+								$newMenuItem->language = $language->lang_code;
+								$db->insertObject('#__menu', $newMenuItem, 'id');
 
-						$db->setQuery($query);
-						$menuId = $db->loadResult();
-
-						if (!empty($menuId) && !in_array($menuId, $alreadyAssociated))
-						{
-							$associations[]      = $menuId;
-							$alreadyAssociated[] = $menuId;
-						}
-						else
-						{
-							$newMenuItem = clone $menuItem;
-							unset($newMenuItem->id);
-							$newMenuItem->menutype = $menu->params['menutype'];
-							$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
-							$newMenuItem->language = $language->lang_code;
-							$db->insertObject('#__menu', $newMenuItem, 'id');
-
-							$associations[] = $newMenuItem->id;
+								$associations[] = $newMenuItem->id;
+							}
 						}
 					}
 				}
