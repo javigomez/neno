@@ -2016,6 +2016,21 @@ class NenoHelper
 
 		$query
 			->clear()
+			->update('#__modules')
+			->set('language = ' . $db->quote($defaultLanguage))
+			->where(
+				array (
+					'published = 1',
+					'module = ' . $db->quote('mod_menu'),
+					'client_id = 0',
+					'language  = ' . $db->quote('*')
+				)
+			);
+		$db->setQuery($query);
+		$db->execute();
+
+		$query
+			->clear()
 			->select(
 				array (
 					'position',
@@ -2029,7 +2044,7 @@ class NenoHelper
 					'published = 1',
 					'module = ' . $db->quote('mod_menu'),
 					'client_id = 0',
-					'language <> ' . $db->quote('*')
+					'language = ' . $db->quote($defaultLanguage)
 				)
 			)
 			->group('language');
@@ -2221,7 +2236,6 @@ class NenoHelper
 				$db->execute();
 			}
 		}
-
 
 		// Once we finish restructuring menus, let's rebuild them
 		$menuTable = new JTableMenu($db);
