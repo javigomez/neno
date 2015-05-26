@@ -385,11 +385,12 @@ class NenoContentElementGroup extends NenoContentElement
 	 * Get all the tables related to this group
 	 *
 	 * @param   bool $loadExtraData           Calculate other data
-	 * @param   bool $loadTablesNotDiscovered Only loads tables that bave not been discovered yet
+	 * @param   bool $loadTablesNotDiscovered Only loads tables that have not been discovered yet
+	 * @param   bool $avoidDoNotTranslate     Don't load tables marked as Don't translate
 	 *
 	 * @return array
 	 */
-	public function getTables($loadExtraData = true, $loadTablesNotDiscovered = false)
+	public function getTables($loadExtraData = true, $loadTablesNotDiscovered = false, $avoidDoNotTranslate = false)
 	{
 		if ($this->tables === null || $loadTablesNotDiscovered)
 		{
@@ -407,8 +408,14 @@ class NenoContentElementGroup extends NenoContentElement
 					$this->tables = array ($this->tables);
 				}
 
+				/* @var $table NenoContentElementTable */
 				foreach ($this->tables as $key => $table)
 				{
+					if ($avoidDoNotTranslate && !$this->tables[$key]->isTranslate())
+					{
+						unset ($this->tables[$key]);
+						continue;
+					}
 					$this->tables[$key]->setGroup($this);
 				}
 			}

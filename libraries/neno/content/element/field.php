@@ -390,7 +390,7 @@ class NenoContentElementField extends NenoContentElement
 
 							$translationMethods = $translation->getTranslationMethods();
 
-							if (empty($translationMethods))
+							if (empty($translationMethods[$language->lang_code]))
 							{
 								$translationMethodsTr = $translationmethods[$language->lang_code];
 

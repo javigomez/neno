@@ -209,7 +209,7 @@ class NenoControllerStrings extends JControllerAdmin
 		{
 			/* @var $group NenoContentElementGroup */
 			$group  = NenoContentElementGroup::load($groupId);
-			$tables = $group->getTables(false);
+			$tables = $group->getTables(false, false, true);
 			$files  = $group->getLanguageFiles();
 
 			$displayData = array ();
@@ -217,6 +217,18 @@ class NenoControllerStrings extends JControllerAdmin
 			/* @var $model NenoModelStrings */
 			$model                 = $this->getModel();
 			$displayData['tables'] = NenoHelper::convertNenoObjectListToJObjectList($tables);
+
+			//Remove fields marked as Don't translate
+			foreach ($displayData['tables'] as $table)
+			{
+				foreach ($table->fields as $key => $field)
+				{
+					if (!$field->translate)
+					{
+						unset($table->fields[$key]);
+					}
+				}
+			}
 			$displayData['files']  = NenoHelper::convertNenoObjectListToJObjectList($files);
 			$displayData['state']  = $model->getState();
 			$tablesHTML            = JLayoutHelper::render('multiselecttables', $displayData, JPATH_NENO_LAYOUTS);

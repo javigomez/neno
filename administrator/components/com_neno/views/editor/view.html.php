@@ -118,7 +118,7 @@ class NenoViewEditor extends JViewLegacy
 	 */
 	protected function getGroupData()
 	{
-		$groups = NenoHelper::getGroups(false);
+		$groups = NenoHelper::getGroups(false, true);
 
 		/* @var $group NenoContentElementGroup */
 		foreach ($groups as $key => $group)

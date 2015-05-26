@@ -48,16 +48,11 @@ class NenoControllerGroupElement extends JControllerForm
 		$table = $table->prepareDataForView();
 
 		// Make file name
-		$filter               = JFilterInput::getInstance();
 		$table_name           = str_replace('#__', '', $table->table_name);
-		$group_name           = $filter->clean($table->group->group_name, 'CMD');
-		$group_name_no_spaces = str_replace(' ', '_', $group_name);
 
-		$file_name = $group_name_no_spaces . '_' . $table_name . '_contentelements.xml';
-
+		$file_name = $table_name . '_contentelements.xml';
 		$displayData               = array ();
 		$displayData['table_name'] = $table_name;
-		$displayData['group_name'] = $group_name;
 		$displayData['table']      = $table;
 
 		// Output XML
