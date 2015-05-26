@@ -9,19 +9,16 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // No direct access
-defined('JPATH_NENO') or die;
-?>
-
+defined('JPATH_NENO') or die;?>
 <?php if (!empty($displayData)): ?>
-
 <?php $primary_keys = $displayData['table']->primary_key; ?>
-
 <?xml version="1.0" encoding="UTF-8" ?>
 <neno type="contentelement">
-    <name><?php echo $displayData['group_name']; ?> - <?php echo $displayData['table_name']; ?></name>
+    <name><?php echo $displayData['table_name']; ?></name>
     <author>Neno - http://www.neno-translate.com</author>
     <version>1.0.0</version>
-    <description>Definition of the table <?php echo $displayData['table_name']; ?> for the <?php echo $displayData['group_name']; ?> component</description>
+    <description>Definition of the table <?php echo $displayData['table_name']; ?></description>
+    <translate><?php echo $displayData['table']->translate; ?></translate>
     <reference type="content">
         <table name="<?php echo $displayData['table_name']; ?>">
 <?php foreach ($displayData['table']->fields as $field): ?>
