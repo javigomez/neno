@@ -2329,12 +2329,20 @@ class NenoHelper
 			// For some reason the module id is not in the state, let's try to find it
 			if (empty($moduleId))
 			{
-				$moduleId = array (
-					'language' => $language,
-					'module'   => 'mod_menu',
-					'access'   => '1',
-					'title'    => $newMenuType['title'] . '-' . $language
-				);
+				$query
+					->clear()
+					->select('id')
+					->from('#__modules')
+					->where(
+						array (
+							'language = ' . $db->quote($language),
+							'module = ' . $db->quote('mod_menu'),
+							'params LIKE ' . $db->quote('%' . $menuType . '%')
+						)
+					);
+
+				$db->setQuery($query);
+				$moduleId = (int) $db->loadResult();
 			}
 
 			/* @var $item JObject */
