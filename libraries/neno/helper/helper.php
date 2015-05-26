@@ -2271,7 +2271,7 @@ class NenoHelper
 	{
 		$db       = JFactory::getDbo();
 		$query    = $db->getQuery(true);
-		$menuType = $defaultMenuType['params']['menutype'] . strtolower($language);
+		$menuType = $defaultMenuType->params['menutype'] . strtolower($language);
 
 		$query
 			->select('1')
