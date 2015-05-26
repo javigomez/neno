@@ -2064,7 +2064,7 @@ class NenoHelper
 
 		$db->setQuery($query);
 		$menus        = $db->loadObjectList();
-		$defaultMenus = clone $menus;
+		$defaultMenus = array ();
 
 		// If there's no menu created, let's create one
 		if (empty($menus))
@@ -2080,6 +2080,8 @@ class NenoHelper
 				$menu->params = json_decode($menu->params, true);
 				$menus[$key]  = $menu;
 			}
+
+			$defaultMenus[$key] = clone $menu;
 		}
 
 
