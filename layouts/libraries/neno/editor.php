@@ -17,11 +17,11 @@ $translation = $displayData;
 ?>
 	<script>
 		jQuery(document).ready(function () {
-			jQuery('#copy-btn').on('click', copyOriginal);
+			jQuery('#copy-btn').off('click').on('click', copyOriginal);
 
 			<?php if (NenoSettings::get('translator') == '' || NenoSettings::get('translator_api_key') == ''): ?>
 
-			jQuery('#translate-btn').on('click', function () {
+			jQuery('#translate-btn').off('click').on('click', function () {
 				jQuery('#translatorKeyModal').modal('show');
 			});
 
@@ -52,15 +52,15 @@ $translation = $displayData;
 
 			<?php else: ?>
 
-			jQuery('#translate-btn').on('click', translate);
+			jQuery('#translate-btn').off('click').on('click', translate);
 
 			<?php endif; ?>
 
-			jQuery('#skip-button').on('click', loadNextTranslation);
+			jQuery('#skip-button').off('click').on('click', loadNextTranslation);
 
-			jQuery('#draft-button').on('click', saveDraft);
+			jQuery('#draft-button').off('click').on('click', saveDraft);
 
-			jQuery('#save-next-button').on('click', saveTranslationAndNext);
+			jQuery('#save-next-button').off('click').on('click', saveTranslationAndNext);
 
 			var action = jQuery('#default_translate_action').val();
 			if (action == '1') {

@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 <script>
     jQuery(document).ready(function(){
         selectDebugText();
-        jQuery('#select-all-btn').on('click', selectDebugText);
+        jQuery('#select-all-btn').off('click').on('click', selectDebugText);
     });
     
     function selectDebugText() {
