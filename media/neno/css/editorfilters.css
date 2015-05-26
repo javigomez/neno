@@ -82,6 +82,7 @@
 
 #results-wrapper .string-text {
     margin-left: 18px;
+    white-space: nowrap;
 }
 
 #elements-wrapper {

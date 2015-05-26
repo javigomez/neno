@@ -33,12 +33,14 @@ function loadNextTranslation() {
 }
 
 function updateEditorString(row, data) {
-    if (jQuery('#input-status-' + data.state).prop('checked')) {
+    if (jQuery('#input-status-' + data.state).prop('checked') || jQuery('#status-multiselect input:checked').length == 0) {
         var string = data.string;
         var statuses = ['', 'translated', 'queued', 'changed', 'not-translated'];
         try {
             var stringObject = jQuery(string);
-            string = stringObject.text();
+            if (stringObject.length) {
+                string = stringObject.text();
+            }
         }
         catch (err) {
         }
@@ -88,10 +90,10 @@ function saveTranslationAndNext() {
                     jQuery('#consolidate-button').focus();
                 }
                 var row = jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']');
-                if (row) {
+                if (row.length) {
                     updateEditorString(row, data.translation);
                 }
-                if (row && row == jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']')) {
+                if (row.length && row[0] == jQuery('#elements-wrapper .string[data-id=' + data.translation.id + ']')[0]) {
                     loadNextTranslation();
                 }
             }
