@@ -634,4 +634,31 @@ class NenoContentElementField extends NenoContentElement
 
 		return $data;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function persist()
+	{
+		if ($this->translate)
+		{
+			$this->checkTranslatableStatusFromContentElementFile();
+		}
+
+		return parent::persist();
+	}
+
+	/**
+	 * Check if the table should be translatable
+	 *
+	 * @return void
+	 */
+	public function checkTranslatableStatusFromContentElementFile()
+	{
+		$filePath        = JPATH_NENO . DIRECTORY_SEPARATOR . 'contentelements' . DIRECTORY_SEPARATOR . str_replace('#__', '', $this->getTable()->getTableName()) . '_contentelements.xml';
+		$xml             = simplexml_load_file($filePath);
+		$this->translate = ((int) $xml->xpath('/neno/reference/table/field[@name=\'' . $this->fieldName . '\']/@translate')) == 1;
+	}
 }

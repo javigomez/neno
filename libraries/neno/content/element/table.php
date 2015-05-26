@@ -352,6 +352,12 @@ class NenoContentElementTable extends NenoContentElement
 	 */
 	public function persist()
 	{
+		// If the table has been marked as translatable, let's check for the content element file
+		if ($this->translate)
+		{
+			$this->checkTranslatableStatusFromContentElementFile();
+		}
+
 		$result = parent::persist();
 
 		if (defined('NENO_INSTALLATION'))
@@ -438,6 +444,18 @@ class NenoContentElementTable extends NenoContentElement
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Check if the table should be translatable
+	 *
+	 * @return void
+	 */
+	public function checkTranslatableStatusFromContentElementFile()
+	{
+		$filePath        = JPATH_NENO . DIRECTORY_SEPARATOR . 'contentelements' . DIRECTORY_SEPARATOR . str_replace('#__', '', $this->tableName) . '_contentelements.xml';
+		$xml             = simplexml_load_file($filePath);
+		$this->translate = ((int) $xml->translate) == 1;
 	}
 
 	/**
