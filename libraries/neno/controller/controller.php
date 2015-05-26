@@ -434,4 +434,9 @@ class NenoController extends JControllerLegacy
 
 		JFactory::getApplication()->close();
 	}
+
+	public function createMenus()
+	{
+		NenoHelper::createMenuStructure();
+	}
 }
