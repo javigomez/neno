@@ -432,8 +432,15 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 			{
 				// Get query type
 				$queryType = $this->getQueryType((string) $this->sql);
-				$languages = NenoHelper::getTargetLanguages();
-				$result    = parent::execute();
+				$languages = array ();
+
+				// If the query is creating/modifying/deleting a record, let's do the same on the shadow tables
+				if (($queryType === self::INSERT_QUERY || $queryType === self::DELETE_QUERY || $queryType === self::UPDATE_QUERY || $queryType === self::REPLACE_QUERY) && $this->hasToBeParsed((string) $this->sql))
+				{
+					$languages = NenoHelper::getTargetLanguages();
+				}
+
+				$result = parent::execute();
 
 				// If the query is creating/modifying/deleting a record, let's do the same on the shadow tables
 				if (($queryType === self::INSERT_QUERY || $queryType === self::DELETE_QUERY || $queryType === self::UPDATE_QUERY || $queryType === self::REPLACE_QUERY) && $this->hasToBeParsed((string) $this->sql))
