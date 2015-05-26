@@ -125,8 +125,9 @@ class NenoControllerInstallation extends JControllerAdmin
 				break;
 			case 4:
 				/* @var $db NenoDatabaseDriverMysqlx */
-				$db    = JFactory::getDbo();
-				$query = $db->getQuery(true);
+				$db            = JFactory::getDbo();
+				$query         = $db->getQuery(true);
+				$tablesIgnored = NenoHelper::getDoNotTranslateTables();
 
 				/* @var $config \Joomla\Registry\Registry */
 				$config = JFactory::getConfig();
@@ -151,34 +152,37 @@ class NenoControllerInstallation extends JControllerAdmin
 
 				foreach ($tables as $table)
 				{
-					$sourceLanguage      = NenoSettings::get('source_language');
-					$sourceLanguageParts = explode('-', $sourceLanguage);
-					$query
-						->clear()
-						->select(
-							array (
-								'COUNT(*) AS counter',
-								'language',
-								$db->quote($table) . ' AS `table`'
-							)
-						)
-						->from($db->quoteName($table))
-						->where(
-							array (
-								'language <> ' . $db->quote('*'),
-								'language <> ' . $db->quote(''),
-								'language <> ' . $db->quote($sourceLanguage),
-								'language <> ' . $db->quote($sourceLanguageParts[0]),
-							)
-						)
-						->group('language');
-
-					$db->setQuery($query);
-					$recordsFound = $db->loadObjectList();
-
-					if (!empty($recordsFound))
+					if (!in_array(str_replace($db->getPrefix(), '#__', $table), $tablesIgnored))
 					{
-						$tablesFound = array_merge($tablesFound, $recordsFound);
+						$sourceLanguage      = NenoSettings::get('source_language');
+						$sourceLanguageParts = explode('-', $sourceLanguage);
+						$query
+							->clear()
+							->select(
+								array (
+									'COUNT(*) AS counter',
+									'language',
+									$db->quote($table) . ' AS `table`'
+								)
+							)
+							->from($db->quoteName($table))
+							->where(
+								array (
+									'language <> ' . $db->quote('*'),
+									'language <> ' . $db->quote(''),
+									'language <> ' . $db->quote($sourceLanguage),
+									'language <> ' . $db->quote($sourceLanguageParts[0]),
+								)
+							)
+							->group('language');
+
+						$db->setQuery($query);
+						$recordsFound = $db->loadObjectList();
+
+						if (!empty($recordsFound))
+						{
+							$tablesFound = array_merge($tablesFound, $recordsFound);
+						}
 					}
 				}
 
