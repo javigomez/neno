@@ -1593,7 +1593,7 @@ class NenoHelper
 	/**
 	 * Return all groups.
 	 *
-	 * @param bool $loadExtraData Load Extra data flag
+	 * @param bool $loadExtraData       Load Extra data flag
 	 * @param bool $avoidDoNotTranslate Don't return fields/keys marked as Don't translate
 	 *
 	 * @return  array
@@ -1609,8 +1609,8 @@ class NenoHelper
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$subquery1 = $db->getQuery(true);
-			$arrayWhere1 = array('t.group_id = g.id');
+			$subquery1   = $db->getQuery(true);
+			$arrayWhere1 = array ('t.group_id = g.id');
 			if ($avoidDoNotTranslate)
 			{
 				$arrayWhere1[] = 't.translate = 1';
@@ -1644,7 +1644,7 @@ class NenoHelper
 			$countGroups = count($groups);
 			for ($i = 0; $i < $countGroups; $i++)
 			{
-				$group = NenoContentElementGroup::getGroup($groups[$i]->id, $loadExtraData);
+				$group              = NenoContentElementGroup::getGroup($groups[$i]->id, $loadExtraData);
 				$translationMethods = $group->getAssignedTranslationMethods();
 				if ($avoidDoNotTranslate && empty($translationMethods))
 				{
@@ -2063,13 +2063,13 @@ class NenoHelper
 			->group('language');
 
 		$db->setQuery($query);
-		$menus = $db->loadObjectList('language');
+		$menus = $db->loadObjectList();
 
 		// If there's no menu created, let's create one
 		if (empty($menus))
 		{
-			$menu                    = self::createMenu($defaultLanguage, new stdClass());
-			$menus[$defaultLanguage] = $menu;
+			$menu    = self::createMenu($defaultLanguage, new stdClass());
+			$menus[] = $menu;
 		}
 
 		foreach ($menus as $key => $menu)
@@ -2086,12 +2086,7 @@ class NenoHelper
 		$query
 			->clear()
 			->update('#__menu AS m')
-			->set(
-				array (
-					'language = ' . $db->quote($defaultLanguage),
-					'menutype = ' . $db->quote($menus[$defaultLanguage]->params['menutype'])
-				)
-			)
+			->set('language = ' . $db->quote($defaultLanguage))
 			->where(
 				array (
 					'client_id = 0',
