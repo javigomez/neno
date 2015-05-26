@@ -1011,6 +1011,7 @@ class NenoHelper
 			'#__messages',
 			'#__messages_cfg',
 			'#__modules_menu',
+			'#__modules',
 			'#__postinstall_messages',
 			'#__redirect_links',
 			'#__users',
@@ -1025,7 +1026,9 @@ class NenoHelper
 			'#__user_notes',
 			'#__user_profiles',
 			'#__user_usergroup_map',
-			'#__viewlevels'
+			'#__viewlevels',
+			'#__menu',
+			'#__menu_types',
 		);
 	}
 
