@@ -265,14 +265,16 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 			$languageTagSelected = $this->getLanguageTagSelected();
 		}
 
-
-		if (preg_match_all($pattern, $sql, $matches))
+		if ($languageTagSelected != '')
 		{
-			foreach ($matches[0] as $match)
+			if (preg_match_all($pattern, $sql, $matches))
 			{
-				if ($this->isTranslatable($match))
+				foreach ($matches[0] as $match)
 				{
-					$sql = str_replace($match, $this->generateShadowTableName($match, $languageTagSelected), $sql);
+					if ($this->isTranslatable($match))
+					{
+						$sql = str_replace($match . ' ', $this->generateShadowTableName($match, $languageTagSelected) . ' ', $sql);
+					}
 				}
 			}
 		}
