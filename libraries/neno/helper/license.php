@@ -48,26 +48,7 @@ class NenoHelperLicense
         
     }
     
-    public static function isValid()
-    {
-        $licenseData = self::getLicenseData();
-        if (count($licenseData) !== 4)
-        {
-            return false;
-        }
-        if (self::checkDomainMatch($licenseData[2]) === false)
-        {
-			return false;
-		}
-        if (strtotime($licenseData[3]) < time())
-        {
-            return false;
-        }
-        return true;
-    }
-    
-    
-    public static function getLicense() {
+    private static function getLicense() {
         return NenoSettings::get('license_code', '');         
     }
     
@@ -77,7 +58,7 @@ class NenoHelperLicense
      * @param string $domain
      * @return boolean
      */
-    public static function checkDomainMatch($domain)
+    private static function checkDomainMatch($domain)
     {
         if (
                 strpos(JUri::root(), $domain) === false 
@@ -99,7 +80,7 @@ class NenoHelperLicense
      * @param string $license
      * @return array
      */
-    public static function getLicenseData() 
+    private static function getLicenseData() 
     {
         $license = self::getLicense();
         return explode('|', base64_decode($license));

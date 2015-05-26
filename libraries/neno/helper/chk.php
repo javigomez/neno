@@ -35,7 +35,7 @@ class NenoHelperChk extends NenoHelperLicense
         return true;
     }
     
-    public static function checkDomainMatch($domain)
+    private static function checkDomainMatch($domain)
     {
         if (
                 strpos(JUri::root(), $domain) === false 
