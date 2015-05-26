@@ -49,9 +49,9 @@ foreach ($this->items as $item)
 
 <script>
 	jQuery(document).ready(function () {
-		jQuery('select').on('change', saveSetting);
-		jQuery(".input-setting").on('blur', saveSetting);
-		jQuery('fieldset.radio').on('change', saveSetting);
+		jQuery('select').off('change').on('change', saveSetting);
+		jQuery(".input-setting").off('blur').on('blur', saveSetting);
+		jQuery('fieldset.radio').off('change').on('change', saveSetting);
 		var options = {
 			html: true,
 			placement: "right"

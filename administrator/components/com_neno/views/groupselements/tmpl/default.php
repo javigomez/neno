@@ -330,7 +330,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 					jQuery('#nenomodal').modal('show');
 
 					//Handle saving and submitting the form
-					jQuery('#save-modal-btn').on('click', function () {
+					jQuery('#save-modal-btn').off('click').on('click', function () {
 						jQuery('#groupelement-form').submit();
 					});
 				}

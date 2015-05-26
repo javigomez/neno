@@ -33,7 +33,7 @@ $next = JFactory::getApplication()->input->getString('next', 'dashboard');
 
 <script>
 	jQuery(document).ready(function () {
-		jQuery('.not-ready').on('click', function (e) {
+		jQuery('.not-ready').off('click').on('click', function (e) {
 			e.preventDefault();
 			alert('<?php echo JText::_('COM_NENO_LANGUAGE_IS_NOT_READY_YET_MESSAGE'); ?>');
 		});

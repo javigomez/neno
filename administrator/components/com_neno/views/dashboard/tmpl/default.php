@@ -35,11 +35,11 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	function bindEvents() {
 		//Bind the loader into the new selector
 		loadMissingTranslationMethodSelectors();
-		jQuery('.configuration-button').on('click', function () {
+		jQuery('.configuration-button').off('click').on('click', function () {
 			jQuery(this).siblings('.language-configuration').slideToggle('fast');
 		});
 
-		jQuery(".radio").on('change', function () {
+		jQuery(".radio").off('change').on('change', function () {
 			jQuery.ajax({
 				beforeSend: onBeforeAjax,
 				url: 'index.php?option=com_neno&task=dashboard.toggleLanguage&language=' + jQuery(this).data('language')

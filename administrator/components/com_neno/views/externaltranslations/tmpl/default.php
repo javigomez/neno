@@ -47,7 +47,7 @@ if (!empty($this->extra_sidebar))
 
 <script>
 	jQuery(document).ready(function () {
-		jQuery('.translate_automatically_setting').on('click', function () {
+		jQuery('.translate_automatically_setting').off('click').on('click', function () {
 			jQuery.ajax({
 				beforeSend: onBeforeAjax,
 				type: "POST",
@@ -64,7 +64,7 @@ if (!empty($this->extra_sidebar))
 			});
 		});
 
-		jQuery('.order-button').on('click', function () {
+		jQuery('.order-button').off('click').on('click', function () {
 			jQuery.ajax({
 				beforeSend: onBeforeAjax,
 				type: "POST",

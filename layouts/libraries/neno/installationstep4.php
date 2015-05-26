@@ -72,7 +72,7 @@ JHtml::_('bootstrap.tooltip');
 </div>
 
 <script>
-	jQuery('#proceed-button').on('click', function () {
+	jQuery('#proceed-button').off('click').on('click', function () {
 
 		if (jQuery('#backup-created-checkbox').prop('checked')) {
 			jQuery('#warning-message').slideToggle(400, function () {
@@ -90,7 +90,7 @@ JHtml::_('bootstrap.tooltip');
 		sendDiscoveringStep();
 	});
 
-	jQuery('#backup-created-checkbox').on('click', function () {
+	jQuery('#backup-created-checkbox').off('click').on('click', function () {
 		jQuery('#proceed-button').attr('disabled', !jQuery(this).prop('checked'));
 	});
 
