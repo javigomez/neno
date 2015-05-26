@@ -2290,12 +2290,14 @@ class NenoHelper
 			$db->execute();
 		}
 
+
 		// Create module menu
 		JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
 
 		/* @var $moduleModel ModulesModelModule */
 		$moduleModel              = JModelLegacy::getInstance('Module', 'ModulesModel');
 		$newMenuType              = get_object_vars($defaultMenuType);
+		$previousId               = $newMenuType['id'];
 		$newMenuType['id']        = null;
 		$newMenuType['language']  = $language;
 		$newMenuType['title']     = JText::sprintf('COM_NENO_MAIN_MENU_TITLE', $language);
@@ -2303,6 +2305,7 @@ class NenoHelper
 		$newMenuType['client_id'] = 0;
 		$newMenuType['access']    = 1;
 		$newMenuType['module']    = 'mod_menu';
+		$newMenuType['assigned']  = self::getModuleAssignments($previousId);
 
 		if (empty($newMenuType['params']))
 		{
@@ -2313,14 +2316,56 @@ class NenoHelper
 
 		if ($moduleModel->save($newMenuType))
 		{
-			/* @var $item JObject */
-			$item = $moduleModel->getItem($moduleModel->getState('module.id'));
-			$item = (object) $item->getProperties();
+			$moduleId = $moduleModel->getState('module.id');
 
-			return $item;
+			if (!empty($moduleId))
+			{
+				/* @var $item JObject */
+				$item = $moduleModel->getItem($moduleModel->getState('module.id'));
+				$item = (object) $item->getProperties();
+
+				return $item;
+			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get all the module assignments
+	 *
+	 * @param int $moduleId Module Id
+	 *
+	 * @return array
+	 */
+	protected static function getModuleAssignments($moduleId)
+	{
+		return self::getAssignments('menuid', 'moduleid', $moduleId);
+	}
+
+	/**
+	 * Get all the assignments
+	 *
+	 * @param string $selectColumnName Select column
+	 * @param string $whereColumnName  Where column
+	 * @param int    $itemId           Item id
+	 *
+	 * @return array
+	 */
+	protected static function getAssignments($selectColumnName, $whereColumnName, $itemId)
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->select($db->quoteName($selectColumnName))
+			->from('#__modules_menu')
+			->where($db->quoteName($whereColumnName) . ' = ' . $db->quote($itemId));
+
+		$db->setQuery($query);
+		$assignments = $db->loadArray();
+
+		return $assignments;
 	}
 
 	/**
@@ -3641,6 +3686,18 @@ class NenoHelper
 		$values = $db->loadObjectList();
 
 		return JHtml::_('select.genericlist', $values, 'translator', null, 'value', 'text', null, false, true);
+	}
+
+	/**
+	 * Get all the menu assignments
+	 *
+	 * @param int $menuId menu Id
+	 *
+	 * @return array
+	 */
+	protected static function getMenuAssignments($menuId)
+	{
+		return self::getAssignments('moduleid', 'menuid', $menuId);
 	}
 
 	/**
