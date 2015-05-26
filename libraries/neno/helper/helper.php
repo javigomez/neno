@@ -2062,7 +2062,7 @@ class NenoHelper
 		// If there's no menu created, let's create one
 		if (empty($defaultMenus))
 		{
-			$menu             = self::createMenu($defaultLanguage, $defaultLanguage, new stdClass());
+			$menu             = self::createMenu($defaultLanguage, new stdClass());
 			$menus[$menu->id] = $menu;
 		}
 
@@ -2070,7 +2070,9 @@ class NenoHelper
 		{
 			foreach ($languages as $language)
 			{
-				$createdMenu                   = self::createMenu($language->lang_code, $defaultLanguage, $menu);
+				$createdMenu                   = self::createMenu($language->lang_code, $menu);
+				$createdMenu->default          = $menu;
+				$createdMenu->language         = $language->lang_code;
 				$menus[$createdMenu->menutype] = $createdMenu;
 			}
 
@@ -2233,6 +2235,11 @@ class NenoHelper
 			}
 		}
 
+		foreach ($menus as $menu)
+		{
+			self::assignModules($menu->menutype, $menu->default, $menu->language, $defaultLanguage);
+		}
+
 		// Once we finish restructuring menus, let's rebuild them
 		$menuTable = new JTableMenu($db);
 		$menuTable->rebuild();
@@ -2246,7 +2253,7 @@ class NenoHelper
 	 *
 	 * @return stdClass
 	 */
-	protected static function createMenu($language, $defaultLanguage, stdClass $defaultMenuType)
+	protected static function createMenu($language, stdClass $defaultMenuType)
 	{
 		$db       = JFactory::getDbo();
 		$query    = $db->getQuery(true);
@@ -2282,90 +2289,9 @@ class NenoHelper
 				->where('menutype = ' . $db->quote($menuType));
 			$db->setQuery($query);
 			$item = $db->loadObject();
-
-			$query
-				->clear()
-				->select('*')
-				->from('#__modules')
-				->where(
-					array (
-						'module = ' . $db->quote('mod_menu'),
-						'params LIKE ' . $db->quote('%' . $defaultMenuType->menutype . '%'),
-						'language = ' . $db->quote($defaultLanguage)
-					)
-				);
-
-			$db->setQuery($query);
-			$modules = $db->loadObjectList();
-
-			// Create module menu
-			JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
-
-			/* @var $moduleModel ModulesModelModule */
-			$moduleModel = JModelLegacy::getInstance('Module', 'ModulesModel');
-
-			foreach ($modules as $module)
-			{
-				$newMenuType               = get_object_vars($module);
-				$newMenuType['id']         = null;
-				$newMenuType['language']   = $language;
-				$newMenuType['title']      = $newMenuType['title'] . '-' . $language;
-				$newMenuType['published']  = 1;
-				$newMenuType['client_id']  = 0;
-				$newMenuType['access']     = 1;
-				$newMenuType['module']     = 'mod_menu';
-				$newMenuType['assigned']   = self::getModuleAssignments($module->id);
-				$newMenuType['assignment'] = 1;
-
-				if (empty($newMenuType['params']))
-				{
-					$newMenuType['params'] = array ();
-				}
-
-				$newMenuType['params']['menutype'] = $menuType;
-				$moduleModel->save($newMenuType);
-			}
 		}
 
-
 		return $item;
-	}
-
-	/**
-	 * Get all the module assignments
-	 *
-	 * @param int $moduleId Module Id
-	 *
-	 * @return array
-	 */
-	protected static function getModuleAssignments($moduleId)
-	{
-		return self::getAssignments('menuid', 'moduleid', $moduleId);
-	}
-
-	/**
-	 * Get all the assignments
-	 *
-	 * @param string $selectColumnName Select column
-	 * @param string $whereColumnName  Where column
-	 * @param int    $itemId           Item id
-	 *
-	 * @return array
-	 */
-	protected static function getAssignments($selectColumnName, $whereColumnName, $itemId)
-	{
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query
-			->select($db->quoteName($selectColumnName))
-			->from('#__modules_menu')
-			->where($db->quoteName($whereColumnName) . ' = ' . $db->quote($itemId));
-
-		$db->setQuery($query);
-		$assignments = $db->loadArray();
-
-		return $assignments;
 	}
 
 	/**
@@ -2398,6 +2324,100 @@ class NenoHelper
 		$db->setQuery($query);
 
 		return $db->loadArray();
+	}
+
+	protected static function assignModules($menuType, $defaultMenuType, $language, $defaultLanguage)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->clear()
+			->select('*')
+			->from('#__modules')
+			->where(
+				array (
+					'module = ' . $db->quote('mod_menu'),
+					'params LIKE ' . $db->quote('%' . $defaultMenuType->menutype . '%'),
+					'language = ' . $db->quote($defaultLanguage),
+					'published IN (0,1)'
+				)
+			);
+
+		$db->setQuery($query);
+		$modules = $db->loadObjectList();
+
+		// Create module menu
+		JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
+
+		/* @var $moduleModel ModulesModelModule */
+		$moduleModel = JModelLegacy::getInstance('Module', 'ModulesModel');
+
+		foreach ($modules as $module)
+		{
+			$newMenuType               = get_object_vars($module);
+			$newMenuType['id']         = null;
+			$newMenuType['language']   = $language;
+			$newMenuType['title']      = $newMenuType['title'] . '-' . $language;
+			$newMenuType['published']  = 1;
+			$newMenuType['client_id']  = 0;
+			$newMenuType['access']     = 1;
+			$newMenuType['module']     = 'mod_menu';
+			$newMenuType['assigned']   = self::getModuleAssignments($module->id);
+			$newMenuType['assignment'] = 1;
+
+			if (empty($newMenuType['params']))
+			{
+				$newMenuType['params'] = array ();
+			}
+			else
+			{
+				if (is_string($newMenuType['params']))
+				{
+					$newMenuType['params'] = json_decode($newMenuType['params'], true);
+				}
+			}
+
+			$newMenuType['params']['menutype'] = $menuType;
+			$moduleModel->save($newMenuType);
+		}
+	}
+
+	/**
+	 * Get all the module assignments
+	 *
+	 * @param int $moduleId Module Id
+	 *
+	 * @return array
+	 */
+	protected
+	static function getModuleAssignments($moduleId)
+	{
+		return self::getAssignments('menuid', 'moduleid', $moduleId);
+	}
+
+	/**
+	 * Get all the assignments
+	 *
+	 * @param string $selectColumnName Select column
+	 * @param string $whereColumnName  Where column
+	 * @param int    $itemId           Item id
+	 *
+	 * @return array
+	 */
+	protected static function getAssignments($selectColumnName, $whereColumnName, $itemId)
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->select($db->quoteName($selectColumnName))
+			->from('#__modules_menu')
+			->where($db->quoteName($whereColumnName) . ' = ' . $db->quote($itemId));
+
+		$db->setQuery($query);
+		$assignments = $db->loadArray();
+
+		return $assignments;
 	}
 
 	/**
