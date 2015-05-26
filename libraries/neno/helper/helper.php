@@ -2165,34 +2165,38 @@ class NenoHelper
 
 						foreach ($defaultMenus as $defaultMenu)
 						{
-							$menu     = self::createMenu($language->lang_code, $defaultMenu);
-							$menus[]  = $menu;
-							$newAlias = JFilterOutput::stringURLSafe($menuItem->alias . '-' . $language->lang_code);
+							$menu = self::createMenu($language->lang_code, $defaultMenu);
 
-							$query
-								->clear()
-								->select('id')
-								->from('#__menu')
-								->where('alias = ' . $db->quote($newAlias));
-
-							$db->setQuery($query);
-							$menuId = $db->loadResult();
-
-							if (!empty($menuId) && !in_array($menuId, $alreadyAssociated))
+							if (!empty($menu))
 							{
-								$associations[]      = $menuId;
-								$alreadyAssociated[] = $menuId;
-							}
-							else
-							{
-								$newMenuItem = clone $menuItem;
-								unset($newMenuItem->id);
-								$newMenuItem->menutype = $menu->params['menutype'];
-								$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
-								$newMenuItem->language = $language->lang_code;
-								$db->insertObject('#__menu', $newMenuItem, 'id');
+								$menus[]  = $menu;
+								$newAlias = JFilterOutput::stringURLSafe($menuItem->alias . '-' . $language->lang_code);
 
-								$associations[] = $newMenuItem->id;
+								$query
+									->clear()
+									->select('id')
+									->from('#__menu')
+									->where('alias = ' . $db->quote($newAlias));
+
+								$db->setQuery($query);
+								$menuId = $db->loadResult();
+
+								if (!empty($menuId) && !in_array($menuId, $alreadyAssociated))
+								{
+									$associations[]      = $menuId;
+									$alreadyAssociated[] = $menuId;
+								}
+								else
+								{
+									$newMenuItem = clone $menuItem;
+									unset($newMenuItem->id);
+									$newMenuItem->menutype = $menu->params['menutype'];
+									$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
+									$newMenuItem->language = $language->lang_code;
+									$db->insertObject('#__menu', $newMenuItem, 'id');
+
+									$associations[] = $newMenuItem->id;
+								}
 							}
 						}
 					}
@@ -2303,7 +2307,7 @@ class NenoHelper
 		$previousId                = $newMenuType['id'];
 		$newMenuType['id']         = null;
 		$newMenuType['language']   = $language;
-		$newMenuType['title']      = JText::sprintf('COM_NENO_MAIN_MENU_TITLE', $language);
+		$newMenuType['title']      = $newMenuType['title'] . '-' . $language;
 		$newMenuType['published']  = 1;
 		$newMenuType['client_id']  = 0;
 		$newMenuType['access']     = 1;
@@ -2322,14 +2326,22 @@ class NenoHelper
 		{
 			$moduleId = $moduleModel->getState('module.id');
 
-			if (!empty($moduleId))
+			// For some reason the module id is not in the state, let's try to find it
+			if (empty($moduleId))
 			{
-				/* @var $item JObject */
-				$item = $moduleModel->getItem($moduleModel->getState('module.id'));
-				$item = (object) $item->getProperties();
-
-				return $item;
+				$moduleId = array (
+					'language' => $language,
+					'module'   => 'mod_menu',
+					'access'   => '1',
+					'title'    => $newMenuType['title'] . '-' . $language
+				);
 			}
+
+			/* @var $item JObject */
+			$item = $moduleModel->getItem($moduleId);
+			$item = (object) $item->getProperties();
+
+			return $item;
 		}
 
 		return false;
