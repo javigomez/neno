@@ -55,6 +55,11 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	private $manifestTables;
 
 	/**
+	 * @var array
+	 */
+	private $languages;
+
+	/**
 	 * Set Autoincrement index in a shadow table
 	 *
 	 * @param   string $tableName   Original table name
@@ -474,13 +479,6 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 			{
 				// Get query type
 				$queryType = $this->getQueryType((string) $this->sql);
-				$languages = array ();
-
-				// If the query is creating/modifying/deleting a record, let's do the same on the shadow tables
-				if (($queryType === self::INSERT_QUERY || $queryType === self::DELETE_QUERY || $queryType === self::UPDATE_QUERY || $queryType === self::REPLACE_QUERY) && $this->hasToBeParsed((string) $this->sql))
-				{
-					$languages = NenoHelper::getTargetLanguages();
-				}
 
 				$result = parent::execute();
 
@@ -489,7 +487,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 				{
 					$sql = $this->sql;
 
-					foreach ($languages as $language)
+					foreach ($this->languages as $language)
 					{
 						$newSql = $this->replaceTableNameStatements((string) $sql, $language->lang_code);
 
@@ -593,6 +591,8 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 				$this->manifestTables[] = $object->table_name;
 			}
 		}
+
+		$this->languages = NenoHelper::getTargetLanguages();
 	}
 
 	/**
