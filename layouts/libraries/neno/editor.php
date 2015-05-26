@@ -71,13 +71,39 @@ $translation = $displayData;
 				translate();
 			}
 			<?php endif; ?>
+             
+            jQuery('#dont-translate').tooltip();  
+            jQuery('#dont-translate').off().on('click', changeFieldTranslateState);
 		});
+        
+        function changeFieldTranslateState() {
+
+            var id = jQuery(this).attr('data-id');
+
+            jQuery.ajax({
+                    beforeSend: onBeforeAjax,
+                    url: 'index.php?option=com_neno&task=groupselements.toggleContentElementField&fieldId=' + id + '&translateStatus=0',
+                    success: function() {
+                        window.location.reload();
+                    }
+                }
+            );
+        }        
+        
 	</script>
 
 	<div>
 		<div class="span12">
 			<div class="span6 breadcrumbs">
 				<?php echo empty($translation) ? '' : implode(' <span class="gt icon-arrow-right"></span>', $translation->breadcrumbs); ?>
+                <?php if (!empty($translation->breadcrumbs)): ?>
+                    &nbsp;&nbsp;
+                    <a id="dont-translate" 
+                       class="hasTooltip" 
+                       href="javascript:void(0);" 
+                       title="<?php echo JHtml::tooltipText('COM_NENO_EDITOR_BTN_DONT_TRANSLATE'); ?>" 
+                       data-id="<?php echo $translation->content_id; ?>"><i class="icon-unpublish"></i></a>
+                <?php endif; ?>
 			</div>
 			<div class="span6 pull-right">
 				<div class="pull-right right-buttons">

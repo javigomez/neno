@@ -87,11 +87,19 @@ button .normal-text {
     overflow-y: scroll !important;
 }
 .breadcrumbs {
+    font-size: 16px;
     padding-top: 15px;
     color: #888;
 }
+.breadcrumbs .icon-unpublish:before{
+    color: #ccc;
+}
+.breadcrumbs .icon-unpublish:hover:before{
+    color: #bd362f;
+}
+
 .breadcrumbs .gt {
-    font-size: 10px;
+    font-size: 12px;
     color: #ccc;
     margin: 0 10px;
 }
