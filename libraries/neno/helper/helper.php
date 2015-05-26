@@ -2178,6 +2178,13 @@ class NenoHelper
 							$newMenuItem->language = $language->lang_code;
 							if ($db->insertObject('#__menu', $newMenuItem, 'id'))
 							{
+
+								// Assign all the modules to this item
+								$query = 'INSERT INTO #__modules_menu (moduleid,menuid) SELECT moduleid,' . $db->quote($newMenuItem->id) . ' FROM  #__modules_menu WHERE menuid = ' . $db->quote($menuItem->id);
+								$db->setQuery($query);
+								$db->execute();
+								$query = $db->getQuery(true);
+
 								$associations[] = $newMenuItem->id;
 							}
 						}
