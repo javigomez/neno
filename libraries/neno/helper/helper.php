@@ -2050,6 +2050,7 @@ class NenoHelper
 			->clear()
 			->select(
 				array (
+					'title',
 					'position',
 					'params',
 					'language'
@@ -2063,8 +2064,7 @@ class NenoHelper
 					'client_id = 0',
 					'language = ' . $db->quote($defaultLanguage)
 				)
-			)
-			->group('language');
+			);
 
 		$db->setQuery($query);
 		$menus        = $db->loadObjectList();
