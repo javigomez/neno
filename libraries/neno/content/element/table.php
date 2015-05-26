@@ -388,9 +388,9 @@ class NenoContentElementTable extends NenoContentElement
 					->setTranslate($field->isTranslatable() && $this->isTranslate())
 					->persist();
 
-				if ($field->getFieldName() === 'language')
+				if ($field->getFieldName() === 'language' && $this->isTranslate())
 				{
-					$languages       = NenoHelper::getLanguages(false);
+					$languages       = NenoHelper::getTargetLanguages();
 					$defaultLanguage = NenoSettings::get('source_language');
 
 					foreach ($languages as $language)
