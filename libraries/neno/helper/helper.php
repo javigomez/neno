@@ -253,12 +253,15 @@ class NenoHelper
 		// Create a simple array
 		$arr = array ();
 
-		foreach ($languages as $lang)
+		if (!empty($languages))
 		{
-			// Do not include the default language
-			if ($lang->lang_code !== $defaultLanguage)
+			foreach ($languages as $lang)
 			{
-				$arr[$lang->lang_code] = $lang;
+				// Do not include the default language
+				if ($lang->lang_code !== $defaultLanguage)
+				{
+					$arr[$lang->lang_code] = $lang;
+				}
 			}
 		}
 
@@ -2006,7 +2009,7 @@ class NenoHelper
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db              = JFactory::getDbo();
 		$query           = $db->getQuery(true);
-		$languages       = NenoHelper::getLanguages();
+		$languages       = NenoHelper::getTargetLanguages();
 		$defaultLanguage = NenoSettings::get('source_language');
 
 		// Delete all the menus trashed
@@ -2048,46 +2051,30 @@ class NenoHelper
 
 		$query
 			->clear()
-			->select(
-				array (
-					'title',
-					'position',
-					'params',
-					'language'
-				)
-			)
-			->from('#__modules')
-			->where(
-				array (
-					'published = 1',
-					'module = ' . $db->quote('mod_menu'),
-					'client_id = 0',
-					'language = ' . $db->quote($defaultLanguage)
-				)
-			);
+			->select('mt.*')
+			->from('#__menu_types AS mt')
+			->where('EXISTS (SELECT 1 FROM #__menu AS m WHERE mt.menutype = m.menutype AND m.language = ' . $db->quote($defaultLanguage) . ')');
 
 		$db->setQuery($query);
-		$menus        = $db->loadObjectList();
-		$defaultMenus = array ();
+		$defaultMenus = $db->loadObjectList();
+		$menus        = array ();
 
 		// If there's no menu created, let's create one
-		if (empty($menus))
+		if (empty($defaultMenus))
 		{
-			$menu    = self::createMenu($defaultLanguage, new stdClass());
-			$menus[] = $menu;
+			$menu             = self::createMenu($defaultLanguage, $defaultLanguage, new stdClass());
+			$menus[$menu->id] = $menu;
 		}
 
-		foreach ($menus as $key => $menu)
+		foreach ($defaultMenus as $key => $menu)
 		{
-			if (is_string($menu->params))
+			foreach ($languages as $language)
 			{
-				$menu->params = json_decode($menu->params, true);
-				$menus[$key]  = $menu;
+				$createdMenu                   = self::createMenu($language->lang_code, $defaultLanguage, $menu);
+				$menus[$createdMenu->menutype] = $createdMenu;
 			}
 
-			$defaultMenus[$key] = clone $menu;
 		}
-
 
 		// Set all the menus items from '*' to default language
 		$query
@@ -2132,7 +2119,7 @@ class NenoHelper
 			$associations = array ();
 			$insert       = false;
 
-			if (count($existingLanguagesAssociated) < (count($languages) - 1))
+			if (count($existingLanguagesAssociated) < (count($languages)))
 			{
 				foreach ($languages as $language)
 				{
@@ -2164,40 +2151,32 @@ class NenoHelper
 							}
 						}
 
-						foreach ($defaultMenus as $defaultMenu)
+						$newAlias = JFilterOutput::stringURLSafe($menuItem->alias . '-' . $language->lang_code);
+
+						$query
+							->clear()
+							->select('id')
+							->from('#__menu')
+							->where('alias = ' . $db->quote($newAlias));
+
+						$db->setQuery($query);
+						$menuId = $db->loadResult();
+
+						if (!empty($menuId) && !in_array($menuId, $alreadyAssociated))
 						{
-							$menu = self::createMenu($language->lang_code, $defaultMenu);
-
-							if (!empty($menu))
+							$associations[]      = $menuId;
+							$alreadyAssociated[] = $menuId;
+						}
+						else
+						{
+							$newMenuItem = clone $menuItem;
+							unset($newMenuItem->id);
+							$newMenuItem->menutype = $menuItem->menutype . '-' . strtolower($language->lang_code);
+							$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
+							$newMenuItem->language = $language->lang_code;
+							if ($db->insertObject('#__menu', $newMenuItem, 'id'))
 							{
-								$menus[]  = $menu;
-								$newAlias = JFilterOutput::stringURLSafe($menuItem->alias . '-' . $language->lang_code);
-
-								$query
-									->clear()
-									->select('id')
-									->from('#__menu')
-									->where('alias = ' . $db->quote($newAlias));
-
-								$db->setQuery($query);
-								$menuId = $db->loadResult();
-
-								if (!empty($menuId) && !in_array($menuId, $alreadyAssociated))
-								{
-									$associations[]      = $menuId;
-									$alreadyAssociated[] = $menuId;
-								}
-								else
-								{
-									$newMenuItem = clone $menuItem;
-									unset($newMenuItem->id);
-									$newMenuItem->menutype = $menu->params['menutype'];
-									$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
-									$newMenuItem->language = $language->lang_code;
-									$db->insertObject('#__menu', $newMenuItem, 'id');
-
-									$associations[] = $newMenuItem->id;
-								}
+								$associations[] = $newMenuItem->id;
 							}
 						}
 					}
@@ -2267,27 +2246,21 @@ class NenoHelper
 	 *
 	 * @return stdClass
 	 */
-	protected static function createMenu($language, stdClass $defaultMenuType)
+	protected static function createMenu($language, $defaultLanguage, stdClass $defaultMenuType)
 	{
 		$db       = JFactory::getDbo();
 		$query    = $db->getQuery(true);
-		$menuType = $defaultMenuType->params['menutype'] . '-' . strtolower($language);
+		$menuType = $defaultMenuType->menutype . '-' . strtolower($language);
 
 		$query
-			->select('1')
+			->select('*')
 			->from('#__menu_types')
 			->where('menutype = ' . $db->quote($menuType));
 
 		$db->setQuery($query);
-		$exists = $db->loadResult() == 1;
+		$item = $db->loadObject();
 
-		// Create module menu
-		JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
-
-		/* @var $moduleModel ModulesModelModule */
-		$moduleModel = JModelLegacy::getInstance('Module', 'ModulesModel');
-
-		if (!$exists)
+		if (empty($item))
 		{
 			$query
 				->clear()
@@ -2303,53 +2276,57 @@ class NenoHelper
 			$db->setQuery($query);
 			$db->execute();
 
-			$newMenuType               = get_object_vars($defaultMenuType);
-			$previousId                = $newMenuType['id'];
-			$newMenuType['id']         = null;
-			$newMenuType['language']   = $language;
-			$newMenuType['title']      = $newMenuType['title'] . '-' . $language;
-			$newMenuType['published']  = 1;
-			$newMenuType['client_id']  = 0;
-			$newMenuType['access']     = 1;
-			$newMenuType['module']     = 'mod_menu';
-			$newMenuType['assigned']   = self::getModuleAssignments($previousId);
-			$newMenuType['assignment'] = 1;
+			$query
+				->select('*')
+				->from('#__menu_types')
+				->where('menutype = ' . $db->quote($menuType));
+			$db->setQuery($query);
+			$item = $db->loadObject();
 
-			if (empty($newMenuType['params']))
-			{
-				$newMenuType['params'] = array ();
-			}
-
-			$newMenuType['params']['menutype'] = $menuType;
-
-			if ($moduleModel->save($newMenuType))
-			{
-				$moduleId = $moduleModel->getState('module.id');
-			}
-		}
-
-		// For some reason the module id is not in the state, let's try to find it
-		if (empty($moduleId))
-		{
 			$query
 				->clear()
-				->select('id')
+				->select('*')
 				->from('#__modules')
 				->where(
 					array (
-						'language = ' . $db->quote($language),
 						'module = ' . $db->quote('mod_menu'),
-						'params LIKE ' . $db->quote('%' . $menuType . '%')
+						'params LIKE ' . $db->quote('%' . $defaultMenuType->menutype . '%'),
+						'language = ' . $db->quote($defaultLanguage)
 					)
 				);
 
 			$db->setQuery($query);
-			$moduleId = (int) $db->loadResult();
+			$modules = $db->loadObjectList();
+
+			// Create module menu
+			JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
+
+			/* @var $moduleModel ModulesModelModule */
+			$moduleModel = JModelLegacy::getInstance('Module', 'ModulesModel');
+
+			foreach ($modules as $module)
+			{
+				$newMenuType               = get_object_vars($module);
+				$newMenuType['id']         = null;
+				$newMenuType['language']   = $language;
+				$newMenuType['title']      = $newMenuType['title'] . '-' . $language;
+				$newMenuType['published']  = 1;
+				$newMenuType['client_id']  = 0;
+				$newMenuType['access']     = 1;
+				$newMenuType['module']     = 'mod_menu';
+				$newMenuType['assigned']   = self::getModuleAssignments($module->id);
+				$newMenuType['assignment'] = 1;
+
+				if (empty($newMenuType['params']))
+				{
+					$newMenuType['params'] = array ();
+				}
+
+				$newMenuType['params']['menutype'] = $menuType;
+				$moduleModel->save($newMenuType);
+			}
 		}
 
-		/* @var $item JObject */
-		$item = $moduleModel->getItem($moduleId);
-		$item = (object) $item->getProperties();
 
 		return $item;
 	}
