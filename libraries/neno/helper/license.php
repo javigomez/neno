@@ -80,7 +80,7 @@ class NenoHelperLicense
      * @param string $license
      * @return array
      */
-    private static function getLicenseData() 
+    public static function getLicenseData() 
     {
         $license = self::getLicense();
         return explode('|', base64_decode($license));
