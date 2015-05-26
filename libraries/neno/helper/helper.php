@@ -1594,10 +1594,11 @@ class NenoHelper
 	 * Return all groups.
 	 *
 	 * @param bool $loadExtraData Load Extra data flag
+	 * @param bool $avoidDoNotTranslate Don't return fields/keys marked as Don't translate
 	 *
 	 * @return  array
 	 */
-	public static function getGroups($loadExtraData = true)
+	public static function getGroups($loadExtraData = true, $avoidDoNotTranslate = false)
 	{
 		$cacheId   = NenoCache::getCacheId(__FUNCTION__, array (1));
 		$cacheData = NenoCache::getCacheData($cacheId);
@@ -1609,10 +1610,16 @@ class NenoHelper
 			$query = $db->getQuery(true);
 
 			$subquery1 = $db->getQuery(true);
+			$arrayWhere1 = array('t.group_id = g.id');
+			if ($avoidDoNotTranslate)
+			{
+				$arrayWhere1[] = 't.translate = 1';
+			}
 			$subquery1
 				->select('1')
 				->from(' #__neno_content_element_tables AS t')
-				->where('t.group_id = g.id');
+				->where($arrayWhere1);
+
 			$subquery2 = $db->getQuery(true);
 			$subquery2
 				->select('1')
@@ -1637,9 +1644,15 @@ class NenoHelper
 			$countGroups = count($groups);
 			for ($i = 0; $i < $countGroups; $i++)
 			{
-				$groups[$i] = NenoContentElementGroup::getGroup($groups[$i]->id, $loadExtraData);
+				$group = NenoContentElementGroup::getGroup($groups[$i]->id, $loadExtraData);
+				$translationMethods = $group->getAssignedTranslationMethods();
+				if ($avoidDoNotTranslate && empty($translationMethods))
+				{
+					unset ($groups[$i]);
+					continue;
+				}
+				$groups[$i] = $group;
 			}
-
 			NenoCache::setCacheData($cacheId, $groups);
 			$cacheData = $groups;
 		}
