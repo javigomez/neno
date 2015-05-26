@@ -1029,6 +1029,7 @@ class NenoHelper
 			'#__viewlevels',
 			'#__menu',
 			'#__menu_types',
+			'#__languages',
 		);
 	}
 
