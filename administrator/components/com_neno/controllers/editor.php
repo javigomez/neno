@@ -110,12 +110,17 @@ class NenoControllerEditor extends NenoControllerStrings
 	{
 		/* @var $translation NenoContentElementTranslation */
 		$translation = NenoContentElementTranslation::load($translationId, false, true);
-
-		$translation
-			->setString($translationText)
-			->setState($changeState)
-			->addTranslationMethod(NenoContentElementTranslation::MANUAL_TRANSLATION_METHOD, 1);
-
+        
+        if (!empty($translation))
+        {
+            $translation
+                ->setString($translationText)
+                ->setState($changeState)
+                ->addTranslationMethod(NenoContentElementTranslation::MANUAL_TRANSLATION_METHOD, 1);
+        } else {
+            throw new Exception('Error loading translation');
+        }
+        
 		if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
 		{
 			$translation->setTimeCompleted(new DateTime);
