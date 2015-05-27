@@ -318,12 +318,21 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	 */
 	public function loadStringsFromFile($onlyNew = false)
 	{
-		$filePath = $this->getFilePath();
+		$filePath           = $this->getFilePath();
+		$overwrittenStrings = $this->loadStringsFromTemplateOverwrite();
 
 		// Check if the file exists.
-		if (file_exists($filePath))
+		if (file_exists($filePath) || !empty($overwrittenStrings))
 		{
-			$strings = parse_ini_file($this->getFilePath());
+			$strings = array ();
+
+			if (file_exists($filePath))
+			{
+				$strings = parse_ini_file($this->getFilePath());
+			}
+
+			// Merging these two arrays
+			$strings = array_merge($strings, $overwrittenStrings);
 
 			if ($strings !== false)
 			{
@@ -353,12 +362,10 @@ class NenoContentElementLanguageFile extends NenoContentElement
 						$this->languageStrings[] = $languageString;
 					}
 				}
-
-				return true;
 			}
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
@@ -371,5 +378,42 @@ class NenoContentElementLanguageFile extends NenoContentElement
 		$filePath = JPATH_ROOT . "/language/$this->language/" . $this->getFileName();
 
 		return $filePath;
+	}
+
+	/**
+	 * Load strings from the template overwrite
+	 *
+	 * @return array
+	 */
+	public function loadStringsFromTemplateOverwrite()
+	{
+		$strings = array ();
+		$db      = JFactory::getDbo();
+		$query   = $db->getQuery(true);
+		$query
+			->select('template')
+			->from('#__template_styles')
+			->where(
+				array (
+					'home = 1',
+					'client_id = 0'
+				)
+			)
+			->group('template');
+
+		$db->setQuery($query);
+		$template = $db->loadResult();
+
+		if (!empty($template))
+		{
+			$filePath = JPATH_THEMES . DIRECTORY_SEPARATOR . $template . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $this->language . DIRECTORY_SEPARATOR . $this->getFileName();
+
+			if (file_exists($filePath))
+			{
+				$strings = parse_ini_file($filePath);
+			}
+		}
+
+		return $strings;
 	}
 }
