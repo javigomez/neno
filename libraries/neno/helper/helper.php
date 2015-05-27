@@ -749,7 +749,12 @@ class NenoHelper
 		// If there is a template, let's try to get those files
 		if (!empty($template))
 		{
-			$languageFilesPath = array_merge($languageFilesPath, JFolder::files(JPATH_THEMES . "/$template/language/$defaultLanguage/", $languageFilePattern));
+			$overwriteFiles = JFolder::files(JPATH_THEMES . "/$template/language/$defaultLanguage/", $languageFilePattern);
+
+			if ($overwriteFiles !== false)
+			{
+				$languageFilesPath = array_merge($languageFilesPath, $overwriteFiles);
+			}
 		}
 
 		$languageFiles = array ();
