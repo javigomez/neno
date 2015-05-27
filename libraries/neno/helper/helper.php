@@ -711,6 +711,12 @@ class NenoHelper
 					$extensionName = 'mod_' . $extensionName;
 				}
 				break;
+			case 'template':
+				if (!self::startsWith($extensionName, 'tpl_'))
+				{
+					$extensionName = 'tpl_' . $extensionName;
+				}
+				break;
 		}
 
 		return $extensionName;
