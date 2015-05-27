@@ -1483,6 +1483,12 @@ class NenoHelper
 	 */
 	public static function isDatabaseDriverEnabled()
 	{
+		// Reset cache
+		$user   = JFactory::getUser();
+		$cache  = JFactory::getCache('com_plugins', '');
+		$levels = implode(',', $user->getAuthorisedViewLevels());
+		$cache->store(false, $levels);
+		
 		$plugin = JPluginHelper::getPlugin('system', 'neno');
 
 		return !empty($plugin);
