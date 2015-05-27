@@ -392,7 +392,7 @@ class NenoContentElementLanguageFile extends NenoContentElement
 
 		if (!empty($template))
 		{
-			$filePath = JPATH_THEMES . DIRECTORY_SEPARATOR . $template . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $this->language . DIRECTORY_SEPARATOR . $this->getFileName();
+			$filePath = JPATH_ROOT . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $template . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $this->language . DIRECTORY_SEPARATOR . $this->getFileName();
 
 			if (file_exists($filePath))
 			{
