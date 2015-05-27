@@ -387,22 +387,8 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	 */
 	public function loadStringsFromTemplateOverwrite()
 	{
-		$strings = array ();
-		$db      = JFactory::getDbo();
-		$query   = $db->getQuery(true);
-		$query
-			->select('template')
-			->from('#__template_styles')
-			->where(
-				array (
-					'home = 1',
-					'client_id = 0'
-				)
-			)
-			->group('template');
-
-		$db->setQuery($query);
-		$template = $db->loadResult();
+		$strings  = array ();
+		$template = NenoHelper::getFrontendTemplate();
 
 		if (!empty($template))
 		{
