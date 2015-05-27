@@ -56,12 +56,16 @@
     margin-top: 7px;
     margin-left: 23px;
 }
+.icon-cancel-2,
 .icon-checkmark {
-    color: #65D074;
+    color: #0ba14b;
     height: 14px;
     width: 14px;
     margin-top: 7px;
     margin-left: 23px;
+}
+.icon-cancel-2 {
+    color: #e61e26;
 }
 .task-message {
     margin-bottom: 20px;

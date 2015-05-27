@@ -128,7 +128,7 @@ JHtml::_('bootstrap.tooltip');
 				log_line.addClass('alert-' + messages[i].type);
 			}
 			//Check if scroll is already at the bottom of the container
-			scroll = container.scrollTop() == container[0].scrollHeight - container.height();
+			scroll = (container.scrollTop() == 0 || container.scrollTop() == container[0].scrollHeight - container.height());
 
 			container.append(log_line);
 
