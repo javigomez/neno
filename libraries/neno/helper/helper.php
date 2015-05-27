@@ -1488,7 +1488,7 @@ class NenoHelper
 		$cache  = JFactory::getCache('com_plugins', '');
 		$levels = implode(',', $user->getAuthorisedViewLevels());
 		$cache->store(false, $levels);
-		
+
 		$plugin = JPluginHelper::getPlugin('system', 'neno');
 
 		return !empty($plugin);
@@ -2921,6 +2921,8 @@ class NenoHelper
 					->update('#__update_sites')
 					->set('enabled = 1')
 					->where('update_site_id = ' . (int) $updateId);
+				$db->setQuery($query);
+				$db->execute();
 			}
 
 			// Find updates for languages
