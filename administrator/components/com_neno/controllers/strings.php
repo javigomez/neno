@@ -27,7 +27,7 @@ class NenoControllerStrings extends JControllerAdmin
 	 */
 	public function getStrings()
 	{
-		NenoLog::log('Method getStrings of NenoControllerEditor called', 3);
+		NenoLog::log('Method getStrings of NenoControllerStrings called', 3);
 		$input          = JFactory::getApplication()->input;
 		$filterJson     = $input->getString('jsonGroupsElements');
 		$filterArray    = json_decode($filterJson);
@@ -40,7 +40,7 @@ class NenoControllerStrings extends JControllerAdmin
 		$filterSearch   = strtolower($input->get('filter_search', '', 'RAW'));
 		$app            = JFactory::getApplication();
 
-		NenoLog::log('Processing filtered json data for getStrings', 3);
+		NenoLog::log('Processing filtered json data for NenoControllerStrings::getStrings', 3);
 
 		foreach ($filterArray as $filterItem)
 		{
