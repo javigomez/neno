@@ -34,24 +34,33 @@ class NenoControllerEditor extends NenoControllerStrings
 		$workingLanguage = NenoHelper::getWorkingLanguage();
 		$defaultLanguage = NenoSettings::get('source_language');
 		$translator      = NenoSettings::get('translator');
+		$result          = array ();
 
 		try
 		{
 			/* @var $nenoTranslate NenoTranslateApi */
 			$nenoTranslate = NenoTranslateApi::getAdapter($translator);
-			$result        = $nenoTranslate->translate($text, $defaultLanguage, $workingLanguage);
 
-			if ($result == null)
+			try
 			{
-				$result = $text;
+				$result['text']   = $nenoTranslate->translate($text, $defaultLanguage, $workingLanguage);
+				$result['status'] = 'ok';
+			}
+			catch (Exception $e)
+			{
+				$result['text']   = $text;
+				$result['status'] = 'err';
+				$result['error']  = $e->getMessage();
 			}
 		}
 		catch (UnexpectedValueException $e)
 		{
-			$result = $text;
+			$result['text']   = $text;
+			$result['status'] = 'err';
+			$result['error']  = $e->getMessage();
 		}
 
-		echo $result;
+		echo json_encode($result);
 
 		$app->close();
 	}
@@ -110,17 +119,19 @@ class NenoControllerEditor extends NenoControllerStrings
 	{
 		/* @var $translation NenoContentElementTranslation */
 		$translation = NenoContentElementTranslation::load($translationId, false, true);
-        
-        if (!empty($translation))
-        {
-            $translation
-                ->setString($translationText)
-                ->setState($changeState)
-                ->addTranslationMethod(NenoContentElementTranslation::MANUAL_TRANSLATION_METHOD, 1);
-        } else {
-            throw new Exception('Error loading translation');
-        }
-        
+
+		if (!empty($translation))
+		{
+			$translation
+				->setString($translationText)
+				->setState($changeState)
+				->addTranslationMethod(NenoContentElementTranslation::MANUAL_TRANSLATION_METHOD, 1);
+		}
+		else
+		{
+			throw new Exception('Error loading translation');
+		}
+
 		if ($changeState == NenoContentElementTranslation::TRANSLATED_STATE)
 		{
 			$translation->setTimeCompleted(new DateTime);
@@ -147,7 +158,7 @@ class NenoControllerEditor extends NenoControllerStrings
 			/* @var $translation NenoContentElementTranslation */
 			$translation = NenoContentElementTranslation::load($translationId, false);
 
-			$data = array(
+			$data = array (
 				'translation' => $translation->prepareDataForView()
 			);
 
@@ -176,7 +187,7 @@ class NenoControllerEditor extends NenoControllerStrings
 	 *
 	 * @return NenoModelEditor
 	 */
-	public function getModel($name = 'Editor', $prefix = 'NenoModel', $config = array())
+	public function getModel($name = 'Editor', $prefix = 'NenoModel', $config = array ())
 	{
 		return parent::getModel($name, $prefix, $config);
 	}
