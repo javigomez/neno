@@ -711,6 +711,12 @@ class NenoHelper
 					$extensionName = 'mod_' . $extensionName;
 				}
 				break;
+			case 'template':
+				if (!self::startsWith($extensionName, 'tpl_'))
+				{
+					$extensionName = 'tpl_' . $extensionName;
+				}
+				break;
 		}
 
 		return $extensionName;
@@ -742,7 +748,22 @@ class NenoHelper
 		$defaultLanguage     = NenoSettings::get('source_language');
 		$languageFilePattern = preg_quote($defaultLanguage) . '\.' . $extensionName . '\.(((\w)*\.)^sys)?ini';
 		$languageFilesPath   = JFolder::files(JPATH_ROOT . "/language/$defaultLanguage/", $languageFilePattern);
-		$languageFiles       = array ();
+
+		// Getting the template to check if there are files in the template
+		$template = self::getFrontendTemplate();
+
+		// If there is a template, let's try to get those files
+		if (!empty($template))
+		{
+			$overwriteFiles = JFolder::files(JPATH_ROOT . "/templates/$template/language/$defaultLanguage/", $languageFilePattern);
+
+			if ($overwriteFiles !== false)
+			{
+				$languageFilesPath = array_merge($languageFilesPath, $overwriteFiles);
+			}
+		}
+
+		$languageFiles = array ();
 
 		foreach ($languageFilesPath as $languageFilePath)
 		{
@@ -778,6 +799,32 @@ class NenoHelper
 		}
 
 		return $languageFiles;
+	}
+
+	/**
+	 * Get front-end template
+	 *
+	 * @return string|null
+	 */
+	public static function getFrontendTemplate()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->select('template')
+			->from('#__template_styles')
+			->where(
+				array (
+					'home = 1',
+					'client_id = 0'
+				)
+			)
+			->group('template');
+
+		$db->setQuery($query);
+		$template = $db->loadResult();
+
+		return $template;
 	}
 
 	/**
@@ -1488,7 +1535,7 @@ class NenoHelper
 		$cache  = JFactory::getCache('com_plugins', '');
 		$levels = implode(',', $user->getAuthorisedViewLevels());
 		$cache->store(false, $levels);
-		
+
 		$plugin = JPluginHelper::getPlugin('system', 'neno');
 
 		return !empty($plugin);
@@ -2921,6 +2968,8 @@ class NenoHelper
 					->update('#__update_sites')
 					->set('enabled = 1')
 					->where('update_site_id = ' . (int) $updateId);
+				$db->setQuery($query);
+				$db->execute();
 			}
 
 			// Find updates for languages

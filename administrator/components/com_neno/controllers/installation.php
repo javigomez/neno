@@ -102,7 +102,7 @@ class NenoControllerInstallation extends JControllerAdmin
 
 						foreach ($defaultTranslationsMethods as $ordering => $defaultTranslationsMethod)
 						{
-							$query->values($db->quote($knownLanguage['tag'] . ',' . $defaultTranslationsMethod->id . ',' . ($ordering + 1)));
+							$query->values($db->quote($knownLanguage['tag']) . ',' . $defaultTranslationsMethod->id . ',' . ($ordering + 1));
 						}
 					}
 				}

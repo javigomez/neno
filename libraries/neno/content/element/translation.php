@@ -89,7 +89,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	 * @var NenoContentElement
 	 */
 	protected $element;
-    
+
 	/**
 	 * @var integer
 	 */
@@ -749,7 +749,8 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			if (!empty($translationData))
 			{
-				$filePath = JPATH_ROOT . '/language/' . $this->language . '/' . $translationData['filename'];
+				$template = NenoHelper::getFrontendTemplate();
+				$filePath = JPATH_ROOT . "/templates/$template/language/" . $this->language . '/' . $translationData['filename'];
 
 				if (file_exists($filePath))
 				{
@@ -966,7 +967,7 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			$db->setQuery($query);
 			$data->breadcrumbs = $db->loadRow();
-            
+
 		}
 
 		return $data;

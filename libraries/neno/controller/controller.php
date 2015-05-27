@@ -403,36 +403,41 @@ class NenoController extends JControllerLegacy
 		$translationMethod = $input->getInt('translationMethod');
 		$ordering          = $input->getInt('ordering');
 
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query
-			->replace('#__neno_content_language_defaults')
-			->columns(
-				array (
-					'lang',
-					'translation_method_id',
-					'ordering'
+		if (!empty($language))
+		{
+			/* @var $db NenoDatabaseDriverMysqlx */
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query
+				->delete('#__neno_content_language_defaults')
+				->where(
+					array (
+						'lang = ' . $db->quote($language),
+						'ordering >= ' . $ordering
+					)
+				);
+
+			$db->setQuery($query);
+			$db->execute();
+
+			$query
+				->clear()
+				->insert('#__neno_content_language_defaults')
+				->columns(
+					array (
+						'lang',
+						'translation_method_id',
+						'ordering'
+					)
 				)
-			)
-			->values($db->quote($language) . ',' . $translationMethod . ',' . $ordering);
-		$db->setQuery($query);
-		$db->execute();
+				->values($db->quote($language) . ',' . $translationMethod . ',' . $ordering);
+			$db->setQuery($query);
+			$db->execute();
 
-		$query = $db->getQuery(true);
-		$query
-			->delete('#__neno_content_language_defaults')
-			->where(
-				array (
-					'lang = ' . $db->quote($language),
-					'ordering > ' . $ordering
-				)
-			);
 
-		$db->setQuery($query);
-		$db->execute();
-
-		JFactory::getApplication()->close();
+			JFactory::getApplication()->close();
+		}
 	}
 
 	public function createMenus()

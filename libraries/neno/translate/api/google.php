@@ -33,26 +33,40 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 
 		$apiKey = NenoSettings::get('translator_api_key');
 
-		$url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey
-			. '&q=' . rawurlencode($text) . '&source=' . $source . '&target=' . $target;
+		$url = 'https://www.googleapis.com/language/translate/v2';
 
-		// Invoke the GET request.
-		$response = $this->get($url);
-
-		$text = null;
-
-		// Log it if server response is not OK.
-		if ($response->code != 200)
+		if (mb_strlen($text) < 5000)
 		{
-			NenoLog::log('Google api failed with response: ' . $response->code, 1);
+			// Invoke the POST request.
+			$response = $this->post(
+				$url,
+				array ('key' => $apiKey, 'q' => $text, 'source' => $source, 'target' => $target),
+				array ('X-HTTP-Method-Override' => 'GET')
+			);
+
+			$text = null;
+
+			// Log it if server response is not OK.
+			if ($response->code != 200)
+			{
+				NenoLog::log('Google api failed with response: ' . $response->code, 1);
+				$responseData = json_decode($response->body . true);
+				throw new Exception($responseData['error']['errors'][0]['message'] . '(' . $responseData['error']['errors'][0]['reason'] . ')', $response->code);
+			}
+			else
+			{
+				$responseBody = json_decode($response->body);
+				$text         = $responseBody->data->translations[0]->translatedText;
+			}
+
+			return $text;
 		}
 		else
 		{
-			$responseBody = json_decode($response->body);
-			$text         = $responseBody->data->translations[0]->translatedText;
+			throw new Exception('ERR_TEXT_TOO_LONG', 413);
 		}
 
-		return $text;
+
 	}
 
 	/**
