@@ -129,11 +129,16 @@ function translate() {
             beforeSend: onBeforeAjax,
             type: 'POST',
             url: 'index.php?option=com_neno&task=editor.translate',
+            dataType: "json",
             data: {
                 text: text
             },
             success: function (data) {
-                jQuery('.translated-content').val(data);
+                jQuery('.translated-content').val(data.text);
+                if (data.status == "err") {
+                    jQuery('.translated-error .error-message').html(data.error);
+                    jQuery('.translated-error').show();
+                }
                 jQuery('.translated-by').show();
             }
         }
@@ -295,4 +300,5 @@ function copyOriginal() {
     original = original.replace(/&gt;/g, '>');
     jQuery('.translated-content').val(original);
     jQuery('.translated-by').hide();
+    jQuery('.translated-error').hide();
 }

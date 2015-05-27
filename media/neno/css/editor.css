@@ -72,14 +72,24 @@ button .normal-text {
     text-align: center;
 }
 
+.translated-error,
 .translated-by,
 .last-modified {
     color: #aaa;
     font-style: italic;
 }
 
+.translated-error,
 .translated-by {
     display: none;
+}
+
+.translated-error {
+    color: #bd362f;
+}
+
+.translated-error .error-title {
+    font-weight: bold;
 }
 
 .uneditable-input {
