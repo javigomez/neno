@@ -2176,14 +2176,58 @@ class NenoHelper
 							$newMenuItem->menutype = $menuItem->menutype . '-' . strtolower($language->lang_code);
 							$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $language->lang_code);
 							$newMenuItem->language = $language->lang_code;
+
+							// If the menu item has been inserted properly, let's execute some actions
 							if ($db->insertObject('#__menu', $newMenuItem, 'id'))
 							{
-
 								// Assign all the modules to this item
-								$query = 'INSERT INTO #__modules_menu (moduleid,menuid) SELECT moduleid,' . $db->quote($newMenuItem->id) . ' FROM  #__modules_menu WHERE menuid = ' . $db->quote($menuItem->id);
+								$query = 'INSERT INTO #__modules_menu (moduleid,menuid) SELECT moduleid,' . $db->quote($newMenuItem->id) . ' FROM  #__modules_menu WHERE menuid = ' . $db->quote($menuItem->id) . ' AND language = ' . $db->quote('*');
 								$db->setQuery($query);
 								$db->execute();
 								$query = $db->getQuery(true);
+
+								// Get all the modules assigned to this menu item using a different language from *
+								$query
+									->select('m.*')
+									->from('#__modules AS m')
+									->innerJoin('#__modules_menu AS mm ON m.id = mm.moduleid')
+									->where(
+										array (
+											'mm.menuid = ' . (int) $menuItem->id,
+											'm.language <> ' . $db->quote('*')
+										)
+									);
+
+								$db->setQuery($query);
+								$modules = $db->loadObjectList();
+
+								if (!empty($modules))
+								{
+									$query
+										->clear()
+										->insert('#__modules_menu')
+										->columns(
+											array (
+												'moduleid',
+												'menuid'
+											)
+										);
+
+									foreach ($modules as $module)
+									{
+										unset($module->id);
+										$module->language = $language->lang_code;
+										$module->title    = $module->title . '(' . $language->lang_code . ')';
+
+										if ($db->insertObject('#__modules', $module, 'id'))
+										{
+											$query->values($module->id . ',' . $newMenuItem->id);
+										}
+									}
+
+									$db->setQuery($query);
+									$db->execute();
+								}
 
 								$associations[] = $newMenuItem->id;
 							}
@@ -2260,7 +2304,8 @@ class NenoHelper
 	 *
 	 * @return stdClass
 	 */
-	protected static function createMenu($language, stdClass $defaultMenuType)
+	protected
+	static function createMenu($language, stdClass $defaultMenuType)
 	{
 		$db       = JFactory::getDbo();
 		$query    = $db->getQuery(true);
