@@ -146,23 +146,21 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		$translateStatus = $input->getBool('translateStatus');
 
 		/* @var $field NenoContentElementField */
-		$field = NenoContentElementField::getFieldById($fieldId);
+		$field = NenoContentElementField::load($fieldId, false, true);
 
 		// If the table exists, let's work with it.
 		if ($field !== false)
 		{
-
 			$field->setTranslate($translateStatus);
+
 			if ($field->persist() === false)
 			{
 				NenoLog::log('Error saving new state!', NenoLog::PRIORITY_ERROR);
 			}
-
 		}
 
 		JFactory::getApplication()->close();
 	}
-
 
 	/**
 	 *
@@ -240,14 +238,17 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		$selected_methods = $input->get('selected_methods', array (), 'ARRAY');
 
 		$translation_methods = NenoHelper::loadTranslationMethods();
-        
-        if (!empty($group_id)) {
-            $group = NenoContentElementGroup::load($group_id)->prepareDataForView();
-        } else {
-            $group = new stdClass;
-            $group->assigned_translation_methods = array();
-        }
-        
+
+		if (!empty($group_id))
+		{
+			$group = NenoContentElementGroup::load($group_id)->prepareDataForView();
+		}
+		else
+		{
+			$group                               = new stdClass;
+			$group->assigned_translation_methods = array ();
+		}
+
 		// Ensure that we know what was selected for the previous selector
 		if (($n > 0 && !isset($selected_methods[$n - 1])) || ($n > 0 && $selected_methods[$n - 1] == 0))
 		{
