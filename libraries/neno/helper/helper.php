@@ -2379,11 +2379,118 @@ class NenoHelper
 				$db->execute();
 			}
 		}
-		/*
-		foreach ($menus as $menu)
+
+		// Get all the modules with the language as default
+		$query
+			->clear()
+			->select('m.*')
+			->from('#__modules AS m')
+			->where('m.language = ' . $db->quote($defaultLanguage));
+
+		$db->setQuery($query);
+		$modules = $db->loadObjectList();
+
+		foreach ($modules as $module)
 		{
-			self::assignModules($menu->menutype, $menu->default, $menu->language, $defaultLanguage);
-		}*/
+			$previousId    = $module->id;
+			$previousTitle = $module->title;
+
+			foreach ($languages as $language)
+			{
+				if ($language->lang_code != $defaultLanguage)
+				{
+					$module->id       = 0;
+					$module->title    = $previousTitle . ' (' . $language->lang_code . ')';
+					$module->language = $language->lang_code;
+
+					// If the module has been inserted correctly, let's assign it
+					if ($db->insertObject('#__modules', $module, 'id'))
+					{
+						$insert      = false;
+						$insertQuery = $db->getQuery(true);
+						$insertQuery
+							->clear()
+							->insert('#__modules_menu')
+							->columns(
+								array (
+									'moduleid',
+									'menuid'
+								)
+							);
+
+						// Check if the previous module is assigned to all
+						$query
+							->clear()
+							->select('1')
+							->from('#__modules_menu')
+							->where(
+								array (
+									'moduleid = ' . $previousId,
+									'menuid'
+								)
+							);
+
+						$db->setQuery($query);
+						$result = $db->loadResult();
+
+						if ($result == 1)
+						{
+							$insertQuery->values($module->id . ', 0');
+							$insert = true;
+						}
+						else
+						{
+							// Check if the module has assigned selected
+							$query
+								->clear()
+								->select('DISTINCT m2.id')
+								->from('#__modules_menu AS mm')
+								->innerJoin('#__menu AS m1 ON mm.menuid = m1.id')
+								->innerJoin('#__associations AS a1 ON a1.id = m1.id')
+								->innerJoin('#__associations AS a2 ON a1.key = a2.key')
+								->innerJoin('#__menu AS m2 ON a2.id = m2.id')
+								->where(
+									array (
+										'a1.context = ' . $db->quote('com_menus.item'),
+										'a2.context = ' . $db->quote('com_menus.item'),
+										'a1.id <> a2.id',
+										'm1.client_id = 0',
+										'm1.level <> 0',
+										'm1.published <> -2',
+										'm2.client_id = 0',
+										'm2.level <> 0',
+										'm2.published <> -2',
+										'mm.moduleid = ' . $previousId,
+										'm1.language = ' . $db->quote($defaultLanguage),
+										'm2.language = ' . $db->quote($language->lang_code)
+									)
+								);
+
+							$db->setQuery($query);
+							$menuIds = $db->loadArray();
+
+							if (!empty($menuIds))
+							{
+								$insert = true;
+
+								foreach ($menuIds as $menuId)
+								{
+									$insertQuery->values($module->id . ',' . $menuId);
+								}
+							}
+						}
+
+						if ($insert)
+						{
+							$db->setQuery($insertQuery);
+							$db->execute();
+						}
+					}
+				}
+			}
+
+		}
+
 
 		// Once we finish restructuring menus, let's rebuild them
 		$menuTable = new JTableMenu($db);
