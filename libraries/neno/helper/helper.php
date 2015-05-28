@@ -2198,6 +2198,9 @@ class NenoHelper
 			$menuAssociations[$menutype] = $db->loadAssocList('language');
 		}
 
+		$menuItemsCreated  = array ();
+		$modulesDuplicated = array ();
+
 		foreach ($nonAssociatedMenuItems as $key => $menuItem)
 		{
 			$associations = array ();
@@ -2217,6 +2220,8 @@ class NenoHelper
 			{
 				if ($language->lang_code !== $menuItem->language)
 				{
+					$menuItemsCreated[$language->lang_code] = array ();
+
 					// If there's no menu associated
 					if (empty($menuAssociations[$menuItem->menutype][$language->lang_code]))
 					{
@@ -2241,58 +2246,12 @@ class NenoHelper
 					// If the menu item has been inserted properly, let's execute some actions
 					if ($db->insertObject('#__menu', $newMenuItem, 'id'))
 					{
-						/*
+						$menuItemsCreated[$language->lang_code][] = $newMenuItem->id;
 						// Assign all the modules to this item
 						$query = 'INSERT INTO #__modules_menu (moduleid,menuid) SELECT moduleid,' . $db->quote($newMenuItem->id) . ' FROM  #__modules_menu WHERE menuid = ' . $db->quote($menuItem->id) . ' AND language = ' . $db->quote('*');
 						$db->setQuery($query);
 						$db->execute();
-						$query = $db->getQuery(true);
-
-						// Get all the modules assigned to this menu item using a different language from *
-						$query
-							->select('m.*')
-							->from('#__modules AS m')
-							->innerJoin('#__modules_menu AS mm ON m.id = mm.moduleid')
-							->where(
-								array (
-									'mm.menuid = ' . (int) $menuItem->id,
-									'm.language <> ' . $db->quote('*')
-								)
-							);
-
-						$db->setQuery($query);
-						$modules = $db->loadObjectList();
-
-						if (!empty($modules))
-						{
-							$query
-								->clear()
-								->insert('#__modules_menu')
-								->columns(
-									array (
-										'moduleid',
-										'menuid'
-									)
-								);
-
-							foreach ($modules as $module)
-							{
-								unset($module->id);
-								$module->language = $language->lang_code;
-								$module->title    = $module->title . '(' . $language->lang_code . ')';
-
-								if ($db->insertObject('#__modules', $module, 'id'))
-								{
-									$query->values($module->id . ',' . $newMenuItem->id);
-								}
-							}
-
-							$db->setQuery($query);
-							$db->execute();
-						}
-
-						*/
-
+						$query          = $db->getQuery(true);
 						$associations[] = $newMenuItem->id;
 					}
 				}
@@ -2341,6 +2300,61 @@ class NenoHelper
 				}
 			}
 
+			// Get all the modules assigned to this menu item using a different language from *
+			$query
+				->select('m.*')
+				->from('#__modules AS m')
+				->innerJoin('#__modules_menu AS mm ON m.id = mm.moduleid')
+				->where(
+					array (
+						'mm.menuid = ' . (int) $menuItem->id,
+						'm.language <> ' . $db->quote('*')
+					)
+				);
+
+			$db->setQuery($query);
+			$modules = $db->loadObjectList();
+
+			if (!empty($modules))
+			{
+				$query
+					->clear()
+					->insert('#__modules_menu')
+					->columns(
+						array (
+							'moduleid',
+							'menuid'
+						)
+					);
+
+				foreach ($menuItemsCreated as $language => $newMenuItems)
+				{
+					foreach ($modules as $module)
+					{
+						$previousId = $module->id;
+
+						if (!isset($modulesDuplicated[$previousId . $language]))
+						{
+							unset($module->id);
+							$module->language = $language;
+							$module->title    = $module->title . '(' . $language . ')';
+							if ($db->insertObject('#__modules', $module, 'id'))
+							{
+								$modulesDuplicated[$previousId . $language] = $module->id;
+							}
+						}
+
+						foreach ($newMenuItems as $newMenuItem)
+						{
+							$query->values($modulesDuplicated[$previousId . $language] . ',' . $newMenuItem->id);
+						}
+					}
+				}
+
+				$db->setQuery($query);
+				$db->execute();
+			}
+
 			if ($insert)
 			{
 				$db->setQuery($insertQuery);
@@ -2356,181 +2370,6 @@ class NenoHelper
 		// Once we finish restructuring menus, let's rebuild them
 		$menuTable = new JTableMenu($db);
 		$menuTable->rebuild();
-	}
-
-	/**
-	 * Create a new menu
-	 *
-	 * @param   string   $language        Language
-	 * @param   stdClass $defaultMenuType Default language menu type
-	 *
-	 * @return stdClass
-	 */
-	protected static function createMenu($language, stdClass $defaultMenuType)
-	{
-		$db       = JFactory::getDbo();
-		$query    = $db->getQuery(true);
-		$menuType = $defaultMenuType->menutype . '-' . strtolower($language);
-
-		$query
-			->select('*')
-			->from('#__menu_types')
-			->where('menutype = ' . $db->quote($menuType));
-
-		$db->setQuery($query);
-		$item = $db->loadObject();
-
-		if (empty($item))
-		{
-			$query
-				->clear()
-				->insert('#__menu_types')
-				->columns(
-					array (
-						'menutype',
-						'title'
-					)
-				)
-				->values($db->quote($menuType) . ', ' . $db->quote($defaultMenuType->title . '(' . $language . ')'));
-
-			$db->setQuery($query);
-			$db->execute();
-
-			$query
-				->select('*')
-				->from('#__menu_types')
-				->where('menutype = ' . $db->quote($menuType));
-			$db->setQuery($query);
-			$item = $db->loadObject();
-		}
-
-		return $item;
-	}
-
-	/**
-	 * Get the language associated to this menu
-	 *
-	 * @param   integer $menuItemId MenuItem Id
-	 *
-	 * @return array
-	 */
-	protected static function getLanguageAssociated($menuItemId)
-	{
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('DISTINCT l.lang_code')
-			->from('#__languages AS l')
-			->innerJoin('#__menu AS m ON l.lang_code = m.language')
-			->where(
-				array (
-					'EXISTS(SELECT 1 FROM #__associations a1 INNER JOIN #__associations AS a2 ON a1.key = a2.key WHERE a2.id = m.id AND a1.context = ' . $db->quote('com_menus.item') . ' AND a1.id = ' . (int) $menuItemId . ' AND a2.id <> ' . (int) $menuItemId . ')',
-					'm.client_id = 0',
-					'm.level <> 0',
-					'm.published <> -2',
-					'm.id <> ' . (int) $menuItemId
-				)
-			);
-
-		$db->setQuery($query);
-
-		return $db->loadArray();
-	}
-
-	protected static function assignModules($menuType, $defaultMenuType, $language, $defaultLanguage)
-	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query
-			->clear()
-			->select('*')
-			->from('#__modules')
-			->where(
-				array (
-					'module = ' . $db->quote('mod_menu'),
-					'params LIKE ' . $db->quote('%' . $defaultMenuType->menutype . '%'),
-					'language = ' . $db->quote($defaultLanguage),
-					'published IN (0,1)'
-				)
-			);
-
-		$db->setQuery($query);
-		$modules = $db->loadObjectList();
-
-		// Create module menu
-		JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
-
-		/* @var $moduleModel ModulesModelModule */
-		$moduleModel = JModelLegacy::getInstance('Module', 'ModulesModel');
-
-		foreach ($modules as $module)
-		{
-			$newMenuType               = get_object_vars($module);
-			$newMenuType['id']         = null;
-			$newMenuType['language']   = $language;
-			$newMenuType['title']      = $newMenuType['title'] . '-' . $language;
-			$newMenuType['published']  = 1;
-			$newMenuType['client_id']  = 0;
-			$newMenuType['access']     = 1;
-			$newMenuType['module']     = 'mod_menu';
-			$newMenuType['assigned']   = self::getModuleAssignments($module->id);
-			$newMenuType['assignment'] = 1;
-
-			if (empty($newMenuType['params']))
-			{
-				$newMenuType['params'] = array ();
-			}
-			else
-			{
-				if (is_string($newMenuType['params']))
-				{
-					$newMenuType['params'] = json_decode($newMenuType['params'], true);
-				}
-			}
-
-			$newMenuType['params']['menutype'] = $menuType;
-			$moduleModel->save($newMenuType);
-		}
-	}
-
-	/**
-	 * Get all the module assignments
-	 *
-	 * @param int $moduleId Module Id
-	 *
-	 * @return array
-	 */
-	protected
-	static function getModuleAssignments($moduleId)
-	{
-		return self::getAssignments('menuid', 'moduleid', $moduleId);
-	}
-
-	/**
-	 * Get all the assignments
-	 *
-	 * @param string $selectColumnName Select column
-	 * @param string $whereColumnName  Where column
-	 * @param int    $itemId           Item id
-	 *
-	 * @return array
-	 */
-	protected static function getAssignments($selectColumnName, $whereColumnName, $itemId)
-	{
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query
-			->select($db->quoteName($selectColumnName))
-			->from('#__modules_menu')
-			->where($db->quoteName($whereColumnName) . ' = ' . $db->quote($itemId));
-
-		$db->setQuery($query);
-		$assignments = $db->loadArray();
-
-		return $assignments;
 	}
 
 	/**
@@ -2811,7 +2650,13 @@ class NenoHelper
 		switch ($issue)
 		{
 			case 'content_missing':
-				return self::createContentRow($language);
+				if (!self::hasContentCreated($language))
+				{
+					return self::createContentRow($language);
+				}
+
+				return true;
+
 				break;
 			case 'language_file_out_of_date':
 				$languages = self::findLanguages();
@@ -3824,6 +3669,149 @@ class NenoHelper
 	}
 
 	/**
+	 * Create a new menu
+	 *
+	 * @param   string   $language        Language
+	 * @param   stdClass $defaultMenuType Default language menu type
+	 *
+	 * @return stdClass
+	 */
+	protected static function createMenu($language, stdClass $defaultMenuType)
+	{
+		$db       = JFactory::getDbo();
+		$query    = $db->getQuery(true);
+		$menuType = $defaultMenuType->menutype . '-' . strtolower($language);
+
+		$query
+			->select('*')
+			->from('#__menu_types')
+			->where('menutype = ' . $db->quote($menuType));
+
+		$db->setQuery($query);
+		$item = $db->loadObject();
+
+		if (empty($item))
+		{
+			$query
+				->clear()
+				->insert('#__menu_types')
+				->columns(
+					array (
+						'menutype',
+						'title'
+					)
+				)
+				->values($db->quote($menuType) . ', ' . $db->quote($defaultMenuType->title . '(' . $language . ')'));
+
+			$db->setQuery($query);
+			$db->execute();
+
+			$query
+				->select('*')
+				->from('#__menu_types')
+				->where('menutype = ' . $db->quote($menuType));
+			$db->setQuery($query);
+			$item = $db->loadObject();
+		}
+
+		return $item;
+	}
+
+	protected static function assignModules($menuType, $defaultMenuType, $language, $defaultLanguage)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->clear()
+			->select('*')
+			->from('#__modules')
+			->where(
+				array (
+					'module = ' . $db->quote('mod_menu'),
+					'params LIKE ' . $db->quote('%' . $defaultMenuType->menutype . '%'),
+					'language = ' . $db->quote($defaultLanguage),
+					'published IN (0,1)'
+				)
+			);
+
+		$db->setQuery($query);
+		$modules = $db->loadObjectList();
+
+		// Create module menu
+		JLoader::register('ModulesModelModule', JPATH_ADMINISTRATOR . '/components/com_modules/models/module.php');
+
+		/* @var $moduleModel ModulesModelModule */
+		$moduleModel = JModelLegacy::getInstance('Module', 'ModulesModel');
+
+		foreach ($modules as $module)
+		{
+			$newMenuType               = get_object_vars($module);
+			$newMenuType['id']         = null;
+			$newMenuType['language']   = $language;
+			$newMenuType['title']      = $newMenuType['title'] . '-' . $language;
+			$newMenuType['published']  = 1;
+			$newMenuType['client_id']  = 0;
+			$newMenuType['access']     = 1;
+			$newMenuType['module']     = 'mod_menu';
+			$newMenuType['assigned']   = self::getModuleAssignments($module->id);
+			$newMenuType['assignment'] = 1;
+
+			if (empty($newMenuType['params']))
+			{
+				$newMenuType['params'] = array ();
+			}
+			else
+			{
+				if (is_string($newMenuType['params']))
+				{
+					$newMenuType['params'] = json_decode($newMenuType['params'], true);
+				}
+			}
+
+			$newMenuType['params']['menutype'] = $menuType;
+			$moduleModel->save($newMenuType);
+		}
+	}
+
+	/**
+	 * Get all the module assignments
+	 *
+	 * @param int $moduleId Module Id
+	 *
+	 * @return array
+	 */
+	protected
+	static function getModuleAssignments($moduleId)
+	{
+		return self::getAssignments('menuid', 'moduleid', $moduleId);
+	}
+
+	/**
+	 * Get all the assignments
+	 *
+	 * @param string $selectColumnName Select column
+	 * @param string $whereColumnName  Where column
+	 * @param int    $itemId           Item id
+	 *
+	 * @return array
+	 */
+	protected static function getAssignments($selectColumnName, $whereColumnName, $itemId)
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->select($db->quoteName($selectColumnName))
+			->from('#__modules_menu')
+			->where($db->quoteName($whereColumnName) . ' = ' . $db->quote($itemId));
+
+		$db->setQuery($query);
+		$assignments = $db->loadArray();
+
+		return $assignments;
+	}
+
+	/**
 	 * Get all the menu assignments
 	 *
 	 * @param int $menuId menu Id
@@ -3847,6 +3835,38 @@ class NenoHelper
 		$missingAssociations = self::getLanguageAssociated($menuItemId);
 
 		return empty($missingAssociations);
+	}
+
+	/**
+	 * Get the language associated to this menu
+	 *
+	 * @param   integer $menuItemId MenuItem Id
+	 *
+	 * @return array
+	 */
+	protected static function getLanguageAssociated($menuItemId)
+	{
+		/* @var $db NenoDatabaseDriverMysqlx */
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('DISTINCT l.lang_code')
+			->from('#__languages AS l')
+			->innerJoin('#__menu AS m ON l.lang_code = m.language')
+			->where(
+				array (
+					'EXISTS(SELECT 1 FROM #__associations a1 INNER JOIN #__associations AS a2 ON a1.key = a2.key WHERE a2.id = m.id AND a1.context = ' . $db->quote('com_menus.item') . ' AND a1.id = ' . (int) $menuItemId . ' AND a2.id <> ' . (int) $menuItemId . ')',
+					'm.client_id = 0',
+					'm.level <> 0',
+					'm.published <> -2',
+					'm.id <> ' . (int) $menuItemId
+				)
+			);
+
+		$db->setQuery($query);
+
+		return $db->loadArray();
 	}
 
 	/**
