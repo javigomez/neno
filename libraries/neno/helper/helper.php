@@ -2095,6 +2095,21 @@ class NenoHelper
 		$db->setQuery($query);
 		$db->execute();
 
+		$query
+			->clear()
+			->update('#__modules')
+			->set('language = ' . $db->quote($defaultLanguage))
+			->where(
+				array (
+					'published = 1',
+					'module = ' . $db->quote('mod_menu'),
+					'client_id = 0',
+					'language  = ' . $db->quote('*')
+				)
+			);
+		$db->setQuery($query);
+		$db->execute();
+
 		// Set all the menus items from '*' to default language
 		$query
 			->clear()
