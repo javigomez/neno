@@ -2241,6 +2241,7 @@ class NenoHelper
 					// If the menu item has been inserted properly, let's execute some actions
 					if ($db->insertObject('#__menu', $newMenuItem, 'id'))
 					{
+						/*
 						// Assign all the modules to this item
 						$query = 'INSERT INTO #__modules_menu (moduleid,menuid) SELECT moduleid,' . $db->quote($newMenuItem->id) . ' FROM  #__modules_menu WHERE menuid = ' . $db->quote($menuItem->id) . ' AND language = ' . $db->quote('*');
 						$db->setQuery($query);
@@ -2289,6 +2290,8 @@ class NenoHelper
 							$db->setQuery($query);
 							$db->execute();
 						}
+
+						*/
 
 						$associations[] = $newMenuItem->id;
 					}
