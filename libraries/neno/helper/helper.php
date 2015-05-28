@@ -1530,15 +1530,23 @@ class NenoHelper
 	 */
 	public static function isDatabaseDriverEnabled()
 	{
-		// Reset cache
-		$user   = JFactory::getUser();
-		$cache  = JFactory::getCache('com_plugins', '');
-		$levels = implode(',', $user->getAuthorisedViewLevels());
-		$cache->store(false, $levels);
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
-		$plugin = JPluginHelper::getPlugin('system', 'neno');
+		$query
+			->select('enabled')
+			->from('#__extensions')
+			->where(
+				array (
+					'folder = ' . $db->quote('system'),
+					'type = ' . $db->quote('plugin'),
+					'element = ' . $db->quote('neno'),
+				)
+			);
 
-		return !empty($plugin);
+		$db->setQuery($query);
+
+		return $db->loadResult() == 1;
 	}
 
 	/**
@@ -2087,21 +2095,6 @@ class NenoHelper
 		$db->setQuery($query);
 		$db->execute();
 
-		$query
-			->clear()
-			->update('#__modules')
-			->set('language = ' . $db->quote($defaultLanguage))
-			->where(
-				array (
-					'published = 1',
-					'module = ' . $db->quote('mod_menu'),
-					'client_id = 0',
-					'language  = ' . $db->quote('*')
-				)
-			);
-		$db->setQuery($query);
-		$db->execute();
-
 		// Set all the menus items from '*' to default language
 		$query
 			->clear()
@@ -2380,6 +2373,95 @@ class NenoHelper
 		// Once we finish restructuring menus, let's rebuild them
 		$menuTable = new JTableMenu($db);
 		$menuTable->rebuild();
+	}
+
+	/**
+	 * Create a new menu
+	 *
+	 * @param   string   $language        Language
+	 * @param   stdClass $defaultMenuType Default language menu type
+	 *
+	 * @return stdClass
+	 */
+	protected static function createMenu($language, stdClass $defaultMenuType, $defaultLanguage)
+	{
+		$db       = JFactory::getDbo();
+		$query    = $db->getQuery(true);
+		$menuType = $defaultMenuType->menutype . '-' . strtolower($language);
+
+		$query
+			->select('*')
+			->from('#__menu_types')
+			->where('menutype = ' . $db->quote($menuType));
+
+		$db->setQuery($query);
+		$item = $db->loadObject();
+
+		if (empty($item))
+		{
+			$query
+				->clear()
+				->insert('#__menu_types')
+				->columns(
+					array (
+						'menutype',
+						'title'
+					)
+				)
+				->values($db->quote($menuType) . ', ' . $db->quote($defaultMenuType->title . '(' . $language . ')'));
+
+			$db->setQuery($query);
+			$db->execute();
+
+			$query
+				->select('*')
+				->from('#__menu_types')
+				->where('menutype = ' . $db->quote($menuType));
+			$db->setQuery($query);
+			$item = $db->loadObject();
+
+			//Create menu modules
+
+			$query
+				->clear()
+				->select('*')
+				->from('#__modules')
+				->where(
+					array (
+						'module = ' . $db->quote('mod_menu'),
+						'client_id = 0',
+						'params LIKE ' . $db->quote('%' . $defaultMenuType->menutype . '%'),
+						'language = ' . $db->quote($defaultLanguage)
+					)
+				);
+
+			$db->setQuery($query);
+			$modules = $db->loadObjectList();
+
+			if (!empty($modules))
+			{
+				foreach ($modules as $module)
+				{
+					$previousId     = $module->id;
+					$module->params = json_decode($module->params, true);
+
+					$module->id                 = 0;
+					$module->params['menutype'] = $item->menutype;
+					$module->params             = json_encode($module->params);
+					$module->language           = $language;
+					$module->title              = $module->title . ' (' . $language . ')';
+
+					$db->insertObject('#__modules', $module, 'id');
+
+					// Assigning items
+					$query = 'INSERT INTO #__modules_menu (menuid,moduleid) SELECT menuid,' . $db->quote($module->id) . ' FROM  #__modules_menu WHERE moduleid = ' . $db->quote($previousId);
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+		}
+
+		return $item;
 	}
 
 	/**
@@ -3676,95 +3758,6 @@ class NenoHelper
 		$values = $db->loadObjectList();
 
 		return JHtml::_('select.genericlist', $values, 'translator', null, 'value', 'text', null, false, true);
-	}
-
-	/**
-	 * Create a new menu
-	 *
-	 * @param   string   $language        Language
-	 * @param   stdClass $defaultMenuType Default language menu type
-	 *
-	 * @return stdClass
-	 */
-	protected static function createMenu($language, stdClass $defaultMenuType, $defaultLanguage)
-	{
-		$db       = JFactory::getDbo();
-		$query    = $db->getQuery(true);
-		$menuType = $defaultMenuType->menutype . '-' . strtolower($language);
-
-		$query
-			->select('*')
-			->from('#__menu_types')
-			->where('menutype = ' . $db->quote($menuType));
-
-		$db->setQuery($query);
-		$item = $db->loadObject();
-
-		if (empty($item))
-		{
-			$query
-				->clear()
-				->insert('#__menu_types')
-				->columns(
-					array (
-						'menutype',
-						'title'
-					)
-				)
-				->values($db->quote($menuType) . ', ' . $db->quote($defaultMenuType->title . '(' . $language . ')'));
-
-			$db->setQuery($query);
-			$db->execute();
-
-			$query
-				->select('*')
-				->from('#__menu_types')
-				->where('menutype = ' . $db->quote($menuType));
-			$db->setQuery($query);
-			$item = $db->loadObject();
-
-			//Create menu modules
-
-			$query
-				->clear()
-				->select('*')
-				->from('#__modules')
-				->where(
-					array (
-						'module = ' . $db->quote('mod_menu'),
-						'client_id = 0',
-						'params LIKE ' . $db->quote('%' . $defaultMenuType->menutype . '%'),
-						'language = ' . $db->quote($defaultLanguage)
-					)
-				);
-
-			$db->setQuery($query);
-			$modules = $db->loadObjectList();
-
-			if (!empty($modules))
-			{
-				foreach ($modules as $module)
-				{
-					$previousId     = $module->id;
-					$module->params = json_decode($module->params, true);
-
-					$module->id                 = 0;
-					$module->params['menutype'] = $item->menutype;
-					$module->params             = json_encode($module->params);
-					$module->language           = $language;
-					$module->title              = $module->title . ' (' . $language . ')';
-
-					$db->insertObject('#__modules', $module, 'id');
-
-					// Assigning items
-					$query = 'INSERT INTO #__modules_menu (menuid,moduleid) SELECT menuid,' . $db->quote($module->id) . ' FROM  #__modules_menu WHERE moduleid = ' . $db->quote($previousId);
-					$db->setQuery($query);
-					$db->execute();
-				}
-			}
-		}
-
-		return $item;
 	}
 
 	protected static function assignModules($menuType, $defaultMenuType, $language, $defaultLanguage)
