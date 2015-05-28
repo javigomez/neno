@@ -2203,6 +2203,11 @@ class NenoHelper
 
 		foreach ($nonAssociatedMenuItems as $key => $menuItem)
 		{
+			if (!isset($menuAssociations[$menuItem->menutype]))
+			{
+				$menuAssociations[$menuItem->menutype] = array ();
+			}
+
 			$associations = array ();
 			$insert       = false;
 			$insertQuery  = $db->getQuery(true);
@@ -2225,12 +2230,17 @@ class NenoHelper
 					// If there's no menu associated
 					if (empty($menuAssociations[$menuItem->menutype][$language->lang_code]))
 					{
+						if (!isset($menuAssociations[$menuItem->menutype][$language->lang_code]))
+						{
+							$menuAssociations[$menuItem->menutype][$language->lang_code] = array ();
+						}
 						$newMenuType           = new stdClass;
-						$newMenuType->menutype = $menuItem->menutype . '-' . strtolower($language->lang_code);
-						$newMenuType->title    = $menuItem->menutype . ' (' . $language->lang_code . ')';
+						$newMenuType->menutype = $menuItem->menutype;
+						$newMenuType->title    = $menuItem->menutype;
+						$newMenuType           = self::createMenu($language->lang_code, $newMenuType, $defaultLanguage);
 
 						// If the menu has been inserted properly, let's save into the data structure
-						if ($db->insertObject('#__menu_types', $newMenuType, 'id'))
+						if (!empty($newMenuType))
 						{
 							$menuAssociations[$menuItem->menutype][$language->lang_code]['menutype'] = $newMenuType->menutype;
 							$menuAssociations[$menuItem->menutype][$language->lang_code]['language'] = $language->lang_code;
@@ -3676,7 +3686,7 @@ class NenoHelper
 	 *
 	 * @return stdClass
 	 */
-	protected static function createMenu($language, stdClass $defaultMenuType)
+	protected static function createMenu($language, stdClass $defaultMenuType, $defaultLanguage)
 	{
 		$db       = JFactory::getDbo();
 		$query    = $db->getQuery(true);
@@ -3712,6 +3722,46 @@ class NenoHelper
 				->where('menutype = ' . $db->quote($menuType));
 			$db->setQuery($query);
 			$item = $db->loadObject();
+
+			//Create menu modules
+
+			$query
+				->clear()
+				->select('*')
+				->from('#__modules')
+				->where(
+					array (
+						'module = ' . $db->quote('mod_menu'),
+						'client_id = 0',
+						'params LIKE ' . $db->quote('%' . $defaultMenuType->menutype . '%'),
+						'language = ' . $db->quote($defaultLanguage)
+					)
+				);
+
+			$db->setQuery($query);
+			$modules = $db->loadObjectList();
+
+			if (!empty($modules))
+			{
+				foreach ($modules as $module)
+				{
+					$previousId     = $module->id;
+					$module->params = json_decode($module->params, true);
+
+					$module->id                 = 0;
+					$module->params['menutype'] = $item->menutype;
+					$module->params             = json_encode($module->params);
+					$module->language           = $language;
+					$module->title              = $module->title . ' (' . $language . ')';
+
+					$db->insertObject('#__modules', $module, 'id');
+
+					// Assigning items
+					$query = 'INSERT INTO #__modules_menu (menuid,moduleid) SELECT menuid,' . $db->quote($module->id) . ' FROM  #__modules_menu WHERE moduleid = ' . $db->quote($previousId);
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
 		}
 
 		return $item;
