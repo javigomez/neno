@@ -170,6 +170,12 @@ $translation = $displayData;
 				<div class="pull-right last-modified">
 					<?php echo empty($translation) ? '' : JText::sprintf('COM_NENO_EDITOR_LAST_MODIFIED', $translation->time_changed !== '0000-00-00 00:00:00' ? $translation->time_changed : JText::_('COM_NENO_EDITOR_NEVER')) ?>
 				</div>
+				<div class="clearfix"></div>
+				<br/>
+				<div class="pull-left translated-error">
+					<span class="label label-important error-title"><?php echo JText::sprintf('COM_NENO_EDITOR_ERROR_TRANSLATED_BY', NenoSettings::get('translator')); ?></span>
+					<span class="error-message"></span>
+				</div>
 			</div>
 		</div>
 	</div>

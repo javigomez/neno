@@ -63,8 +63,8 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 			// Log it if server response is not OK.
 			if ($response->code != 200)
 			{
-				NenoLog::log('Yandex api failed with response: ' . $response->code, 1);
-				$responseData = json_encode($response->body, true);
+				NenoLog::log('Yandex API failed with response: ' . $response->code, 1);
+				$responseData = json_decode($response->body, true);
 				throw new Exception(JText::_('COM_NENO_EDITOR_YANDEX_ERROR_CODE_' . $responseData['code']), $responseData['code']);
 			}
 			else

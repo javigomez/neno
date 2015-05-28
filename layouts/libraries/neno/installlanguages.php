@@ -25,8 +25,9 @@ $languages = $displayData->languages;
 </table>
 
 <script>
-	jQuery("[data-language]").click(function () {
+	jQuery("#languages-modal button[data-language]").click(function () {
 		var button = jQuery(this);
+		var iso = button.attr('data-language');
 		button.hide();
 		button.parent().append('<div class="loading loading-iso-' + button.attr('data-language') + '"></div>')
 		jQuery.ajax({
@@ -39,15 +40,17 @@ $languages = $displayData->languages;
 			},
 			type: 'POST',
 			success: function (html) {
+				console.log(html);
 				if (html != 'err') {
 					var response = jQuery(html);
-					var iso = response.find('fieldset').attr('data-language');
 					var cell = jQuery('.action-cell [data-language-iso="' + iso + '"]');
 					cell.html('<div class="icon-checkmark"></div>');
 					response.insertBefore('#add-languages-button');
 					bindEvents();
 					loadMissingTranslationMethodSelectors();
 					jQuery('.loading-iso-' + iso).removeClass('loading').addClass('icon-checkmark');
+				} else {
+					jQuery('.loading-iso-' + iso).removeClass('loading').addClass('icon-cancel-2');
 				}
 			}
 		});

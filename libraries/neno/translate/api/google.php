@@ -49,9 +49,9 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 			// Log it if server response is not OK.
 			if ($response->code != 200)
 			{
-				NenoLog::log('Google api failed with response: ' . $response->code, 1);
-				$responseData = json_decode($response->body . true);
-				throw new Exception($responseData['error']['errors'][0]['message'] . '(' . $responseData['error']['errors'][0]['reason'] . ')', $response->code);
+				NenoLog::log('Google API failed with response: ' . $response->code, 1);
+				$responseData = json_decode($response->body , true);
+				throw new Exception($responseData['error']['errors'][0]['message'] . ' (' . $responseData['error']['errors'][0]['reason'] . ')', $response->code);
 			}
 			else
 			{
