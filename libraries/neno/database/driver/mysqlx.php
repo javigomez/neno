@@ -185,72 +185,15 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	 */
 	private function hasToBeParsed($sql)
 	{
-		$ignoredQueryRegex = array (
-			'/show (.+)/i',
-			'/#__neno_(.+)/',
-			'/FROM #__extensions/',
-			'/#__associations/',
-			'/#__session/',
-			'/#__schemas/',
-			'/#__update(.*)/',
-			'/#___/',
-			'/#__contentitem_tag_map/',
-			'/#__content_frontpage/',
-			'/#__content_rating/',
-			'/#__content_types/',
-			'/#__finder_links/',
-			'/#__finder_links_terms0/',
-			'/#__finder_links_terms1/',
-			'/#__finder_links_terms2/',
-			'/#__finder_links_terms3/',
-			'/#__finder_links_terms4/',
-			'/#__finder_links_terms5/',
-			'/#__finder_links_terms6/',
-			'/#__finder_links_terms7/',
-			'/#__finder_links_terms8/',
-			'/#__finder_links_terms9/',
-			'/#__finder_links_termsa/',
-			'/#__finder_links_termsb/',
-			'/#__finder_links_termsc/',
-			'/#__finder_links_termsd/',
-			'/#__finder_links_termse/',
-			'/#__finder_links_termsf/',
-			'/#__finder_taxonomy/',
-			'/#__finder_taxonomy_map/',
-			'/#__finder_types/',
-			'/#__messages/',
-			'/#__messages_cfg/',
-			'/#__modules_menu/',
-			'/#__modules/',
-			'/#__postinstall_messages/',
-			'/#__redirect_links/',
-			'/#__users/',
-			'/#__banner_clients/',
-			'/#__banner_tracks/',
-			'/#__extensions/',
-			'/#__overrider/',
-			'/#__template_styles/',
-			'/#__ucm_history/',
-			'/#__usergroups/',
-			'/#__user_keys/',
-			'/#__user_notes/',
-			'/#__user_profiles/',
-			'/#__user_usergroup_map/',
-			'/#__viewlevels/',
-			'/#__menu/',
-			'/#__menu_types/',
-			'/#__languages/',
-		);
-
-		foreach ($ignoredQueryRegex as $queryRegex)
+		foreach ($this->manifestTables as $table)
 		{
-			if (preg_match($queryRegex, $sql))
+			if (preg_match('/' . preg_quote($table) . '/', $sql))
 			{
-				return false;
+				return true;
 			}
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
