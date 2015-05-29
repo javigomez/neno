@@ -289,6 +289,28 @@ class NenoControllerInstallation extends JControllerAdmin
 		$query    = $db->getQuery(true);
 		$finished = NenoSettings::get('installation_completed') == 1;
 
+		if (NenoSettings::get('percentPerExtension') == null)
+		{
+			// Calculate percent per extension discovered
+			$extensions = $db->quote(NenoHelper::whichExtensionsShouldBeTranslated());
+			$query
+				->clear()
+				->select('COUNT(*)')
+				->from('`#__extensions` AS e')
+				->where(
+					array (
+						'e.type IN (' . implode(',', $extensions) . ')',
+						'e.name NOT LIKE \'com_neno\''
+					)
+				);
+
+			$db->setQuery($query);
+			$extensionToDiscover = (int) $db->loadResult();
+
+			$percentPerExtension = 85 / $extensionToDiscover;
+			NenoSettings::set('percentPerExtension', $percentPerExtension);
+		}
+
 		// Do until timeout
 		while (!$finished)
 		{
@@ -423,28 +445,9 @@ class NenoControllerInstallation extends JControllerAdmin
 			}
 			elseif (NenoSettings::get('discovering_step_menu') != 1)
 			{
-				NenoHelper::setSetupState(0, JText::_('COM_NENO_INSTALLATION_MESSAGE_GENERATING_MENUS'));
+				NenoHelper::setSetupState(100, JText::_('COM_NENO_INSTALLATION_MESSAGE_GENERATING_MENUS'));
 				NenoHelper::createMenuStructure();
 				NenoSettings::set('discovering_step_menu', 1);
-
-				// Calculate percent per extension discovered
-				$extensions = $db->quote(NenoHelper::whichExtensionsShouldBeTranslated());
-				$query
-					->clear()
-					->select('COUNT(*)')
-					->from('`#__extensions` AS e')
-					->where(
-						array (
-							'e.type IN (' . implode(',', $extensions) . ')',
-							'e.name NOT LIKE \'com_neno\''
-						)
-					);
-
-				$db->setQuery($query);
-				$extensionToDiscover = (int) $db->loadResult();
-
-				$percentPerExtension = 85 / $extensionToDiscover;
-				NenoSettings::set('percentPerExtension', $percentPerExtension);
 			}
 			else
 			{
