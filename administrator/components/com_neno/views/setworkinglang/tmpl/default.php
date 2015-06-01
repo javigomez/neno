@@ -19,23 +19,53 @@ $next = JFactory::getApplication()->input->getString('next', 'dashboard');
 <div class="clearfix">
 	<?php foreach ($this->langs as $lang): ?>
 		<a class="btn btn-large span2 <?php echo $lang->isInstalled == false ? 'not-ready' : ''; ?>"
+		   data-language="<?php echo $lang->lang_code; ?>"
 		   href="index.php?option=com_neno&task=setworkinglang&lang=<?php echo $lang->lang_code; ?>&next=<?php echo $next; ?>">
 			<h4>
-				<?php
-				if (file_exists(JPATH_SITE . '/media/mod_languages/images/' . $lang->image . '.gif')): ?>
+				<?php if (file_exists(JPATH_SITE . '/media/mod_languages/images/' . $lang->image . '.gif')): ?>
 					<img src="<?php echo JUri::root() . 'media/mod_languages/images/' . $lang->image . '.gif'; ?>"/>
 				<?php endif; ?>
 				<?php echo $lang->title_native; ?>
 			</h4>
+			<?php if ($lang->isInstalled == false): ?>
+				<span
+					class="setting-up-messsage"><?php echo JText::_('COM_NENO_LANGUAGE_SETTING_UP_MESSAGE'); ?></span>
+			<?php endif; ?>
 		</a>
 	<?php endforeach; ?>
 </div>
 
 <script>
 	jQuery(document).ready(function () {
+		checkLanguages();
 		jQuery('.not-ready').off('click').on('click', function (e) {
 			e.preventDefault();
 			alert('<?php echo JText::_('COM_NENO_LANGUAGE_IS_NOT_READY_YET_MESSAGE'); ?>');
 		});
+
+		interval = setInterval(checkLanguages, 5000);
 	});
+
+	function checkLanguages() {
+		if (jQuery('.not-ready').length != 0) {
+			jQuery('.not-ready').each(function () {
+				var button = jQuery(this);
+				jQuery.ajax({
+					url: 'index.php?option=com_neno&task=isLanguageInstalled',
+					type: 'POST',
+					data: {
+						language: button.data('language')
+					},
+					success: function (data) {
+						if (data == 'ok') {
+							button.removeClass('not-ready');
+							button.find('.setting-up-messsage').remove();
+						}
+					}
+				});
+			});
+		} else if (typeof interval != 'undefined') {
+			clearInterval(interval);
+		}
+	}
 </script>

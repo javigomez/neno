@@ -444,4 +444,29 @@ class NenoController extends JControllerLegacy
 	{
 		NenoHelper::createMenuStructure();
 	}
+
+	/**
+	 * Check if a particular language has been installed
+	 *
+	 * @return void
+	 */
+	public function isLanguageInstalled()
+	{
+		$input    = $this->input;
+		$language = $input->post->getString('language');
+
+		if (!empty($language))
+		{
+			if (NenoHelper::isCompletelyInstall($language))
+			{
+				echo 'ok';
+			}
+			else
+			{
+				echo 'err';
+			}
+		}
+
+		JFactory::getApplication()->close();
+	}
 }
