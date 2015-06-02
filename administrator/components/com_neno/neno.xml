@@ -65,9 +65,4 @@
             <language tag="en-GB">languages/en-GB/en-GB.com_neno.sys.ini</language>
         </languages>
     </administration>
-
-    <updateservers>
-        <server type="extension" priority="1" name="com_neno">http://www.neno-translate.com/releases/neno-update.xml</server>
-    </updateservers>
-
 </extension>

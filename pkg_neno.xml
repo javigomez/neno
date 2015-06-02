@@ -16,4 +16,7 @@
         <file type="plugin" id="neno" group="system">plg_system_neno.zip</file>
         <file type="library" id="neno">lib_neno.zip</file>
     </files>
+    <updateservers>
+        <server type="extension" priority="1" name="pkg_neno">http://www.neno-translate.com/releases/neno-update.xml</server>
+    </updateservers>
 </extension>
