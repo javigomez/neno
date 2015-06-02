@@ -108,7 +108,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	.table-groups-elements .row-field {
 		background-color: white;
 	}
-	
+
 </style>
 
 <script type="text/javascript">
@@ -141,6 +141,23 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 		//Bind modal clicks
 		jQuery('.modalgroupform').off('click').on('click', showModalGroupForm);
 
+		jQuery("[data-toggle='tooltip']").tooltip();
+
+		jQuery('.filter-dropdown').off('change').on('change', saveFilter);
+	}
+
+	function saveFilter() {
+		var filter = jQuery(this).find(':selected').val();
+		var fieldId = jQuery(this).data('field');
+
+		jQuery.ajax({
+			url: 'index.php?option=com_neno&task=groupselements.changeFieldFilter',
+			type: 'POST',
+			data: {
+				fieldId: fieldId,
+				filter: filter
+			}
+		});
 	}
 
 
@@ -226,12 +243,12 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 			jQuery('[for="check-toggle-translate-' + id + '-0"]').addClass('active btn-danger');
 			jQuery('[for="check-toggle-translate-' + id + '-1"]').removeClass('active btn-success');
 		}
-        
-        //Show an alert that count no longer is accurate
-        jQuery('#reload-notice').remove();
-        jQuery('.navbar-fixed-top .navbar-inner').append('<div style="padding:10px 30px;" id="reload-notice"><div class="alert alert-warning"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_WARNING'); ?><a href="index.php?option=com_neno&view=groupselements" class="btn btn-info pull-right" style="height: 16px; font-size: 12px;margin-top:-4px"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_BTN'); ?></a></div></div>').height('92');
-        jQuery('body').css('padding-top', '93px');
-        
+
+		//Show an alert that count no longer is accurate
+		jQuery('#reload-notice').remove();
+		jQuery('.navbar-fixed-top .navbar-inner').append('<div style="padding:10px 30px;" id="reload-notice"><div class="alert alert-warning"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_WARNING'); ?><a href="index.php?option=com_neno&view=groupselements" class="btn btn-info pull-right" style="height: 16px; font-size: 12px;margin-top:-4px"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_BTN'); ?></a></div></div>').height('92');
+		jQuery('body').css('padding-top', '93px');
+
 		jQuery.ajax({
 				beforeSend: onBeforeAjax,
 				url: 'index.php?option=com_neno&task=groupselements.toggleContentElementField&fieldId=' + id + '&translateStatus=' + status
@@ -270,10 +287,10 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 			toggler.find('span').removeClass();
 		}
 
-        //Show an alert that count no longer is accurate
-        jQuery('#reload-notice').remove();
-        jQuery('.navbar-fixed-top .navbar-inner').append('<div style="padding:10px 30px;" id="reload-notice"><div class="alert alert-warning"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_WARNING'); ?><a href="index.php?option=com_neno&view=groupselements" class="btn btn-info pull-right" style="height: 16px; font-size: 12px;margin-top:-4px"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_BTN'); ?></a></div></div>').height('92');
-        jQuery('body').css('padding-top', '93px');
+		//Show an alert that count no longer is accurate
+		jQuery('#reload-notice').remove();
+		jQuery('.navbar-fixed-top .navbar-inner').append('<div style="padding:10px 30px;" id="reload-notice"><div class="alert alert-warning"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_WARNING'); ?><a href="index.php?option=com_neno&view=groupselements" class="btn btn-info pull-right" style="height: 16px; font-size: 12px;margin-top:-4px"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_RELOAD_BTN'); ?></a></div></div>').height('92');
+		jQuery('body').css('padding-top', '93px');
 
 		jQuery.ajax({
 				beforeSend: onBeforeAjax,
@@ -313,11 +330,11 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 
 	function showModalGroupForm(isNew) {
-        if (isNew  === true) {
-            var id = 0;
-        } else {
-            var id = getGroupIdFromChildElement(jQuery(this));
-        }
+		if (isNew === true) {
+			var id = 0;
+		} else {
+			var id = getGroupIdFromChildElement(jQuery(this));
+		}
 
 		//Load group form html
 		jQuery.ajax({
@@ -349,19 +366,19 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 		return id_parts[1];
 
 	}
-    
-    //Catch the joomla submit
-    var originalJoomla = Joomla.submitbutton;
-    Joomla.submitbutton = function(task) {
-        if (task === 'addGroup') {
-            showModalGroupForm(true);
-        } else {
-            //Submit as normal
-            originalJoomla.apply(this, arguments);
-        }
-        
-    }
-    
+
+	//Catch the joomla submit
+	var originalJoomla = Joomla.submitbutton;
+	Joomla.submitbutton = function (task) {
+		if (task === 'addGroup') {
+			showModalGroupForm(true);
+		} else {
+			//Submit as normal
+			originalJoomla.apply(this, arguments);
+		}
+
+	}
+
 
 </script>
 

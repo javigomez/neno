@@ -3882,6 +3882,92 @@ class NenoHelper
 		return JHtml::_('select.genericlist', $values, 'translator', null, 'value', 'text', null, false, true);
 	}
 
+	/**
+	 * Generate filters drop down
+	 *
+	 * @param int    $fieldId
+	 * @param string $selected
+	 *
+	 * @return string
+	 */
+	public static function generateFilterDropDown($fieldId, $selected)
+	{
+		$filters = array (
+			array (
+				'value' => 'INT',
+				'text'  => 'INT',
+			),
+			array (
+				'value' => 'UNIT',
+				'text'  => 'UNIT',
+			),
+			array (
+				'value' => 'FLOAT',
+				'text'  => 'FLOAT',
+			),
+			array (
+				'value' => 'BOOL',
+				'text'  => 'BOOL',
+			),
+			array (
+				'value' => 'WORD',
+				'text'  => 'WORD',
+			),
+			array (
+				'value' => 'ALNUM',
+				'text'  => 'ALNUM',
+			),
+			array (
+				'value' => 'CMD',
+				'text'  => 'CMD',
+			),
+			array (
+				'value' => 'BASE64',
+				'text'  => 'BASE64',
+			),
+			array (
+				'value' => 'STRING',
+				'text'  => 'STRING',
+			),
+			array (
+				'value' => 'HTML',
+				'text'  => 'HTML',
+			),
+			array (
+				'value' => 'ARRAY',
+				'text'  => 'ARRAY',
+			),
+			array (
+				'value' => 'TRIM',
+				'text'  => 'TRIM',
+			),
+			array (
+				'value' => 'PATH',
+				'text'  => 'PATH',
+			),
+			array (
+				'value' => 'USERNAME',
+				'text'  => 'USERNAME',
+			),
+			array (
+				'value' => 'RAW',
+				'text'  => 'RAW',
+			)
+		);
+
+		return JHtml::_('select.genericlist', $filters, 'filter_field_' . $fieldId, 'class="filter-dropdown" data-field="' . $fieldId . '"', 'value', 'text', $selected, false, true);
+	}
+
+	/**
+	 * Render tooltip for filters
+	 *
+	 * @return string
+	 */
+	public static function renderFilterHelperText()
+	{
+		echo htmlentities(JLayoutHelper::render('filtertooltip', null, JPATH_NENO_LAYOUTS));
+	}
+
 	protected static function assignModules($menuType, $defaultMenuType, $language, $defaultLanguage)
 	{
 		$db    = JFactory::getDbo();

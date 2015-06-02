@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_groups_x_translation_methods
   `translation_method_id` INT(11)    NOT NULL,
   `ordering`              TINYINT(1) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `group_id` (`group_id`,`lang`,`translation_method_id`,`ordering`),
+  UNIQUE KEY `group_id` (`group_id`, `lang`, `translation_method_id`, `ordering`),
   KEY `content_elements_preset_group_idx` (`group_id`),
   KEY `fk_preset_idx` (`translation_method_id`),
   CONSTRAINT `fk_preset` FOREIGN KEY (`translation_method_id`) REFERENCES `#__neno_translation_methods` (`id`)
@@ -203,6 +203,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_fields` (
   `field_name` VARCHAR(100) NOT NULL,
   `field_type` VARCHAR(45)  NOT NULL,
   `translate`  TINYINT(1)   NOT NULL DEFAULT '1',
+  `filter`     VARCHAR(50)  NOT NULL DEFAULT 'RAW',
   PRIMARY KEY (`id`),
   UNIQUE KEY `table_id_x_field` (`table_id`, `field_name`),
   KEY `content_elements_fields_table_idx` (`table_id`),

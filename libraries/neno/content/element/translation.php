@@ -511,6 +511,17 @@ class NenoContentElementTranslation extends NenoContentElement
 		// Update word counter
 		$this->wordCounter = str_word_count($this->getString());
 
+		if ($this->contentType == self::DB_STRING)
+		{
+			/* @var $field NenoContentElementField */
+			$field = $this->element;
+
+			if ($field instanceof NenoContentElementField)
+			{
+				$this->string = $field->applyFilter($this->string);
+			}
+		}
+
 		if ($this->getState() == self::TRANSLATED_STATE)
 		{
 			$this->timeCompleted = new DateTime;
