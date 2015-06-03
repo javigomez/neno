@@ -44,6 +44,16 @@ class NenoViewDashboard extends JViewLegacy
 	protected $extraSidebar;
 
 	/**
+	 * @var bool
+	 */
+	protected $isLanguageSwitcherPublished;
+
+	/**
+	 * @var JForm
+	 */
+	protected $positionField;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -56,9 +66,16 @@ class NenoViewDashboard extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->state               = $this->get('State');
-		$this->items               = $this->get('Items');
-		$this->canInstallLanguages = $this->get('IsPossibleToInstallLanguage');
+		$this->state                       = $this->get('State');
+		$this->items                       = $this->get('Items');
+		$this->canInstallLanguages         = $this->get('IsPossibleToInstallLanguage');
+		$this->isLanguageSwitcherPublished = $this->get('IsSwitcherPublished');
+
+		if (!$this->isLanguageSwitcherPublished)
+		{
+			$this->positionField = $this->get('PositionField');
+		}
+
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
