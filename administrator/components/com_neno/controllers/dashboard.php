@@ -116,4 +116,82 @@ class NenoControllerDashboard extends JControllerAdmin
 
 		echo JLayoutHelper::render('messages', $displayData, JPATH_NENO_LAYOUTS);
 	}
+
+	/**
+	 * Publish language switcher
+	 *
+	 * @throws Exception
+	 *
+	 * @return void
+	 */
+	public function publishSwitcher()
+	{
+		$input = $this->input;
+		$jform = $input->post->get('jform', array (), 'ARRAY');
+
+		if (!empty($jform))
+		{
+			/* @var $model NenoModelDashboard */
+			$model  = $this->getModel('Dashboard', 'NenoModel');
+			$db     = JFactory::getDbo();
+			$query  = $db->getQuery(true);
+			$module = null;
+
+			if ($model->getIsSwitcherPublished(false))
+			{
+				$query
+					->select('*')
+					->from('#__modules')
+					->where('module = ' . $db->quote('mod_languages'));
+				$db->setQuery($query);
+				$module = $db->loadObject();
+			}
+			else
+			{
+				$module            = new stdClass;
+				$module->id        = 0;
+				$module->language  = '*';
+				$module->published = 1;
+				$module->title     = 'Language Switcher';
+				$module->module    = 'mod_languages';
+				$module->access    = '1';
+				$module->client_id = 0;
+
+				$db->insertObject('#__modules', $module, 'id');
+			}
+
+			$module->position = $jform['position'];
+			$db->updateObject('#__modules', $module, 'id');
+
+			// Assigning items
+			$query
+				->clear()
+				->insert('#__modules_menu')
+				->columns(
+					array (
+						'menuid',
+						'moduleid'
+					)
+				)
+				->values('0, ' . $module->id);
+			$db->setQuery($query);
+			$db->execute();
+		}
+
+		JFactory::getApplication()->redirect('index.php?option=com_neno&dashboard');
+	}
+
+	/**
+	 * Publish language switcher
+	 *
+	 * @throws Exception
+	 *
+	 * @return void
+	 */
+	public function doNotShowWarningMessage()
+	{
+		NenoSettings::set('show_language_switcher_warning', 0);
+
+		JFactory::getApplication()->redirect('index.php?option=com_neno&dashboard');
+	}
 }

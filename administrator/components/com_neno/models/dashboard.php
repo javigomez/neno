@@ -35,16 +35,16 @@ class NenoModelDashboard extends JModelList
 
 		foreach ($languages as $language)
 		{
-			$translated      = 0;
-			$queued          = 0;
-			$changed         = 0;
-			$untranslated    = 0;
-			$item            = new stdClass;
-			$item->lang_code = $language[0]->lang_code;
-			$item->published = $language[0]->published;
-			$item->title     = $language[0]->title;
-			$item->image     = $language[0]->image;
-			$item->errors    = NenoHelper::getLanguageErrors((array) $language[0]);
+			$translated        = 0;
+			$queued            = 0;
+			$changed           = 0;
+			$untranslated      = 0;
+			$item              = new stdClass;
+			$item->lang_code   = $language[0]->lang_code;
+			$item->published   = $language[0]->published;
+			$item->title       = $language[0]->title;
+			$item->image       = $language[0]->image;
+			$item->errors      = NenoHelper::getLanguageErrors((array) $language[0]);
 			$item->isInstalled = NenoHelper::isCompletelyInstall($item->lang_code);
 
 			foreach ($language as $internalItem)
@@ -132,5 +132,69 @@ class NenoModelDashboard extends JModelList
 		}
 
 		return true;
+	}
+
+	/**
+	 * Get position field
+	 *
+	 * @return string
+	 */
+	public function getPositionField()
+	{
+		// Adding necessary files
+		require_once JPATH_ADMINISTRATOR . '/components/com_templates/helpers/templates.php';
+		require_once JPATH_ADMINISTRATOR . '/components/com_modules/helpers/modules.php';
+		JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_modules/helpers/html');
+
+		$language = JFactory::getLanguage();
+		$language->load('com_modules', JPATH_BASE);
+		$state     = 1;
+		$positions = JHtml::_('modules.positions', 0, $state);
+
+		// Add custom position to options
+		$customGroupText = JText::_('COM_MODULES_CUSTOM_POSITION');
+
+		// Build field
+		$attr = array (
+			'id'        => 'jform_position',
+			'list.attr' => 'class="chzn-custom-value" '
+				. 'data-custom_group_text="' . $customGroupText . '" '
+				. 'data-no_results_text="' . JText::_('COM_MODULES_ADD_CUSTOM_POSITION') . '" '
+				. 'data-placeholder="' . JText::_('COM_MODULES_TYPE_OR_SELECT_POSITION') . '" '
+		);
+
+		return JHtml::_('select.groupedlist', $positions, 'jform[position]', $attr);
+	}
+
+	/**
+	 * Check if the language switcher has been published already
+	 *
+	 * @param   bool $createdAndPublished True to check whether the module has created and published or just created.
+	 *
+	 * @return bool
+	 */
+	public function getIsSwitcherPublished($createdAndPublished = true)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select(1)
+			->from('#__modules')
+			->where('module = ' . $db->quote('mod_languages'));
+
+		if ($createdAndPublished)
+		{
+			$query->where(
+				array (
+					'position <> \'\'',
+					'published = 1 '
+				)
+			);
+		}
+
+		$db->setQuery($query);
+
+		return $db->loadResult() == 1 || !NenoSettings::get('show_language_switcher_warning', 1);
 	}
 }
