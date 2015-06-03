@@ -45,8 +45,6 @@ class com_NenoInstallerScript
 	/**
 	 * Copying files
 	 *
-	 * @param   JInstallerAdapterComponent $parent Installation adapter
-	 *
 	 * @return bool False if something happens
 	 */
 	public function uninstall()

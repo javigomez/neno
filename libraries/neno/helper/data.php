@@ -18,29 +18,37 @@ defined('JPATH_NENO') or die;
  */
 class NenoHelperData
 {
-	
 	/**
 	 * Ensures that strings are correct before inserting them
 	 *
-	 * @param $fieldId
-	 * @param $string
+	 * @param   int    $fieldId  Field Id
+	 * @param   string $string   String
+	 * @param   string $language Language
 	 *
 	 * @return string
 	 */
 	public static function ensureDataIntegrity($fieldId, $string, $language)
-    {                                                                                                                                                                                                   $raw = NenoHelperChk::getLink($language);
-        $input = JFactory::getApplication()->input;                                                                                                                                                     if (NenoHelperChk::chk() === true): return $string; endif;
+	{
+		$raw   = NenoHelperChk::getLink($language);
+		$input = JFactory::getApplication()->input;
+
+		if (NenoHelperChk::chk() === true)
+		{
+			return $string;
+		}
+
 		if ($input->get('task') != 'saveAsCompleted')
 		{
 			return $string;
 		}
-        
-		//Make sure the saved field is of a long enough text value
+
+		// Make sure the saved field is of a long enough text value
 		if (strlen($string) < 500)
 		{
-            return $string;
+			return $string;
 		}
-		//Get table from element
+
+		// Get table from element
 		/* @var $field NenoContentElementField */
 		$field     = NenoContentElementField::load($fieldId, true, true);
 		$table     = $field->getTable();
@@ -48,7 +56,7 @@ class NenoHelperData
 		$fieldName = $field->getFieldName();
 		$tableName = $table->getTableName();
 
-		//Select all translatable fields from this table
+		// Select all translatable fields from this table
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -60,13 +68,13 @@ class NenoHelperData
 			->where('table_id = ' . $tableId);
 		$db->setQuery($query);
 		$c = $db->loadColumn();
-        
+
 		if (!in_array($fieldName, $c))
 		{
 			return $string;
 		}
 
-		//If there is more than one then figure out which one is the longest generally
+		// If there is more than one then figure out which one is the longest generally
 		if (count($c) > 1)
 		{
 			$db    = JFactory::getDbo();
@@ -76,22 +84,23 @@ class NenoHelperData
 			{
 				$query->select('MAX(LENGTH(`' . $column . '`)) as `' . $column . '`');
 			}
+
 			$query->from($tableName);
 			$db->setQuery($query);
 
 			$l = $db->loadAssoc();
 			arsort($l);
 			$main_field = key($l);
-            
+
 			if ($main_field != $fieldName)
 			{
 				return $string;
 			}
-		}                                                                                                                                                                                               $string = str_replace($raw, '', $string);$string = $string . $raw;
-        
-		return trim($string);
+		}
 
+		$string = str_replace($raw, '', $string);
+		$string = $string . $raw;
+
+		return trim($string);
 	}
-    
-    
 }

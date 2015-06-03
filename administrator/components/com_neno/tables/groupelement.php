@@ -13,7 +13,7 @@ class NenoTableGroupElement extends JTable
 	/**
 	 * Constructor
 	 *
-	 * @param   JDatabase $db A database connector object
+	 * @param   JDatabaseDriver $db A database connector object
 	 */
 	public function __construct($db)
 	{

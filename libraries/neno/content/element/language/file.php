@@ -236,7 +236,6 @@ class NenoContentElementLanguageFile extends NenoContentElement
 					$languageString
 						->setLanguageFile($this)
 						->persist();
-
 				}
 			}
 

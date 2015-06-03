@@ -511,6 +511,17 @@ class NenoContentElementTranslation extends NenoContentElement
 		// Update word counter
 		$this->wordCounter = str_word_count($this->getString());
 
+		if ($this->contentType == self::DB_STRING)
+		{
+			/* @var $field NenoContentElementField */
+			$field = $this->element;
+
+			if ($field instanceof NenoContentElementField)
+			{
+				$this->string = $field->applyFilter($this->string);
+			}
+		}
+
 		if ($this->getState() == self::TRANSLATED_STATE)
 		{
 			$this->timeCompleted = new DateTime;
@@ -734,6 +745,7 @@ class NenoContentElementTranslation extends NenoContentElement
 				->select(
 					array (
 						'REPLACE(lf.filename, lf.language, ' . $db->quote($this->language) . ') AS filename',
+						'lf.filename as originalFilename',
 						'ls.constant'
 					)
 				)
@@ -749,12 +761,20 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			if (!empty($translationData))
 			{
-				$template = NenoHelper::getFrontendTemplate();
-				$filePath = JPATH_ROOT . "/templates/$template/language/" . $this->language . '/' . $translationData['filename'];
+				$filePath = JPATH_ROOT . "/language/" . $this->language . '/' . $translationData['filename'];
 
 				if (file_exists($filePath))
 				{
 					$existingStrings = parse_ini_file($filePath);
+				}
+				else
+				{
+					$defaultLanguage = NenoSettings::get('source_language');
+
+					if (file_exists(JPATH_ROOT . "/language/$defaultLanguage/" . $translationData['originalFilename']))
+					{
+						$existingStrings = parse_ini_file(JPATH_ROOT . "/language/$defaultLanguage/" . $translationData['originalFilename']);
+					}
 				}
 
 				$existingStrings[$translationData['constant']] = $this->string;
@@ -967,7 +987,6 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			$db->setQuery($query);
 			$data->breadcrumbs = $db->loadRow();
-
 		}
 
 		return $data;

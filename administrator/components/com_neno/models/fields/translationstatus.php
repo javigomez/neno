@@ -12,16 +12,17 @@ defined('JPATH_BASE') or die;
 
 JFormHelper::loadFieldClass('list');
 
-
 /**
+ * class JFormFieldTranslationStatus
  *
+ * @since  1.0
  */
 class JFormFieldTranslationStatus extends JFormFieldList
 {
 	/**
 	 * The form field type.
 	 *
-	 * @var		string
+	 * @var        string
 	 * @since   1.6
 	 */
 	protected $type = 'TranslationStatus';
@@ -35,7 +36,7 @@ class JFormFieldTranslationStatus extends JFormFieldList
 	 */
 	public function getOptions()
 	{
-		$options = array();
+		$options = array ();
 
 		$options[] = JHtml::_('select.option', NenoContentElementTranslation::TRANSLATED_STATE, JText::_('COM_NENO_STATUS_TRANSLATED'));
 		$options[] = JHtml::_('select.option', NenoContentElementTranslation::QUEUED_FOR_BEING_TRANSLATED_STATE, JText::_('COM_NENO_STATUS_QUEUED'));

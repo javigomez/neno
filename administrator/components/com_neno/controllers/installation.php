@@ -115,7 +115,7 @@ class NenoControllerInstallation extends JControllerAdmin
 
 				$data->languages           = $languagesData;
 				$data->canInstallLanguages = true;
-				$memoryDetails             = NenoHelper::getMemoryDetails();
+				$memoryDetails             = NenoHelperBackend::getMemoryDetails();
 
 				if (!empty($memoryDetails))
 				{
@@ -289,6 +289,28 @@ class NenoControllerInstallation extends JControllerAdmin
 		$query    = $db->getQuery(true);
 		$finished = NenoSettings::get('installation_completed') == 1;
 
+		if (NenoSettings::get('percentPerExtension') == null)
+		{
+			// Calculate percent per extension discovered
+			$extensions = $db->quote(NenoHelper::whichExtensionsShouldBeTranslated());
+			$query
+				->clear()
+				->select('COUNT(*)')
+				->from('`#__extensions` AS e')
+				->where(
+					array (
+						'e.type IN (' . implode(',', $extensions) . ')',
+						'e.name NOT LIKE \'com_neno\''
+					)
+				);
+
+			$db->setQuery($query);
+			$extensionToDiscover = (int) $db->loadResult();
+
+			$percentPerExtension = 85 / $extensionToDiscover;
+			NenoSettings::set('percentPerExtension', $percentPerExtension);
+		}
+
 		// Do until timeout
 		while (!$finished)
 		{
@@ -395,12 +417,12 @@ class NenoControllerInstallation extends JControllerAdmin
 			elseif (NenoSettings::get('parsing_others') != 1) // Check if other tables have been grouped
 			{
 				NenoHelper::setSetupState(95, JText::_('COM_NENO_INSTALLATION_MESSAGE_PARSING_OTHER_TABLES'));
-				NenoHelper::groupingTablesNotDiscovered();
+				NenoHelperBackend::groupingTablesNotDiscovered();
 				NenoSettings::set('parsing_others', 1);
 			}
 			elseif (NenoSettings::get('do_not_translate_group') != 1) // Check if DoNotTranslate group has been created
 			{
-				NenoHelper::createDoNotTranslateGroup();
+				NenoHelperBackend::createDoNotTranslateGroup();
 				NenoSettings::set('do_not_translate_group', 1);
 			}
 			elseif (NenoSettings::get('publishing_plugins') != 1) // Check if plugins have been enabled
@@ -423,28 +445,9 @@ class NenoControllerInstallation extends JControllerAdmin
 			}
 			elseif (NenoSettings::get('discovering_step_menu') != 1)
 			{
-				NenoHelper::setSetupState(0, JText::_('COM_NENO_INSTALLATION_MESSAGE_GENERATING_MENUS'));
+				NenoHelper::setSetupState(100, JText::_('COM_NENO_INSTALLATION_MESSAGE_GENERATING_MENUS'));
 				NenoHelper::createMenuStructure();
 				NenoSettings::set('discovering_step_menu', 1);
-
-				// Calculate percent per extension discovered
-				$extensions = $db->quote(NenoHelper::whichExtensionsShouldBeTranslated());
-				$query
-					->clear()
-					->select('COUNT(*)')
-					->from('`#__extensions` AS e')
-					->where(
-						array (
-							'e.type IN (' . implode(',', $extensions) . ')',
-							'e.name NOT LIKE \'com_neno\''
-						)
-					);
-
-				$db->setQuery($query);
-				$extensionToDiscover = (int) $db->loadResult();
-
-				$percentPerExtension = 85 / $extensionToDiscover;
-				NenoSettings::set('percentPerExtension', $percentPerExtension);
 			}
 			else
 			{
@@ -471,7 +474,7 @@ class NenoControllerInstallation extends JControllerAdmin
 	 */
 	public function getSetupStatus()
 	{
-		$setupState = NenoHelper::getSetupState();
+		$setupState = NenoHelperBackend::getSetupState();
 		echo json_encode($setupState);
 		JFactory::getApplication()->close();
 	}

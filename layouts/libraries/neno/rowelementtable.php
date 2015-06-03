@@ -95,6 +95,10 @@ if ($displayData === null): ?>
 									translate</label>
 							</fieldset>
 						</td>
+						<td><?php echo NenoHelper::generateFilterDropDown($field->id, $field->filter); ?>
+							<span class="icon-help" data-toggle="tooltip"
+							      data-title="<?php echo NenoHelper::renderFilterHelperText(); ?>" data-html="true"
+							      data-placement="right"></span></td>
 						<td></td>
 					</tr>
 				<?php endforeach; ?>

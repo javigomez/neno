@@ -34,6 +34,11 @@ class NenoViewSettings extends JViewLegacy
 	protected $sidebar;
 
 	/**
+	 * @var JPagination
+	 */
+	protected $pagination;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -74,14 +79,11 @@ class NenoViewSettings extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=groupselements');
 
 		$toolbar = JToolbar::getInstance();
 		$toolbar->addButtonPath(JPATH_NENO . '/button');
 		$toolbar->appendButton('TC', $this->get('TCAvailable'));
-        
-		$this->extra_sidebar = '';
 	}
 }

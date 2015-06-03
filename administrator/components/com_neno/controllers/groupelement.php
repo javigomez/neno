@@ -44,13 +44,13 @@ class NenoControllerGroupElement extends JControllerForm
 		/* @var $table NenoContentElementTable */
 		$table = NenoContentElementTable::load($table_id, false, true);
 
-		/* @var $table stdClass */
-		$table = $table->prepareDataForView();
+		/* @var $tableObject stdClass */
+		$tableObject = $table->prepareDataForView();
 
 		// Make file name
-		$table_name           = str_replace('#__', '', $table->table_name);
+		$table_name = str_replace('#__', '', $tableObject->table_name);
 
-		$file_name = $table_name . '_contentelements.xml';
+		$file_name                 = $table_name . '_contentelements.xml';
 		$displayData               = array ();
 		$displayData['table_name'] = $table_name;
 		$displayData['table']      = $table;

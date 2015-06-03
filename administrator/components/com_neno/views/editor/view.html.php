@@ -88,11 +88,11 @@ class NenoViewEditor extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$this->state           = $this->get('State');
-		$this->items           = $this->get('Items');
-		$this->filterForm      = $this->get('FilterForm');
-		$this->activeFilters   = $this->get('ActiveFilters');
-		$this->defaultAction   = self::getDefaultTranslateAction();
+		$this->state         = $this->get('State');
+		$this->items         = $this->get('Items');
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
+		$this->defaultAction = self::getDefaultTranslateAction();
 		$this->getGroupData();
 		$this->getStatuses();
 		$this->getTranslationMethods();
@@ -109,6 +109,16 @@ class NenoViewEditor extends JViewLegacy
 		$this->sidebar = JHtmlSidebar::render();
 
 		parent::display($tpl);
+	}
+
+	/**
+	 * Load configuration setting for default action when loading a string
+	 *
+	 * @return int
+	 */
+	protected function getDefaultTranslateAction()
+	{
+		return NenoHelperBackend::getDefaultTranslateAction();
 	}
 
 	/**
@@ -136,7 +146,7 @@ class NenoViewEditor extends JViewLegacy
 	 */
 	protected function getStatuses()
 	{
-		$this->statuses = NenoHelper::getStatuses();
+		$this->statuses = NenoHelperBackend::getStatuses();
 	}
 
 	/**
@@ -150,16 +160,6 @@ class NenoViewEditor extends JViewLegacy
 	}
 
 	/**
-	 * Load configuration setting for default action when loading a string
-	 *
-	 * @return int
-	 */
-	protected function getDefaultTranslateAction()
-	{
-		return NenoHelper::getDefaultTranslateAction();
-	}
-
-	/**
 	 * Add the page title and toolbar.
 	 *
 	 * @return void
@@ -168,18 +168,15 @@ class NenoViewEditor extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-
 		$bar = JToolbar::getInstance('toolbar');
 		$bar->appendButton('Link', 'home', JText::_('COM_NENO_BACK_TO_DASHBOARD'), 'index.php?option=com_neno');
 
 		$toolbar = JToolbar::getInstance();
 		$toolbar->addButtonPath(JPATH_NENO . '/button');
 		$toolbar->appendButton('TC', $this->get('TCAvailable'));
-        
+
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=editor');
-
-		$this->extra_sidebar = '';
 	}
 
 	/**

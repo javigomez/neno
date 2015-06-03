@@ -69,7 +69,5 @@ class NenoViewMoveElementConfirm extends JViewLegacy
 
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=groupselements');
-
-		$this->extra_sidebar = '';
 	}
 }

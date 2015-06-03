@@ -119,6 +119,8 @@ class NenoSettings
 	/**
 	 * Save the settings into the database
 	 *
+	 * @param   string $setting Setting name
+	 *
 	 * @return bool
 	 */
 	private static function saveSettingsToDb($setting = null)

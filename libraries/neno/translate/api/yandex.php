@@ -38,6 +38,8 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 	 * @param   string $target target language
 	 *
 	 * @return string
+	 *
+	 * @throws Exception
 	 */
 	public function translate($text, $source, $target)
 	{

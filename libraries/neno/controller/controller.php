@@ -76,7 +76,7 @@ class NenoController extends JControllerLegacy
 			}
 		}
 
-		NenoHelper::setAdminTitle($showLanguagesDropDown);
+		NenoHelperBackend::setAdminTitle($showLanguagesDropDown);
 
 		parent::display($cachable, $urlParams);
 
@@ -258,7 +258,7 @@ class NenoController extends JControllerLegacy
 				{
 					NenoTaskMonitor::addTask('language', array ('language' => $item->lang_code));
 				}
-				
+
 				$item->isInstalled = NenoHelper::isCompletelyInstall($language[0]->lang_code);
 
 				foreach ($language as $internalItem)
@@ -434,14 +434,32 @@ class NenoController extends JControllerLegacy
 				->values($db->quote($language) . ',' . $translationMethod . ',' . $ordering);
 			$db->setQuery($query);
 			$db->execute();
-
-
 			JFactory::getApplication()->close();
 		}
 	}
 
-	public function createMenus()
+	/**
+	 * Check if a particular language has been installed
+	 *
+	 * @return void
+	 */
+	public function isLanguageInstalled()
 	{
-		NenoHelper::createMenuStructure();
+		$input    = $this->input;
+		$language = $input->post->getString('language');
+
+		if (!empty($language))
+		{
+			if (NenoHelper::isCompletelyInstall($language))
+			{
+				echo 'ok';
+			}
+			else
+			{
+				echo 'err';
+			}
+		}
+
+		JFactory::getApplication()->close();
 	}
 }

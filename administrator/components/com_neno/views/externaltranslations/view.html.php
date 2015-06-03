@@ -39,6 +39,11 @@ class NenoViewExternalTranslations extends JViewLegacy
 	protected $tcNeeded;
 
 	/**
+	 * @var string
+	 */
+	protected $extraSidebar;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -78,10 +83,9 @@ class NenoViewExternalTranslations extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-
 		// Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_neno&view=externaltranslations');
 
-		$this->extra_sidebar = '';
+		$this->extraSidebar = '';
 	}
 }

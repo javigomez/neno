@@ -18,9 +18,9 @@ $listOrder     = $this->state->get('list.ordering');
 $listDirection = $this->state->get('list.direction');
 
 // Joomla Component Creator code to allow adding non select list filters
-if (!empty($this->extra_sidebar))
+if (!empty($this->extraSidebar))
 {
-	$this->sidebar .= $this->extra_sidebar;
+	$this->sidebar .= $this->extraSidebar;
 }
 
 ?>

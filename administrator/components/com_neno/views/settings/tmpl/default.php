@@ -16,9 +16,9 @@ JHtml::_('behavior.multiselect');
 JHtml::_('formbehavior.chosen', 'select');
 
 // Joomla Component Creator code to allow adding non select list filters
-if (!empty($this->extra_sidebar))
+if (!empty($this->extraSidebar))
 {
-	$this->sidebar .= $this->extra_sidebar;
+	$this->sidebar .= $this->extraSidebar;
 }
 
 $user   = JFactory::getUser();
@@ -55,7 +55,7 @@ foreach ($this->items as $item)
 		var options = {
 			html: true,
 			placement: "right"
-		}
+		};
 		jQuery('.settings-tooltip').tooltip(options);
 	});
 

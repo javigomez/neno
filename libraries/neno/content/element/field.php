@@ -62,6 +62,11 @@ class NenoContentElementField extends NenoContentElement
 	protected $translations;
 
 	/**
+	 * @var string
+	 */
+	protected $filter;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data              Field data
@@ -289,7 +294,7 @@ class NenoContentElementField extends NenoContentElement
 	 * Persist all the translations
 	 *
 	 * @param   array|null  $recordId Record id to just load that row
-	 * @param   string\null $language Language tag
+	 * @param   string|null $language Language tag
 	 *
 	 * @return void
 	 */
@@ -657,8 +662,51 @@ class NenoContentElementField extends NenoContentElement
 	 */
 	public function checkTranslatableStatusFromContentElementFile()
 	{
-		$filePath        = JPATH_NENO . DIRECTORY_SEPARATOR . 'contentelements' . DIRECTORY_SEPARATOR . str_replace('#__', '', $this->getTable()->getTableName()) . '_contentelements.xml';
-		$xml             = simplexml_load_file($filePath);
-		$this->translate = ((int) $xml->xpath('/neno/reference/table/field[@name=\'' . $this->fieldName . '\']/@translate')) == 1;
+		$filePath = JPATH_NENO . DIRECTORY_SEPARATOR . 'contentelements' . DIRECTORY_SEPARATOR . str_replace('#__', '', $this->getTable()->getTableName()) . '_contentelements.xml';
+
+		// If the file exists, let's check what is there
+		if (file_exists($filePath))
+		{
+			$xml             = simplexml_load_file($filePath);
+			$this->translate = ((int) $xml->xpath('/neno/reference/table/field[@name=\'' . $this->fieldName . '\']/@translate')) == 1;
+		}
+	}
+
+	/**
+	 * Apply field filter
+	 *
+	 * @param   string $string String to apply the filter
+	 *
+	 * @return mixed
+	 */
+	public function applyFilter($string)
+	{
+		$filter = JFilterInput::getInstance();
+
+		return $filter->clean($string, $this->filter);
+	}
+
+	/**
+	 * Get Filter
+	 *
+	 * @return string
+	 */
+	public function getFilter()
+	{
+		return $this->filter;
+	}
+
+	/**
+	 * Set filter
+	 *
+	 * @param   string $filter Filter
+	 *
+	 * @return $this
+	 */
+	public function setFilter($filter)
+	{
+		$this->filter = $filter;
+
+		return $this;
 	}
 }

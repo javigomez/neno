@@ -39,6 +39,11 @@ class NenoViewDashboard extends JViewLegacy
 	protected $canInstallLanguages;
 
 	/**
+	 * @var string
+	 */
+	protected $extraSidebar;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -68,10 +73,10 @@ class NenoViewDashboard extends JViewLegacy
 		$toolbar->appendButton('TC', $this->get('TCAvailable'));
 
 		JToolBarHelper::title(JText::_('COM_NENO_DASHBOARD_TITLE'), 'screen');
-		
+
 		$this->sidebar = JHtmlSidebar::render();
 
-		$this->extra_sidebar = NenoHelper::getSidebarInfobox('dashboard');
+		$this->extraSidebar = NenoHelperBackend::getSidebarInfobox('dashboard');
 
 		parent::display($tpl);
 	}

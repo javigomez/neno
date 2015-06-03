@@ -56,7 +56,7 @@ defined('_JEXEC') or die;
         </div>
 
         <div class="controls">
-            <textarea rows="40" id="debug-text"><?php echo NenoHelper::printServerInformation(NenoHelper::getServerInfo()); ?></textarea>
+            <textarea rows="40" id="debug-text"><?php echo NenoHelperBackend::printServerInformation(NenoHelperBackend::getServerInfo()); ?></textarea>
         </div>
     </div>
 </div>

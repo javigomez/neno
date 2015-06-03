@@ -416,6 +416,7 @@ class NenoContentElementGroup extends NenoContentElement
 						unset ($this->tables[$key]);
 						continue;
 					}
+
 					$this->tables[$key]->setGroup($this);
 				}
 			}
@@ -830,7 +831,7 @@ class NenoContentElementGroup extends NenoContentElement
 	/**
 	 * Generate the content for a particular language
 	 *
-	 * @param string $languageTag Language tag
+	 * @param   string $languageTag Language tag
 	 *
 	 * @return bool True on success
 	 */

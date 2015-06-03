@@ -24,7 +24,7 @@ if (!defined('JPATH_NENO'))
 	}
 }
 
-if (!NenoHelper::isDatabaseDriverEnabled())
+if (!NenoHelperBackend::isDatabaseDriverEnabled())
 {
 	$app = JFactory::getApplication();
 	$app->enqueueMessage('Please enable the plugin to use Neno', 'error');

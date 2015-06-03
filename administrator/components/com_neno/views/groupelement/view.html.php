@@ -55,12 +55,12 @@ class NenoViewGroupElement extends JViewLegacy
 		$this->item      = $this->get('Item');
 		$this->form      = $this->get('Form');
 		$this->languages = $this->get('Languages');
-        
-        if (empty($this->item->id))
-        {
-            $this->item->id = 0;
-        }
-        
+
+		if (empty($this->item->id))
+		{
+			$this->item->id = 0;
+		}
+
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
 		{
@@ -82,11 +82,9 @@ class NenoViewGroupElement extends JViewLegacy
 	protected function addToolbar()
 	{
 		JFactory::getApplication()->input->set('hidemainmenu', true);
-
-		$user  = JFactory::getUser();
 		$isNew = ($this->item->id == 0);
 
-		$canDo = NenoHelper::getActions();
+		$canDo = NenoHelperBackend::getActions();
 
 		JToolBarHelper::title(JText::_('COM_NENO_TITLE_GROUP_ELEMENT'), 'test.png');
 
