@@ -79,7 +79,7 @@ class NenoTranslateApiYandex extends NenoTranslateApi
 		}
 		else
 		{
-			throw new Exception('ERR_TEXT_TOO_LONG', 413);
+			throw new Exception(JText::_('COM_NENO_EDITOR_YANDEX_ERROR_TEXT_TOO_LONG'), 413);
 		}
 	}
 

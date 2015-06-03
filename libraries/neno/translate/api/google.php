@@ -65,7 +65,7 @@ class NenoTranslateApiGoogle extends NenoTranslateApi
 		}
 		else
 		{
-			throw new Exception('ERR_TEXT_TOO_LONG', 413);
+			throw new Exception(JText::_('COM_NENO_EDITOR_GOOGLE_ERROR_TEXT_TOO_LONG'), 413);
 		}
 	}
 
