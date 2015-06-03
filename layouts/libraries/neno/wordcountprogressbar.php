@@ -38,8 +38,8 @@ defined('JPATH_NENO') or die;
 		     title="<?php echo JText::_('COM_NENO_STATUS_CHANGED'); ?>: <?php echo $displayData->wordCount->changed; ?>">
 		</div>
 		<div class="not-translated" style="width:<?php echo $displayData->widthNotTranslated; ?>%"
-		     alt="<?php echo JText::_('COM_NENO_STATUS_NOTTRANSLATED'); ?>: <?php echo $displayData->wordCount->untranslated; ?>"
-		     title="<?php echo JText::_('COM_NENO_STATUS_NOTTRANSLATED'); ?>: <?php echo $displayData->wordCount->untranslated; ?>">
+		     alt="<?php echo JText::_('COM_NENO_STATUS_NOT_TRANSLATED'); ?>: <?php echo $displayData->wordCount->untranslated; ?>"
+		     title="<?php echo JText::_('COM_NENO_STATUS_NOT_TRANSLATED'); ?>: <?php echo $displayData->wordCount->untranslated; ?>">
 		</div>
 	</div>
 </div>
