@@ -294,7 +294,7 @@ class NenoContentElementField extends NenoContentElement
 	 * Persist all the translations
 	 *
 	 * @param   array|null  $recordId Record id to just load that row
-	 * @param   string\null $language Language tag
+	 * @param   string|null $language Language tag
 	 *
 	 * @return void
 	 */
@@ -670,7 +670,6 @@ class NenoContentElementField extends NenoContentElement
 			$xml             = simplexml_load_file($filePath);
 			$this->translate = ((int) $xml->xpath('/neno/reference/table/field[@name=\'' . $this->fieldName . '\']/@translate')) == 1;
 		}
-
 	}
 
 	/**
@@ -700,7 +699,7 @@ class NenoContentElementField extends NenoContentElement
 	/**
 	 * Set filter
 	 *
-	 * @param string $filter Filter
+	 * @param   string $filter Filter
 	 *
 	 * @return $this
 	 */

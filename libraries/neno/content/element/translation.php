@@ -987,7 +987,6 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			$db->setQuery($query);
 			$data->breadcrumbs = $db->loadRow();
-
 		}
 
 		return $data;

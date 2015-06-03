@@ -34,7 +34,7 @@ class JFormFieldGroup extends JFormFieldList
 	 */
 	public function getOptions()
 	{
-		$options = NenoHelper::getGroupOptions();
+		$options = NenoHelperBackend::getGroupOptions();
 
 		return array_merge(parent::getOptions(), $options);
 	}

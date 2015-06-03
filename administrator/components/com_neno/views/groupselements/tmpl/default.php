@@ -18,9 +18,9 @@ JHtml::_('behavior.multiselect');
 JHtml::stylesheet('media/neno/css/admin.css');
 
 // Joomla Component Creator code to allow adding non select list filters
-if (!empty($this->extra_sidebar))
+if (!empty($this->extraSidebar))
 {
-	$this->sidebar .= $this->extra_sidebar;
+	$this->sidebar .= $this->extraSidebar;
 }
 
 $workingLanguage = NenoHelper::getWorkingLanguage();
@@ -130,7 +130,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 		jQuery('.toggler.toggle-fields').off('click').on('click', toggleFieldVisibility);
 
 		//Bind checking and unchecking checkboxes
-		jQuery('#table-groups-elements input[type=checkbox]').off('click').on('click', checkUncheckFamilyCheckboxes);
+		jQuery('#table-groups-elements').find('input[type=checkbox]').off('click').on('click', checkUncheckFamilyCheckboxes);
 
 		//Attach the field translate state toggler
 		jQuery('.check-toggle-translate-radio').off('change').on('change', changeFieldTranslateState);
@@ -330,10 +330,9 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 
 	function showModalGroupForm(isNew) {
+		var id = getGroupIdFromChildElement(jQuery(this));
 		if (isNew === true) {
-			var id = 0;
-		} else {
-			var id = getGroupIdFromChildElement(jQuery(this));
+			id = 0;
 		}
 
 		//Load group form html
@@ -343,8 +342,9 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 				success: function (html) {
 
 					//Inject HTML into the modal
-					jQuery('#nenomodal').find('.modal-body').html(html);
-					jQuery('#nenomodal').modal('show');
+					var modal = jQuery('#nenomodal');
+					modal.find('.modal-body').html(html);
+					modal.modal('show');
 
 					//Handle saving and submitting the form
 					jQuery('#save-modal-btn').off('click').on('click', function () {
@@ -440,7 +440,7 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 								<?php if (empty($group->assigned_translation_methods)): ?>
 									<?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_ADD_TRANSLATION_METHOD'); ?>
 								<?php else: ?>
-									<?php echo NenoHelper::renderTranslationMethodsAsCSV($group->assigned_translation_methods); ?>
+									<?php echo NenoHelperBackend::renderTranslationMethodsAsCSV($group->assigned_translation_methods); ?>
 								<?php endif; ?>
 							</a>
 						</td>

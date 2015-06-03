@@ -30,7 +30,7 @@ if (!defined('JPATH_NENO'))
 	}
 }
 
-if (!NenoHelper::isDatabaseDriverEnabled())
+if (!NenoHelperBackend::isDatabaseDriverEnabled())
 {
 	$app = JFactory::getApplication();
 	$app->enqueueMessage(JText::_('COM_NENO_ENABLE_PLUGIN_MESSAGE'), 'error');
@@ -40,10 +40,8 @@ if (!NenoHelper::isDatabaseDriverEnabled())
 /*else if (!NenoHelper::isLicenseValid())
 {
 	$app = JFactory::getApplication();
-	$app->enqueueMessage(JText::_('COM_NENO_ERROR_IN_LICENSE'), 'warning');    
+	$app->enqueueMessage(JText::_('COM_NENO_ERROR_IN_LICENSE'), 'warning');
 }*/
-
-
 
 // Include dependencies
 jimport('joomla.application.component.controller');

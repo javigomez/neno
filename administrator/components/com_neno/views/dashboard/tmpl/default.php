@@ -19,9 +19,9 @@ JHtml::_('formbehavior.chosen', 'select');
 JHtml::stylesheet('media/neno/css/admin.css');
 
 // Joomla Component Creator code to allow adding non select list filters
-if (!empty($this->extra_sidebar))
+if (!empty($this->extraSidebar))
 {
-	$this->sidebar .= $this->extra_sidebar;
+	$this->sidebar .= $this->extraSidebar;
 }
 
 $workingLanguage = NenoHelper::getWorkingLanguage();
@@ -108,9 +108,10 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 			beforeSend: onBeforeAjax,
 			url: 'index.php?option=com_neno&task=showInstallLanguagesModal&placement=dashboard',
 			success: function (html) {
-				jQuery('#languages-modal .modal-body').empty().append(html);
-				jQuery('#languages-modal .modal-header h3').html("<?php echo JText::_('COM_NENO_INSTALLATION_TARGET_LANGUAGES_LANGUAGE_MODAL_TITLE'); ?>");
-				jQuery('#languages-modal').modal('show');
+				var modal = jQuery('#languages-modal');
+				modal.find('.modal-body').empty().append(html);
+				modal.find('.modal-header h3').html("<?php echo JText::_('COM_NENO_INSTALLATION_TARGET_LANGUAGES_LANGUAGE_MODAL_TITLE'); ?>");
+				modal.modal('show');
 			}
 		});
 	})

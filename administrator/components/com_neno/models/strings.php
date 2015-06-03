@@ -81,7 +81,10 @@ class NenoModelStrings extends JModelList
 	/**
 	 * Get and set current values of filters
 	 *
-	 * @param
+	 * @param   string $ordering  Ordering field
+	 * @param   string $direction Direction field
+	 *
+	 * @return void
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
@@ -134,7 +137,7 @@ class NenoModelStrings extends JModelList
 		}
 
 		// Status filtering
-		$status = $app->getUserStateFromRequest($this->context . '.status', 'status', array ());
+		$status = (array) $app->getUserStateFromRequest($this->context . '.status', 'status', array ());
 
 		if (!empty($status))
 		{
@@ -149,7 +152,7 @@ class NenoModelStrings extends JModelList
 		}
 
 		// Translation methods filtering
-		$method = $app->getUserStateFromRequest($this->context . '.type', 'type', array ());
+		$method = (array) $app->getUserStateFromRequest($this->context . '.type', 'type', array ());
 
 		if (!empty($method))
 		{

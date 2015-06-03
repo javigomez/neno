@@ -12,16 +12,17 @@ defined('JPATH_BASE') or die;
 
 JFormHelper::loadFieldClass('list');
 
-
 /**
+ * Class JFormFieldTranslationMethod
  *
+ * @since  1.0
  */
 class JFormFieldTranslationMethod extends JFormFieldList
 {
 	/**
 	 * The form field type.
 	 *
-	 * @var		string
+	 * @var        string
 	 * @since   1.6
 	 */
 	protected $type = 'TranslationMethod';
@@ -35,7 +36,7 @@ class JFormFieldTranslationMethod extends JFormFieldList
 	 */
 	public function getOptions()
 	{
-		$options = array();
+		$options = array ();
 
 		$options[] = JHtml::_('select.option', 'machine', JText::_('COM_NENO_TRANSLATION_METHODS_MACHINE'));
 		$options[] = JHtml::_('select.option', 'professional', JText::_('COM_NENO_TRANSLATION_METHODS_PROFESSIONAL'));

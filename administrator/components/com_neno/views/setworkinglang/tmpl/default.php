@@ -47,8 +47,9 @@ $next = JFactory::getApplication()->input->getString('next', 'dashboard');
 	});
 
 	function checkLanguages() {
-		if (jQuery('.not-ready').length != 0) {
-			jQuery('.not-ready').each(function () {
+		var notReadyLanguages = jQuery('.not-ready');
+		if (notReadyLanguages.length != 0) {
+			notReadyLanguages.each(function () {
 				var button = jQuery(this);
 				jQuery.ajax({
 					url: 'index.php?option=com_neno&task=isLanguageInstalled',

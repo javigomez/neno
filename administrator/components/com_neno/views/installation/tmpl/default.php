@@ -34,11 +34,12 @@ if (!empty($this->extra_sidebar))
 			success: function (html) {
 				jQuery('.installation-form').empty().append(html.installation_step);
 				if (html.jsidebar !== '') {
-					jQuery('#j-sidebar-container').empty().append(html.jsidebar);
+					var sidebar = jQuery('#j-sidebar-container');
+					sidebar.empty().append(html.jsidebar);
 					jQuery('#j-main-container-installation').prop('id', 'j-main-container');
 					jQuery('#j-main-container').addClass('span10');
 					toggleSidebar(false);
-					jQuery('#j-sidebar-container').show();
+					sidebar.show();
 				}
 
 				bindEvents();
@@ -133,9 +134,10 @@ if (!empty($this->extra_sidebar))
 		});
 
 		function renderErrorMessages(messages) {
-			jQuery('.error-messages').empty();
+			var errorMessages = jQuery('.error-messages');
+			errorMessages.empty();
 			for (var i = 0; i < messages.length; i++) {
-				jQuery('.error-messages').append('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>' + messages[i] + '</div>');
+				errorMessages.append('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>' + messages[i] + '</div>');
 			}
 		}
 	}

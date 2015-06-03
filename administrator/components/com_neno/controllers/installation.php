@@ -115,7 +115,7 @@ class NenoControllerInstallation extends JControllerAdmin
 
 				$data->languages           = $languagesData;
 				$data->canInstallLanguages = true;
-				$memoryDetails             = NenoHelper::getMemoryDetails();
+				$memoryDetails             = NenoHelperBackend::getMemoryDetails();
 
 				if (!empty($memoryDetails))
 				{
@@ -417,12 +417,12 @@ class NenoControllerInstallation extends JControllerAdmin
 			elseif (NenoSettings::get('parsing_others') != 1) // Check if other tables have been grouped
 			{
 				NenoHelper::setSetupState(95, JText::_('COM_NENO_INSTALLATION_MESSAGE_PARSING_OTHER_TABLES'));
-				NenoHelper::groupingTablesNotDiscovered();
+				NenoHelperBackend::groupingTablesNotDiscovered();
 				NenoSettings::set('parsing_others', 1);
 			}
 			elseif (NenoSettings::get('do_not_translate_group') != 1) // Check if DoNotTranslate group has been created
 			{
-				NenoHelper::createDoNotTranslateGroup();
+				NenoHelperBackend::createDoNotTranslateGroup();
 				NenoSettings::set('do_not_translate_group', 1);
 			}
 			elseif (NenoSettings::get('publishing_plugins') != 1) // Check if plugins have been enabled
@@ -474,7 +474,7 @@ class NenoControllerInstallation extends JControllerAdmin
 	 */
 	public function getSetupStatus()
 	{
-		$setupState = NenoHelper::getSetupState();
+		$setupState = NenoHelperBackend::getSetupState();
 		echo json_encode($setupState);
 		JFactory::getApplication()->close();
 	}

@@ -124,7 +124,7 @@ class NenoModelDashboard extends JModelList
 	 */
 	public function getIsPossibleToInstallLanguage()
 	{
-		$memoryDetails = NenoHelper::getMemoryDetails();
+		$memoryDetails = NenoHelperBackend::getMemoryDetails();
 
 		if (!empty($memoryDetails))
 		{

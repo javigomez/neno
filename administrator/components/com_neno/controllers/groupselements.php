@@ -28,7 +28,7 @@ class NenoControllerGroupsElements extends JControllerAdmin
 		NenoLog::log('Method discoverExtension of NenoControllerGroupsElements called', 3);
 
 		// Check all the extensions that haven't been discover yet
-		NenoHelper::groupingTablesNotDiscovered();
+		NenoHelperBackend::groupingTablesNotDiscovered();
 
 		NenoLog::log('Redirecting to groupselements view', 3);
 
@@ -82,12 +82,12 @@ class NenoControllerGroupsElements extends JControllerAdmin
 			NenoLog::log('Parsing element files for readContentElementFile', 3);
 
 			// Parse element file(s)
-			NenoHelper::parseContentElementFile(JFile::stripExt($fileData['name']), $contentElementFiles);
+			NenoHelperBackend::parseContentElementFile(JFile::stripExt($fileData['name']), $contentElementFiles);
 
 			NenoLog::log('Cleaning temporal folder for readContentElementFile', 3);
 
 			// Clean temporal folder
-			NenoHelper::cleanFolder(JFactory::getConfig()->get('tmp_path'));
+			NenoHelperBackend::cleanFolder(JFactory::getConfig()->get('tmp_path'));
 		}
 
 		NenoLog::log('Redirecting to groupselements view', 3);

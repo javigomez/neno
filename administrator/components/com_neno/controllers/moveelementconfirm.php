@@ -26,7 +26,7 @@ class NenoControllerMoveElementConfirm extends JControllerAdmin
 	public function show()
 	{
 		$input = JFactory::getApplication()->input;
-        
+
 		// Overwrite the view
 		$input->set('view', 'moveelementconfirm');
 

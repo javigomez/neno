@@ -109,11 +109,13 @@ class NenoControllerEditor extends NenoControllerStrings
 	/**
 	 * Save translation into the database
 	 *
-	 * @param   int    $translationId   Translation ID
-	 * @param   string $translationText Translation Text
-	 * @param   int    $changeState     Translation status
+	 * @param   int      $translationId   Translation ID
+	 * @param   string   $translationText Translation Text
+	 * @param   int|bool $changeState     Translation status
 	 *
 	 * @return bool
+	 *
+	 * @throws Exception
 	 */
 	protected function saveTranslation($translationId, $translationText, $changeState = false)
 	{
@@ -151,7 +153,7 @@ class NenoControllerEditor extends NenoControllerStrings
 	{
 		$input           = $this->input;
 		$translationId   = $input->getInt('id');
-		$translationText = $input->getRaw('text');
+		$translationText = $input->get('text', '', 'RAW');
 
 		if ($this->saveTranslation($translationId, $translationText, NenoContentElementTranslation::TRANSLATED_STATE))
 		{

@@ -16,9 +16,9 @@ JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
 
 // Joomla Component Creator code to allow adding non select list filters
-if (!empty($this->extra_sidebar))
+if (!empty($this->extraSidebar))
 {
-	$this->sidebar .= $this->extra_sidebar;
+	$this->sidebar .= $this->extraSidebar;
 }
 
 $document = JFactory::getDocument();
@@ -73,5 +73,4 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/editor.css');
             </div>
         </div>
     </div>
-</div>
 </div>

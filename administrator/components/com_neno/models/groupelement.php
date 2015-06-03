@@ -42,7 +42,6 @@ class NenoModelGroupElement extends JModelAdmin
 	 */
 	public function getForm($data = array (), $loadData = true)
 	{
-
 		// Get the form.
 		$form = $this->loadForm('com_neno.groupelement', 'groupelement', array ('control' => 'jform', 'load_data' => $loadData));
 
@@ -133,7 +132,7 @@ class NenoModelGroupElement extends JModelAdmin
 				$db->execute();
 			}
 
-			NenoHelper::consolidateTranslationMethods($groupId, empty($data['translation_methods']) || $data['translation_methods'][0] == 0);
+			NenoHelperBackend::consolidateTranslationMethods($groupId, empty($data['translation_methods']) || $data['translation_methods'][0] == 0);
 
 			return true;
 		}
