@@ -745,6 +745,7 @@ class NenoContentElementTranslation extends NenoContentElement
 				->select(
 					array (
 						'REPLACE(lf.filename, lf.language, ' . $db->quote($this->language) . ') AS filename',
+						'lf.filename as originalFilename',
 						'ls.constant'
 					)
 				)
@@ -765,6 +766,15 @@ class NenoContentElementTranslation extends NenoContentElement
 				if (file_exists($filePath))
 				{
 					$existingStrings = parse_ini_file($filePath);
+				}
+				else
+				{
+					$defaultLanguage = NenoSettings::get('source_language');
+
+					if (file_exists(JPATH_ROOT . "/language/$defaultLanguage/" . $translationData['originalFilename']))
+					{
+						$existingStrings = parse_ini_file(JPATH_ROOT . "/language/$defaultLanguage/" . $translationData['originalFilename']);
+					}
 				}
 
 				$existingStrings[$translationData['constant']] = $this->string;
