@@ -760,8 +760,7 @@ class NenoContentElementTranslation extends NenoContentElement
 
 			if (!empty($translationData))
 			{
-				$template = NenoHelper::getFrontendTemplate();
-				$filePath = JPATH_ROOT . "/templates/$template/language/" . $this->language . '/' . $translationData['filename'];
+				$filePath = JPATH_ROOT . "/language/" . $this->language . '/' . $translationData['filename'];
 
 				if (file_exists($filePath))
 				{
