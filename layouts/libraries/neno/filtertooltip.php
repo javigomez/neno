@@ -28,8 +28,8 @@
 		<?php echo JText::_('COM_NENO_GROUPS_ELEMENTS_FILTER_HELPER_TEXT_CMD'); ?>
 	</li>
 	<li>
-		<span class="label label-info">BASE64</span>
-		<?php echo JText::_('COM_NENO_GROUPS_ELEMENTS_FILTER_HELPER_TEXT_BASE64'); ?>
+		<span class="label label-info">BASE 64</span>
+		<?php echo JText::_('COM_NENO_GROUPS_ELEMENTS_FILTER_HELPER_TEXT_BASE_64'); ?>
 	</li>
 	<li>
 		<span class="label label-info">STRING</span>
