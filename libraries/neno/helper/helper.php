@@ -2207,12 +2207,23 @@ class NenoHelper
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query
-				->select('name')
-				->from('#__extensions')
-				->where('element = ' . $db->quote($jiso));
-			$db->setQuery($query);
-			$languageName = $db->loadResult();
+			$languageDescFile = JPATH_BASE . '/language/' . $jiso . '/' . $jiso . '.xml';
+
+			if (file_exists($languageDescFile))
+			{
+				$xml          = simplexml_load_file($languageDescFile);
+				$languageName = (string) $xml->name;
+			}
+			else
+			{
+				$query
+					->select('name')
+					->from('#__extensions')
+					->where('element = ' . $db->quote($jiso));
+				$db->setQuery($query);
+				$languageName = $db->loadResult();
+			}
+
 
 			if (empty($languageName))
 			{
