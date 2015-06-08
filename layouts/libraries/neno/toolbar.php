@@ -9,7 +9,7 @@
  */
 
 // No direct access
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 $document = JFactory::getDocument();
 $document->addStyleSheet(JUri::root() . '/media/neno/css/toolbar.css');

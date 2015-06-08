@@ -8,7 +8,7 @@
  */
 
 // No direct access
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 $groupId = $displayData;
 

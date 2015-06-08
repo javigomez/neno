@@ -8,7 +8,7 @@
  */
 
 // No direct access
-defined('JPATH_BASE') or die;
+defined('_JEXEC') or die;
 
 $data = $displayData;
 
