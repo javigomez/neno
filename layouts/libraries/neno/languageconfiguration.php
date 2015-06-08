@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package     Neno
  * @subpackage  Helpers
@@ -8,6 +7,7 @@
  * @copyright   Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
+
 // No direct access
 defined('JPATH_NENO') or die;
 

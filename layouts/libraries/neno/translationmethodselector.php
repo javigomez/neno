@@ -1,8 +1,6 @@
 <?php
-
 /**
  * @package     Neno
- * @subpackage  Helpers
  *
  * @author      Jensen Technologies S.L. <info@notwebdesign.com>
  * @copyright   Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
