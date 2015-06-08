@@ -40,7 +40,7 @@ class NenoControllerInstallation extends JControllerAdmin
 
 		if ($step == 5)
 		{
-			NenoHelper::addSubmenu();
+			NenoHelperBackend::addSubmenu();
 			$sidebar = JHtmlSidebar::render();
 		}
 

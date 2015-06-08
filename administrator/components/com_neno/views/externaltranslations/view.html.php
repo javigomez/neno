@@ -66,7 +66,7 @@ class NenoViewExternalTranslations extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
 
-		NenoHelper::addSubmenu('externaltranslations');
+		NenoHelperBackend::addSubmenu('externaltranslations');
 		$this->addToolbar();
 
 		$this->sidebar = JHtmlSidebar::render();

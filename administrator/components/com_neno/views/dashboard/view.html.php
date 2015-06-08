@@ -83,7 +83,7 @@ class NenoViewDashboard extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
 
-		NenoHelper::addSubmenu('dashboard');
+		NenoHelperBackend::addSubmenu('dashboard');
 
 		$toolbar = JToolbar::getInstance();
 		$toolbar->addButtonPath(JPATH_NENO . '/button');

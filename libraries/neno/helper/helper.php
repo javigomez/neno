@@ -19,52 +19,6 @@ defined('_JEXEC') or die;
 class NenoHelper
 {
 	/**
-	 * Configure the Link bar.
-	 *
-	 * @param   string $vName View name
-	 *
-	 * @return void
-	 */
-	public static function addSubmenu($vName = '')
-	{
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_DASHBOARD'),
-			'index.php?option=com_neno&view=dashboard',
-			($vName == 'dashboard') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_EDITOR'),
-			'index.php?option=com_neno&view=editor',
-			($vName == 'editor') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_EXTERNAL_GROUPSELEMENTS'),
-			'index.php?option=com_neno&view=groupselements',
-			($vName == 'groupselements') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_EXTERNAL_TRANSLATIONS'),
-			'index.php?option=com_neno&view=externaltranslations',
-			($vName == 'externaltranslations') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_EXTERNAL_SETTINGS'),
-			'index.php?option=com_neno&view=settings',
-			($vName == 'settings') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_DEBUG_REPORT'),
-			'index.php?option=com_neno&view=debug',
-			($vName == 'debug') ? true : false
-		);
-	}
-
-	/**
 	 * Set the working language on the currently logged in user
 	 *
 	 * @param   string $lang 'en-GB' or 'de-DE'

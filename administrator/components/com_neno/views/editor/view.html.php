@@ -103,7 +103,7 @@ class NenoViewEditor extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
 
-		NenoHelper::addSubmenu('editor');
+		NenoHelperBackend::addSubmenu('editor');
 		$this->addToolbar();
 
 		$this->sidebar = JHtmlSidebar::render();
