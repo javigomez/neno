@@ -1,3 +1,10 @@
-!.gitignore
-!*neno*
 *
+!.gitignore
+!/components/com_neno/
+!/administrator/components/com_neno/
+!/administrator/language/*/*.com_neno.ini
+!/administrator/language/*/*.com_neno.sys.ini
+!media/neno/
+!layouts/libraries/neno/
+!libraries/neno/
+!plugins/system/neno/
