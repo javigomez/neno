@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
  *
  * @since  1.0
  */
-class NenoContentElementField extends NenoContentElement
+class NenoContentElementField extends NenoContentElement implements NenoContentElementInterface
 {
 	/**
 	 * @var array
@@ -67,6 +67,11 @@ class NenoContentElementField extends NenoContentElement
 	protected $filter;
 
 	/**
+	 * @var bool
+	 */
+	protected $discovered;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data              Field data
@@ -83,7 +88,7 @@ class NenoContentElementField extends NenoContentElement
 		if ($loadParent)
 		{
 			$this->table = $data->get('table') == null
-				? NenoContentElementTable::load($data->get('tableId'), $loadExtraData)
+				? NenoContentElementTable::load($data->get('tableId'), $loadExtraData, $loadParent)
 				: $data->get('table');
 		}
 
@@ -291,12 +296,164 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
+	 * Remove all the translations associated to this field
+	 *
+	 * @return void
+	 */
+	public function removeTranslations()
+	{
+		$translations = $this->getTranslations();
+
+		/* @var $translation NenoContentElementTranslation */
+		foreach ($translations as $translation)
+		{
+			$translation->remove();
+		}
+	}
+
+	/**
+	 * Get all the translations for this field
+	 *
+	 * @return array
+	 */
+	public function getTranslations()
+	{
+		if ($this->translations === null)
+		{
+			$this->translations = NenoContentElementTranslation::getTranslations($this);
+		}
+
+		return $this->translations;
+	}
+
+	/**
+	 * Set translations
+	 *
+	 * @param   array $translations Translations
+	 *
+	 * @return $this
+	 */
+	public function setTranslations(array $translations)
+	{
+		$this->translations = $translations;
+
+		return $this;
+	}
+
+	/**
+	 * Apply field filter
+	 *
+	 * @param   string $string String to apply the filter
+	 *
+	 * @return mixed
+	 */
+	public function applyFilter($string)
+	{
+		$filter = JFilterInput::getInstance();
+
+		return $filter->clean($string, $this->filter);
+	}
+
+	/**
+	 * Get Filter
+	 *
+	 * @return string
+	 */
+	public function getFilter()
+	{
+		return $this->filter;
+	}
+
+	/**
+	 * Set filter
+	 *
+	 * @param   string $filter Filter
+	 *
+	 * @return $this
+	 */
+	public function setFilter($filter)
+	{
+		$this->filter = $filter;
+
+		return $this;
+	}
+
+	/**
+	 * Discover the element
+	 *
+	 * @return bool True on success
+	 */
+	public function discoverElement()
+	{
+		NenoHelper::setSetupState(
+			0,
+			JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD', $this->getTable()->getGroup()->getGroupName(), $this->getTable()->getTableName(), $this->getFieldName()),
+			3
+		);
+
+		if ($this->persistTranslations() === true)
+		{
+			$this
+				->setDiscovered(true)
+				->persist();
+		}
+	}
+
+	/**
+	 * Get the table that contains this field
+	 *
+	 * @return NenoContentElementTable
+	 */
+	public function getTable()
+	{
+		return $this->table;
+	}
+
+	/**
+	 * Set Table
+	 *
+	 * @param   NenoContentElementTable $table Table
+	 *
+	 * @return $this
+	 */
+	public function setTable(NenoContentElementTable $table)
+	{
+		$this->table = $table;
+
+		return $this;
+	}
+
+	/**
+	 * Get Field name
+	 *
+	 * @return string
+	 */
+	public function getFieldName()
+	{
+		return $this->fieldName;
+	}
+
+	/**
+	 * Set field name
+	 *
+	 * @param   string $fieldName Field name
+	 *
+	 * @return $this
+	 */
+	public function setFieldName($fieldName)
+	{
+		$this->fieldName = $fieldName;
+
+		return $this;
+	}
+
+	/**
 	 * Persist all the translations
 	 *
 	 * @param   array|null  $recordId Record id to just load that row
 	 * @param   string|null $language Language tag
 	 *
-	 * @return void
+	 * @return bool True on success
 	 */
 	public function persistTranslations($recordId = null, $language = null)
 	{
@@ -426,6 +583,8 @@ class NenoContentElementField extends NenoContentElement
 				$this->translations[$i] = $translation;
 			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -467,54 +626,6 @@ class NenoContentElementField extends NenoContentElement
 		}
 
 		return $rows;
-	}
-
-	/**
-	 * Get the table that contains this field
-	 *
-	 * @return NenoContentElementTable
-	 */
-	public function getTable()
-	{
-		return $this->table;
-	}
-
-	/**
-	 * Set Table
-	 *
-	 * @param   NenoContentElementTable $table Table
-	 *
-	 * @return $this
-	 */
-	public function setTable(NenoContentElementTable $table)
-	{
-		$this->table = $table;
-
-		return $this;
-	}
-
-	/**
-	 * Get Field name
-	 *
-	 * @return string
-	 */
-	public function getFieldName()
-	{
-		return $this->fieldName;
-	}
-
-	/**
-	 * Set field name
-	 *
-	 * @param   string $fieldName Field name
-	 *
-	 * @return $this
-	 */
-	public function setFieldName($fieldName)
-	{
-		$this->fieldName = $fieldName;
-
-		return $this;
 	}
 
 	/**
@@ -581,66 +692,6 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
-	 * Remove all the translations associated to this field
-	 *
-	 * @return void
-	 */
-	public function removeTranslations()
-	{
-		$translations = $this->getTranslations();
-
-		/* @var $translation NenoContentElementTranslation */
-		foreach ($translations as $translation)
-		{
-			$translation->remove();
-		}
-	}
-
-	/**
-	 * Get all the translations for this field
-	 *
-	 * @return array
-	 */
-	public function getTranslations()
-	{
-		if ($this->translations === null)
-		{
-			$this->translations = NenoContentElementTranslation::getTranslations($this);
-		}
-
-		return $this->translations;
-	}
-
-	/**
-	 * Set translations
-	 *
-	 * @param   array $translations Translations
-	 *
-	 * @return $this
-	 */
-	public function setTranslations(array $translations)
-	{
-		$this->translations = $translations;
-
-		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return $this
-	 */
-	public function prepareCacheContent()
-	{
-		/* @var $data $this */
-		$data               = parent::prepareCacheContent();
-		$data->table        = null;
-		$data->translations = null;
-
-		return $data;
-	}
-
-	/**
 	 * {@inheritdoc}
 	 *
 	 * @return bool
@@ -662,7 +713,7 @@ class NenoContentElementField extends NenoContentElement
 	 */
 	public function checkTranslatableStatusFromContentElementFile()
 	{
-		$filePath = JPATH_NENO . DIRECTORY_SEPARATOR . 'contentelements' . DIRECTORY_SEPARATOR . str_replace('#__', '', $this->getTable()->getTableName()) . '_contentelements.xml';
+		$filePath = JPATH_NENO . '/contentelements/' . str_replace('#__', '', $this->getTable()->getTableName()) . '_contentelements.xml';
 
 		// If the file exists, let's check what is there
 		if (file_exists($filePath))
@@ -673,39 +724,25 @@ class NenoContentElementField extends NenoContentElement
 	}
 
 	/**
-	 * Apply field filter
+	 * Check if the field has been discovered already
 	 *
-	 * @param   string $string String to apply the filter
-	 *
-	 * @return mixed
+	 * @return boolean
 	 */
-	public function applyFilter($string)
+	public function isDiscovered()
 	{
-		$filter = JFilterInput::getInstance();
-
-		return $filter->clean($string, $this->filter);
+		return $this->discovered;
 	}
 
 	/**
-	 * Get Filter
+	 * Set discovered flag
 	 *
-	 * @return string
-	 */
-	public function getFilter()
-	{
-		return $this->filter;
-	}
-
-	/**
-	 * Set filter
-	 *
-	 * @param   string $filter Filter
+	 * @param   boolean $discovered Discovered flag
 	 *
 	 * @return $this
 	 */
-	public function setFilter($filter)
+	public function setDiscovered($discovered)
 	{
-		$this->filter = $filter;
+		$this->discovered = $discovered;
 
 		return $this;
 	}

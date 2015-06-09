@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
  *
  * @since  1.0
  */
-class NenoContentElementLanguageFile extends NenoContentElement
+class NenoContentElementLanguageFile extends NenoContentElement implements NenoContentElementInterface
 {
 	/**
 	 * @var stdClass
@@ -44,6 +44,11 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	 * @var array
 	 */
 	protected $languageStrings;
+
+	/**
+	 * @var bool
+	 */
+	protected $discovered;
 
 	/**
 	 * Constructor
@@ -214,67 +219,6 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @return bool
-	 */
-	public function persist()
-	{
-		if (parent::persist())
-		{
-			if (defined('NENO_INSTALLATION'))
-			{
-				NenoSettings::set('discovering_languagefile', $this->id);
-				NenoHelper::setSetupState(
-					0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getFilename()), 2
-				);
-			}
-
-			if (!empty($this->languageStrings))
-			{
-				/* @var $languageString NenoContentElementLanguageString */
-				foreach ($this->languageStrings as $languageString)
-				{
-					$languageString
-						->setLanguageFile($this)
-						->persist();
-				}
-			}
-
-			if (defined('NENO_INSTALLATION'))
-			{
-				NenoSettings::set('discovering_languagefile', null);
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Get filename
-	 *
-	 * @return string
-	 */
-	public function getFilename()
-	{
-		return $this->filename;
-	}
-
-	/**
-	 * Set filename
-	 *
-	 * @param   string $filename Filename
-	 *
-	 * @return $this
-	 */
-	public function setFilename($filename)
-	{
-		$this->filename = $filename;
-
-		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
 	 * @param   bool $allFields         Allows to show all the fields
 	 * @param   bool $recursive         Convert this method in recursive
 	 * @param   bool $convertToDatabase Convert property names to database
@@ -380,6 +324,30 @@ class NenoContentElementLanguageFile extends NenoContentElement
 	}
 
 	/**
+	 * Get filename
+	 *
+	 * @return string
+	 */
+	public function getFilename()
+	{
+		return $this->filename;
+	}
+
+	/**
+	 * Set filename
+	 *
+	 * @param   string $filename Filename
+	 *
+	 * @return $this
+	 */
+	public function setFilename($filename)
+	{
+		$this->filename = $filename;
+
+		return $this;
+	}
+
+	/**
 	 * Load strings from the template overwrite
 	 *
 	 * @return array
@@ -391,7 +359,7 @@ class NenoContentElementLanguageFile extends NenoContentElement
 
 		if (!empty($template))
 		{
-			$filePath = JPATH_ROOT . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $template . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $this->language . DIRECTORY_SEPARATOR . $this->getFileName();
+			$filePath = JPATH_ROOT . '/templates/' . $template . '/language/' . $this->language . '/' . $this->getFileName();
 
 			if (file_exists($filePath))
 			{
@@ -400,5 +368,80 @@ class NenoContentElementLanguageFile extends NenoContentElement
 		}
 
 		return $strings;
+	}
+
+	/**
+	 * Discover the element
+	 *
+	 * @return bool True on success
+	 */
+	public function discoverElement()
+	{
+		NenoHelper::setSetupState(
+			0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getFilename()), 2
+		);
+
+		// Check if there are children not discovered
+		$languageString = NenoContentElementLanguageString::load(array ('discovered' => 0, '_limit' => 1, 'languagefile_id' => $this->id));
+
+		if (empty($languageString))
+		{
+			$this
+				->setDiscovered(true)
+				->persist();
+		}
+		else
+		{
+			NenoSettings::set('installation_level', '2.2');
+			NenoSettings::set('discovering_element_1.2', $this->id);
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return bool
+	 */
+	public function persist()
+	{
+		if (parent::persist())
+		{
+			if (!empty($this->languageStrings))
+			{
+				/* @var $languageString NenoContentElementLanguageString */
+				foreach ($this->languageStrings as $languageString)
+				{
+					$languageString
+						->setLanguageFile($this)
+						->persist();
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if the field has been discovered already
+	 *
+	 * @return boolean
+	 */
+	public function isDiscovered()
+	{
+		return $this->discovered;
+	}
+
+	/**
+	 * Set discovered flag
+	 *
+	 * @param   boolean $discovered Discovered flag
+	 *
+	 * @return $this
+	 */
+	public function setDiscovered($discovered)
+	{
+		$this->discovered = $discovered;
+
+		return $this;
 	}
 }

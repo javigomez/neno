@@ -342,15 +342,21 @@ class NenoHelperBackend
 	/**
 	 * Grouping tables that haven't been discovered
 	 *
-	 * @return void
+	 * @param   bool $persist Persist the group
+	 *
+	 * @return NenoContentElementGroup
 	 */
-	public static function groupingTablesNotDiscovered()
+	public static function groupingTablesNotDiscovered($persist = true)
 	{
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db = JFactory::getDbo();
 
 		// Get all the tables that haven't been detected using naming convention.
 		$tablesNotDiscovered = self::getTablesNotDiscovered();
+
+		$tablesAdded = false;
+
+		$otherGroup = null;
 
 		if (!empty($tablesNotDiscovered))
 		{
@@ -363,8 +369,6 @@ class NenoHelperBackend
 
 			$db->setQuery($query);
 			$groupId = $db->loadResult();
-
-			$otherGroup = null;
 
 			if (!empty($groupId))
 			{
@@ -410,13 +414,24 @@ class NenoHelperBackend
 					}
 
 					$otherGroup->addTable($table);
+					$tablesAdded = true;
 				}
 			}
 
-			$otherGroup
-				->setAssignedTranslationMethods(NenoHelper::getTranslationMethodsForLanguages())
-				->persist();
+			$otherGroup->setAssignedTranslationMethods(NenoHelper::getTranslationMethodsForLanguages());
+
+			if ($persist)
+			{
+				$otherGroup->persist();
+			}
 		}
+
+		if (!$tablesAdded)
+		{
+			$otherGroup = null;
+		}
+
+		return $otherGroup;
 	}
 
 	/**

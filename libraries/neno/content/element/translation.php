@@ -925,20 +925,6 @@ class NenoContentElementTranslation extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @return $this
-	 */
-	public function prepareCacheContent()
-	{
-		/* @var $data $this */
-		$data          = parent::prepareCacheContent();
-		$data->element = null;
-
-		return $data;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
 	 * @param   bool $breadcrumb Load breadcrumb
 	 *
 	 * @return JObject

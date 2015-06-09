@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
  *
  * @since  1.0
  */
-class NenoContentElementGroup extends NenoContentElement
+class NenoContentElementGroup extends NenoContentElement implements NenoContentElementInterface
 {
 	/**
 	 * @var array
@@ -447,15 +447,7 @@ class NenoContentElementGroup extends NenoContentElement
 	 */
 	public function persist()
 	{
-		$currentPercent = NenoSettings::get('percentPerExtension') + NenoSettings::get('currentPercent');
-		NenoSettings::set('currentPercent', $currentPercent);
-		NenoHelper::setSetupState($currentPercent, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP', $this->groupName));
 		$result = parent::persist();
-
-		if (defined('NENO_INSTALLATION'))
-		{
-			NenoSettings::set('discovering_group', $this->id);
-		}
 
 		// Check if the saving process has been completed successfully
 		if ($result)
@@ -561,13 +553,6 @@ class NenoContentElementGroup extends NenoContentElement
 				}
 			}
 		}
-
-		if (defined('NENO_INSTALLATION'))
-		{
-			NenoSettings::set('discovering_group', null);
-		}
-
-		$this->setContentElementIntoCache();
 
 		return $result;
 	}
@@ -759,37 +744,6 @@ class NenoContentElementGroup extends NenoContentElement
 	}
 
 	/**
-	 * {@inheritdoc}
-	 *
-	 * @return $this
-	 */
-	public function prepareCacheContent()
-	{
-		/* @var $data $this */
-		$data = parent::prepareCacheContent();
-
-		$tables          = array ();
-		$languageStrings = array ();
-
-		/* @var $table NenoContentElementTable */
-		foreach ($data->getTables() as $table)
-		{
-			$tables[] = $table->prepareCacheContent();
-		}
-
-		/* @var $languageString NenoContentElementLanguageString */
-		foreach ($data->getLanguageFiles() as $languageString)
-		{
-			$languageStrings [] = $languageString->prepareCacheContent();
-		}
-
-		$data->tables        = $tables;
-		$data->languageFiles = $languageStrings;
-
-		return $data;
-	}
-
-	/**
 	 * Get a list of extensions linked to this group
 	 *
 	 * @return array
@@ -870,5 +824,38 @@ class NenoContentElementGroup extends NenoContentElement
 				}
 			}
 		}
+	}
+
+	/**
+	 * Discover the element
+	 *
+	 * @return bool True on success
+	 */
+	public function discoverElement()
+	{
+		// Save the hierarchy first,
+		if ($this->isNew() || NenoSettings::get('discovering_element_0') == $this->id)
+		{
+			NenoHelper::setSetupState(0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP', $this->groupName));
+			$level = '1.1';
+		}
+		else
+		{
+			$level = '1.2';
+		}
+
+		$this->persist();
+
+		$elementId = $this->id;
+
+		if (empty($this->tables) && empty($this->languageFiles))
+		{
+			NenoHelper::setSetupState(0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_CONTENT_NOT_DETECTED', $this->getGroupName()), 1, 'warning');
+			$level     = 0;
+			$elementId = 0;
+		}
+
+		NenoSettings::set('installation_level', $level);
+		NenoSettings::set('discovering_element_0', $elementId);
 	}
 }

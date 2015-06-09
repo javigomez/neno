@@ -293,11 +293,6 @@ class NenoHelper
 		else
 		{
 			$group->persist();
-
-			if (defined('NENO_INSTALLATION'))
-			{
-				self::setSetupState(0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_CONTENT_NOT_DETECTED', $group->getGroupName()), 1, 'warning');
-			}
 		}
 
 		return true;
@@ -533,7 +528,7 @@ class NenoHelper
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db         = JFactory::getDbo();
 		$query      = $db->getQuery(true);
-		$extensions = array_map(array ('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
+		$extensions = self::whichExtensionsShouldBeTranslated();
 
 		$query
 			->select(
@@ -545,7 +540,7 @@ class NenoHelper
 			->where(
 				array (
 					'extension_id < 10000',
-					'type IN (' . implode(',', $extensions) . ')'
+					'type IN (' . implode(',', $db->quote($extensions)) . ')'
 				)
 			);
 
@@ -821,19 +816,31 @@ class NenoHelper
 		$query = $db->getQuery(true);
 
 		$query
-			->insert('#__neno_installation_messages')
-			->columns(
-				array (
-					'message',
-					'type',
-					'percent',
-					'level'
-				)
-			)
-			->values($db->quote($message) . ',' . $db->quote($type) . ',' . (int) $percent . ',' . (int) $level);
+			->select('1')
+			->from('#__neno_installation_messages')
+			->where('message = ' . $db->quote($message));
 
 		$db->setQuery($query);
-		$db->execute();
+		$result = $db->loadResult();
+
+		if (empty($result))
+		{
+			$query
+				->clear()
+				->insert('#__neno_installation_messages')
+				->columns(
+					array (
+						'message',
+						'type',
+						'percent',
+						'level'
+					)
+				)
+				->values($db->quote($message) . ',' . $db->quote($type) . ',' . (int) $percent . ',' . (int) $level);
+
+			$db->setQuery($query);
+			$db->execute();
+		}
 	}
 
 	/**

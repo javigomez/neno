@@ -281,152 +281,22 @@ class NenoControllerInstallation extends JControllerAdmin
 	 */
 	public function processDiscoveringStep()
 	{
-		// Define installation flag
-		define('NENO_INSTALLATION', 1);
-
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db       = JFactory::getDbo();
 		$query    = $db->getQuery(true);
 		$finished = NenoSettings::get('installation_completed') == 1;
 
-		if (NenoSettings::get('percentPerExtension') == null)
+		if (!$finished)
 		{
-			// Calculate percent per extension discovered
-			$extensions = $db->quote(NenoHelper::whichExtensionsShouldBeTranslated());
-			$query
-				->clear()
-				->select('COUNT(*)')
-				->from('`#__extensions` AS e')
-				->where(
-					array (
-						'e.type IN (' . implode(',', $extensions) . ')',
-						'e.name NOT LIKE \'com_neno\''
-					)
-				);
+			$level   = NenoSettings::get('installation_level', 0);
+			$element = $this->getElementByLevel($level);
 
-			$db->setQuery($query);
-			$extensionToDiscover = (int) $db->loadResult();
-
-			$percentPerExtension = 85 / $extensionToDiscover;
-			NenoSettings::set('percentPerExtension', $percentPerExtension);
-		}
-
-		// Do until timeout
-		while (!$finished)
-		{
-			// Check if the menus have been created
-			if (NenoSettings::get('discovering_extensions') != 1) // Check if the extensions have been discovered
+			if ($element == null && $level == 0)
 			{
-				// Check if there was a process executing before
-				if (NenoSettings::get('discovering_field') != null)
-				{
-					/* @var $field NenoContentElementField */
-					$field = NenoContentElementField::load(NenoSettings::get('discovering_field'), false, true);
-
-					if (!empty($field))
-					{
-						$field->persistTranslations();
-					}
-
-					NenoSettings::set('discovering_field', null);
-				}
-				elseif (NenoSettings::get('discovering_languagestring') != null)
-				{
-					if (NenoSettings::get('discovering_languagestring') != '')
-					{
-						/* @var $languageString NenoContentElementLanguageString */
-						$languageString = NenoContentElementLanguageString::load(NenoSettings::get('discovering_languagestring'), false, true);
-
-						if (!empty($languageString))
-						{
-							$languageString->persist();
-						}
-					}
-
-					NenoSettings::set('discovering_languagestring', null);
-				}
-				elseif (NenoSettings::get('discovering_table') != null)
-				{
-					/* @var $table NenoContentElementTable */
-					$table = NenoContentElementTable::load(NenoSettings::get('discovering_table'), false, true);
-
-					if (!empty($table))
-					{
-						$table->getFields(false, true, true);
-						$table->persist();
-					}
-
-					NenoSettings::get('discovering_table', null);
-				}
-				elseif (NenoSettings::get('discovering_languagefile') != null)
-				{
-					/* @var $languageFile NenoContentElementLanguageFile */
-					$languageFile = NenoContentElementLanguageFile::load(NenoSettings::get('discovering_languagefile'), false, true);
-
-					if (!empty($languageFile))
-					{
-						$languageFile->loadStringsFromFile(true);
-						$languageFile->persist();
-					}
-
-					NenoSettings::get('discovering_languagefile', null);
-				}
-				elseif (NenoSettings::get('discovering_group') != null)
-				{
-					/* @var $group NenoContentElementGroup */
-					$group = NenoContentElementGroup::load(NenoSettings::get('discovering_group'));
-
-					if (!empty($group))
-					{
-						$group->getTables(false, true);
-						$group->getLanguageFiles();
-						$group->persist();
-					}
-				}
-				else
-				{
-					// If it's not, let's get which extensions haven't been discovered yet
-					$extensions = $db->quote(NenoHelper::whichExtensionsShouldBeTranslated());
-
-					$query
-						->clear()
-						->select('e.*')
-						->from('`#__extensions` AS e')
-						->where(
-							array (
-								'e.type IN (' . implode(',', $extensions) . ')',
-								'e.name NOT LIKE \'com_neno\'',
-								'NOT EXISTS (SELECT 1 FROM #__neno_content_element_groups_x_extensions AS ge WHERE ge.extension_id = e.extension_id)'
-							)
-						)
-						->order('name');
-					$db->setQuery($query, 0, 1);
-					$extension = $db->loadAssoc();
-
-					// There's no extensions to be discovered
-					if (empty($extension))
-					{
-						NenoSettings::set('discovering_extensions', 1);
-					}
-					else
-					{
-						NenoHelper::discoverExtension($extension);
-					}
-				}
-			}
-			elseif (NenoSettings::get('parsing_others') != 1) // Check if other tables have been grouped
-			{
-				NenoHelper::setSetupState(95, JText::_('COM_NENO_INSTALLATION_MESSAGE_PARSING_OTHER_TABLES'));
-				NenoHelperBackend::groupingTablesNotDiscovered();
-				NenoSettings::set('parsing_others', 1);
-			}
-			elseif (NenoSettings::get('do_not_translate_group') != 1) // Check if DoNotTranslate group has been created
-			{
+				// If there aren't any, let's create do not translate group if it doesn't exist
 				NenoHelperBackend::createDoNotTranslateGroup();
-				NenoSettings::set('do_not_translate_group', 1);
-			}
-			elseif (NenoSettings::get('publishing_plugins') != 1) // Check if plugins have been enabled
-			{
+
+				// Let's publish language plugins
 				$query
 					->clear()
 					->update('#__extensions')
@@ -441,21 +311,29 @@ class NenoControllerInstallation extends JControllerAdmin
 				$db->setQuery($query);
 				$db->execute();
 
-				NenoSettings::set('publishing_plugins', 1);
-			}
-			elseif (NenoSettings::get('discovering_step_menu') != 1)
-			{
-				NenoHelper::setSetupState(100, JText::_('COM_NENO_INSTALLATION_MESSAGE_GENERATING_MENUS'));
+				// Let's create menu structure
 				NenoHelper::createMenuStructure();
-				NenoSettings::set('discovering_step_menu', 1);
+
+				NenoSettings::set('installation_completed', 1);
+				$finished = true;
+			}
+			elseif ($element == null && $level != 0)
+			{
+				list($firstPart, $secondPart) = explode('.', $level);
+				$firstPart--;
+
+				if ($firstPart == 0)
+				{
+					NenoSettings::set('installation_level', $firstPart);
+				}
+				else
+				{
+					NenoSettings::set('installation_level', implode('.', array ($firstPart, $secondPart)));
+				}
 			}
 			else
 			{
-				NenoHelper::setSetupState(100, JText::_('COM_NENO_INSTALLATION_MESSAGE_INSTALLATION_COMPLETED'));
-
-				// Set installation as completed
-				NenoSettings::set('installation_completed', 1);
-				$finished = true;
+				$element->discoverElement();
 			}
 		}
 
@@ -465,6 +343,191 @@ class NenoControllerInstallation extends JControllerAdmin
 		}
 
 		JFactory::getApplication()->close();
+	}
+
+	/**
+	 * Get a particular element using the level
+	 *
+	 * @param   string $level Hierarchy level
+	 *
+	 * @return NenoContentElementInterface|null
+	 */
+	protected function getElementByLevel($level)
+	{
+		$element   = null;
+		$elementId = NenoSettings::get('discovering_element_' . $level);
+		$db        = JFactory::getDbo();
+		$query     = $db->getQuery(true);
+
+		switch ($level)
+		{
+			// Groups
+			case '0':
+				// This means to get a group that haven't been discovered yet
+				$extensions = $db->quote(NenoHelper::whichExtensionsShouldBeTranslated());
+
+				$query
+					->clear()
+					->select('e.*')
+					->from('`#__extensions` AS e')
+					->where(
+						array (
+							'e.type IN (' . implode(',', $extensions) . ')',
+							'e.name NOT LIKE \'com_neno\'',
+							'NOT EXISTS (SELECT 1 FROM #__neno_content_element_groups_x_extensions AS ge WHERE ge.extension_id = e.extension_id)'
+						)
+					)
+					->order('name');
+				$db->setQuery($query, 0, 1);
+				$extension = $db->loadAssoc();
+
+				if (!empty($extension))
+				{
+					// Check if this extension has been discovered already
+					$groupId = NenoHelper::isExtensionAlreadyDiscovered($extension['extension_id']);
+
+					if ($groupId !== false)
+					{
+						$group = NenoContentElementGroup::load($groupId);
+					}
+					else
+					{
+						$group = new NenoContentElementGroup(array ('group_name' => $extension['name']));
+					}
+
+					$group->addExtension($extension['extension_id']);
+
+					$extensionName = NenoHelper::getExtensionName($extension);
+					$languageFiles = NenoHelper::getLanguageFiles($extensionName);
+					$tables        = NenoHelper::getComponentTables($group, $extensionName);
+					$group->setAssignedTranslationMethods(NenoHelper::getTranslationMethodsForLanguages());
+
+					// If the group contains tables and/or language strings, let's save it
+					if (!empty($tables) || !empty($languageFiles))
+					{
+						$group
+							->setLanguageFiles($languageFiles)
+							->setTables($tables);
+					}
+
+					$element = $group;
+				}
+				else
+				{
+					$element = NenoHelperBackend::groupingTablesNotDiscovered(false);
+				}
+
+				break;
+
+			// Tables
+			case '1.1':
+				// This means to get a table which has fields that haven't been discovered yet.
+
+				if (empty($elementId))
+				{
+					// Get one table that hasn't been discovered yet
+					$table = NenoContentElementTable::load(
+						array (
+							'discovered' => 0,
+							'_limit'     => 1,
+							'translate'  => 1,
+							'group_id'   => NenoSettings::get('discovering_element_0')
+						), false, true
+					);
+				}
+				else
+				{
+					$table = NenoContentElementTable::load($elementId, false, true);
+				}
+
+				if (!empty($table))
+				{
+					$element = $table;
+				}
+
+				break;
+
+			// Language files
+			case '1.2':
+				// This means to get a language file which has language strings that haven't been discovered yet.
+
+				if ($elementId == null)
+				{
+					// Get one table that hasn't been discovered yet
+					$languageFile = NenoContentElementLanguageFile::load(
+						array (
+							'discovered' => 0,
+							'_limit'     => 1,
+							'group_id'   => NenoSettings::get('discovering_element_0')
+						), false, true
+					);
+				}
+				else
+				{
+					$languageFile = NenoContentElementLanguageFile::load($elementId, false, true);
+				}
+
+				if (!empty($languageFile))
+				{
+					$element = $languageFile;
+				}
+				break;
+
+			// Fields
+			case '2.1':
+				// This means to get a field that hasn't been completed yet.
+
+				if ($elementId == null)
+				{
+					// Get one table that hasn't been discovered yet
+					$field = NenoContentElementField::load(
+						array (
+							'discovered' => 0,
+							'_limit'     => 1,
+							'translate'  => 1,
+							'table_id'   => NenoSettings::get('discovering_element_1.1')
+						), false, true
+					);
+				}
+				else
+				{
+					$field = NenoContentElementField::load($elementId);
+				}
+
+				if (!empty($field) && $field)
+				{
+					$element = $field;
+				}
+				break;
+
+			// Language strings
+			case '2.2':
+				// This means to get a language string that hasn't been completed yet.
+
+				if ($elementId == null)
+				{
+					// Get one table that hasn't been discovered yet
+					$languageString = NenoContentElementLanguageString::load(
+						array (
+							'discovered'      => 0,
+							'_limit'          => 1,
+							'languagefile_id' => NenoSettings::get('discovering_element_1.2')
+						), false, true
+					);
+				}
+				else
+				{
+					$languageString = NenoContentElementLanguageString::load($elementId);
+				}
+
+				if (!empty($languageString))
+				{
+					$element = $languageString;
+				}
+				break;
+		}
+
+		return $element;
 	}
 
 	/**

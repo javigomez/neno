@@ -185,16 +185,22 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	 */
 	private function hasToBeParsed($sql)
 	{
-		if (!empty($this->manifestTables))
+		// Check if the query contains Neno tables
+
+		if (!preg_match('/#__neno_/', $sql))
 		{
-			foreach ($this->manifestTables as $table)
+			if (!empty($this->manifestTables))
 			{
-				if (preg_match('/' . preg_quote($table) . '/', $sql))
+				foreach ($this->manifestTables as $table)
 				{
-					return true;
+					if (preg_match('/' . preg_quote($table) . '/', $sql))
+					{
+						return true;
+					}
 				}
 			}
 		}
+
 
 		return false;
 	}
