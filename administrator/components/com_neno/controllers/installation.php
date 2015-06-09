@@ -562,7 +562,7 @@ class NenoControllerInstallation extends JControllerAdmin
 			$db->setQuery($query, 0, 1);
 			$extensionsCounter = $db->loadResult();
 
-			NenoSettings::set('percent_per_extension', 100 / ($extensionsCounter + 1));
+			NenoSettings::set('percent_per_extension', 90 / ($extensionsCounter + 1));
 		}
 	}
 
