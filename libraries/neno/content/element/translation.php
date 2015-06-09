@@ -170,7 +170,7 @@ class NenoContentElementTranslation extends NenoContentElement
 			}
 		}
 
-		$this->charactersCounter = strlen($this->getString());
+		$this->charactersCounter = mb_strlen($this->getString());
 
 		if (!$this->isNew())
 		{

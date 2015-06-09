@@ -341,7 +341,7 @@ class NenoLanguageFile
 	{
 		if (NenoHelper::endsWith($path, '/'))
 		{
-			$path = substr($path, 0, strlen($path) - 1);
+			$path = substr($path, 0, mb_strlen($path) - 1);
 		}
 
 		jimport('joomla.filesystem.folder');
@@ -500,9 +500,9 @@ class NenoLanguageFile
 			// Loop through all the core files
 			for ($i = 0; $i < count($coreFiles) && !$found; $i++)
 			{
-				$strlen = strlen($coreFiles[$i]);
+				$strlen = mb_strlen($coreFiles[$i]);
 
-				if (substr($file, strlen($file) - $strlen, $strlen) == $coreFiles[$i])
+				if (substr($file, mb_strlen($file) - $strlen, $strlen) == $coreFiles[$i])
 				{
 					$found = true;
 				}

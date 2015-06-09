@@ -645,7 +645,7 @@ class NenoHelperBackend
 					$directive = true;
 				}
 
-				if (strlen($match[1]))
+				if (mb_strlen($match[1]))
 				{
 					$phpInfo[$match[1]] = array ();
 				}
@@ -760,7 +760,7 @@ class NenoHelperBackend
 		while ($lines++ < 0)
 		{
 			// Find first newline and remove all text before that
-			$output = substr($output, strpos($output, "\n") + 1);
+			$output = substr($output, mb_strpos($output, "\n") + 1);
 		}
 
 		// Close file and return

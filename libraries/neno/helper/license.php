@@ -78,9 +78,9 @@ class NenoHelperLicense
 	 */
 	private static function checkDomainMatch($domain)
 	{
-		if (strpos(JUri::root(), $domain) === false
-			&& strpos(JUri::root(), 'localhost') === false
-			&& strpos(JUri::root(), '127.0.0.1') === false)
+		if (mb_strpos(JUri::root(), $domain) === false
+			&& mb_strpos(JUri::root(), 'localhost') === false
+			&& mb_strpos(JUri::root(), '127.0.0.1') === false)
 		{
 			return false;
 		}

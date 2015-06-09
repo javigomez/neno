@@ -43,7 +43,7 @@ class NenoHelperData
 		}
 
 		// Make sure the saved field is of a long enough text value
-		if (strlen($string) < 500)
+		if (mb_strlen($string) < 500)
 		{
 			return $string;
 		}

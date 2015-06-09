@@ -101,7 +101,7 @@ class NenoHelper
 	 */
 	public static function endsWith($string, $suffix)
 	{
-		return $suffix === "" || strpos($string, $suffix, strlen($string) - strlen($suffix)) !== false;
+		return $suffix === "" || mb_strpos($string, $suffix, mb_strlen($string) - mb_strlen($suffix)) !== false;
 	}
 
 	/**
@@ -378,7 +378,7 @@ class NenoHelper
 	 */
 	public static function startsWith($string, $prefix)
 	{
-		return $prefix === "" || strrpos($string, $prefix, -strlen($string)) !== false;
+		return $prefix === "" || strrpos($string, $prefix, -mb_strlen($string)) !== false;
 	}
 
 	/**
@@ -1055,7 +1055,7 @@ class NenoHelper
 
 			for (; $last_part < $parts_count; ++$last_part)
 			{
-				$length += strlen($parts[$last_part]);
+				$length += mb_strlen($parts[$last_part]);
 
 				if ($length - 3 > $truncate)
 				{
