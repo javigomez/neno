@@ -253,7 +253,6 @@ class NenoContentElementLanguageString extends NenoContentElement implements Nen
 	public function discoverElement()
 	{
 		NenoHelper::setSetupState(
-			0,
 			JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD', $this->getLanguageFile()->getGroup()->getGroupName(), $this->getLanguageFile()->getFilename(), $this->getConstant()),
 			3
 		);

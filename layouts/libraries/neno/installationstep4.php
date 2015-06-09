@@ -45,7 +45,7 @@ JHtml::_('bootstrap.tooltip');
 			<h2><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_TITLE'); ?></h2>
 
 			<div class="progress progress-striped active" id="progress-bar">
-				<div class="bar" style="width: 0%;"></div>
+				<div class="bar" style="width: 2%;"></div>
 			</div>
 			<p><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_FINISH_SETUP_MESSAGE'); ?></p>
 

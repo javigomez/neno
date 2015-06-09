@@ -441,7 +441,7 @@ class NenoContentElementTable extends NenoContentElement implements NenoContentE
 	public function discoverElement()
 	{
 		NenoHelper::setSetupState(
-			0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getTableName()), 2
+			JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getTableName()), 2
 		);
 
 		if ($this->translate)
@@ -465,7 +465,7 @@ class NenoContentElementTable extends NenoContentElement implements NenoContentE
 		else
 		{
 			NenoHelper::setSetupState(
-				0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_TABLE_TOO_MANY_RECORDS', $this->group->getGroupName(), $this->getTableName()), 2, 'error'
+				JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_TABLE_TOO_MANY_RECORDS', $this->group->getGroupName(), $this->getTableName()), 2, 'error'
 			);
 		}
 	}

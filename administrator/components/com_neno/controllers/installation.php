@@ -356,8 +356,9 @@ class NenoControllerInstallation extends JControllerAdmin
 	{
 		$element   = null;
 		$elementId = NenoSettings::get('discovering_element_' . $level);
-		$db        = JFactory::getDbo();
-		$query     = $db->getQuery(true);
+		$this->initPercents();
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
 		switch ($level)
 		{
@@ -528,6 +529,41 @@ class NenoControllerInstallation extends JControllerAdmin
 		}
 
 		return $element;
+	}
+
+	/**
+	 * Init percents
+	 *
+	 * @return void
+	 */
+	protected function initPercents()
+	{
+		$currentPercent = NenoSettings::get('current_percent', 0);
+
+		if ($currentPercent == 0)
+		{
+			$db    = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			// This means to get a group that haven't been discovered yet
+			$extensions = $db->quote(NenoHelper::whichExtensionsShouldBeTranslated());
+
+			$query
+				->clear()
+				->select('COUNT(e.extension_id)')
+				->from('`#__extensions` AS e')
+				->where(
+					array (
+						'e.type IN (' . implode(',', $extensions) . ')',
+						'e.name NOT LIKE \'%neno%\'',
+					)
+				)
+				->order('name');
+			$db->setQuery($query, 0, 1);
+			$extensionsCounter = $db->loadResult();
+
+			NenoSettings::set('percent_per_extension', 100 / ($extensionsCounter + 1));
+		}
 	}
 
 	/**

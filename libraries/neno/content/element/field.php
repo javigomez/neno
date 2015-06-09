@@ -386,7 +386,6 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 	public function discoverElement()
 	{
 		NenoHelper::setSetupState(
-			0,
 			JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD', $this->getTable()->getGroup()->getGroupName(), $this->getTable()->getTableName(), $this->getFieldName()),
 			3
 		);

@@ -378,7 +378,7 @@ class NenoContentElementLanguageFile extends NenoContentElement implements NenoC
 	public function discoverElement()
 	{
 		NenoHelper::setSetupState(
-			0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getFilename()), 2
+			JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getFilename()), 2
 		);
 
 		// Check if there are children not discovered

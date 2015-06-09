@@ -836,7 +836,7 @@ class NenoContentElementGroup extends NenoContentElement implements NenoContentE
 		// Save the hierarchy first,
 		if ($this->isNew() || NenoSettings::get('discovering_element_0') == $this->id)
 		{
-			NenoHelper::setSetupState(0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP', $this->groupName));
+			NenoHelper::setSetupState(JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP', $this->groupName));
 			$level = '1.1';
 		}
 		else
@@ -850,7 +850,7 @@ class NenoContentElementGroup extends NenoContentElement implements NenoContentE
 
 		if (empty($this->tables) && empty($this->languageFiles))
 		{
-			NenoHelper::setSetupState(0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_CONTENT_NOT_DETECTED', $this->getGroupName()), 1, 'warning');
+			NenoHelper::setSetupState(JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_CONTENT_NOT_DETECTED', $this->getGroupName()), 1, 'warning');
 			$level     = 0;
 			$elementId = 0;
 		}

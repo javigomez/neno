@@ -803,17 +803,23 @@ class NenoHelper
 	/**
 	 * Set setup state
 	 *
-	 * @param   int    $percent Completed percent
 	 * @param   string $message Message
 	 * @param   int    $level   Level
 	 * @param   string $type    Message type
 	 *
 	 * @return void
 	 */
-	public static function setSetupState($percent, $message, $level = 1, $type = 'info')
+	public static function setSetupState($message, $level = 1, $type = 'info')
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$db      = JFactory::getDbo();
+		$query   = $db->getQuery(true);
+		$percent = NenoSettings::get('current_percent');
+
+		if ($level == 1 && $type == 'info')
+		{
+			$percent = $percent + NenoSettings::get('percent_per_extension');
+			NenoSettings::set('current_percent', $percent);
+		}
 
 		$query
 			->select('1')

@@ -353,10 +353,8 @@ class NenoHelperBackend
 
 		// Get all the tables that haven't been detected using naming convention.
 		$tablesNotDiscovered = self::getTablesNotDiscovered();
-
-		$tablesAdded = false;
-
-		$otherGroup = null;
+		$tablesAdded         = false;
+		$otherGroup          = null;
 
 		if (!empty($tablesNotDiscovered))
 		{
