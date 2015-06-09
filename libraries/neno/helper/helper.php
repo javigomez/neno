@@ -2891,10 +2891,6 @@ class NenoHelper
 				'text'  => 'CMD',
 			),
 			array (
-				'value' => 'BASE64',
-				'text'  => 'BASE64',
-			),
-			array (
 				'value' => 'STRING',
 				'text'  => 'STRING',
 			),
