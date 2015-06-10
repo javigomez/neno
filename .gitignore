@@ -1,4 +1,5 @@
 /*
+!.gitignore
 !/administrator
 /administrator/*
 !/administrator/components
