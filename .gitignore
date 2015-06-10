@@ -1,5 +1,8 @@
 /*
 !.gitignore
+!pkg_neno.xml
+!script.php
+!README.md
 !/administrator
 /administrator/*
 !/administrator/components
