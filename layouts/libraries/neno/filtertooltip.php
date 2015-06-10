@@ -9,8 +9,19 @@
 
 // No direct access
 defined('_JEXEC') or die;
+
 ?>
-<ul style="list-style: none">
+
+<style>
+	.filter-list {
+		list-style-type: none;
+	}
+
+	.filter-list li {
+		padding: 5px 0;
+	}
+</style>
+<ul class="filter-list">
 	<li>
 		<span class="label label-info">INT</span>
 		<?php echo JText::_('COM_NENO_GROUPS_ELEMENTS_FILTER_HELPER_TEXT_INT'); ?>
