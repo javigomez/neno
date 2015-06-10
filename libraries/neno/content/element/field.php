@@ -631,16 +631,18 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 				}
 			}
 
-			$realTableName = str_replace('#__', $db->getPrefix(), $this->getTable()->getTableName());
-
 			$query
-				->select(
-					array (
-						$db->quoteName($this->getFieldName(), 'string'),
-						'IF((SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ' . $db->quote($realTableName) . ' AND COLUMN_NAME = ' . $db->quote('state') . '),state, 1) as state'
-					)
-				)
+				->select($db->quoteName($this->getFieldName(), 'string'))
 				->from($this->getTable()->getTableName());
+
+			if ($this->getTable()->hasState())
+			{
+				$query->select('state');
+			}
+			else
+			{
+				$query->select('1 AS state');
+			}
 
 			$db->setQuery($query);
 			$rows = $db->loadAssocList();

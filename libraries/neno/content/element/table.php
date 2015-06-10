@@ -587,4 +587,27 @@ class NenoContentElementTable extends NenoContentElement implements NenoContentE
 
 		return $this;
 	}
+
+	/**
+	 * Check if a table has a state field
+	 *
+	 * @return bool
+	 */
+	public function hasState()
+	{
+		$fields = $this->getFields(false);
+		$found  = false;
+
+		/* @var $field NenoContentElementField */
+		foreach ($fields as $field)
+		{
+			if ($field->getFieldName() == 'state')
+			{
+				$found = true;
+				break;
+			}
+		}
+
+		return $found;
+	}
 }
