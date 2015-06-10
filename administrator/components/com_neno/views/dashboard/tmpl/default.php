@@ -105,11 +105,26 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 <div class="modal hide fade" id="languages-modal">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3>Modal header</h3>
 	</div>
 	<div class="modal-body"></div>
 	<div class="modal-footer">
 		<a href="#" class="btn" data-dismiss="modal"><?php echo JText::_('JCLOSE'); ?></a>
+	</div>
+</div>
+
+<div class="modal hide fade" id="translationMethodModal">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3><?php echo JText::_('COM_NENO_TRANSLATION_METHOD_MODAL_TITLE'); ?></h3>
+	</div>
+	<div class="modal-body">
+		<p>
+			<?php echo JText::_('COM_NENO_TRANSLATION_METHOD_MODAL_MESSAGE'); ?>
+		</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn" data-dismiss="modal"><?php echo JText::_('JNO'); ?></a>
+		<button type="button" class="btn btn-primary yes-btn"><?php echo JText::_('JYES'); ?></button>
 	</div>
 </div>
 
