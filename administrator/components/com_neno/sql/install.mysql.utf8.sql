@@ -400,7 +400,8 @@ INSERT IGNORE INTO `#__neno_settings` VALUES (1, 'translate_automatically_profes
   (4, 'license_code', '', 0), (5, 'translator', '', 0),
   (6, 'translator_api_key', '', 0),
   (7, 'source_language', 'en-GB', 0), (8, 'schedule_task_option', 'ajax', 0),
-  (9, 'hide_empty_strings', '1', 0), (10, 'installation_completed', '0', 0), (11, 'default_translate_action', '0', 2);
+  (9, 'hide_empty_strings', '1', 0), (10, 'installation_completed', '0', 0), (11, 'default_translate_action', '0', 2),
+  (12, 'copy_unpublished', '1', 2), (13, 'copy_trashed', '0', 2);
 
 INSERT IGNORE INTO `#__neno_machine_translation_api_language_pairs`
 VALUES (1, 1, 'af', 'ar'), (2, 1, 'af', 'az'), (3, 1, 'af', 'be'), (4, 1, 'af', 'bg'), (5, 1, 'af', 'bn'),

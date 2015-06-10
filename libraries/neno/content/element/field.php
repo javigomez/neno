@@ -386,7 +386,12 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 	public function discoverElement()
 	{
 		NenoHelper::setSetupState(
-			JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD', $this->getTable()->getGroup()->getGroupName(), $this->getTable()->getTableName(), $this->getFieldName()),
+			JText::sprintf(
+				'COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD',
+				$this->getTable()->getGroup()->getGroupName(),
+				$this->getTable()->getTableName(),
+				$this->getFieldName()
+			),
 			3
 		);
 
@@ -509,63 +514,66 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 
 						foreach ($strings as $string)
 						{
-							$commonData['string'] = $string['string'];
-
-							// If the string is empty or is a number, let's mark as translated.
-							if (empty($string['string']) || is_numeric($string['string']))
+							if ($string['state'] == 0 && NenoSettings::get('copy_unpublished', 1) || ($string['state'] == -2 && NenoSettings::get('copy_trashed', 0)))
 							{
-								$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
-							}
-							else
-							{
-								$commonData['state'] = NenoContentElementTranslation::NOT_TRANSLATED_STATE;
-							}
+								$commonData['string'] = $string['string'];
 
-							$translation = new NenoContentElementTranslation($commonData);
-							$sourceData  = array ();
-
-							foreach ($primaryKeyData as $primaryKey)
-							{
-								$field     = self::getFieldByTableAndFieldName($this->getTable(), $primaryKey);
-								$fieldData = array (
-									'field' => $field,
-									'value' => $string[$primaryKey]
-								);
-
-								$sourceData[] = $fieldData;
-							}
-
-							$translation->setSourceElementData($sourceData);
-
-							// If the translation does not exists already, let's add it
-							if ($translation->existsAlready())
-							{
-								$translation = NenoContentElementTranslation::getTranslationBySourceElementData($sourceData, $language->lang_code, $this->getId());
-								$translation->setElement($this);
-
-								if ($translation->refresh())
+								// If the string is empty or is a number, let's mark as translated.
+								if (empty($string['string']) || is_numeric($string['string']))
 								{
-									$translation->persist();
+									$commonData['state'] = NenoContentElementTranslation::TRANSLATED_STATE;
 								}
-							}
-
-							$translationMethods = $translation->getTranslationMethods();
-
-							if (empty($translationMethods[$language->lang_code]))
-							{
-								$translationMethodsTr = $translationmethods[$language->lang_code];
-
-								if (!empty($translationMethodsTr))
+								else
 								{
-									foreach ($translationMethodsTr as $translationMethodTr)
+									$commonData['state'] = NenoContentElementTranslation::NOT_TRANSLATED_STATE;
+								}
+
+								$translation = new NenoContentElementTranslation($commonData);
+								$sourceData  = array ();
+
+								foreach ($primaryKeyData as $primaryKey)
+								{
+									$field     = self::getFieldByTableAndFieldName($this->getTable(), $primaryKey);
+									$fieldData = array (
+										'field' => $field,
+										'value' => $string[$primaryKey]
+									);
+
+									$sourceData[] = $fieldData;
+								}
+
+								$translation->setSourceElementData($sourceData);
+
+								// If the translation does not exists already, let's add it
+								if ($translation->existsAlready())
+								{
+									$translation = NenoContentElementTranslation::getTranslationBySourceElementData($sourceData, $language->lang_code, $this->getId());
+									$translation->setElement($this);
+
+									if ($translation->refresh())
 									{
-										$translation->addTranslationMethod($translationMethodTr->translation_method_id);
+										$translation->persist();
 									}
 								}
-							}
 
-							$translation->persist();
-							$this->translations[] = $translation;
+								$translationMethods = $translation->getTranslationMethods();
+
+								if (empty($translationMethods[$language->lang_code]))
+								{
+									$translationMethodsTr = $translationmethods[$language->lang_code];
+
+									if (!empty($translationMethodsTr))
+									{
+										foreach ($translationMethodsTr as $translationMethodTr)
+										{
+											$translation->addTranslationMethod($translationMethodTr->translation_method_id);
+										}
+									}
+								}
+
+								$translation->persist();
+								$this->translations[] = $translation;
+							}
 						}
 					}
 				}
@@ -616,8 +624,15 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 				}
 			}
 
+			$realTableName = str_replace('#__', $db->getPrefix(), $this->getTable()->getTableName());
+
 			$query
-				->select($db->quoteName($this->getFieldName(), 'string'))
+				->select(
+					array (
+						$db->quoteName($this->getFieldName(), 'string'),
+						'IF((SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ' . $db->quote($realTableName) . ' AND COLUMN_NAME = ' . $db->quote('state') . '),state, 1) as state'
+					)
+				)
 				->from($this->getTable()->getTableName());
 
 			$db->setQuery($query);
