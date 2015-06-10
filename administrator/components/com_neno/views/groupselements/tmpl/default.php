@@ -143,12 +143,18 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 		jQuery("[data-toggle='tooltip']").tooltip();
 
-		jQuery('.filter-dropdown').off('change').on('change', saveFilter);
+		jQuery('.filter').off('click').on('click', saveFilter);
 	}
 
-	function saveFilter() {
-		var filter = jQuery(this).find(':selected').val();
-		var fieldId = jQuery(this).data('field');
+	function saveFilter(e) {
+		e.preventDefault();
+		var filter = jQuery(this).data('filter');
+		var parent = jQuery(this).closest('.btn-group');
+		var fieldId = parent.data('field');
+
+		parent.find('.filter.hide').removeClass('hide');
+		parent.find(".filter[data-filter='" + filter + "']").addClass('hide');
+		parent.find('.dropdown-toggle').text(filter);
 
 		jQuery.ajax({
 			url: 'index.php?option=com_neno&task=groupselements.changeFieldFilter',

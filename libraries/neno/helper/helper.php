@@ -2868,65 +2868,23 @@ class NenoHelper
 	public static function generateFilterDropDown($fieldId, $selected)
 	{
 		$filters = array (
-			array (
-				'value' => 'INT',
-				'text'  => 'INT',
-			),
-			array (
-				'value' => 'UNIT',
-				'text'  => 'UNIT',
-			),
-			array (
-				'value' => 'FLOAT',
-				'text'  => 'FLOAT',
-			),
-			array (
-				'value' => 'BOOL',
-				'text'  => 'BOOL',
-			),
-			array (
-				'value' => 'WORD',
-				'text'  => 'WORD',
-			),
-			array (
-				'value' => 'ALNUM',
-				'text'  => 'ALNUM',
-			),
-			array (
-				'value' => 'CMD',
-				'text'  => 'CMD',
-			),
-			array (
-				'value' => 'STRING',
-				'text'  => 'STRING',
-			),
-			array (
-				'value' => 'HTML',
-				'text'  => 'HTML',
-			),
-			array (
-				'value' => 'ARRAY',
-				'text'  => 'ARRAY',
-			),
-			array (
-				'value' => 'TRIM',
-				'text'  => 'TRIM',
-			),
-			array (
-				'value' => 'PATH',
-				'text'  => 'PATH',
-			),
-			array (
-				'value' => 'USERNAME',
-				'text'  => 'USERNAME',
-			),
-			array (
-				'value' => 'RAW',
-				'text'  => 'RAW',
-			)
+			'INT',
+			'UNIT',
+			'FLOAT',
+			'BOOL',
+			'WORD',
+			'ALNUM',
+			'CMD',
+			'STRING',
+			'HTML',
+			'ARRAY',
+			'TRIM',
+			'PATH',
+			'USERNAME',
+			'RAW'
 		);
 
-		return JHtml::_('select.genericlist', $filters, 'filter_field_' . $fieldId, 'class="filter-dropdown" data-field="' . $fieldId . '"', 'value', 'text', $selected, false, true);
+		return JLayoutHelper::render('dropdownbutton', array ('filters' => $filters, 'selected' => $selected, 'fieldId' => $fieldId), JPATH_NENO_LAYOUTS);
 	}
 
 	/**

@@ -25,6 +25,13 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 	, 'mediumtext'
 	, 'longtext'
 	);
+	/**
+	 * @var
+	 */
+	private static $filterMapByFieldName = array (
+		'alias' => 'CMD',
+		'slug'  => 'CMD'
+	);
 
 	/**
 	 * @var stdClass
@@ -715,6 +722,17 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 		if ($this->translate)
 		{
 			$this->checkTranslatableStatusFromContentElementFile();
+		}
+
+		if ($this->isNew())
+		{
+			$this->filter = 'RAW';
+
+			// If this field name has a established filter, let's set it
+			if (isset(self::$filterMapByFieldName[strtolower($this->fieldName)]))
+			{
+				$this->filter = self::$filterMapByFieldName[strtolower($this->fieldName)];
+			}
 		}
 
 		return parent::persist();

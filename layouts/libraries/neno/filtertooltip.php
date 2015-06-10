@@ -40,10 +40,6 @@ defined('_JEXEC') or die;
 		<?php echo JText::_('COM_NENO_GROUPS_ELEMENTS_FILTER_HELPER_TEXT_CMD'); ?>
 	</li>
 	<li>
-		<span class="label label-info">BASE 64</span>
-		<?php echo JText::_('COM_NENO_GROUPS_ELEMENTS_FILTER_HELPER_TEXT_BASE_64'); ?>
-	</li>
-	<li>
 		<span class="label label-info">STRING</span>
 		<?php echo JText::_('COM_NENO_GROUPS_ELEMENTS_FILTER_HELPER_TEXT_STRING'); ?>
 	</li>
