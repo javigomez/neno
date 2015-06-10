@@ -23,6 +23,9 @@
 !/libraries
 /libraries/*
 !/libraries/neno
+!media
+media/*
+!media/neno
 !/plugins
 /plugins/*
 !/plugins/system
