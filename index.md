@@ -2,7 +2,9 @@
 layout: index
 ---
 ### Welcome to the Neno Documentation
-> The documentation is not ready yet. Please be patient!
+```
+:exclamation: The documentation is not ready yet. Please be patient!
+```
 
 ## Contents
 [Components not fully compatible with Neno](#Components-not-fully-compatible-with-Neno)
