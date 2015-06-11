@@ -7,7 +7,7 @@
  * @copyright   Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 /**
  * Class NenoContentElement
@@ -124,57 +124,7 @@ abstract class NenoContentElement extends NenoObject
 	{
 		NenoLog::log('Element deleted successfully', 2);
 
-		if (parent::remove())
-		{
-			NenoCache::setCacheData($this->getCacheId(), null);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Get Cache Id for a particular
-	 *
-	 * @return bool|string False if the cacheId doesn't exist
-	 */
-	private function getCacheId()
-	{
-		$cacheId = false;
-
-		// Only existing records can have cache file
-		if (!$this->isNew())
-		{
-			$cacheId = $this->getClassReflectionObject()->getName() . '.' . $this->getId();
-		}
-
-		return $cacheId;
-	}
-
-	/**
-	 * Save this NenoContentElement in the cache
-	 *
-	 * @return void
-	 */
-	public function setContentElementIntoCache()
-	{
-		if (!$this->isNew())
-		{
-			NenoCache::setCacheData($this->getCacheId(), $this->prepareCacheContent());
-		}
-	}
-
-	/**
-	 * Prepare content for cache
-	 *
-	 * @return NenoContentElement
-	 */
-	public function prepareCacheContent()
-	{
-		$data = clone $this;
-
-		return $data;
+		return parent::remove();
 	}
 
 	/**
@@ -188,4 +138,6 @@ abstract class NenoContentElement extends NenoObject
 
 		return $this;
 	}
+
+
 }

@@ -7,14 +7,14 @@
  * @copyright   Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 /**
  * Class NenoContentElementLangfile
  *
  * @since  1.0
  */
-class NenoContentElementLanguageString extends NenoContentElement
+class NenoContentElementLanguageString extends NenoContentElement implements NenoContentElementInterface
 {
 	/**
 	 * @var NenoContentElementLanguageFile
@@ -50,6 +50,11 @@ class NenoContentElementLanguageString extends NenoContentElement
 	 * @var array
 	 */
 	protected $translations;
+
+	/**
+	 * @var bool
+	 */
+	protected $discovered;
 
 	/**
 	 * Constructor
@@ -181,39 +186,83 @@ class NenoContentElementLanguageString extends NenoContentElement
 	}
 
 	/**
+	 * Set that the content has changed
+	 *
+	 * @return $this
+	 */
+	public function contentHasChanged()
+	{
+		parent::contentHasChanged();
+		$this->timeChanged = new DateTime;
+
+		return $this;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @return bool
 	 */
-	public function persist()
+	public function remove()
 	{
-		$isNew         = $this->isNew();
-		$persistResult = parent::persist();
+		$translations = $this->getTranslations();
 
-		if (defined('NENO_INSTALLATION'))
+		/* @var $translation NenoContentElementTranslation */
+		foreach ($translations as $translation)
 		{
-			if ($isNew)
-			{
-				NenoHelper::setSetupState(
-					0,
-					JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD', $this->getLanguageFile()->getGroup()->getGroupName(), $this->getLanguageFile()->getFilename(), $this->getConstant()),
-					3
-				);
-				NenoSettings::set('discovering_languagestring', $this->id);
-			}
+			$translation->remove();
 		}
 
-		if ($persistResult)
+		return parent::remove();
+	}
+
+	/**
+	 * Get translations
+	 *
+	 * @return array
+	 */
+	public function getTranslations()
+	{
+		if ($this->translations == null)
 		{
-			$this->persistTranslations();
+			$this->translations = NenoContentElementTranslation::getTranslations($this);
 		}
 
-		if (defined('NENO_INSTALLATION'))
-		{
-			NenoSettings::set('discovering_languagestring', null);
-		}
+		return $this->translations;
+	}
 
-		return $persistResult;
+	/**
+	 * Set translations
+	 *
+	 * @param   array $translations Translations
+	 *
+	 * @return $this
+	 */
+	public function setTranslations(array $translations)
+	{
+		$this->translations = $translations;
+
+		return $this;
+	}
+
+	/**
+	 * Discover the element
+	 *
+	 * @return bool True on success
+	 */
+	public function discoverElement()
+	{
+		NenoHelper::setSetupState(
+			JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD', $this->getLanguageFile()->getGroup()->getGroupName(), $this->getLanguageFile()->getFilename(), $this->getConstant()),
+			3
+		);
+
+		if ($this->persistTranslations())
+		{
+			$this
+				->setDiscovered(true)
+				->persist();
+		}
 	}
 
 	/**
@@ -352,6 +401,8 @@ class NenoContentElementLanguageString extends NenoContentElement
 				$this->translations[$i] = $translation;
 			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -379,77 +430,26 @@ class NenoContentElementLanguageString extends NenoContentElement
 	}
 
 	/**
-	 * Set that the content has changed
+	 * Check if the field has been discovered already
+	 *
+	 * @return boolean
+	 */
+	public function isDiscovered()
+	{
+		return $this->discovered;
+	}
+
+	/**
+	 * Set discovered flag
+	 *
+	 * @param   boolean $discovered Discovered flag
 	 *
 	 * @return $this
 	 */
-	public function contentHasChanged()
+	public function setDiscovered($discovered)
 	{
-		parent::contentHasChanged();
-		$this->timeChanged = new DateTime;
+		$this->discovered = $discovered;
 
 		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return bool
-	 */
-	public function remove()
-	{
-		$translations = $this->getTranslations();
-
-		/* @var $translation NenoContentElementTranslation */
-		foreach ($translations as $translation)
-		{
-			$translation->remove();
-		}
-
-		return parent::remove();
-	}
-
-	/**
-	 * Get translations
-	 *
-	 * @return array
-	 */
-	public function getTranslations()
-	{
-		if ($this->translations == null)
-		{
-			$this->translations = NenoContentElementTranslation::getTranslations($this);
-		}
-
-		return $this->translations;
-	}
-
-	/**
-	 * Set translations
-	 *
-	 * @param   array $translations Translations
-	 *
-	 * @return $this
-	 */
-	public function setTranslations(array $translations)
-	{
-		$this->translations = $translations;
-
-		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return $this
-	 */
-	public function prepareCacheContent()
-	{
-		/* @var $data $this */
-		$data               = parent::prepareCacheContent();
-		$data->translations = null;
-		$data->languageFile = null;
-
-		return $data;
 	}
 }

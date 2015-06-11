@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package     Neno
  * @subpackage  Helpers
@@ -8,8 +7,9 @@
  * @copyright   Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
+
 // No direct access
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 if ($displayData === null): ?>
 
@@ -98,7 +98,7 @@ if ($displayData === null): ?>
 						<td><?php echo NenoHelper::generateFilterDropDown($field->id, $field->filter); ?>
 							<span class="icon-help" data-toggle="tooltip"
 							      data-title="<?php echo NenoHelper::renderFilterHelperText(); ?>" data-html="true"
-							      data-placement="right"></span></td>
+							      data-placement="bottom"></span></td>
 						<td></td>
 					</tr>
 				<?php endforeach; ?>

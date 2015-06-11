@@ -1,4 +1,27 @@
-<ul style="list-style: none">
+<?php
+/**
+ * @package    Neno
+ *
+ * @author     Jensen Technologies S.L. <info@notwebdesign.com>
+ * @copyright  Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+// No direct access
+defined('_JEXEC') or die;
+
+?>
+
+<style>
+	.filter-list {
+		list-style-type: none;
+	}
+
+	.filter-list li {
+		padding: 5px 0;
+	}
+</style>
+<ul class="filter-list">
 	<li>
 		<span class="label label-info">INT</span>
 		<?php echo JText::_('COM_NENO_GROUPS_ELEMENTS_FILTER_HELPER_TEXT_INT'); ?>
@@ -26,10 +49,6 @@
 	<li>
 		<span class="label label-info">CMD</span>
 		<?php echo JText::_('COM_NENO_GROUPS_ELEMENTS_FILTER_HELPER_TEXT_CMD'); ?>
-	</li>
-	<li>
-		<span class="label label-info">BASE64</span>
-		<?php echo JText::_('COM_NENO_GROUPS_ELEMENTS_FILTER_HELPER_TEXT_BASE64'); ?>
 	</li>
 	<li>
 		<span class="label label-info">STRING</span>

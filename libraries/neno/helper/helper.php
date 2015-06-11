@@ -9,7 +9,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // No direct access
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 /**
  * Neno helper.
@@ -18,52 +18,6 @@ defined('JPATH_NENO') or die;
  */
 class NenoHelper
 {
-	/**
-	 * Configure the Link bar.
-	 *
-	 * @param   string $vName View name
-	 *
-	 * @return void
-	 */
-	public static function addSubmenu($vName = '')
-	{
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_DASHBOARD'),
-			'index.php?option=com_neno&view=dashboard',
-			($vName == 'dashboard') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_EDITOR'),
-			'index.php?option=com_neno&view=editor',
-			($vName == 'editor') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_EXTERNAL_GROUPSELEMENTS'),
-			'index.php?option=com_neno&view=groupselements',
-			($vName == 'groupselements') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_EXTERNAL_TRANSLATIONS'),
-			'index.php?option=com_neno&view=externaltranslations',
-			($vName == 'externaltranslations') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_EXTERNAL_SETTINGS'),
-			'index.php?option=com_neno&view=settings',
-			($vName == 'settings') ? true : false
-		);
-
-		JHtmlSidebar::addEntry(
-			JText::_('COM_NENO_NAV_LINK_DEBUG_REPORT'),
-			'index.php?option=com_neno&view=debug',
-			($vName == 'debug') ? true : false
-		);
-	}
-
 	/**
 	 * Set the working language on the currently logged in user
 	 *
@@ -147,7 +101,7 @@ class NenoHelper
 	 */
 	public static function endsWith($string, $suffix)
 	{
-		return $suffix === "" || strpos($string, $suffix, strlen($string) - strlen($suffix)) !== false;
+		return $suffix === "" || mb_strpos($string, $suffix, mb_strlen($string) - mb_strlen($suffix)) !== false;
 	}
 
 	/**
@@ -339,11 +293,6 @@ class NenoHelper
 		else
 		{
 			$group->persist();
-
-			if (defined('NENO_INSTALLATION'))
-			{
-				self::setSetupState(0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_CONTENT_NOT_DETECTED', $group->getGroupName()), 1, 'warning');
-			}
 		}
 
 		return true;
@@ -429,7 +378,7 @@ class NenoHelper
 	 */
 	public static function startsWith($string, $prefix)
 	{
-		return $prefix === "" || strrpos($string, $prefix, -strlen($string)) !== false;
+		return $prefix === "" || strrpos($string, $prefix, -mb_strlen($string)) !== false;
 	}
 
 	/**
@@ -579,7 +528,7 @@ class NenoHelper
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db         = JFactory::getDbo();
 		$query      = $db->getQuery(true);
-		$extensions = array_map(array ('NenoHelper', 'escapeString'), self::whichExtensionsShouldBeTranslated());
+		$extensions = self::whichExtensionsShouldBeTranslated();
 
 		$query
 			->select(
@@ -591,7 +540,7 @@ class NenoHelper
 			->where(
 				array (
 					'extension_id < 10000',
-					'type IN (' . implode(',', $extensions) . ')'
+					'type IN (' . implode(',', $db->quote($extensions)) . ')'
 				)
 			);
 
@@ -854,32 +803,50 @@ class NenoHelper
 	/**
 	 * Set setup state
 	 *
-	 * @param   int    $percent Completed percent
 	 * @param   string $message Message
 	 * @param   int    $level   Level
 	 * @param   string $type    Message type
 	 *
 	 * @return void
 	 */
-	public static function setSetupState($percent, $message, $level = 1, $type = 'info')
+	public static function setSetupState($message, $level = 1, $type = 'info')
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$db      = JFactory::getDbo();
+		$query   = $db->getQuery(true);
+		$percent = NenoSettings::get('current_percent');
+
+		if ($level == 1 && $type == 'info')
+		{
+			$percent = $percent + NenoSettings::get('percent_per_extension');
+			NenoSettings::set('current_percent', $percent);
+		}
 
 		$query
-			->insert('#__neno_installation_messages')
-			->columns(
-				array (
-					'message',
-					'type',
-					'percent',
-					'level'
-				)
-			)
-			->values($db->quote($message) . ',' . $db->quote($type) . ',' . (int) $percent . ',' . (int) $level);
+			->select('1')
+			->from('#__neno_installation_messages')
+			->where('message = ' . $db->quote($message));
 
 		$db->setQuery($query);
-		$db->execute();
+		$result = $db->loadResult();
+
+		if (empty($result))
+		{
+			$query
+				->clear()
+				->insert('#__neno_installation_messages')
+				->columns(
+					array (
+						'message',
+						'type',
+						'percent',
+						'level'
+					)
+				)
+				->values($db->quote($message) . ',' . $db->quote($type) . ',' . (int) $percent . ',' . (int) $level);
+
+			$db->setQuery($query);
+			$db->execute();
+		}
 	}
 
 	/**
@@ -1088,7 +1055,7 @@ class NenoHelper
 
 			for (; $last_part < $parts_count; ++$last_part)
 			{
-				$length += strlen($parts[$last_part]);
+				$length += mb_strlen($parts[$last_part]);
 
 				if ($length - 3 > $truncate)
 				{
@@ -2253,12 +2220,23 @@ class NenoHelper
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query
-				->select('name')
-				->from('#__extensions')
-				->where('element = ' . $db->quote($jiso));
-			$db->setQuery($query);
-			$languageName = $db->loadResult();
+			$languageDescFile = JPATH_BASE . '/language/' . $jiso . '/' . $jiso . '.xml';
+
+			if (file_exists($languageDescFile))
+			{
+				$xml          = simplexml_load_file($languageDescFile);
+				$languageName = (string) $xml->name;
+			}
+			else
+			{
+				$query
+					->select('name')
+					->from('#__extensions')
+					->where('element = ' . $db->quote($jiso));
+				$db->setQuery($query);
+				$languageName = $db->loadResult();
+			}
+
 
 			if (empty($languageName))
 			{
@@ -2890,69 +2868,23 @@ class NenoHelper
 	public static function generateFilterDropDown($fieldId, $selected)
 	{
 		$filters = array (
-			array (
-				'value' => 'INT',
-				'text'  => 'INT',
-			),
-			array (
-				'value' => 'UNIT',
-				'text'  => 'UNIT',
-			),
-			array (
-				'value' => 'FLOAT',
-				'text'  => 'FLOAT',
-			),
-			array (
-				'value' => 'BOOL',
-				'text'  => 'BOOL',
-			),
-			array (
-				'value' => 'WORD',
-				'text'  => 'WORD',
-			),
-			array (
-				'value' => 'ALNUM',
-				'text'  => 'ALNUM',
-			),
-			array (
-				'value' => 'CMD',
-				'text'  => 'CMD',
-			),
-			array (
-				'value' => 'BASE64',
-				'text'  => 'BASE64',
-			),
-			array (
-				'value' => 'STRING',
-				'text'  => 'STRING',
-			),
-			array (
-				'value' => 'HTML',
-				'text'  => 'HTML',
-			),
-			array (
-				'value' => 'ARRAY',
-				'text'  => 'ARRAY',
-			),
-			array (
-				'value' => 'TRIM',
-				'text'  => 'TRIM',
-			),
-			array (
-				'value' => 'PATH',
-				'text'  => 'PATH',
-			),
-			array (
-				'value' => 'USERNAME',
-				'text'  => 'USERNAME',
-			),
-			array (
-				'value' => 'RAW',
-				'text'  => 'RAW',
-			)
+			'INT',
+			'UNIT',
+			'FLOAT',
+			'BOOL',
+			'WORD',
+			'ALNUM',
+			'CMD',
+			'STRING',
+			'HTML',
+			'ARRAY',
+			'TRIM',
+			'PATH',
+			'USERNAME',
+			'RAW'
 		);
 
-		return JHtml::_('select.genericlist', $filters, 'filter_field_' . $fieldId, 'class="filter-dropdown" data-field="' . $fieldId . '"', 'value', 'text', $selected, false, true);
+		return JLayoutHelper::render('dropdownbutton', array ('filters' => $filters, 'selected' => $selected, 'fieldId' => $fieldId), JPATH_NENO_LAYOUTS);
 	}
 
 	/**

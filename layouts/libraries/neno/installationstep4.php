@@ -1,5 +1,13 @@
 <?php
+/**
+ * @package    Neno
+ *
+ * @author     Jensen Technologies S.L. <info@notwebdesign.com>
+ * @copyright  Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ */
 
+//No direct access
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
@@ -37,7 +45,7 @@ JHtml::_('bootstrap.tooltip');
 			<h2><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_TITLE'); ?></h2>
 
 			<div class="progress progress-striped active" id="progress-bar">
-				<div class="bar" style="width: 0%;"></div>
+				<div class="bar" style="width: 2%;"></div>
 			</div>
 			<p><?php echo JText::_('COM_NENO_INSTALLATION_SETUP_COMPLETING_FINISH_SETUP_MESSAGE'); ?></p>
 

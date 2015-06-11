@@ -171,6 +171,7 @@ function fixIssue() {
 }
 
 function loadMissingTranslationMethodSelectors(listSelector, placement) {
+    apply = false;
     if (typeof listSelector != 'string') {
         var parent = jQuery('.translation-method-selector-container').parent();
 
@@ -182,7 +183,7 @@ function loadMissingTranslationMethodSelectors(listSelector, placement) {
         }
     }
 
-    if (typeof placement == 'undefined') {
+    if (typeof placement != 'string') {
         placement = 'language';
     }
 
@@ -214,7 +215,7 @@ function loadMissingTranslationMethodSelectors(listSelector, placement) {
                 otherParams = '&language=' + lang;
             }
 
-            executeAjaxForTranslationMethodSelectors(listSelector, placement, n, selected_methods_string, jQuery(this).find('.translation-method-selector'), otherParams);
+            executeAjaxForTranslationMethodSelectors(listSelector, placement, n, selected_methods_string, jQuery(this).find('.translation-method-selector'), otherParams, false);
         });
     }
     else {
@@ -227,6 +228,7 @@ function loadMissingTranslationMethodSelectors(listSelector, placement) {
             for (var i = 0; i < n; i++) {
                 if (i > selector_id) {
                     jQuery(this).closest(listSelector).find("[data-selector-container-id='" + i + "']").remove();
+                    n--;
                 }
             }
         }
@@ -237,8 +239,27 @@ function loadMissingTranslationMethodSelectors(listSelector, placement) {
         if (typeof lang != 'undefined') {
             otherParams = '&language=' + lang;
         }
-        saveTranslationMethod(jQuery(this).find(':selected').val(), lang, selector_id + 1);
-        executeAjaxForTranslationMethodSelectors(listSelector, placement, n, selected_methods_string, jQuery(this), otherParams);
+
+        var modal = jQuery('#translationMethodModal');
+        var run = false;
+        var element = jQuery(this);
+
+        modal.find('.yes-btn').off('click').on('click', function () {
+            saveTranslationMethod(element.find(':selected').val(), lang, selector_id + 1, true);
+            run = true;
+            modal.modal('hide');
+            apply = true;
+        });
+
+        modal.off('hide').on('hide', function () {
+            if (!run) {
+                saveTranslationMethod(element.find(':selected').val(), lang, selector_id + 1, false);
+            }
+
+            executeAjaxForTranslationMethodSelectors(listSelector, placement, n, selected_methods_string, element, otherParams);
+        });
+
+        modal.modal('show');
     }
 }
 
@@ -256,8 +277,8 @@ function executeAjaxForTranslationMethodSelectors(listSelector, placement, n, se
 
                 if (placement == 'language') {
                     jQuery(element).closest(listSelector).find('.translation-method-selector').each(function () {
-                        saveTranslationMethod(jQuery(this).find(':selected').val(), jQuery(this).closest(listSelector).data('language'), jQuery(this).data('selector-id') + 1);
-                    })
+                        saveTranslationMethod(jQuery(this).find(':selected').val(), jQuery(this).closest(listSelector).data('language'), jQuery(this).data('selector-id') + 1, apply);
+                    });
                 }
             }
 
@@ -282,7 +303,13 @@ function executeAjaxForTranslationMethodSelectors(listSelector, placement, n, se
     });
 }
 
-function saveTranslationMethod(translationMethod, language, ordering) {
+function saveTranslationMethod(translationMethod, language, ordering, applyToElements) {
+    if (typeof applyToElements == 'undefined') {
+        applyToElements = false;
+    }
+
+    applyToElements = applyToElements ? 1 : 0;
+
     jQuery.ajax({
         beforeSend: onBeforeAjax,
         url: 'index.php?option=com_neno&task=saveTranslationMethod',
@@ -290,7 +317,8 @@ function saveTranslationMethod(translationMethod, language, ordering) {
         data: {
             translationMethod: translationMethod,
             language: language,
-            ordering: ordering
+            ordering: ordering,
+            applyToElements: applyToElements
         }
     });
 }

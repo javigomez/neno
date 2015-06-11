@@ -61,7 +61,7 @@ class NenoViewSettings extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
 
-		NenoHelper::addSubmenu('settings');
+		NenoHelperBackend::addSubmenu('settings');
 
 		$this->addToolbar();
 

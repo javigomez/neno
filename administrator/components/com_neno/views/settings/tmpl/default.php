@@ -24,7 +24,7 @@ if (!empty($this->extraSidebar))
 $user   = JFactory::getUser();
 $userId = $user->get('id');
 
-$options = array();
+$options = array ();
 
 foreach ($this->items as $item)
 {
@@ -39,9 +39,11 @@ foreach ($this->items as $item)
 		vertical-align: super;
 		cursor: pointer;
 	}
+
 	td.setting-label {
 		width: 40% !important;
 	}
+
 	table td {
 		border: none !important;
 	}
@@ -114,7 +116,8 @@ foreach ($this->items as $item)
 				<?php $item = $options['license_code']; ?>
 				<td class='left setting-label'>
 					<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
-					<span class="settings-tooltip" data-toggle="tooltip" title='<?php echo JText::_('COM_NENO_SETTINGS_SETTING_INFO_' . strtoupper($item->setting_key)); ?>'>[?]</span>
+					<span class="settings-tooltip" data-toggle="tooltip"
+					      title='<?php echo JText::_('COM_NENO_SETTINGS_SETTING_INFO_' . strtoupper($item->setting_key)); ?>'>[?]</span>
 				</td>
 				<td class=''>
 					<textarea name="<?php echo $item->setting_key; ?>"
@@ -134,7 +137,8 @@ foreach ($this->items as $item)
 				<?php $item = $options['translator']; ?>
 				<td class='setting-label'>
 					<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
-					<span class="settings-tooltip" data-toggle="tooltip" title='<?php echo JText::_('COM_NENO_SETTINGS_SETTING_INFO_' . strtoupper($item->setting_key)); ?>'>[?]</span>
+					<span class="settings-tooltip" data-toggle="tooltip"
+					      title='<?php echo JText::_('COM_NENO_SETTINGS_SETTING_INFO_' . strtoupper($item->setting_key)); ?>'>[?]</span>
 				</td>
 				<td class=''>
 					<?php echo $item->dropdown; ?>
@@ -151,8 +155,52 @@ foreach ($this->items as $item)
 					       value="<?php echo $item->setting_value; ?>"/>
 				</td>
 			</tr>
+			<tr>
+				<?php $item = $options['copy_unpublished']; ?>
+				<td class='setting-label'>
+					<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
+				</td>
+				<td class=''>
+					<fieldset id="<?php echo $item->setting_key; ?>" class="radio btn-group btn-group-yesno">
+						<input type="radio" id="<?php echo $item->setting_key; ?>0"
+						       name="<?php echo $item->setting_key; ?>" value="1"
+							<?php echo ($item->setting_value) ? 'checked="checked"' : ''; ?>>
+						<label for="<?php echo $item->setting_key; ?>0" class="btn">
+							<?php echo JText::_('JYES'); ?>
+						</label>
+						<input type="radio" id="<?php echo $item->setting_key; ?>1"
+						       name="<?php echo $item->setting_key; ?>" value="0"
+							<?php echo ($item->setting_value) ? '' : 'checked="checked"'; ?>>
+						<label for="<?php echo $item->setting_key; ?>1" class="btn">
+							<?php echo JText::_('JNO'); ?>
+						</label>
+					</fieldset>
+				</td>
+			</tr>
+			<tr>
+				<?php $item = $options['copy_trashed']; ?>
+				<td class='setting-label'>
+					<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_' . strtoupper($item->setting_key)); ?>
+				</td>
+				<td class=''>
+					<fieldset id="<?php echo $item->setting_key; ?>" class="radio btn-group btn-group-yesno">
+						<input type="radio" id="<?php echo $item->setting_key; ?>0"
+						       name="<?php echo $item->setting_key; ?>" value="1"
+							<?php echo ($item->setting_value) ? 'checked="checked"' : ''; ?>>
+						<label for="<?php echo $item->setting_key; ?>0" class="btn">
+							<?php echo JText::_('JYES'); ?>
+						</label>
+						<input type="radio" id="<?php echo $item->setting_key; ?>1"
+						       name="<?php echo $item->setting_key; ?>" value="0"
+							<?php echo ($item->setting_value) ? '' : 'checked="checked"'; ?>>
+						<label for="<?php echo $item->setting_key; ?>1" class="btn">
+							<?php echo JText::_('JNO'); ?>
+						</label>
+					</fieldset>
+				</td>
+			</tr>
 		</table>
-				<h2><?php echo JText::_('COM_NENO_SETTINGS_TRANSLATE'); ?></h2>
+		<h2><?php echo JText::_('COM_NENO_SETTINGS_TRANSLATE'); ?></h2>
 		<table class="table full-width" id="typeListTranslate">
 			<tr>
 				<?php $item = $options['hide_empty_strings']; ?>
@@ -187,6 +235,7 @@ foreach ($this->items as $item)
 			</tr>
 		</table>
 		<br/>
+
 		<h2><?php echo JText::_('COM_NENO_SETTINGS_SCHEDULED'); ?></h2>
 		<table class="table full-width" id="typeListScheduled">
 			<tr>

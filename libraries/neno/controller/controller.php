@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // No direct access
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 /**
  * Class NenoController
@@ -42,7 +42,10 @@ class NenoController extends JControllerLegacy
 		$view  = $input->getCmd('view', 'dashboard');
 		$app   = JFactory::getApplication();
 
-		if (NenoSettings::get('installation_completed') != 1 && NenoSettings::get('installation_status') != 6 && $view != 'installation' && $view != 'debug' && $app->isAdmin())
+		if (NenoSettings::get('installation_completed') != 1
+			&& NenoSettings::get('installation_status') != 6
+			&& $view != 'installation' && $view != 'debug' && $app->isAdmin()
+		)
 		{
 			if ($view != 'dashboard')
 			{
@@ -402,6 +405,7 @@ class NenoController extends JControllerLegacy
 		$language          = $input->getString('language');
 		$translationMethod = $input->getInt('translationMethod');
 		$ordering          = $input->getInt('ordering');
+		$applyToElements   = $input->getInt('applyToElements');
 
 		if (!empty($language))
 		{
@@ -434,6 +438,53 @@ class NenoController extends JControllerLegacy
 				->values($db->quote($language) . ',' . $translationMethod . ',' . $ordering);
 			$db->setQuery($query);
 			$db->execute();
+
+			if ($applyToElements)
+			{
+				// Deleting translation methods for groups
+				$query
+					->clear()
+					->delete('#__neno_content_element_groups_x_translation_methods')
+					->where(
+						array (
+							'lang = ' . $db->quote($language),
+							'ordering >= ' . $db->quote($ordering)
+						)
+					);
+
+				$db->setQuery($query);
+				$db->execute();
+
+				// Delete translation methods for translations
+				$query
+					->clear()
+					->delete('#__neno_content_element_translation_x_translation_methods')
+					->where(
+						array (
+							'translation_id IN (SELECT id FROM #__neno_content_element_translations WHERE language = ' . $db->quote($language) . ' AND state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE . ')',
+							'ordering >= ' . $db->quote($ordering)
+						)
+					);
+
+				$db->setQuery($query);
+				$db->execute();
+
+				// Inserting translation methods for groups
+				$query = 'INSERT INTO #__neno_content_element_groups_x_translation_methods (group_id, lang, translation_method_id, ordering)
+							SELECT id, ' . $db->quote($language) . ', ' . $db->quote($translationMethod) . ',' . $db->quote($ordering) . ' FROM #__content_element_groups';
+
+				$db->setQuery($query);
+				$db->execute();
+
+				// Inserting translation methods for translations
+				$query = 'INSERT INTO #__neno_content_element_translation_x_translation_methods (translation_id, translation_method_id, ordering)
+							SELECT id, ' . $db->quote($translationMethod) . ',' . $db->quote($ordering) . ' FROM #__content_element_translations
+							WHERE language = ' . $db->quote($language) . ' AND state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE;
+
+				$db->setQuery($query);
+				$db->execute();
+			}
+
 			JFactory::getApplication()->close();
 		}
 	}

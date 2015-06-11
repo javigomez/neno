@@ -62,7 +62,7 @@ class NenoViewGroupsElements extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
 
-		NenoHelper::addSubmenu('groupselements');
+		NenoHelperBackend::addSubmenu('groupselements');
 
 		$this->addToolbar();
 

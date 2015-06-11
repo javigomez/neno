@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 /**
  * Database driver class extends from Joomla Platform Database Driver class
@@ -185,16 +185,22 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	 */
 	private function hasToBeParsed($sql)
 	{
-		if (!empty($this->manifestTables))
+		// Check if the query contains Neno tables
+
+		if (!preg_match('/#__neno_/', $sql))
 		{
-			foreach ($this->manifestTables as $table)
+			if (!empty($this->manifestTables))
 			{
-				if (preg_match('/' . preg_quote($table) . '/', $sql))
+				foreach ($this->manifestTables as $table)
 				{
-					return true;
+					if (preg_match('/' . preg_quote($table) . '/', $sql))
+					{
+						return true;
+					}
 				}
 			}
 		}
+
 
 		return false;
 	}

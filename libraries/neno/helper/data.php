@@ -9,7 +9,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // No direct access
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 /**
  * Neno Data helper.
@@ -43,7 +43,7 @@ class NenoHelperData
 		}
 
 		// Make sure the saved field is of a long enough text value
-		if (strlen($string) < 500)
+		if (mb_strlen($string) < 500)
 		{
 			return $string;
 		}

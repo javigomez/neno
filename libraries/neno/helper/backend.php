@@ -9,7 +9,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // No direct access
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 /**
  * Neno Backend helper.
@@ -143,7 +143,7 @@ class NenoHelperBackend
 		if ($showLanguageDropDown)
 		{
 			$displayData['workingLanguage'] = NenoHelper::getWorkingLanguage();
-			$displayData['targetLanguages'] = NenoHelper::getLanguages();
+			$displayData['targetLanguages'] = NenoHelper::getLanguages(false);
 		}
 
 		$adminTitleLayout     = JLayoutHelper::render('toolbar', $displayData, JPATH_NENO_LAYOUTS);
@@ -342,15 +342,19 @@ class NenoHelperBackend
 	/**
 	 * Grouping tables that haven't been discovered
 	 *
-	 * @return void
+	 * @param   bool $persist Persist the group
+	 *
+	 * @return NenoContentElementGroup
 	 */
-	public static function groupingTablesNotDiscovered()
+	public static function groupingTablesNotDiscovered($persist = true)
 	{
 		/* @var $db NenoDatabaseDriverMysqlx */
 		$db = JFactory::getDbo();
 
 		// Get all the tables that haven't been detected using naming convention.
 		$tablesNotDiscovered = self::getTablesNotDiscovered();
+		$tablesAdded         = false;
+		$otherGroup          = null;
 
 		if (!empty($tablesNotDiscovered))
 		{
@@ -363,8 +367,6 @@ class NenoHelperBackend
 
 			$db->setQuery($query);
 			$groupId = $db->loadResult();
-
-			$otherGroup = null;
 
 			if (!empty($groupId))
 			{
@@ -410,13 +412,24 @@ class NenoHelperBackend
 					}
 
 					$otherGroup->addTable($table);
+					$tablesAdded = true;
 				}
 			}
 
-			$otherGroup
-				->setAssignedTranslationMethods(NenoHelper::getTranslationMethodsForLanguages())
-				->persist();
+			$otherGroup->setAssignedTranslationMethods(NenoHelper::getTranslationMethodsForLanguages());
+
+			if ($persist)
+			{
+				$otherGroup->persist();
+			}
 		}
+
+		if (!$tablesAdded)
+		{
+			$otherGroup = null;
+		}
+
+		return $otherGroup;
 	}
 
 	/**
@@ -632,7 +645,7 @@ class NenoHelperBackend
 					$directive = true;
 				}
 
-				if (strlen($match[1]))
+				if (mb_strlen($match[1]))
 				{
 					$phpInfo[$match[1]] = array ();
 				}
@@ -747,7 +760,7 @@ class NenoHelperBackend
 		while ($lines++ < 0)
 		{
 			// Find first newline and remove all text before that
-			$output = substr($output, strpos($output, "\n") + 1);
+			$output = substr($output, mb_strpos($output, "\n") + 1);
 		}
 
 		// Close file and return

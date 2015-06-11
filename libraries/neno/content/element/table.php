@@ -6,14 +6,14 @@
  * @copyright   Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 /**
  * Class NenoContentElementTable
  *
  * @since  1.0
  */
-class NenoContentElementTable extends NenoContentElement
+class NenoContentElementTable extends NenoContentElement implements NenoContentElementInterface
 {
 	/**
 	 * @var stdClass
@@ -46,6 +46,11 @@ class NenoContentElementTable extends NenoContentElement
 	protected $fields;
 
 	/**
+	 * @var bool
+	 */
+	protected $discovered;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data          Table data
@@ -55,6 +60,8 @@ class NenoContentElementTable extends NenoContentElement
 	public function __construct($data, $loadExtraData = true, $loadParent = false)
 	{
 		parent::__construct($data);
+
+		$data = (array) $data;
 
 		// Make sure the name of the table is properly formatted.
 		$this->tableName = NenoHelper::unifyTableName($this->tableName);
@@ -348,171 +355,6 @@ class NenoContentElementTable extends NenoContentElement
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @return boolean
-	 */
-	public function persist()
-	{
-		// If the table has been marked as translatable, let's check for the content element file
-		if ($this->translate)
-		{
-			$this->checkTranslatableStatusFromContentElementFile();
-		}
-
-		$result = parent::persist();
-
-		if (defined('NENO_INSTALLATION'))
-		{
-			NenoHelper::setSetupState(
-				0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getTableName()), 2
-			);
-			NenoSettings::set('discovering_table', $this->id);
-		}
-
-		if ($result)
-		{
-			/* @var $db NenoDatabaseDriverMysqlx */
-			$db = JFactory::getDbo();
-
-			// If the table has been marked as translated
-			if ($this->translate)
-			{
-				// Creates shadow tables and copy the content on it
-				$db->createShadowTables($this->tableName);
-			}
-
-			/* @var $field NenoContentElementField */
-			foreach ($this->fields as $field)
-			{
-				$field
-					->setTable($this)
-					->setTranslate($field->isTranslatable() && $this->isTranslate())
-					->persist();
-
-				if ($field->getFieldName() === 'language' && $this->isTranslate())
-				{
-					$languages       = NenoHelper::getTargetLanguages();
-					$defaultLanguage = NenoSettings::get('source_language');
-
-					foreach ($languages as $language)
-					{
-						if ($language->lang_code != $defaultLanguage)
-						{
-							$db->deleteContentElementsFromSourceTableToShadowTables($this->tableName, $language->lang_code);
-						}
-					}
-				}
-			}
-
-			// Only persist tables that are translatable.
-			if ($this->translate)
-			{
-				/* @var $field NenoContentElementField */
-				foreach ($this->fields as $field)
-				{
-					if (defined('NENO_INSTALLATION'))
-					{
-						NenoHelper::setSetupState(
-							0,
-							JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE_FIELD', $this->group->getGroupName(), $this->getTableName(), $field->getFieldName()),
-							3
-						);
-						NenoSettings::set('discovering_field', $field->id);
-					}
-
-					$field->persistTranslations();
-
-					if (defined('NENO_INSTALLATION'))
-					{
-						NenoSettings::set('discovering_field', null);
-					}
-				}
-			}
-			else
-			{
-				if (defined('NENO_INSTALLATION'))
-				{
-					NenoHelper::setSetupState(
-						0, JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_TABLE_TOO_MANY_RECORDS', $this->group->getGroupName(), $this->getTableName()), 2, 'error'
-					);
-				}
-			}
-		}
-
-		if (defined('NENO_INSTALLATION'))
-		{
-			NenoSettings::set('discovering_table', null);
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Check if the table should be translatable
-	 *
-	 * @return void
-	 */
-	public function checkTranslatableStatusFromContentElementFile()
-	{
-		$filePath = JPATH_NENO . DIRECTORY_SEPARATOR . 'contentelements' . DIRECTORY_SEPARATOR . str_replace('#__', '', $this->tableName) . '_contentelements.xml';
-
-		if (file_exists($filePath))
-		{
-			$xml             = simplexml_load_file($filePath);
-			$this->translate = ((int) $xml->translate) == 1;
-		}
-	}
-
-	/**
-	 * Get Table name
-	 *
-	 * @return string
-	 */
-	public function getTableName()
-	{
-		return $this->tableName;
-	}
-
-	/**
-	 * Set Table name
-	 *
-	 * @param   string $tableName Table name
-	 *
-	 * @return $this
-	 */
-	public function setTableName($tableName)
-	{
-		$this->tableName = $tableName;
-
-		return $this;
-	}
-
-	/**
-	 * Check if the table is translatable
-	 *
-	 * @return boolean
-	 */
-	public function isTranslate()
-	{
-		return $this->translate;
-	}
-
-	/**
-	 * Mark this table as translatable/untranslatable
-	 *
-	 * @param   boolean $translate Translation status
-	 *
-	 * @return $this
-	 */
-	public function setTranslate($translate)
-	{
-		$this->translate = $translate;
-
-		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
 	 * @param   bool $allFields         Allows to show all the fields
 	 * @param   bool $recursive         Convert this method in recursive
 	 * @param   bool $convertToDatabase Convert property names to database
@@ -568,25 +410,204 @@ class NenoContentElementTable extends NenoContentElement
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Get Table name
+	 *
+	 * @return string
+	 */
+	public function getTableName()
+	{
+		return $this->tableName;
+	}
+
+	/**
+	 * Set Table name
+	 *
+	 * @param   string $tableName Table name
 	 *
 	 * @return $this
 	 */
-	public function prepareCacheContent()
+	public function setTableName($tableName)
 	{
-		/* @var $data $this */
-		$data   = parent::prepareCacheContent();
-		$fields = array ();
+		$this->tableName = $tableName;
 
-		/* @var $field NenoContentElementField */
-		foreach ($data->getFields() as $field)
+		return $this;
+	}
+
+	/**
+	 * Discover the element
+	 *
+	 * @return bool True on success
+	 */
+	public function discoverElement()
+	{
+		NenoHelper::setSetupState(
+			JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_PARSING_GROUP_TABLE', $this->group->getGroupName(), $this->getTableName()), 2
+		);
+
+		if ($this->translate)
 		{
-			$fields[] = $field->prepareCacheContent();
+			// Check if there are children not discovered
+			$field = NenoContentElementField::load(array ('discovered' => 0, 'table_id' => $this->id, '_limit' => 1, 'translate' => 1));
+
+			if (!empty($field))
+			{
+				NenoSettings::set('installation_level', '2.1');
+				NenoSettings::set('discovering_element_1.1', $this->id);
+			}
+			else
+			{
+				NenoSettings::set('discovering_element_1.1', 0);
+				$this
+					->setDiscovered(true)
+					->persist();
+			}
+		}
+		else
+		{
+			NenoHelper::setSetupState(
+				JText::sprintf('COM_NENO_INSTALLATION_MESSAGE_TABLE_TOO_MANY_RECORDS', $this->group->getGroupName(), $this->getTableName()), 2, 'error'
+			);
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @return boolean
+	 */
+	public function persist()
+	{
+		// If the table has been marked as translatable, let's check for the content element file
+		if ($this->translate)
+		{
+			$this->checkTranslatableStatusFromContentElementFile();
 		}
 
-		$data->fields = $fields;
-		$data->group  = null;
+		$result = parent::persist();
 
-		return $data;
+		if ($result)
+		{
+			/* @var $db NenoDatabaseDriverMysqlx */
+			$db = JFactory::getDbo();
+
+			// If the table has been marked as translated
+			if ($this->translate)
+			{
+				// Creates shadow tables and copy the content on it
+				$db->createShadowTables($this->tableName);
+			}
+
+			/* @var $field NenoContentElementField */
+			foreach ($this->fields as $field)
+			{
+				$field
+					->setTable($this)
+					->setTranslate($field->isTranslatable() && $this->isTranslate())
+					->persist();
+
+				if ($field->getFieldName() === 'language' && $this->isTranslate())
+				{
+					$languages       = NenoHelper::getTargetLanguages();
+					$defaultLanguage = NenoSettings::get('source_language');
+
+					foreach ($languages as $language)
+					{
+						if ($language->lang_code != $defaultLanguage)
+						{
+							$db->deleteContentElementsFromSourceTableToShadowTables($this->tableName, $language->lang_code);
+						}
+					}
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Check if the table should be translatable
+	 *
+	 * @return void
+	 */
+	public function checkTranslatableStatusFromContentElementFile()
+	{
+		$filePath = JPATH_NENO . '/contentelements/' . str_replace('#__', '', $this->tableName) . '_contentelements.xml';
+
+		if (file_exists($filePath))
+		{
+			$xml             = simplexml_load_file($filePath);
+			$this->translate = ((int) $xml->translate) == 1;
+		}
+	}
+
+	/**
+	 * Check if the table is translatable
+	 *
+	 * @return boolean
+	 */
+	public function isTranslate()
+	{
+		return $this->translate;
+	}
+
+	/**
+	 * Mark this table as translatable/untranslatable
+	 *
+	 * @param   boolean $translate Translation status
+	 *
+	 * @return $this
+	 */
+	public function setTranslate($translate)
+	{
+		$this->translate = $translate;
+
+		return $this;
+	}
+
+	/**
+	 * Check if the field has been discovered already
+	 *
+	 * @return boolean
+	 */
+	public function isDiscovered()
+	{
+		return $this->discovered;
+	}
+
+	/**
+	 * Set discovered flag
+	 *
+	 * @param   boolean $discovered Discovered flag
+	 *
+	 * @return $this
+	 */
+	public function setDiscovered($discovered)
+	{
+		$this->discovered = $discovered;
+
+		return $this;
+	}
+
+	/**
+	 * Check if a table has a state field
+	 *
+	 * @return bool
+	 */
+	public function hasState()
+	{
+		$fields = $this->getFields(false);
+		$found  = false;
+
+		/* @var $field NenoContentElementField */
+		foreach ($fields as $field)
+		{
+			if ($field->getFieldName() == 'state')
+			{
+				$found = true;
+				break;
+			}
+		}
+
+		return $found;
 	}
 }

@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
-defined('JPATH_BASE') or die;
+defined('_JEXEC') or die;
 
 // Define Neno path constant
 if (!defined('JPATH_NENO'))

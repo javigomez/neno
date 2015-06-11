@@ -34,7 +34,7 @@ class NenoViewDebug extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		NenoHelper::addSubmenu('debug');
+		NenoHelperBackend::addSubmenu('debug');
 		$this->sidebar = JHtmlSidebar::render();
 
 		return parent::display($tpl);

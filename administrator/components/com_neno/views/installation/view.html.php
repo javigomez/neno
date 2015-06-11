@@ -32,7 +32,7 @@ class NenoViewInstallation extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		NenoHelper::addSubmenu('');
+		NenoHelperBackend::addSubmenu('');
 
 		$this->sidebar = JHtmlSidebar::render();
 

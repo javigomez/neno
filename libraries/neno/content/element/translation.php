@@ -6,7 +6,7 @@
  * @copyright   Copyright (c) 2014 Jensen Technologies S.L. All rights reserved
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
-defined('JPATH_NENO') or die;
+defined('_JEXEC') or die;
 
 /**
  * Class NenoContentElementMetadata
@@ -170,7 +170,7 @@ class NenoContentElementTranslation extends NenoContentElement
 			}
 		}
 
-		$this->charactersCounter = strlen($this->getString());
+		$this->charactersCounter = mb_strlen($this->getString());
 
 		if (!$this->isNew())
 		{
@@ -920,20 +920,6 @@ class NenoContentElementTranslation extends NenoContentElement
 		$db->execute();
 
 		return parent::remove();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @return $this
-	 */
-	public function prepareCacheContent()
-	{
-		/* @var $data $this */
-		$data          = parent::prepareCacheContent();
-		$data->element = null;
-
-		return $data;
 	}
 
 	/**

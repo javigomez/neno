@@ -161,6 +161,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_tables` (
   `primary_key`     VARCHAR(255) NOT NULL,
   `translate`       TINYINT(1)   NOT NULL DEFAULT '1',
   `use_joomla_lang` TINYINT(1)   NOT NULL,
+  `discovered`      TINYINT(1)   NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `group_id_x_table_name` (`group_id`, `table_name`),
   UNIQUE KEY `table_name` (`table_name`),
@@ -184,6 +185,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_language_files` (
   `extension`  VARCHAR(255) NOT NULL,
   `language`   VARCHAR(5)   NOT NULL,
   `time_added` DATETIME     NOT NULL,
+  `discovered` TINYINT(1)   NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_#___#__neno_content_elemen_idx` (`group_id`),
   CONSTRAINT `fk_#__neno_content_element_1` FOREIGN KEY (`group_id`) REFERENCES `#__neno_content_element_groups` (`id`)
@@ -204,6 +206,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_fields` (
   `field_type` VARCHAR(45)  NOT NULL,
   `translate`  TINYINT(1)   NOT NULL DEFAULT '1',
   `filter`     VARCHAR(50)  NOT NULL DEFAULT 'RAW',
+  `discovered` TINYINT(1)   NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `table_id_x_field` (`table_id`, `field_name`),
   KEY `content_elements_fields_table_idx` (`table_id`),
@@ -226,6 +229,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_language_strings` (
   `time_added`      DATETIME     NOT NULL,
   `time_changed`    DATETIME     NOT NULL,
   `time_deleted`    DATETIME     NOT NULL,
+  `discovered`      TINYINT(1)   NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `languagefile_id` (`languagefile_id`, `constant`),
   KEY `fk_#__neno_content_element_idx` (`languagefile_id`),
@@ -396,7 +400,8 @@ INSERT IGNORE INTO `#__neno_settings` VALUES (1, 'translate_automatically_profes
   (4, 'license_code', '', 0), (5, 'translator', '', 0),
   (6, 'translator_api_key', '', 0),
   (7, 'source_language', 'en-GB', 0), (8, 'schedule_task_option', 'ajax', 0),
-  (9, 'hide_empty_strings', '1', 0), (10, 'installation_completed', '0', 0), (11, 'default_translate_action', '0', 2);
+  (9, 'hide_empty_strings', '1', 0), (10, 'installation_completed', '0', 0), (11, 'default_translate_action', '0', 2),
+  (12, 'copy_unpublished', '1', 2), (13, 'copy_trashed', '0', 2);
 
 INSERT IGNORE INTO `#__neno_machine_translation_api_language_pairs`
 VALUES (1, 1, 'af', 'ar'), (2, 1, 'af', 'az'), (3, 1, 'af', 'be'), (4, 1, 'af', 'bg'), (5, 1, 'af', 'bn'),

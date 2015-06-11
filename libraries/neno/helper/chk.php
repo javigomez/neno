@@ -1,15 +1,14 @@
 <?php
-
 /**
  * @package     Neno
- * @subpackage  Helper
  *
  * @author      Jensen Technologies S.L. <info@notwebdesign.com>
  * @copyright   Copyright (C) 2014 Jensen Technologies S.L. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
-// No direct access
-defined('JPATH_NENO') or die;
+
+/* No direct access */
+defined('_JEXEC') or die;
 
 /**
  * Neno chk helper.
@@ -54,7 +53,7 @@ class NenoHelperChk extends NenoHelperLicense
 	 */
 	private static function checkDomainMatch($domain)
 	{
-		if (strpos(JUri::root(), $domain) === false)
+		if (mb_strpos(JUri::root(), $domain) === false)
 		{
 			return false;
 		}
