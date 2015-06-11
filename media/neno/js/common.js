@@ -82,6 +82,8 @@ function saveTranslationAndNext() {
                                 url: 'index.php?option=com_neno&task=editor.consolidateTranslation',
                                 success: function () {
                                     jQuery('#consolidate-modal').modal('hide');
+                                    jQuery('#consolidate-confirm-modal .modal-body p span').html(data.counter);
+                                    jQuery('#consolidate-confirm-modal').modal('show');
                                 }
                             }
                         );
