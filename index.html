@@ -21,6 +21,10 @@
           <h1 id="project_title">Neno Documentation</h1>
           <h2 id="project_tagline">Documentation for the Neno Translation component</h2>
 
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Jensen-Technologies/neno/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Jensen-Technologies/neno/tarball/master">Download this project as a tar.gz file</a>
+            </section>
         </header>
     </div>
 
@@ -31,6 +35,21 @@
 <a id="welcome-to-the-neno-documentation" class="anchor" href="#welcome-to-the-neno-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to the Neno Documentation</h3>
 
 <p>The documentation is not ready yet. Please be patient.</p>
+
+<h2>
+<a id="contents" class="anchor" href="#contents" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contents</h2>
+
+<p><a href="#anchors-not-fully-compatible">Components not fully compatible with Neno</a></p>
+
+<h2>
+<a id="components-not-fully-compatible-with-neno-anchors-not-fully-compatible" class="anchor" href="#components-not-fully-compatible-with-neno-anchors-not-fully-compatible" aria-hidden="true"><span class="octicon octicon-link"></span></a>Components not fully compatible with Neno (#anchors-not-fully-compatible)</h2>
+
+<h3>
+<a id="jreviews" class="anchor" href="#jreviews" aria-hidden="true"><span class="octicon octicon-link"></span></a>JReviews</h3>
+
+<p>This component is not fully compatible with Neno because it has a table called #__jreviews_content which mixes content in several languages. That table contains fields to store tags in different languages such as tagesX (Spanish tags), tagenX (English tags), tagroX ( Romanian tags), tagdeX (German tags), tagitX (Italian tags). </p>
+
+<p>The correct method for implementing tags in Joomla is to use com_tags or create a separate table for tags and use the “language” field. </p>
       </section>
     </div>
 
