@@ -2,8 +2,9 @@
 layout: index
 ---
 ### Welcome to the Neno Documentation
+
 ```
-:exclamation: The documentation is not ready yet. Please be patient!
+The documentation is not ready yet. Please be patient!
 ```
 
 ## Contents
