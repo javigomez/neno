@@ -13,7 +13,10 @@ The documentation is not ready yet. Please be patient!
 
 ## Getting Started With Neno
 
-### Installing & setting up Neno 
+### Installing & setting up Neno
+
+Neno is very easy to setup and only takes a few minutes to install. We have created a walkthrough guide below to to guide you through the process. 
+
 
 ## Components not fully compatible with Neno
 
