@@ -19,6 +19,7 @@ Neno is very easy to setup and only takes a few minutes to install. We have crea
 ##### Step 1 Select Source language.
 The first thing you will be asked to do is to Select your source Language. This is the language you will use to translate from. If your website is already multilingual then choose the main language you create content in. We recommend that you select English as your source language whenever possible, as the quality of external machine translation is often better.
 
+Once you have selected your source language click next to move to next step.
 
 ## Components not fully compatible with Neno
 
