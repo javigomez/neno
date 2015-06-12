@@ -6,6 +6,7 @@ layout: index
 ```
 The documentation is not ready yet. Please be patient!
 ```
+## Getting Started With Neno
 
 ## Contents
 * [Components not fully compatible with Neno](#components-not-fully-compatible-with-neno)
