@@ -336,9 +336,9 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 
 
 	function showModalGroupForm(isNew) {
-		var id = getGroupIdFromChildElement(jQuery(this));
-		if (isNew === true) {
-			id = 0;
+		var id = 0;
+		if (isNew !== true) {
+			id = getGroupIdFromChildElement(jQuery(this));
 		}
 
 		//Load group form html
@@ -372,9 +372,10 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 		var id = 0;
 
 		if (typeof id_parts != 'undefined') {
+			id_parts = id_parts.split('-');
 			id = id_parts[1];
 		}
-		
+
 		return id;
 
 	}
