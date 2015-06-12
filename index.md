@@ -24,6 +24,12 @@ Once you have selected your source language click next to move to next step.
 ##### Step 2 Default Settings 
 Here you can choose Your default Translation settings. When Neno discovers untranslated content on your site it will assign it to the translation method you select here. You can also select a second translation method; this can be useful if for example you select machine translation as the first method, and want to review the machine translations manually afterwards.These settings can easily be changed later. For now select the translation method you think you will use most.
 
+##### Step 3 Target Languages
+Here you can choose the target languages you wish to translate your website into. To choose a language simply click the published button to select it. (You may see some text in red saying that the language does not have a created content record, but don’t worry just click “Fix it!”)
+
+You can add as many languages as you like here, and you can add or remove languages from your dashboard after setup is complete. You can also select your default translation method for the chosen languages here and change them later.
+
+If You don’t see the language you are looking for you can click on the add language button at the bottom of the page to get more languages. Once you can see all your target languages have been installed on screen click next to continue.
 
 
 
