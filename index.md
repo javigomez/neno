@@ -31,6 +31,8 @@ You can add as many languages as you like here, and you can add or remove langua
 
 If You don’t see the language you are looking for you can click on the add language button at the bottom of the page to get more languages. Once you can see all your target languages have been installed on screen click next to continue.
 
+##### Step 4 backup your site.
+To complete the setup, neno needs to move any existing translations to the neno database, to prevent having to translate content again. At this point we recommend that you backup your site as once the content is removed there is no way to undo this action. Once your site is backed up click on the proceed button to complete the installation.
 
 
 ## Components not fully compatible with Neno
