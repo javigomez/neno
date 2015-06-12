@@ -86,11 +86,12 @@ JHtml::_('bootstrap.tooltip');
 			jQuery('#warning-message').slideToggle(400, function () {
 				jQuery('#installation-wrapper').slideToggle();
 			});
-			jQuery.ajax({
-				url: 'index.php?option=com_neno&task=installation.getPreviousMessages',
-				success: function (messages) {
-					printMessages(messages);
-					interval = setInterval(checkStatus, 2000);
+
+			interval = setInterval(checkStatus, 2000);
+
+			Notification.requestPermission(function (perm) {
+				if (perm == 'granted') {
+					notifications = true;
 				}
 			});
 		}
@@ -142,9 +143,9 @@ JHtml::_('bootstrap.tooltip');
 
 			//Scroll to bottom
 			//if (scroll) {
-				container.stop().animate({
-					scrollTop: container[0].scrollHeight - container.height()
-				}, 100);
+			container.stop().animate({
+				scrollTop: container[0].scrollHeight - container.height()
+			}, 100);
 			//}
 
 			if (messages[i].percent != 0) {

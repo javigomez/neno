@@ -25,6 +25,7 @@ if (!empty($this->extra_sidebar))
 ?>
 
 <script>
+	notifications = false;
 	jQuery(document).ready(loadInstallationStep);
 
 	function loadInstallationStep() {
@@ -34,6 +35,7 @@ if (!empty($this->extra_sidebar))
 			success: function (html) {
 				jQuery('.installation-form').empty().append(html.installation_step);
 				if (html.jsidebar !== '') {
+					showNotification();
 					var sidebar = jQuery('#j-sidebar-container');
 					sidebar.empty().append(html.jsidebar);
 					jQuery('#j-main-container-installation').prop('id', 'j-main-container');
@@ -94,6 +96,21 @@ if (!empty($this->extra_sidebar))
 		});
 	}
 
+	function showNotification() {
+		if (notifications) {
+			try {
+				installationNotification = new Notification('<?php echo JText::_('COM_NENO_INSTALLATION_POPUP'); ?>', {
+					body: '<?php echo JText::_('COM_NENO_INSTALLATION_POPUP'); ?>',
+					dir: 'auto',
+					lang: '',
+					icon: '<?php echo JUri::root(); ?>/media/neno/images/neno_alert.png'
+				});
+			} catch (e) {
+
+			}
+		}
+	}
+
 	function processInstallationStep() {
 		jQuery('.loading-spin').removeClass('hide');
 		var allInputs = jQuery('.installation-step').find(':input');
@@ -133,13 +150,13 @@ if (!empty($this->extra_sidebar))
 				}
 			}
 		});
+	}
 
-		function renderErrorMessages(messages) {
-			var errorMessages = jQuery('.error-messages');
-			errorMessages.empty();
-			for (var i = 0; i < messages.length; i++) {
-				errorMessages.append('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>' + messages[i] + '</div>');
-			}
+	function renderErrorMessages(messages) {
+		var errorMessages = jQuery('.error-messages');
+		errorMessages.empty();
+		for (var i = 0; i < messages.length; i++) {
+			errorMessages.append('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>' + messages[i] + '</div>');
 		}
 	}
 </script>
