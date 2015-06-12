@@ -44,8 +44,6 @@ if ($displayData !== null): ?>
 						<?php echo JText::_($translation_method->name_constant); ?>
 					</option>
 				<?php endforeach; ?>
-
-
 			</select>
 		</div>
 	</div>

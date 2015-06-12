@@ -368,8 +368,14 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 	function getGroupIdFromChildElement(e) {
 
 		var row = e.parents('.row-group');
-		var id_parts = row.attr('data-id').split('-');
-		return id_parts[1];
+		var id_parts = row.data('id');
+		var id = 0;
+
+		if (typeof id_parts != 'undefined') {
+			id = id_parts[1];
+		}
+		
+		return id;
 
 	}
 
