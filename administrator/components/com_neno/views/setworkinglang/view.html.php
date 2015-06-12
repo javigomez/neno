@@ -26,6 +26,11 @@ class NenoViewSetWorkingLang extends JViewLegacy
 	protected $langs;
 
 	/**
+	 * @var string
+	 */
+	protected $sidebar;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template name
@@ -37,7 +42,8 @@ class NenoViewSetWorkingLang extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$this->langs = NenoHelper::getTargetLanguages(false);
-		JFactory::getApplication()->input->set('hidemainmenu', true);
+		NenoHelperBackend::addSubmenu('');
+		$this->sidebar = JHtmlSidebar::render();
 		parent::display($tpl);
 	}
 }

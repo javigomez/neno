@@ -14,25 +14,30 @@ defined('_JEXEC') or die;
 $next = JFactory::getApplication()->input->getString('next', 'dashboard');
 
 ?>
-<h2><?php echo JText::_('COM_NENO_SETTINGS_SET_WORKING_LANGUAGE'); ?></h2>
+<div id="j-sidebar-container" class="span2">
+	<?php echo $this->sidebar; ?>
+</div>
+<div id="j-main-container" class="span10">
+	<h2><?php echo JText::_('COM_NENO_SETTINGS_SET_WORKING_LANGUAGE'); ?></h2>
 
-<div class="clearfix">
-	<?php foreach ($this->langs as $lang): ?>
-		<a class="btn btn-large span2 <?php echo $lang->isInstalled == false ? 'not-ready' : ''; ?>"
-		   data-language="<?php echo $lang->lang_code; ?>"
-		   href="index.php?option=com_neno&task=setworkinglang&lang=<?php echo $lang->lang_code; ?>&next=<?php echo $next; ?>">
-			<h4>
-				<?php if (file_exists(JPATH_SITE . '/media/mod_languages/images/' . $lang->image . '.gif')): ?>
-					<img src="<?php echo JUri::root() . 'media/mod_languages/images/' . $lang->image . '.gif'; ?>"/>
+	<div class="clearfix">
+		<?php foreach ($this->langs as $lang): ?>
+			<a class="btn btn-large span2 <?php echo $lang->isInstalled == false ? 'not-ready' : ''; ?>"
+			   data-language="<?php echo $lang->lang_code; ?>"
+			   href="index.php?option=com_neno&task=setworkinglang&lang=<?php echo $lang->lang_code; ?>&next=<?php echo $next; ?>">
+				<h4>
+					<?php if (file_exists(JPATH_SITE . '/media/mod_languages/images/' . $lang->image . '.gif')): ?>
+						<img src="<?php echo JUri::root() . 'media/mod_languages/images/' . $lang->image . '.gif'; ?>"/>
+					<?php endif; ?>
+					<?php echo $lang->title_native; ?>
+				</h4>
+				<?php if ($lang->isInstalled == false): ?>
+					<span
+						class="setting-up-messsage"><?php echo JText::_('COM_NENO_LANGUAGE_SETTING_UP_MESSAGE'); ?></span>
 				<?php endif; ?>
-				<?php echo $lang->title_native; ?>
-			</h4>
-			<?php if ($lang->isInstalled == false): ?>
-				<span
-					class="setting-up-messsage"><?php echo JText::_('COM_NENO_LANGUAGE_SETTING_UP_MESSAGE'); ?></span>
-			<?php endif; ?>
-		</a>
-	<?php endforeach; ?>
+			</a>
+		<?php endforeach; ?>
+	</div>
 </div>
 
 <script>
