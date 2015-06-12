@@ -95,6 +95,7 @@ if (!empty($this->extra_sidebar))
 	}
 
 	function processInstallationStep() {
+		jQuery('.loading-spin').removeClass('hide');
 		var allInputs = jQuery('.installation-step').find(':input');
 		var data = {};
 
