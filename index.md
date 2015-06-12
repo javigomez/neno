@@ -21,6 +21,12 @@ The first thing you will be asked to do is to Select your source Language. This 
 
 Once you have selected your source language click next to move to next step.
 
+##### Step 2 Default Settings 
+Here you can choose Your default Translation settings. When Neno discovers untranslated content on your site it will assign it to the translation method you select here. You can also select a second translation method; this can be useful if for example you select machine translation as the first method, and want to review the machine translations manually afterwards.These settings can easily be changed later. For now select the translation method you think you will use most.
+
+
+
+
 ## Components not fully compatible with Neno
 
 ### JReviews
