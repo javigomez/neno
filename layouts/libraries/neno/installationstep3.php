@@ -37,6 +37,7 @@ $items = $displayData->languages;
 		<button type="button" class="btn btn-success next-step-button">
 			<?php echo JText::_('COM_NENO_INSTALLATION_NEXT'); ?>
 		</button>
+		<img src="<?php echo JUri::root(); ?>/media/neno/images/loading_mini.gif" class="hide loading-spin"/>
 	</div>
 
 	<?php echo JLayoutHelper::render('installationbottom', 3, JPATH_NENO_LAYOUTS); ?>

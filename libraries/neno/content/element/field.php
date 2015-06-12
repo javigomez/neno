@@ -521,7 +521,7 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 
 						foreach ($strings as $string)
 						{
-							if ($string['state'] == 0 && NenoSettings::get('copy_unpublished', 1) || ($string['state'] == -2 && NenoSettings::get('copy_trashed', 0)))
+							if ($string['state'] == 1 || ($string['state'] == 0 && NenoSettings::get('copy_unpublished', 1)) || ($string['state'] == -2 && NenoSettings::get('copy_trashed', 0)))
 							{
 								$commonData['string'] = $string['string'];
 

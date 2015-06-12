@@ -12,7 +12,13 @@ defined('_JEXEC') or die;
 if ($displayData !== null): ?>
 	<?php $n = $displayData['n']; ?>
 	<div class="translation-method-selector-container" data-selector-container-id="<?php echo $n; ?>">
-		<div class="control-label"><?php echo JText::sprintf('COM_NENO_METHOD_N', $n + 1); ?></div>
+		<div class="control-label">
+			<?php if ($n == 0): ?>
+				<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_TRANSLATION_METHOD_1'); ?>
+			<?php else: ?>
+				<?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_TRANSLATION_METHOD_2'); ?>
+			<?php endif; ?>
+		</div>
 		<div class="controls">
 			<select name="jform[translation_methods][<?php echo $n; ?>]" class="translation-method-selector"
 			        data-selector-id="<?php echo $n; ?>">
@@ -38,8 +44,6 @@ if ($displayData !== null): ?>
 						<?php echo JText::_($translation_method->name_constant); ?>
 					</option>
 				<?php endforeach; ?>
-
-
 			</select>
 		</div>
 	</div>

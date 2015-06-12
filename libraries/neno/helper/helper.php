@@ -620,7 +620,7 @@ class NenoHelper
 					$tableData = array (
 						'tableName'  => $tableName,
 						'primaryKey' => $db->getPrimaryKey($tableName),
-						'translate'  => self::isTranslatable($tableName),
+						'translate'  => 1,
 						'group'      => $group
 					);
 
@@ -750,28 +750,6 @@ class NenoHelper
 		$result = $db->loadResult();
 
 		return $result == 1;
-	}
-
-	/**
-	 * Check if a table is translatable
-	 *
-	 * @param   string $tableName Table name
-	 *
-	 * @return bool
-	 */
-	public static function isTranslatable($tableName)
-	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select('COUNT(*) AS counter')
-			->from($db->quoteName($tableName));
-
-		$db->setQuery($query);
-		$counter = (int) $db->loadResult();
-
-		return $counter <= 500;
 	}
 
 	/**

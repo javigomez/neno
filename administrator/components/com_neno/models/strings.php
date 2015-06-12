@@ -79,6 +79,30 @@ class NenoModelStrings extends JModelList
 	}
 
 	/**
+	 * {@inheritdoc}
+	 *
+	 * @return int
+	 */
+	public function getStart()
+	{
+		$store = $this->getStoreId('getstart');
+
+		// Try to load the data from internal storage.
+		if (isset($this->cache[$store]))
+		{
+			return $this->cache[$store];
+		}
+
+		$start = $this->getState('list.start');
+
+		// Add the total to the internal cache.
+		$this->cache[$store] = $start;
+
+		return $this->cache[$store];
+	}
+
+
+	/**
 	 * Get and set current values of filters
 	 *
 	 * @param   string $ordering  Ordering field

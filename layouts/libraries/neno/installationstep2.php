@@ -54,7 +54,7 @@ JHtml::_('bootstrap.tooltip');
 			<button type="button" class="btn btn-success next-step-button">
 				<?php echo JText::_('COM_NENO_INSTALLATION_NEXT'); ?>
 			</button>
-
+			<img src="<?php echo JUri::root(); ?>/media/neno/images/loading_mini.gif" class="hide loading-spin"/>
 		</div>
 	</div>
 
