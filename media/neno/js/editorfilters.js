@@ -49,10 +49,13 @@ jQuery(document).ready(function () {
         loadStrings(true);
     }
 
-    jQuery('button[type=submit]').off('click').on('click', function (e) {
-        var ev = e || window.event;
-        ev.preventDefault();
+    jQuery('.submit-form').off('click').on('click', function (e) {
         loadStrings(true);
-    })
+    });
+
+    jQuery(window).resize(function(){
+       jQuery('#filter_search').width(jQuery('#j-sidebar-container').innerWidth() - jQuery('.submit-form').width() - 57);
+       jQuery('.multiselect-wrapper').width(jQuery('#j-sidebar-container').innerWidth() - 45);
+    });
 
 });
