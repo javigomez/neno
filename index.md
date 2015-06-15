@@ -88,10 +88,10 @@ Neno will log information about every action it takes. In the unlikely event of 
 
 
 ## Translating special content in Joomla
-When translating Joomla content there are some special tags, variables and characters to look out for. This document describes these.
+When translating Joomla content there are some special tags, variables and characters to look out for. 
 
 ### Backslashes
-If the source test contains a backslashes it is important to include them in the translation as well. Typical backslashes may be `\’` or `\”` as well as `\\`. It is important to maintain the same spacing around backslashes as the source text.
+If the source text contains a backslashes it is important to include them in the translation as well. Typical backslashes may be `\’` or `\”` as well as `\\`. It is important to maintain the same spacing around backslashes as the source text.
 
 ### Double quotes
 If the source string contains double quotes (“) then it is OK to also use them in the translated text. If the source language does not contain double quotes but are needed in the translation then please use the HTML entity &quot; 
