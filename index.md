@@ -94,10 +94,10 @@ When translating Joomla content there are some special tags, variables and chara
 If the source text contains a backslashes it is important to include them in the translation as well. Typical backslashes may be `\’` or `\”` as well as `\\`. It is important to maintain the same spacing around backslashes as the source text.
 
 ### Double quotes
-If the source string contains double quotes (“) then it is OK to also use them in the translated text. If the source language does not contain double quotes but are needed in the translation then please use the HTML entity &quot; 
+If the source string contains double quotes `“` then it is OK to also use them in the translated text. If the source language does not contain double quotes but are needed in the translation then please use the HTML entity `&quot;` 
 
 ### Single quotes
-If the source string contains single quotes (‘) then it is OK to also use them in the translated text. If the source language does not contain single quotes but are needed in the translation then please use the HTML entity &#39; 
+If the source string contains single quotes `‘` then it is OK to also use them in the translated text. If the source language does not contain single quotes but are needed in the translation then please use the HTML entity `&#39;`
 
 ### %s and other % variables
 If a source string contains a `%` sign followed by a character it is a variable and will be replaced by something else before being displayed. This list shows what the `%` variable will be replaced with.
