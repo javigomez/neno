@@ -103,7 +103,8 @@ If the source string contains single quotes `‘` then it is OK to also use them
 If a source string contains a `%` sign followed by a character it is a variable and will be replaced by something else before being displayed. This list shows what the `%` variable will be replaced with.
 
 * `%s` a variable that will be replaced by a string
-* `%1` a numbered variable that will be replaced by a string
+* `%d` a variable that will be replaced by a number
+* `%1$s` a variable that will be replaced by a string using a numbered reference
 
 If a string contains more than one `%s` variable the replacements of the variable will be in the same order as the source string. Numbered variables such as `%1` and `%2` can be ordered differently.
 ### HTML
