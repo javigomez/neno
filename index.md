@@ -87,7 +87,7 @@ Neno will log information about every action it takes. In the unlikely event of 
 
 
 
-## Translating special content in Joomla
+## Translating special content in Joomla<a name="translating-special-content-in-joomla"></a>
 When translating Joomla content there are some special tags, variables and characters to look out for. 
 
 ### Backslashes
