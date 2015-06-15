@@ -86,8 +86,8 @@ Neno will log information about every action it takes. In the unlikely event of 
 *If you want to use the copy and translate button on the translation interface (for machine translations) you will need to    get an API key(Google or Yandex) first and copy and paste it into the box provided on the settings page. 
 
 
-
-## Translating special content in Joomla<a name="translating-special-content-in-joomla"></a>
+<a name="translating-special-content-in-joomla"></a>
+## Translating special content in Joomla
 When translating Joomla content there are some special tags, variables and characters to look out for. 
 
 ### Backslashes
