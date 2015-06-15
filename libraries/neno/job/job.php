@@ -38,6 +38,11 @@ class NenoJob extends NenoObject
 	const JOB_STATE_PROCESSED = 4;
 
 	/**
+	 * Status when the job has tried to be sent but the user does not have enough translation credits
+	 */
+	const JOB_STATE_NO_TC = 5;
+
+	/**
 	 * @var array
 	 */
 	public $translations;

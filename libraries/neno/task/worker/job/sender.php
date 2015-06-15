@@ -47,11 +47,9 @@ class NenoTaskWorkerJobSender extends NenoTaskWorker
 			$job->generateJobFile();
 			$job
 				->setSentTime(new DateTime)
-				->persist();
+				->setState(NenoJob::JOB_STATE_SENT);
 
-			// Send API call to the server to fetch the file
-			$httpClient = JHttpFactory::getHttp();
-			$data       = json_encode(
+			$data = json_encode(
 				array (
 					'filename'             => $job->getFileName() . '.zip',
 					'words'                => $job->getWordCount(),
@@ -61,15 +59,21 @@ class NenoTaskWorkerJobSender extends NenoTaskWorker
 				)
 			);
 
-			$response = json_decode(
-				$httpClient->post('http://localhost/neno-translate/api/v1/job/12547854796521547856932154785961', $data),
-				true
-			);
+			list($status, $response) = NenoHelperApi::makeApiCall('job', 'POST', $data);
 
-			if ($response['code'] != 200)
+			if ($status === false)
 			{
-				throw new Exception($response['message'], $response['code']);
+				$job
+					->setSentTime(null)
+					->setState(NenoJob::JOB_STATE_GENERATED);
+
+				if ($response['code'] == 402)
+				{
+					$job->setState(NenoJob::JOB_STATE_NO_TC);
+				}
 			}
+
+			$job->persist();
 		}
 	}
 }
