@@ -85,7 +85,7 @@ class NenoViewGroupsElements extends JViewLegacy
 
 		$toolbar = JToolbar::getInstance();
 		$toolbar->addButtonPath(JPATH_NENO . '/button');
-		$toolbar->appendButton('TC', $this->get('TCAvailable'));
+		$toolbar->appendButton('TC', NenoHelperApi::getTCAvailable());
 
 		$this->extraSidebar = NenoHelperBackend::getSidebarInfobox('groupselements');
 	}

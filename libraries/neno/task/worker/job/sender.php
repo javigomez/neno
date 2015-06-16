@@ -44,32 +44,7 @@ class NenoTaskWorkerJobSender extends NenoTaskWorker
 		/* @var $job NenoJob */
 		foreach ($jobs as $job)
 		{
-			$job->generateJobFile();
-			$job
-				->setSentTime(new DateTime)
-				->persist();
-
-			// Send API call to the server to fetch the file
-			$httpClient = JHttpFactory::getHttp();
-			$data       = json_encode(
-				array (
-					'filename'             => $job->getFileName() . '.zip',
-					'words'                => $job->getWordCount(),
-					'translation_method'   => $job->getTranslationMethod(),
-					'source_language'      => $job->getFromLanguage(),
-					'destination_language' => $job->getToLanguage()
-				)
-			);
-
-			$response = json_decode(
-				$httpClient->post('http://localhost/neno-translate/api/v1/job/12547854796521547856932154785961', $data),
-				true
-			);
-
-			if ($response['code'] != 200)
-			{
-				throw new Exception($response['message'], $response['code']);
-			}
+			$job->sendJob();
 		}
 	}
 }

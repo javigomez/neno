@@ -28,9 +28,9 @@ class NenoHelperApi
 	 */
 	public static function getTCAvailable()
 	{
-		$userData = self::makeApiCall('user');
+		list($status, $userData) = self::makeApiCall('user');
 
-		if ($userData !== false && is_array($userData))
+		if ($status !== false && is_array($userData))
 		{
 			return empty($userData['tcAvailable']) ? 0 : $userData['tcAvailable'];
 		}
@@ -45,14 +45,16 @@ class NenoHelperApi
 	 * @param   string $method     Http Method
 	 * @param   array  $parameters API call parameters
 	 *
-	 * @return bool|array
+	 * @return array
 	 */
-	protected static function makeApiCall($apiCall, $method = 'GET', $parameters = array ())
+	public static function makeApiCall($apiCall, $method = 'GET', $parameters = array ())
 	{
 		self::getHttp();
 
-		$apiEndpoint = NenoSettings::get('api_server_url');
-		$licenseCode = NenoSettings::get('license_code');
+		$apiEndpoint    = NenoSettings::get('api_server_url');
+		$licenseCode    = NenoSettings::get('license_code');
+		$response       = null;
+		$responseStatus = false;
 
 		if (!empty($apiEndpoint) && !empty($licenseCode))
 		{
@@ -60,7 +62,21 @@ class NenoHelperApi
 
 			if (method_exists(self::$httpClient, $method))
 			{
-				$apiResponse = self::$httpClient->{$method}($apiEndpoint . $apiCall, array ('Authorization' => $licenseCode));
+				if ($method === 'get')
+				{
+					$apiResponse = self::$httpClient->{$method}($apiEndpoint . $apiCall, array ('Authorization' => $licenseCode), $parameters);
+				}
+				else
+				{
+					$apiResponse = self::$httpClient->{$method}(
+						$apiEndpoint . $apiCall,
+						json_encode($parameters),
+						array (
+							'Content-Type'  => 'application/json',
+							'Authorization' => $licenseCode
+						)
+					);
+				}
 
 				if ($apiResponse->code == 200)
 				{
@@ -68,15 +84,14 @@ class NenoHelperApi
 
 					if (!empty($data['response']))
 					{
-						return $data['response'];
+						$response       = $data['response'];
+						$responseStatus = true;
 					}
 				}
 			}
-
-			return false;
 		}
 
-		return false;
+		return array ($responseStatus, $response);
 	}
 
 	/**

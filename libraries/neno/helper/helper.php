@@ -1205,7 +1205,7 @@ class NenoHelper
 				$name = 'machine';
 				break;
 			case 3:
-				$name = 'pro';
+				$name = 'professional';
 				break;
 		}
 
