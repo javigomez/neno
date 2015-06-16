@@ -69,7 +69,7 @@ if (!empty($this->extraSidebar))
 							<?php echo JText::_('COM_NENO_JOBS_STATUS_' . $item->state); ?>
 						</td>
 						<td>
-							<?php echo JText::_('COM_NENO_JOBS_STATUS_' . strtoupper($item->to_language)); ?>
+							<?php echo JText::sprintf('COM_NENO_JOBS_STATUS_' . strtoupper($item->to_language), $item->to_language); ?>
 						</td>
 						<td>
 							<?php echo JText::_($item->translation_method->name_constant); ?>
