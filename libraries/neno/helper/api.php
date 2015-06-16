@@ -62,7 +62,21 @@ class NenoHelperApi
 
 			if (method_exists(self::$httpClient, $method))
 			{
-				$apiResponse = self::$httpClient->{$method}($apiEndpoint . $apiCall, array ('Authorization' => $licenseCode), $parameters);
+				if ($method === 'get')
+				{
+					$apiResponse = self::$httpClient->{$method}($apiEndpoint . $apiCall, array ('Authorization' => $licenseCode), $parameters);
+				}
+				else
+				{
+					$apiResponse = self::$httpClient->{$method}(
+						$apiEndpoint . $apiCall,
+						json_encode($parameters),
+						array (
+							'Content-Type'  => 'application/json',
+							'Authorization' => $licenseCode
+						)
+					);
+				}
 
 				if ($apiResponse->code == 200)
 				{

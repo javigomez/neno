@@ -176,6 +176,8 @@ class NenoJob extends NenoObject
 			$job
 				->setTranslations($translationObjects)
 				->persist();
+
+			NenoTaskMonitor::addTask('job_sender');
 		}
 
 		return $job;
@@ -341,7 +343,7 @@ class NenoJob extends NenoObject
 	/**
 	 * Get Translation method
 	 *
-	 * @return string
+	 * @return stdClass
 	 */
 	public function getTranslationMethod()
 	{
@@ -521,7 +523,7 @@ class NenoJob extends NenoObject
 
 		try
 		{
-			return $zipAdapter->extract('http://localhost/neno-translate/tmp/' . $filename . '.json.zip', $tmpPath . '/' . $filename);
+			return $zipAdapter->extract(NenoSettings::get('server_url') . 'tmp/' . $filename . '.json.zip', $tmpPath . '/' . $filename);
 		}
 		catch (RuntimeException $e)
 		{

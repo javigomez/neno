@@ -115,7 +115,7 @@ if (!empty($this->extraSidebar))
 							<div class="translation">
 								<div class="span3">
 									<img
-										src="http://localhost/neno/media/mod_languages/images/<?php echo $item->image; ?>.gif"
+										src="<?php echo JUri::root(); ?>/media/mod_languages/images/<?php echo $item->image; ?>.gif"
 										style="margin-bottom: 3px;">
 									<?php echo $item->title_native; ?>
 								</div>
@@ -171,7 +171,7 @@ if (!empty($this->extraSidebar))
 							<div class="translation">
 								<div class="span3">
 									<img
-										src="http://localhost/neno/media/mod_languages/images/<?php echo $item->image; ?>.gif"
+										src="<?php echo JUri::root(); ?>/media/mod_languages/images/<?php echo $item->image; ?>.gif"
 										style="margin-bottom: 3px;">
 									<?php echo $item->title_native; ?>
 								</div>
