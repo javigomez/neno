@@ -18,16 +18,28 @@ jQuery(document).ready(function () {
     jQuery('body').on('keydown', function (e) {
         var ev = e || window.event;
 
-        // Ctrl-S
+        // Ctrl+S
         if (ev.keyCode == 83 && e.ctrlKey) {
             ev.preventDefault();
             saveDraft();
         }
 
-        // Ctrl-Enter
+        // Ctrl+Enter
         if (ev.keyCode == 13 && e.ctrlKey) {
             ev.preventDefault();
             saveTranslationAndNext();
+        }
+
+        // Ctrl+Space
+        if (ev.keyCode == 32 && e.ctrlKey) {
+            ev.preventDefault();
+            loadNextTranslation();
+        }
+
+        // Ctrl+→
+        if (ev.keyCode == 39 && e.ctrlKey && !e.shiftKey) {
+            ev.preventDefault();
+            copyOriginal();
         }
     });
 

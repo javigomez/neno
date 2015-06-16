@@ -142,9 +142,41 @@ function translate() {
                     jQuery('.translated-error').show();
                 }
                 jQuery('.translated-by').show();
+                jQuery('.translated-content').focus();
             }
         }
     );
+}
+
+function askForTranslatorAPIKey() {
+    jQuery('#translate-btn').off('click').on('click', function () {
+        jQuery('#translatorKeyModal').modal('show');
+    });
+
+    jQuery('#saveTranslatorKey').off('click').on('click', function () {
+        var translator = jQuery('#translator').val();
+        var translatorKey = jQuery('#translator_api_key').val();
+        jQuery.ajax({
+                beforeSend: onBeforeAjax,
+                type: 'POST',
+                data: {
+                    translator: translator,
+                    translatorKey: translatorKey
+                },
+                url: 'index.php?option=com_neno&task=editor.saveTranslatorConfig',
+                success: function () {
+                    jQuery('#saveTranslatorKey').modal('hide');
+                    window.location.reload();
+                }
+            }
+        );
+    });
+
+    var options = {
+        html: true,
+        placement: "right"
+    }
+    jQuery('.settings-tooltip').tooltip(options);
 }
 
 // Check if the user has lost the session
@@ -331,4 +363,5 @@ function copyOriginal() {
     jQuery('.translated-content').val(original);
     jQuery('.translated-by').hide();
     jQuery('.translated-error').hide();
+    jQuery('.translated-content').focus();
 }
