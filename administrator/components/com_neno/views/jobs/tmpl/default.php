@@ -58,6 +58,7 @@ if (!empty($this->extraSidebar))
 					<th>
 						<?php echo JHtml::_('grid.sort', 'COM_NENO_JOBS_ESTIMATED_COMPLETION', 'completion_time', $listDirection, $listOrder); ?>
 					</th>
+					<th></th>
 				</tr>
 				<?php /* @var $item stdClass */ ?>
 				<?php foreach ($this->items as $item): ?>
@@ -85,6 +86,10 @@ if (!empty($this->extraSidebar))
 						</td>
 						<td>
 							<?php echo $item->estimated_time; ?>
+						</td>
+						<td>
+							<a href="index.php?option=com_neno&task=jobs.resend&jobId=<?php echo $item->id; ?>"
+							   class="btn btn-small"><?php echo JText::_('COM_NENO_JOBS_SEND_BUTTON'); ?></a>
 						</td>
 					</tr>
 				<?php endforeach; ?>

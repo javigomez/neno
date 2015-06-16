@@ -44,34 +44,7 @@ class NenoTaskWorkerJobSender extends NenoTaskWorker
 		/* @var $job NenoJob */
 		foreach ($jobs as $job)
 		{
-			$job->generateJobFile();
-			$job
-				->setSentTime(new DateTime)
-				->setState(NenoJob::JOB_STATE_SENT);
-
-			$data = array (
-				'filename'             => $job->getFileName() . '.json.zip',
-				'words'                => $job->getWordCount(),
-				'translation_method'   => NenoHelper::convertTranslationMethodIdToName($job->getTranslationMethod()->id),
-				'source_language'      => $job->getFromLanguage(),
-				'destination_language' => $job->getToLanguage()
-			);
-
- 			list($status, $response) = NenoHelperApi::makeApiCall('job', 'POST', $data);
-
-			if ($status === false)
-			{
-				$job
-					->setSentTime(null)
-					->setState(NenoJob::JOB_STATE_GENERATED);
-
-				if ($response['code'] == 402)
-				{
-					$job->setState(NenoJob::JOB_STATE_NO_TC);
-				}
-			}
-
-			$job->persist();
+			$job->sendJob();
 		}
 	}
 }
