@@ -229,7 +229,7 @@ class NenoJob extends NenoObject
 				case 'machine':
 					$translationCredits = $wordCount;
 					break;
-				case 'pro':
+				case 'professional':
 					$translationCredits = $wordCount * 200;
 					break;
 			}
