@@ -439,7 +439,7 @@ class NenoJob extends NenoObject
 			'jobId'              => $this->getId(),
 			'job_create_time'    => $this->getCreatedTime(true),
 			'file_name'          => $filename,
-			'translation_method' => $this->getTranslationMethod(),
+			'translation_method' => NenoHelper::convertTranslationMethodIdToName($this->getTranslationMethod()->id),
 			'from'               => $this->getFromLanguage(),
 			'to'                 => $this->getToLanguage(),
 			'strings'            => $this->getTranslations()
