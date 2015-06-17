@@ -35,7 +35,7 @@ $document->addStyleSheet(JUri::root() . '/media/neno/css/editor.css');
 		<?php $extraDisplayData->modelState = $this->state; ?>
 		<?php echo JLayoutHelper::render('editorfilters', array ('view' => $this, 'extraDisplayData' => $extraDisplayData), JPATH_NENO_LAYOUTS); ?>
 		<input type="hidden" name="limitstart" id="limitstart" value="0"/>
-		<input type="hidden" name="list_limit" id="list_limit" value="20"/>
+		<input type="hidden" name="list_limit" id="list_limit" value="30"/>
 	</form>
 	<div id="filter-tags-wrapper"></div>
 	<div id="results-wrapper">

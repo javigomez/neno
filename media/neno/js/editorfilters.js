@@ -7,14 +7,16 @@
 
 jQuery(document).ready(function () {
 
+    // Load strings on results scroll
     jQuery('#elements-wrapper').scroll(function(){
         var wrapper = jQuery(this);
         if(wrapper.scrollTop() + wrapper.innerHeight()>=wrapper[0].scrollHeight && wrapper.innerHeight() > 10) {
-            document.adminForm.limitstart.value = parseInt(document.adminForm.limitstart.value) + 20;
+            document.adminForm.limitstart.value = parseInt(document.adminForm.limitstart.value) + 30;
             loadStrings();
         }
     });
 
+    // Bind keyboard events
     jQuery('body').on('keydown', function (e) {
         var ev = e || window.event;
 
@@ -43,6 +45,7 @@ jQuery(document).ready(function () {
         }
     });
 
+    // Load string passed by the URL
     var params = document.location.search.replace('?', '');
     var paramsArray = params.split('&');
     for (var i=0; i<paramsArray.length; i++) {
@@ -53,6 +56,7 @@ jQuery(document).ready(function () {
         }
     }
 
+    // If there are no filter options, select "Manual", "Source has changed" and "Not translated"
     if (document.location.href == document.location.origin + document.location.pathname + '?option=com_neno&view=editor') {
         jQuery('.multiselect input[type=checkbox]').prop('checked', false);
         jQuery('#input-method-1').prop('checked', true);
@@ -61,13 +65,31 @@ jQuery(document).ready(function () {
         loadStrings(true);
     }
 
+    // Bind event to search button
     jQuery('.submit-form').off('click').on('click', function (e) {
         loadStrings(true);
     });
 
+    // Fit filters inside the sidebar
     jQuery(window).resize(function(){
        jQuery('#filter_search').width(jQuery('#j-sidebar-container').innerWidth() - jQuery('.submit-form').width() - 57);
        jQuery('.multiselect-wrapper').width(jQuery('#j-sidebar-container').innerWidth() - 45);
     });
 
+    // Set results wrapper height
+    setResultsWrapperHeight();
+
+    // Bind click event to close multiselects
+    jQuery('html').click(function(e){
+        var ev = e || window.event;
+        if(jQuery(ev.target).parents('.js-stools-container-filters').length == 0) {
+            jQuery('.btn-toggle').each(function (e) {
+                if (jQuery(this).hasClass('open')){
+                    jQuery('#' + jQuery(this).attr('data-toggle')).slideToggle('fast');
+                    jQuery(this).toggleClass('open');
+                    jQuery(this).blur();
+                }
+            });
+        }
+    });
 });

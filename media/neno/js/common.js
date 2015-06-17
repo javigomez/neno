@@ -365,3 +365,15 @@ function copyOriginal() {
     jQuery('.translated-error').hide();
     jQuery('.translated-content').focus();
 }
+
+function setResultsWrapperHeight() {
+    var available = jQuery(window).outerHeight() - /*jQuery('.navbar-fixed-top').outerHeight() -*/ jQuery('header').outerHeight() - jQuery('.subhead-collapse').outerHeight() - jQuery('#status').outerHeight();
+    var sidebar = jQuery('#j-sidebar-container');
+    sidebar.height(available);
+
+    var results = jQuery('#results-wrapper');
+    var resultsBottom = results.position().top + results.outerHeight();
+    var gap = sidebar.outerHeight() - resultsBottom;
+    var elements = jQuery('#elements-wrapper');
+    elements.height(elements.outerHeight() + gap - 70);
+}

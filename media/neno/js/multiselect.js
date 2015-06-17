@@ -190,6 +190,8 @@ function loadStrings(reset) {
                     targetContainer.append(ret);
                 }
 
+                // Set results wrapper height
+                setResultsWrapperHeight();
             }
         });
 }
