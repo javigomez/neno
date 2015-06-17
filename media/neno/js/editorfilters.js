@@ -82,8 +82,8 @@ jQuery(document).ready(function () {
     // Bind click event to close multiselects
     jQuery('html').click(function(e){
         var ev = e || window.event;
-        if(jQuery(ev.target).parents('.js-stools-container-filters').length == 0) {
-            jQuery('.btn-toggle').each(function (e) {
+        if(jQuery(ev.target).parents('.js-stools-container-filters').length == 0 && !jQuery(ev.target).hasClass('icon-arrow-down-3') && !jQuery(ev.target).hasClass('icon-arrow-right-3')) {
+            jQuery('.js-stools-container-filters .btn-toggle').each(function (e) {
                 if (jQuery(this).hasClass('open')){
                     jQuery('#' + jQuery(this).attr('data-toggle')).slideToggle('fast');
                     jQuery(this).toggleClass('open');
