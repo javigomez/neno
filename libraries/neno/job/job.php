@@ -339,9 +339,17 @@ class NenoJob extends NenoObject
 		/* @var $zipAdapter JArchiveZip */
 		$zipAdapter = JArchive::getAdapter('zip');
 
+		file_put_contents(
+			JPATH_ROOT . '/tmp/' . $filename . '.json.zip',
+			fopen(NenoSettings::get('server_url') . 'tmp/' . NenoSettings::get('license_code') . '/' . $filename . '.json.zip', 'r')
+		);
+
 		try
 		{
-			return $zipAdapter->extract(NenoSettings::get('server_url') . 'tmp/' . $filename . '.json.zip', $tmpPath . '/' . $filename);
+			return $zipAdapter->extract(
+				JPATH_ROOT . '/tmp/' . $filename . '.json.zip',
+				$tmpPath . '/' . $filename . '.json'
+			);
 		}
 		catch (RuntimeException $e)
 		{
@@ -369,7 +377,7 @@ class NenoJob extends NenoObject
 		$config       = JFactory::getConfig();
 		$tmpPath      = $config->get('tmp_path');
 		$filename     = $this->getFileName();
-		$fileContents = json_decode(file_get_contents($tmpPath . '/' . $filename . '/' . $filename . '.json'), true);
+		$fileContents = json_decode(file_get_contents($tmpPath . '/' . $filename . '.json' . '/' . $filename . '.json'), true);
 
 		if ($fileContents !== null)
 		{
