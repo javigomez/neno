@@ -197,22 +197,25 @@ class NenoJob extends NenoObject
 			/* @var $query NenoDatabaseQueryMysqli */
 			$query = $db->getQuery(true);
 
-			$query
-				->replace('#__neno_jobs_x_translations')
-				->columns(
-					array (
-						'job_id',
-						'translation_id'
-					)
-				);
-
-			foreach ($this->translations as $translation)
+			if (!empty($this->translations))
 			{
-				$query->values($db->quote($this->getId()) . ',' . (int) $translation);
-			}
+				$query
+					->replace('#__neno_jobs_x_translations')
+					->columns(
+						array (
+							'job_id',
+							'translation_id'
+						)
+					);
 
-			$db->setQuery($query);
-			$db->execute();
+				foreach ($this->translations as $translation)
+				{
+					$query->values($db->quote($this->getId()) . ',' . (int) $translation);
+				}
+
+				$db->setQuery($query);
+				$db->execute();
+			}
 
 			$query
 				->select('SUM(word_counter)')
