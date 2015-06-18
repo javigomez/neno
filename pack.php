@@ -136,7 +136,7 @@ if (rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . 'layouts') !== true)
 
 $files = files($extractPath);
 
-$rootFiles          = array ('pkg_neno.xml', 'script.php');
+$rootFiles          = array ('pkg_neno.xml', 'script.php', 'codeception.yml');
 $noExtensionFolders = array ('tests', 'media', 'layouts', 'cli', 'packages');
 
 foreach ($files as $file)
@@ -243,6 +243,13 @@ if (!empty($zipData))
 	if (createZip(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'pkg_neno.zip', $zipData) === false)
 	{
 		return false;
+	}
+	else
+	{
+		rmdirRecursive(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'packages');
+		rmdirRecursive(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'media');
+		unlink(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'pkg_neno.xml');
+		unlink(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'script.php');
 	}
 }
 else
