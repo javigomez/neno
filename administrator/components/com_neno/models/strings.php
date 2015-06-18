@@ -39,7 +39,6 @@ class NenoModelStrings extends JModelList
 				'group', 'a.group',
 				'key', 'a.key',
 				'element_name', 'a.element_name',
-				'translation_method', 'a.translation_method',
 				'word_counter', 'a.word_counter',
 				'characters', 'a.characters'
 			);
