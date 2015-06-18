@@ -20,10 +20,13 @@
         </header>
     </div>
 
-    {% include nav.md %}
+    
 
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
+      <section id="navigation" class="inner">
+        {% include nav.html %}
+      </section>
       <section id="main_content" class="inner">
         {{content}}
       </section>
