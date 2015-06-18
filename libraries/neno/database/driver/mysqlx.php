@@ -145,7 +145,7 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 	public function replacePrefix($sql, $prefix = '#__')
 	{
 		// Check if the query should be parsed.
-		if ($this->languageHasChanged() && $this->hasToBeParsed($sql))
+		if ($this->isInstallationCompleted() && $this->languageHasChanged() && $this->hasToBeParsed($sql))
 		{
 			// Get query type
 			$queryType = $this->getQueryType($sql);
@@ -159,6 +159,16 @@ class NenoDatabaseDriverMysqlx extends JDatabaseDriverMysqli
 		}
 
 		return parent::replacePrefix($sql, $prefix);
+	}
+
+	/**
+	 * Checks if the installation process has finished
+	 *
+	 * @return bool
+	 */
+	protected function isInstallationCompleted()
+	{
+		return NenoSettings::get('installation_completed') != 1 && NenoSettings::get('installation_status') != 6;
 	}
 
 	/**
