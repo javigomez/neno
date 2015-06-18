@@ -106,27 +106,27 @@ if (rename($extractPath . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATO
 }
 
 // Deleting empty folders
-if (rmdir($extractPath . DIRECTORY_SEPARATOR . 'administrator') !== true)
+if (rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . 'administrator') !== true)
 {
 	return false;
 }
 
-if (rmdir($extractPath . DIRECTORY_SEPARATOR . 'components') !== true)
+if (rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . 'components') !== true)
 {
 	return false;
 }
 
-if (rmdir($extractPath . DIRECTORY_SEPARATOR . 'plugins') !== true)
+if (rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . 'plugins') !== true)
 {
 	return false;
 }
 
-if (rmdir($extractPath . DIRECTORY_SEPARATOR . 'libraries') !== true)
+if (rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . 'libraries') !== true)
 {
 	return false;
 }
 
-if (rmdir($extractPath . DIRECTORY_SEPARATOR . 'layouts') !== true)
+if (rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . 'layouts') !== true)
 {
 	return false;
 }
