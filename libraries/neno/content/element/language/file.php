@@ -444,4 +444,20 @@ class NenoContentElementLanguageFile extends NenoContentElement implements NenoC
 
 		return $this;
 	}
+
+	public function remove()
+	{
+		if ($this->loadStringsFromFile())
+		{
+			/* @var $languageString NenoContentElementLanguageString */
+			foreach ($this->languageStrings as $languageString)
+			{
+				$languageString->remove();
+			}
+		}
+
+		return parent::remove();
+	}
+
+
 }
