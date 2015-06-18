@@ -7,12 +7,8 @@ layout: index
 The documentation is not ready yet. Please be patient!
 ```
 
+{% include nav.html %}
 
-## Contents
-* [Getting Started With Neno](#getting-started-with-neno)
-* [Translating special content in Joomla](#translating-special-content-in-joomla)
-* [Components not fully compatible with Neno](#components-not-fully-compatible-with-neno)
-* [How to get a Google or Yandex API key](apikeys.html)
 
 ## Getting Started With Neno
 
