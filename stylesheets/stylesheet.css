@@ -266,9 +266,14 @@ Full-Width Styles
 
 .inner {
   position: relative;
-  max-width: 640px;
+  max-width: 840px;
   padding: 20px 10px;
   margin: 0 auto;
+}
+
+.nav {
+  width: 180px;
+  float:left;
 }
 
 #forkme_banner {
@@ -362,6 +367,8 @@ Full-Width Styles
 
 #main_content {
   padding-top: 40px;
+  width: 640px;
+  float: left;
 }
 
 #footer_wrap {
