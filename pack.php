@@ -4,6 +4,7 @@ $extractPath = dirname(__FILE__);
 $folders     = folders(dirname(__FILE__));
 $packagePath = $extractPath;
 
+
 // Neno Component folders
 $componentPath = $packagePath . DIRECTORY_SEPARATOR . 'com_neno';
 
@@ -39,6 +40,8 @@ if (file_exists($packagePath . DIRECTORY_SEPARATOR . 'packages'))
 		return false;
 	}
 }
+
+mkdir($packagePath . DIRECTORY_SEPARATOR . 'packages');
 
 if (mkdir($componentPath, 0777, true) !== true)
 {
@@ -180,7 +183,7 @@ foreach ($folders as $extensionFolder)
 
 		// Creating zip
 		$zipData = array ();
-		$files   = files($extractPath . DIRECTORY_SEPARATOR . $extensionFolder, '.', true, true);
+		$files   = files($extractPath . DIRECTORY_SEPARATOR . $extensionFolder, true);
 
 		if (!empty($files))
 		{
@@ -218,7 +221,7 @@ $installationFileContent = file_get_contents($extractPath . DIRECTORY_SEPARATOR 
 file_put_contents($extractPath . DIRECTORY_SEPARATOR . 'pkg_neno.xml', $installationFileContent);
 
 $zipData = array ();
-$files   = files($extractPath, '.', true, true);
+$files   = files($extractPath, true);
 
 if (!empty($files))
 {
@@ -261,7 +264,7 @@ function folders($path)
 	return $folders;
 }
 
-function files($path)
+function files($path, $recursive = false)
 {
 	$it    = new DirectoryIterator($path);
 	$files = array ();
@@ -270,7 +273,11 @@ function files($path)
 	{
 		if (is_file($it->getPathname()) && !$it->isDot() && $it->getFilename() != '.git')
 		{
-			$files[] = $it->getFilename();
+			$files[] = $recursive ? $it->getPathname() : $it->getFilename();
+		}
+		elseif (is_dir($it->getPathname()) && !$it->isDot() && $it->getFilename() != '.git' && $recursive)
+		{
+			$files = array_merge($files, files($it->getPathname(), $recursive));
 		}
 
 		$it->next();
