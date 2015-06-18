@@ -278,6 +278,10 @@ Full-Width Styles
   padding-top: 40px;
 }
 
+.nav li {
+  margin-bottom 4px;
+}
+
 #forkme_banner {
   display: block;
   position: absolute;
