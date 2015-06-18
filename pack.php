@@ -148,7 +148,7 @@ $folders = folders($extractPath);
 
 foreach ($folders as $extensionFolder)
 {
-	if ($extensionFolder != 'tests')
+	if (!in_array($extensionFolder, $noExtensionFolders))
 	{
 		// Parse installation file.
 		$installationFileContent = file_get_contents($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR . 'neno.xml');
