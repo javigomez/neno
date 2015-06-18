@@ -329,6 +329,7 @@ Full-Width Styles
   border-bottom: 1px solid #111;
 	overflow: auto;
 	width: 100%  
+	padding-bottom: 20px;
 }
 
 #main_content {
@@ -339,7 +340,6 @@ Full-Width Styles
 
 #footer_wrap {
   background: #212121;
-  margin-top: 40px;
 }
 
 
