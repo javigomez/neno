@@ -1255,7 +1255,7 @@ class NenoHelper
 		// Delete all the associations left
 		$query
 			->clear()
-			->delete('a USING jos_associations AS a')
+			->delete('a USING #__associations AS a')
 			->where(
 				array (
 					'context = ' . $db->quote('com_menus.item'),
