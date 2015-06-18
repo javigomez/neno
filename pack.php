@@ -147,68 +147,71 @@ $folders = folders($extractPath);
 
 foreach ($folders as $extensionFolder)
 {
-	// Parse installation file.
-	$installationFileContent = file_get_contents($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR . 'neno.xml');
-
-	if ($extensionFolder == 'lib_neno')
+	if ($extensionFolder != 'tests')
 	{
-		$libraryFolders   = folders($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
-		$libraryStructure = '';
+		// Parse installation file.
+		$installationFileContent = file_get_contents($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR . 'neno.xml');
 
-		foreach ($libraryFolders as $libraryFolder)
+		if ($extensionFolder == 'lib_neno')
 		{
-			$libraryStructure .= '<folder>' . $libraryFolder . '</folder>' . "\r\t\t";
+			$libraryFolders   = folders($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
+			$libraryStructure = '';
+
+			foreach ($libraryFolders as $libraryFolder)
+			{
+				$libraryStructure .= '<folder>' . $libraryFolder . '</folder>' . "\r\t\t";
+			}
+
+			$libraryFiles = files($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
+
+			foreach ($libraryFiles as $libraryFile)
+			{
+				if ($libraryFile != 'neno.xml')
+				{
+					$libraryStructure .= '<filename>' . $libraryFile . '</filename>' . "\r\t\t";
+				}
+			}
+
+			$installationFileContent = str_replace('XXX_LIBRARY_STRUCTURE', $libraryStructure, $installationFileContent);
 		}
 
-		$libraryFiles = files($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
+		file_put_contents($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR . 'neno.xml', $installationFileContent);
 
-		foreach ($libraryFiles as $libraryFile)
+		// Creating zip
+		$zipData = array ();
+		$files   = files($extractPath . DIRECTORY_SEPARATOR . $extensionFolder, '.', true, true);
+
+		if (!empty($files))
 		{
-			if ($libraryFile != 'neno.xml')
+			foreach ($files as $file)
 			{
-				$libraryStructure .= '<filename>' . $libraryFile . '</filename>' . "\r\t\t";
+				// Unify path structure
+				$file = str_replace('/', DIRECTORY_SEPARATOR, $file);
+				$file = str_replace('\\', DIRECTORY_SEPARATOR, $file);
+
+				// Add files to zip
+				$zipData[] = array (
+					'name' => str_replace($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR, '', $file),
+					'file' => $file
+				);
 			}
 		}
 
-		$installationFileContent = str_replace('XXX_LIBRARY_STRUCTURE', $libraryStructure, $installationFileContent);
-	}
-
-	file_put_contents($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR . 'neno.xml', $installationFileContent);
-
-	// Creating zip
-	$zipData = array ();
-	$files   = files($extractPath . DIRECTORY_SEPARATOR . $extensionFolder, '.', true, true);
-
-	if (!empty($files))
-	{
-		foreach ($files as $file)
+		if (!empty($zipData))
 		{
-			// Unify path structure
-			$file = str_replace('/', DIRECTORY_SEPARATOR, $file);
-			$file = str_replace('\\', DIRECTORY_SEPARATOR, $file);
-
-			// Add files to zip
-			$zipData[] = array (
-				'name' => str_replace($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR, '', $file),
-				'file' => $file
-			);
-		}
-	}
-
-	if (!empty($zipData))
-	{
-		if (createZip($extractPath . DIRECTORY_SEPARATOR . 'packages' . DIRECTORY_SEPARATOR . $extensionFolder . '.zip', $zipData) === false)
-		{
-			return false;
+			if (createZip($extractPath . DIRECTORY_SEPARATOR . 'packages' . DIRECTORY_SEPARATOR . $extensionFolder . '.zip', $zipData) === false)
+			{
+				return false;
+			}
+			else
+			{
+				rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
+			}
 		}
 		else
 		{
-			rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
+			return false;
 		}
-	}
-	else
-	{
-		return false;
 	}
 }
 
