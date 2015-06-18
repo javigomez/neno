@@ -14,5 +14,10 @@ class InstallNenoCest
 		$I->installJoomla();
 		$I->doAdministratorLogin();
 		$I->setErrorReportingToDevelopment();
+
+		$path = $I->getConfiguration('repo_folder');
+		$I->installExtensionFromDirectory($path);
+		$I->doAdministratorLogout();
+
 	}
 }
