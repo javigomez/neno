@@ -300,6 +300,8 @@ function createZip($path, $zipData)
 		$zip->addFile($element['name'], $element['file']);
 	}
 
+	echo 'The zip archive contains ', $zip->numFiles, ' files with a status of ', $zip->status;
+
 	$zip->close();
 
 	return true;
