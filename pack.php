@@ -207,6 +207,10 @@ foreach ($folders as $extensionFolder)
 			{
 				return false;
 			}
+			else
+			{
+				rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
+			}
 		}
 		else
 		{
