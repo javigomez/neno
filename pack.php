@@ -133,7 +133,8 @@ if (rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . 'layouts') !== true)
 
 $files = files($extractPath);
 
-$rootFiles = array ('pkg_neno.xml', 'script.php');
+$rootFiles          = array ('pkg_neno.xml', 'script.php');
+$noExtensionFolders = array ('tests', 'media', 'layouts', 'cli');
 
 foreach ($files as $file)
 {
