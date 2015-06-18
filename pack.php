@@ -2,8 +2,7 @@
 
 $extractPath = dirname(__FILE__);
 $folders     = folders(dirname(__FILE__));
-$folder      = array_pop($folders);
-$packagePath = $extractPath . DIRECTORY_SEPARATOR . $folder;
+$packagePath = $extractPath;
 
 // Neno Component folders
 $componentPath = $packagePath . DIRECTORY_SEPARATOR . 'com_neno';
@@ -47,37 +46,37 @@ if (mkdir($componentPath, 0777, true) !== true)
 }
 
 // Administrator
-if (rename($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_neno', $componentPath . '/back') !== true)
+if (rename($extractPath . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_neno', $componentPath . '/back') !== true)
 {
 	return false;
 }
 
 // Languages
-if (rename($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'language', $componentPath . DIRECTORY_SEPARATOR . 'languages') !== true)
+if (rename($extractPath . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'language', $componentPath . DIRECTORY_SEPARATOR . 'languages') !== true)
 {
 	return false;
 }
 
 // Front-end
-if (rename($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_neno', $componentPath . DIRECTORY_SEPARATOR . 'front') !== true)
+if (rename($extractPath . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_neno', $componentPath . DIRECTORY_SEPARATOR . 'front') !== true)
 {
 	return false;
 }
 
 // Media files
-if (rename($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'neno', $componentPath . DIRECTORY_SEPARATOR . 'media') !== true)
+if (rename($extractPath . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'neno', $componentPath . DIRECTORY_SEPARATOR . 'media') !== true)
 {
 	return false;
 }
 
 // Layouts
-if (rename($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'layouts' . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'neno', $componentPath . DIRECTORY_SEPARATOR . 'layouts') !== true)
+if (rename($extractPath . DIRECTORY_SEPARATOR . 'layouts' . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'neno', $componentPath . DIRECTORY_SEPARATOR . 'layouts') !== true)
 {
 	return false;
 }
 
 // Cli
-if (rename($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'cli', $componentPath . DIRECTORY_SEPARATOR . 'cli') !== true)
+if (rename($extractPath . DIRECTORY_SEPARATOR . 'cli', $componentPath . DIRECTORY_SEPARATOR . 'cli') !== true)
 {
 	return false;
 }
@@ -95,44 +94,44 @@ if (rename($componentPath . DIRECTORY_SEPARATOR . 'back' . DIRECTORY_SEPARATOR .
 }
 
 // Neno Plugin folder
-if (rename($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'neno', $packagePath . DIRECTORY_SEPARATOR . 'plg_system_neno') !== true)
+if (rename($extractPath . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'neno', $packagePath . DIRECTORY_SEPARATOR . 'plg_system_neno') !== true)
 {
 	return false;
 }
 
 // Neno library folder
-if (rename($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'neno', $packagePath . DIRECTORY_SEPARATOR . 'lib_neno') !== true)
+if (rename($extractPath . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'neno', $packagePath . DIRECTORY_SEPARATOR . 'lib_neno') !== true)
 {
 	return false;
 }
 
 // Deleting empty folders
-if (rmdir($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'administrator') !== true)
+if (rmdir($extractPath . DIRECTORY_SEPARATOR . 'administrator') !== true)
 {
 	return false;
 }
 
-if (rmdir($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'components') !== true)
+if (rmdir($extractPath . DIRECTORY_SEPARATOR . 'components') !== true)
 {
 	return false;
 }
 
-if (rmdir($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'plugins') !== true)
+if (rmdir($extractPath . DIRECTORY_SEPARATOR . 'plugins') !== true)
 {
 	return false;
 }
 
-if (rmdir($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'libraries') !== true)
+if (rmdir($extractPath . DIRECTORY_SEPARATOR . 'libraries') !== true)
 {
 	return false;
 }
 
-if (rmdir($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'layouts') !== true)
+if (rmdir($extractPath . DIRECTORY_SEPARATOR . 'layouts') !== true)
 {
 	return false;
 }
 
-$files = files($extractPath . DIRECTORY_SEPARATOR . $folder);
+$files = files($extractPath);
 
 $rootFiles = array ('pkg_neno.xml', 'script.php');
 
@@ -140,20 +139,20 @@ foreach ($files as $file)
 {
 	if (!in_array($file, $rootFiles))
 	{
-		unlink($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $file);
+		unlink($extractPath . DIRECTORY_SEPARATOR . $file);
 	}
 }
 
-$folders = folders($extractPath . DIRECTORY_SEPARATOR . $folder);
+$folders = folders($extractPath);
 
 foreach ($folders as $extensionFolder)
 {
 	// Parse installation file.
-	$installationFileContent = file_get_contents($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR . 'neno.xml');
+	$installationFileContent = file_get_contents($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR . 'neno.xml');
 
 	if ($extensionFolder == 'lib_neno')
 	{
-		$libraryFolders   = folders($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $extensionFolder);
+		$libraryFolders   = folders($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
 		$libraryStructure = '';
 
 		foreach ($libraryFolders as $libraryFolder)
@@ -161,7 +160,7 @@ foreach ($folders as $extensionFolder)
 			$libraryStructure .= '<folder>' . $libraryFolder . '</folder>' . "\r\t\t";
 		}
 
-		$libraryFiles = files($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $extensionFolder);
+		$libraryFiles = files($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
 
 		foreach ($libraryFiles as $libraryFile)
 		{
@@ -174,11 +173,11 @@ foreach ($folders as $extensionFolder)
 		$installationFileContent = str_replace('XXX_LIBRARY_STRUCTURE', $libraryStructure, $installationFileContent);
 	}
 
-	file_put_contents($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR . 'neno.xml', $installationFileContent);
+	file_put_contents($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR . 'neno.xml', $installationFileContent);
 
 	// Creating zip
 	$zipData = array ();
-	$files   = files($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $extensionFolder, '.', true, true);
+	$files   = files($extractPath . DIRECTORY_SEPARATOR . $extensionFolder, '.', true, true);
 
 	if (!empty($files))
 	{
@@ -190,7 +189,7 @@ foreach ($folders as $extensionFolder)
 
 			// Add files to zip
 			$zipData[] = array (
-				'name' => str_replace($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR, '', $file),
+				'name' => str_replace($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR, '', $file),
 				'file' => $file
 			);
 		}
@@ -198,13 +197,13 @@ foreach ($folders as $extensionFolder)
 
 	if (!empty($zipData))
 	{
-		if (createZip($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'packages' . DIRECTORY_SEPARATOR . $extensionFolder . '.zip', $zipData) === false)
+		if (createZip($extractPath . DIRECTORY_SEPARATOR . 'packages' . DIRECTORY_SEPARATOR . $extensionFolder . '.zip', $zipData) === false)
 		{
 			return false;
 		}
 		else
 		{
-			rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $extensionFolder);
+			rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
 		}
 	}
 	else
@@ -214,19 +213,19 @@ foreach ($folders as $extensionFolder)
 }
 
 // Parse installation file.
-$installationFileContent = file_get_contents($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'pkg_neno.xml');
+$installationFileContent = file_get_contents($extractPath . DIRECTORY_SEPARATOR . 'pkg_neno.xml');
 
-file_put_contents($extractPath . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'pkg_neno.xml', $installationFileContent);
+file_put_contents($extractPath . DIRECTORY_SEPARATOR . 'pkg_neno.xml', $installationFileContent);
 
 $zipData = array ();
-$files   = files($extractPath . DIRECTORY_SEPARATOR . $folder, '.', true, true);
+$files   = files($extractPath, '.', true, true);
 
 if (!empty($files))
 {
 	foreach ($files as $file)
 	{
 		$zipData[] = array (
-			'name' => substr(str_replace($extractPath . DIRECTORY_SEPARATOR . $folder, '', $file), 1),
+			'name' => substr(str_replace($extractPath, '', $file), 1),
 			'file' => $file
 		);
 	}
@@ -240,7 +239,7 @@ if (!empty($zipData))
 	}
 	else
 	{
-		rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . $folder);
+		rmdirRecursive($extractPath);
 
 		return true;
 	}
