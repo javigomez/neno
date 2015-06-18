@@ -35,3 +35,4 @@ media/*
 !composer.json
 !composer.lock
 !RoboFile.php
+!LICENSE.txt
