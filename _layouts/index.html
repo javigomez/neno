@@ -27,8 +27,9 @@
       <section class="inner">
         <section id="navigation" class="nav">
           {% include nav.html %}
+          {% raw %}
           Page url1: {{page.url}}<br />
-          Page url2: {%page.url%}<br />
+          {% endraw %}
         </section>
         <section id="main_content">
           {{content}}
