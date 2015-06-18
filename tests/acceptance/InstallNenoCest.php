@@ -14,8 +14,14 @@ class InstallNenoCest
 		$I->installJoomla();
 		$I->doAdministratorLogin();
 		$I->setErrorReportingToDevelopment();
-		$I->amOnPage('administrator/index.php?option=com_installer');
-		$I->attachFile('input[@type="file"]', 'pkg_neno.zip');
-		$I->click('Upload & Install');
+		$I->amOnPage("/administrator/");
+		$I->click("Extensions");
+		$I->click("Extension Manager");
+		$I->click("Upload Package File");
+		$path = $I->getConfiguration('repo_folder');
+		$I->installExtensionFromDirectory($path);
+		$I->fillField("#install_package", $path);
+		$I->click("#upload > fieldset.uploadform > div.form-actions > input.btn.btn-primary");
+
 	}
 }
