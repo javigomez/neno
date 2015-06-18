@@ -308,9 +308,19 @@ function rmdirRecursive($dir)
 	$it = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
 	foreach ($it as $file)
 	{
-		if ('.' === $file->getBasename() || '..' === $file->getBasename()) continue;
-		if ($file->isDir()) rmdir($file->getPathname());
-		else unlink($file->getPathname());
+		if ('.' === $file->getBasename() || '..' === $file->getBasename())
+		{
+			continue;
+		}
+		if ($file->isDir())
+		{
+			rmdir($file->getPathname());
+		}
+		else
+		{
+			unlink($file->getPathname());
+		}
 	}
-	rmdir($dir);
+
+	return rmdir($dir);
 }
