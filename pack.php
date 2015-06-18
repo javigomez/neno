@@ -204,10 +204,6 @@ foreach ($folders as $extensionFolder)
 			{
 				return false;
 			}
-			else
-			{
-				rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
-			}
 		}
 		else
 		{
@@ -237,15 +233,9 @@ if (!empty($files))
 
 if (!empty($zipData))
 {
-	if (createZip(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'releases' . DIRECTORY_SEPARATOR . 'pkg_neno.zip', $zipData) === false)
+	if (createZip(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'pkg_neno.zip', $zipData) === false)
 	{
 		return false;
-	}
-	else
-	{
-		rmdirRecursive($extractPath);
-
-		return true;
 	}
 }
 else
@@ -304,6 +294,8 @@ function createZip($path, $zipData)
 	}
 
 	$zip->close();
+
+	return true;
 }
 
 function rmdirRecursive($dir)
