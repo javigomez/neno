@@ -1492,6 +1492,7 @@ class NenoHelper
 
 			// Get all the modules assigned to this menu item using a different language from *
 			$query
+				->clear()
 				->select('m.*')
 				->from('#__modules AS m')
 				->innerJoin('#__modules_menu AS mm ON m.id = mm.moduleid')
