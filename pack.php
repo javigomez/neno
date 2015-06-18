@@ -297,7 +297,7 @@ function createZip($path, $zipData)
 
 	foreach ($zipData as $element)
 	{
-		$zip->addFile($element['name'], $element['file']);
+		$zip->addFile($element['file'], $element['name']);
 	}
 
 	echo 'The zip archive contains ', $zip->numFiles, ' files with a status of ', $zip->status;
