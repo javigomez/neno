@@ -30,4 +30,4 @@ modules:
             language: 'English (United Kingdom)'   # Language in which you want the Application to be Installed
             joomla folder: '/home/victor/projects/joomla-cms' # Path to Joomla installation where we execute the tests
         AcceptanceHelper:
-            repo_folder: '/home/victor/projects/neno-test'
+            repo_folder: '/home/victor/projects/neno-test/pkg_neno.zip'
