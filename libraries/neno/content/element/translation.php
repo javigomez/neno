@@ -919,6 +919,14 @@ class NenoContentElementTranslation extends NenoContentElement
 		$db->setQuery($query);
 		$db->execute();
 
+		$query
+			->clear()
+			->delete('#__neno_content_element_translation_x_translation_methods')
+			->where('translation_id =' . $this->getId());
+
+		$db->setQuery($query);
+		$db->execute();
+
 		return parent::remove();
 	}
 
