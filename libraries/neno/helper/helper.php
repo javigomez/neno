@@ -1394,8 +1394,8 @@ class NenoHelper
 				->columns(
 					array (
 						'id',
-						'context',
-						'key'
+						$db->quoteName('context'),
+						$db->quoteName('key')
 					)
 				);
 
