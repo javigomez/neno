@@ -36,3 +36,5 @@ media/*
 !composer.lock
 !RoboFile.php
 !LICENSE.txt
+tests/_output/*
+!codeception.yml
