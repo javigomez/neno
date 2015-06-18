@@ -34,3 +34,4 @@ media/*
 !tests
 !composer.json
 !composer.lock
+!RoboFile.php
