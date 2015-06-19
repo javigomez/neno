@@ -5,6 +5,8 @@
 # If you need both WebDriver and PHPBrowser tests - create a separate suite.
 
 class_name: AcceptanceTester
+extensions:
+  enabled: [NenoExtension]
 modules:
     enabled:
         - JoomlaBrowser
