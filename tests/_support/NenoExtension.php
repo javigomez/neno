@@ -15,6 +15,7 @@ class NenoExtension extends \Codeception\Platform\Extension
 
 	public function testFailed(\Codeception\Event\FailEvent $e)
 	{
+		echo "HOLA";
 		print_r(realpath(dirname(__FILE__) . '../_output'));
 	}
 }

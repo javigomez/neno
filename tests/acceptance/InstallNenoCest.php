@@ -19,8 +19,6 @@ class InstallNenoCest
 		$I->click("Extension Manager");
 		$I->click("Upload Package File");
 		$path = $I->getConfiguration('repo_folder');
-		$I->attachFile("#install_package", $path);
-		$I->click("#upload > fieldset.uploadform > div.form-actions > input.btn.btn-primary");
-
+		$I->installExtensionFromDirectory($path);
 	}
 }

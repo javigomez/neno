@@ -137,7 +137,7 @@ if (rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . 'layouts') !== true)
 $files = files($extractPath);
 
 $rootFiles          = array ('pkg_neno.xml', 'script.php', 'codeception.yml');
-$noExtensionFolders = array ('tests', 'media', 'layouts', 'cli', 'packages');
+$noExtensionFolders = array ('tests', 'media', 'layouts', 'cli', 'packages', 'vendor');
 
 foreach ($files as $file)
 {
@@ -180,81 +180,7 @@ foreach ($folders as $extensionFolder)
 		}
 
 		file_put_contents($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR . 'neno.xml', $installationFileContent);
-
-		// Creating zip
-		$zipData = array ();
-		$files   = files($extractPath . DIRECTORY_SEPARATOR . $extensionFolder, true);
-
-		if (!empty($files))
-		{
-			foreach ($files as $file)
-			{
-				// Unify path structure
-				$file = str_replace('/', DIRECTORY_SEPARATOR, $file);
-				$file = str_replace('\\', DIRECTORY_SEPARATOR, $file);
-
-				// Add files to zip
-				$zipData[] = array (
-					'name' => str_replace($extractPath . DIRECTORY_SEPARATOR . $extensionFolder . DIRECTORY_SEPARATOR, '', $file),
-					'file' => $file
-				);
-			}
-		}
-
-		if (!empty($zipData))
-		{
-			if (createZip($extractPath . DIRECTORY_SEPARATOR . 'packages' . DIRECTORY_SEPARATOR . $extensionFolder . '.zip', $zipData) === false)
-			{
-				return false;
-			}
-			else
-			{
-				rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . $extensionFolder);
-			}
-		}
-		else
-		{
-			return false;
-		}
 	}
-}
-
-// Parse installation file.
-$installationFileContent = file_get_contents($extractPath . DIRECTORY_SEPARATOR . 'pkg_neno.xml');
-
-file_put_contents($extractPath . DIRECTORY_SEPARATOR . 'pkg_neno.xml', $installationFileContent);
-
-$zipData = array ();
-$files   = files($extractPath, true);
-
-if (!empty($files))
-{
-	foreach ($files as $file)
-	{
-		$zipData[] = array (
-			'name' => substr(str_replace($extractPath, '', $file), 1),
-			'file' => $file
-		);
-	}
-}
-
-if (!empty($zipData))
-{
-	if (createZip(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'pkg_neno.zip', $zipData) === false)
-	{
-		return false;
-	}
-	else
-	{
-		rmdirRecursive(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'packages');
-		rmdirRecursive(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'media');
-		unlink(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'pkg_neno.xml');
-		unlink(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'script.php');
-	}
-}
-else
-{
-	return false;
 }
 
 function folders($path)
