@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fields>
+        <field name="position" type="moduleposition"
+               default=""
+               description="COM_MODULES_FIELD_POSITION_DESC"
+               label="COM_MODULES_FIELD_POSITION_LABEL"
+               maxlength="50"
+                />
+    </fields>
+</form>
