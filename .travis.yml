@@ -29,6 +29,7 @@ before_script:
 
 script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
+- pwd
 - php vendor/bin/robo test:acceptance
 env:
   global:
