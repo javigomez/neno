@@ -19,6 +19,8 @@ class InstallNenoCest
 		$I->click("Extension Manager");
 		$I->click("Upload Package File");
 		$path = $I->getConfiguration('repo_folder');
-		$I->installExtensionFromDirectory($path);
+		$I->installExtensionFromDirectory($path . 'lib_neno');
+		$I->installExtensionFromDirectory($path . 'plg_system_neno');
+		$I->installExtensionFromDirectory($path . 'com_neno');
 	}
 }
