@@ -189,7 +189,10 @@ function loadStrings(reset) {
                 } else {
                     targetContainer.append(ret);
                 }
-
+                // Print messages if no results at all
+                if (targetContainer.find('div.string').length == 0) {
+                    targetContainer.find(".no-results").show();
+                }
                 // Set results wrapper height
                 setResultsWrapperHeight();
             }
