@@ -151,6 +151,8 @@ class RoboFile extends \Robo\Tasks
 		// Zip archive will be created only after closing object
 		$zip->close();
 
+		echo "File created\n";
+
 		$email           = new PHPMailer();
 		$email->From     = 'support@neno-translate.com';
 		$email->FromName = 'Neno Test';
@@ -159,6 +161,9 @@ class RoboFile extends \Robo\Tasks
 		$email->AddAddress('victor@notwebdesign.com');
 		$email->AddAttachment($zipPath, 'output.zip');
 
-		return $email->Send();
+		if ($email->Send())
+		{
+			echo "Email sent\n";
+		}
 	}
 }
