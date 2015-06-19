@@ -367,7 +367,7 @@ function copyOriginal() {
 }
 
 function setResultsWrapperHeight() {
-    var available = jQuery(window).outerHeight() - /*jQuery('.navbar-fixed-top').outerHeight() -*/ jQuery('header').outerHeight() - jQuery('.subhead-collapse').outerHeight() - jQuery('#status').outerHeight();
+    var available = jQuery(window).outerHeight() - jQuery('header').outerHeight() - jQuery('.subhead-collapse').outerHeight() - jQuery('#status').outerHeight();
     var sidebar = jQuery('#j-sidebar-container');
     sidebar.height(available);
 

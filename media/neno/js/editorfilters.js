@@ -75,6 +75,9 @@ jQuery(document).ready(function () {
        jQuery('#filter_search').width(jQuery('#j-sidebar-container').innerWidth() - jQuery('.submit-form').width() - 57);
        jQuery('.multiselect-wrapper').width(jQuery('#j-sidebar-container').innerWidth() - 45);
     });
+    setTimeout(function(){
+        jQuery(window).resize();
+    },100);
 
     // Set results wrapper height
     setResultsWrapperHeight();
