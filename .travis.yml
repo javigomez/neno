@@ -26,6 +26,11 @@ before_script:
 - sleep 3 # give fluxbox some time to start
 - composer update
 
+addons:
+  sauce_connect:
+    username: jensentech
+    access_key: 9ff2f739-2c87-4d79-aa97-da58db62c176
+
 script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
 - php vendor/bin/robo test:acceptance
