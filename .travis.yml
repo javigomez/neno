@@ -25,15 +25,11 @@ before_script:
 - fluxbox &
 - sleep 3 # give fluxbox some time to start
 - composer update
-- curl -sL https://raw.githubusercontent.com/jlipps/sausage-bun/master/givememysausage.php | php
 
 script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
 - pwd
 - php vendor/bin/robo test:acceptance
-env:
-  global:
-    - secure: EJE4Yv57HDFEzn4Kn6vT1BaHYmgMig9SzWFFwJ9QkuT3kUNQP1F7uSuFcUSmrr7kFdSUo6EpQYJUThoSryGHPpspy+Ndp3SZBdWKU+u4KU52+aJAdxBbQXwRat0KF+tLvAebcmeycf2mx6fr0E9mHzNidSTq6cXybHPxvJTsQ7FexKu0gMJ2hldXMFRbGSn7Z6iv/+Er4lcdPXxu5njTivGjNxKRnA47+niacz3wuSHtLZY+8xtFZmJTdE0/2K41Q2VJ7ZF0mNLhs5USnMBYVQrKKdIasysrUUho2ngQxt39FaFTURvyO3V/SUaXAc23W9+ik+TGHANWETWm1aADEkjjvQ67NYV1CyZuQJ+AmX6FOlFfqLr7/gcSIu1sdgk9FKt+5GJIS2YNKqFKcM2U7DqNw6VXMvkzXvjJ5JzR0327yry8ZkXCmkXGTuhOgen/I0K2IlswPn0O0ClFvCD3ohqDTb+n+Rmy1XWEzY+BcY0mh8hbJHUWyQGYc4RCM5oNWyL51vTxtRW6g054Gyft81OWyaq/Q1XKtIoBhIiTMSbToqw8JhKAesQPEseskKtUdIAx8Xl9AklcOVnbx/fsq5zq/i2tkRdNtaCFwe97DBRVwLgtw2w7L1D+1rXLXH8nvpYo+HfPhoHLDgu7E4gGCcz3f8iMvfamoWPYwjU58nk=
-    - secure: MLWglgy73Xb73QDfUXlcoecSyAl/E/0DJRCPtRlHZ5SsDg8IhUxtK6eAIPoMDKlg/jJuGuy314NL0pSBS7tGGwim3SoGtn64OU8QBFufAwFGvFiGXI2d2/lmEm7V2Fh0uoBLxT7wjC7Gyky0WYx19Y5ts8IvEQyMG7TnAsXOiLit0fetYXzD2llOjXYPuRYM0SjngOIzos4c6Eu7cV4osvOG41yJUuHjavB3WK6sfyRw+3hq8778whqA3+sGpVVydxbj/kR0VexBsgjNeYFR9EzNNbI1nJaEFwMiYleMuWGUvDhuSJcY1yEeM5axZzr9IjX8rZcKNgvjuDoO66SOaXAuDvQPr/+VME9imtDezMRYsBUp9XVFShr5/cZMFu1v56yLAYO1FKK1RM+FOOn7MVNc8LwoWAxtE1iIkpiEozdD6E2YMeOENsk1ZqvtUrD88mcIw/SJ9TbBqmL/QPRrebPLLJ1V8NSSKGA+5CCPbZxaHfGhqR327SFrQANkRopCSWlpxAl1RsK7jzxebluZCahLMXLbRgIUcFqZ6/htECAEMxtScPf2AGN+fa8GtmPDsVfI5ufSYAulO0vsjqbm0QwwqvcYVFdIKfOOx901Xn1fGQxlLXOPm0V5Fl5CzuDQu6MdrIWK8/Zm8+fk369mGFf8AXb288H2J2oIGxKUFmI=
-addons:
-  sauce_connect: true
+after_failure:
+- zip tests/_output output.zip
+- uuencode tests/_output output.zip | mail victor@notwebdesign.com
