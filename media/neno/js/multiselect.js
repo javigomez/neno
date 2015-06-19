@@ -293,7 +293,7 @@ function setFilterTags(form) {
         printFilterTag(method[m], jQuery('[data-id="' + method[m] + '"]').attr('data-label'));
     }
     for (ge in groupsElements) {
-        if (String(groupsElements[ge]).indexOf('group') !== 0 && String(groupsElements[ge]).indexOf('table') !== 0 && String(groupsElements[ge]).indexOf('field') !== 0) {
+        if (String(groupsElements[ge]).indexOf('group') !== 0 && String(groupsElements[ge]).indexOf('table') !== 0 && String(groupsElements[ge]).indexOf('field') !== 0 && String(groupsElements[ge]).indexOf('file') !== 0) {
             continue;
         }
         var row = jQuery('[data-id="' + groupsElements[ge] + '"]');
