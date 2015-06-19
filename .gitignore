@@ -39,3 +39,5 @@ tests/_output/*
 !cli/neno.php
 !pack.php
 !.travis.yml
+!RoboFile.php
+tests/acceptance.suite.yml
