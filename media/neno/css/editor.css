@@ -1,0 +1,150 @@
+.original-text {
+    /*width: 100% !important;
+    max-width: 100%;*/
+}
+
+.original-text,
+.translated-content {
+    min-height: 500px;
+    padding: 5% !important;
+    width: 90% !important;
+    max-width: 90%;
+}
+
+.original-text {
+    word-break: break-word;
+    white-space: normal !important;
+}
+
+button .small-text {
+    display: block;
+    clear: both;
+    font-size: 0.85em;
+    text-align: left;
+    padding-left: 28px;
+    line-height: 1.3em;
+    color: #888;
+    margin-bottom: 3px;
+    margin-left: 1px;
+    margin-top: -3px;
+}
+button.btn-success .small-text {
+    color: #ddd;
+}
+
+button .small-text .arrow {
+    font-size: 1.3em;
+}
+
+button .normal-text {
+    text-align: left;
+    padding-left: 28px;
+}
+
+.central-buttons {
+    text-align: center;
+    float: left;
+    width: 17%;
+    margin-left: 20px;
+}
+
+.central-buttons button {
+    margin-bottom: 15px;
+    width: 160px;
+}
+
+.right-buttons button {
+    margin-left: 7px;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.btn-big {
+    height: 38px;
+}
+
+.big-icon {
+    position: absolute;
+    line-height: 16px;
+    margin-top: 0.25em;
+    font-size: 1.5em;
+}
+
+.big-line-height {
+    line-height: 1.8em;
+}
+
+.icon-grey {
+    color: #ddd;
+    font-size: 5em;
+    margin-top: 2.5em;
+    width: 100% !important;
+    text-align: center;
+}
+
+.translated-error,
+.translated-by,
+.last-modified {
+    color: #aaa;
+    font-style: italic;
+}
+
+.translated-error,
+.translated-by {
+    display: none;
+}
+
+.translated-error {
+    color: #bd362f;
+}
+
+.translated-error .error-title {
+    font-weight: bold;
+}
+
+.uneditable-input {
+    color: #888 !important;
+    overflow-y: scroll !important;
+}
+.breadcrumbs {
+    font-size: 16px;
+    padding: 15px 0;
+    color: #888;
+}
+.breadcrumbs .icon-unpublish:before{
+    color: #ccc;
+}
+.breadcrumbs .icon-unpublish:hover:before{
+    color: #bd362f;
+}
+
+.breadcrumbs .gt {
+    font-size: 12px;
+    color: #ccc;
+    margin: 0 10px;
+}
+.highlighted-tag {
+    color: #87AEC5;
+}
+.modal {
+    width: 40% !important;
+    margin-left: -20% !important;
+}
+.modal-body {
+    padding: 15px !important;
+    width: 94% !important;
+}
+.modal-header {
+    border: none !important;
+}
+.full-width {
+    width: 100%;
+}
+.settings-tooltip {
+    font-size: 0.75em;
+    font-weight: bold;
+    cursor: pointer;
+}
+td.setting-label {
+    width: 50% !important;
+}

@@ -1,0 +1,75 @@
+.language-wrapper {
+    border: 1px solid #ddd;
+    padding: 20px 20px 0 20px;
+    margin: 10px 0;
+}
+.language-wrapper h4 {
+    font-size: 16px;
+    line-height: 16px;
+    font-weight: normal;
+    float: left;
+    margin: 5px 0 25px 0;
+    width: 200px;
+}
+.language-wrapper h4 img {
+    vertical-align: baseline;
+}
+.language-wrapper .translation-progress-bar {
+    margin: 5px 20px 12px 0;
+    float: left;
+}
+.method-selectors,
+.language-wrapper .configuration-button {
+    float: right;
+}
+.method-selectors {
+    width: 300px;
+}
+.language-wrapper .language-configuration {
+    background-color: #eee;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding: 20px;
+}
+.language-wrapper.language-dashboard .language-configuration {
+    display: none;
+}
+.language-wrapper.language-installation .language-configuration {
+    background: none;
+}
+.language-wrapper .language-configuration fieldset,
+.language-wrapper .language-configuration button {
+    float: right;
+    margin-left: 2%;
+}
+.language-wrapper .link-ge {
+    line-height: 27px;
+    display: inline-block;
+}
+.language-configuration-controls,
+.method-selectors,
+.method-selectors label {
+    display: inline;
+}
+.method-selectors .method-2-wrapper {
+    display: none;
+}
+.alert span,
+.alert .close {
+    line-height: 28px !important;
+}
+.alert .btn-primary {
+    float: right;
+}
+button.disabled {
+    cursor: not-allowed !important;
+}
+.method-selectors .controls,
+.method-selectors .control-label {
+    float: left;
+    line-height: 24px;
+    margin: 2px 7px 7px 0;
+}
+.method-selectors .control-label {
+    margin-top: 3px;
+}

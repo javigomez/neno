@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--suppress ALL -->
+<form>
+    <fields name="filter">
+        <field
+                name="search"
+                type="text"
+                label="COM_BANNERS_SEARCH_IN_TITLE"
+                hint="JSEARCH_FILTER"
+                class="js-stools-search-string"
+                />
+        <field
+                name="translation_status"
+                type="translationstatus"
+                label="COM_NENO_FILTER_TRANSLATION_STATUS"
+                extension="com_neno"
+                description="COM_NENO_FILTER_TRANSLATION_STATUS_DESC"
+                onchange="this.form.submit();"
+                >
+            <option value="">COM_NENO_SELECT_STATUS</option>
+        </field>
+        <field
+                name="translator_type"
+                type="translationmethod"
+                label="COM_BANNERS_FILTER_TRANSLATORS"
+                extension="com_neno"
+                description="COM_BANNERS_FILTER_TRANSLATOR_DESC"
+                onchange="this.form.submit();"
+                >
+            <option value="">COM_NENO_SELECT_TRANSLATION_METHOD</option>
+        </field>
+    </fields>
+    </form>
