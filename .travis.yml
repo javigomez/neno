@@ -29,8 +29,7 @@ before_script:
 addons:
   sauce_connect:
     username: jensentech
-    access_key:
-      secure: "YatXTpRyhoXslYvEDsM+1bSFey7tZbUSTFvIdqBsxPnGv6IpUWPUHwkwacbiL7CfmXyBFa1naU2xID3cHzm6dcIILOjeL0EQSWsEUkOJ2UZ9/2akkYe0g3NGR6roAovJOfkt+uTlZaQ4D4jDKBKoaLhVwRBUO/wD2AG55p/hA4K+R/etbv20aouBqtHj+UOxpId9ChXTk+9JDG7JtpXr7T4zk/IfmB4eBbSwrxBqvhtMvGXfLlGzEnxmhx4jEd3nae/tk1yv1cmEe0OQJ/Dz0V9kgfZc++Kk/0wH85mtMPomRzoKbCthbGiS10fKiiltNJaTZ6TTUuIK9RJPxSzn2ZnsxHE5f7/cqxUtaeedn6hN32gi9B/2deL6P6j3fWfUcMtw2Pvmek9o7nGKsi7oKNau8ZEwt3SyWoB1ipHJICRjtnsf8snpgCkcyFeLAofCJF8DotQgHIR+v/TNj0YBmMCbHX1+SZvcq6eKlBkt/HPrflGRs/ZZoa6EaHoy0nLs9EbCHhC6xlF08FghKCRiduy9MWVAQtIqNwHMooG+CgoNXzuQKeCup0DBUz71j5j6Um21sQD8v1UGh0pTp6SHrqeYTtXghRiv2oc9LrxAU2gziYA+7n4p2QCvWXsACoM8Us+QAKjafdiudYZ76af27f5qJY8U0mRX/cvfi4oizks="
+    access_key: 9ff2f739-2c87-4d79-aa97-da58db62c176
 
 script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
