@@ -1,17 +1,21 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: victor
- * Date: 19/06/15
- * Time: 15:54
- */
+use Codeception\Event\SuiteEvent;
+use Codeception\Event\TestEvent;
+use Codeception\Events;
+
 class NenoExtension extends \Codeception\Platform\Extension
 {
 	// list events to listen to
 	public static $events = array (
-		'test.fail' => 'testFailed',
+		Events::TEST_FAIL => 'testFailed',
 	);
+
+	public function _initialize()
+	{
+		$this->options['silent'] = false;
+	}
+
 
 	public function testFailed(\Codeception\Event\FailEvent $e)
 	{
