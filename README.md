@@ -7,5 +7,5 @@ Documentation: http://documentation.neno-translate.com
 To generate the installation package:
 
 ```php
-pack.php
+php pack.php
 ```
