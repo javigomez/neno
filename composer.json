@@ -9,6 +9,7 @@
     "codeception/codeception": "2.0.13",
     "joomla-projects/joomla-browser": "dev-develop",
     "codegyre/robo": "~0.5",
-    "joomla-projects/robo": "dev-master"
+    "joomla-projects/robo": "dev-master",
+    "sauce/connect": "^3.1"
   }
 }
