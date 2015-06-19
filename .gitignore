@@ -37,8 +37,9 @@ media/*
 tests/_output/*
 !codeception.yml
 !codeception.dist.yml
-!cli/neno.php
+!cli/
+cli/*
+!/cli/neno.php
 !pack.php
 !.travis.yml
 !RoboFile.php
-tests/acceptance.suite.yml
