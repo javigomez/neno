@@ -1,17 +1,5 @@
-actor: Tester
-paths:
-    tests: tests
-    log: tests/_output
-    data: tests/_data
-    helpers: tests/_support
-settings:
-    bootstrap: _bootstrap.php
-    colors: true
-    memory_limit: 1024M
-modules:
-    config:
-        Db:
-            dsn: ''
-            user: ''
-            password: ''
-            dump: tests/_data/dump.sql
+extensions:
+ config:
+   Codeception\Extension\SauceExtension:
+     username: 'jensentech'
+     accesskey: '9ff2f739-2c87-4d79-aa97-da58db62c176'
