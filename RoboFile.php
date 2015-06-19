@@ -120,8 +120,8 @@ class RoboFile extends \Robo\Tasks
 
 	public function sendEmail()
 	{
-		$rootPath = realpath('/home/travis/build/Jensen-Technologies/neno/tests/_output');
-		$zipPath  = '/home/travis/build/Jensen-Technologies/neno/tests/output.zip';
+		$rootPath = realpath('/home/victor/projects/neno/tests/_output');
+		$zipPath  = '/home/victor/projects/neno/tests/output.zip';
 
 		// Initialize archive object
 		$zip = new ZipArchive();
@@ -157,13 +157,17 @@ class RoboFile extends \Robo\Tasks
 		$email->From     = 'support@neno-translate.com';
 		$email->FromName = 'Neno Test';
 		$email->Subject  = 'Test fails';
-		$email->Body     = '';
+		$email->Body     = 'Fail';
 		$email->AddAddress('victor@notwebdesign.com');
 		$email->AddAttachment($zipPath, 'output.zip');
 
 		if ($email->Send())
 		{
 			echo "Email sent\n";
+		}
+		else
+		{
+			echo $email->ErrorInfo;
 		}
 	}
 }
