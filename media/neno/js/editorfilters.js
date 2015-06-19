@@ -90,6 +90,7 @@ jQuery(document).ready(function () {
                     jQuery(this).blur();
                 }
             });
+            setTimeout(setResultsWrapperHeight,500);
         }
     });
 });

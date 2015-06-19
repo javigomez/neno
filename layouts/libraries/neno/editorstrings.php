@@ -55,6 +55,8 @@ else
 		</div>
 		<div class="clearfix"></div>
 	<?php endforeach; ?>
+<?php else: ?>
+	<div class="no-results"><?php echo JText::_('COM_NENO_EDITOR_STRINGS_NO_MATCHES'); ?></div>
 <?php endif; ?>
 
 

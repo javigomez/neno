@@ -107,3 +107,8 @@
     background-color: #155184;
     color: white;
 }
+.no-results {
+    display: none;
+    font-style: italic;
+    margin-left: 9px;
+}
