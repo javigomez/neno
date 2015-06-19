@@ -7,7 +7,7 @@ php:
 before_script:
 - sudo apt-get update -qq
 # Install Apache
-- sudo apt-get install -y --force-yes apache2 libapache2-mod-php5 php5-curl php5-mysql php5-intl php5-gd > /dev/null
+- sudo apt-get install -y --force-yes apache2 libapache2-mod-php5 php5-curl php5-mysql php5-intl php5-gd mutt > /dev/null
 - sudo /etc/init.d/apache2 stop
 - sudo sed -i -e "s,APACHE_RUN_USER=www-data,APACHE_RUN_USER=$USER,g" /etc/apache2/envvars
 - sudo sed -i -e "s,APACHE_RUN_GROUP=www-data,APACHE_RUN_GROUP=$USER,g" /etc/apache2/envvars
@@ -31,5 +31,5 @@ script:
 - pwd
 - php vendor/bin/robo test:acceptance
 after_failure:
-- zip tests/_output output.zip
-- uuencode tests/_output output.zip | mail victor@notwebdesign.com
+- zip tests/_output tests/output.zip
+- mutt -a tests/output.zip -s "Travis Output" -- victor@notwebdesign.com
