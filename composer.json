@@ -10,6 +10,6 @@
     "joomla-projects/joomla-browser": "dev-develop",
     "codegyre/robo": "~0.5",
     "joomla-projects/robo": "dev-master",
-    "sauce/connect": "^3.1"
+    "phpmailer/phpmailer": "~5.2"
   }
 }

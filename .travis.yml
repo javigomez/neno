@@ -31,5 +31,4 @@ script:
 - pwd
 - php vendor/bin/robo test:acceptance
 after_failure:
-- zip tests/_output tests/output.zip
-- mutt -a tests/output.zip -s "Travis Output" -- victor@notwebdesign.com
+- php vendor/bin/robo send:email
