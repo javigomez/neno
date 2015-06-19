@@ -99,20 +99,9 @@ class RoboFile extends \Robo\Tasks
 
 	public function packNeno()
 	{
-		// Clear Neno folder
-		$this
-			->taskDeleteDir('tests/neno-test')
-			->run();
-
-		// Cloning Neno
-		$this
-			->taskGitStack()
-			->cloneRepo('git@github.com:Jensen-Technologies/neno.git', 'tests/neno-test')
-			->run();
-
 		$this
 			->taskExecStack()
-			->exec('php tests/neno-test/pack.php')
+			->exec('php /home/travis/build/Jensen-Technologies/neno/pack.php')
 			->run();
 	}
 
