@@ -12,8 +12,6 @@ modules:
     config:
         JoomlaBrowser:
             url: 'http://localhost/joomla-cms/'     # the url that points to the joomla installation at /tests/system/joomla-cms
-            host: 'ondemand.saucelabs.com'
-            port: 80
             browser: 'firefox'
             window_size: 1024x768
             capabilities:
