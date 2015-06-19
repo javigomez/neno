@@ -76,25 +76,6 @@ class NenoModelEditor extends NenoModelStrings
 			}
 		}
 
-		$query
-			->update('#__neno_content_element_translations')
-			->set(
-				array (
-					'string = ' . $db->quote($translation->getString()),
-					'translation_method = 1',
-					'state = 1'
-				)
-			)
-			->where(
-				array (
-					'original_text =' . $db->quote($translation->getOriginalText()),
-					'id <> ' . $translationId
-				)
-			);
-
-		$db->setQuery($query);
-		$db->execute();
-
 		return true;
 	}
 

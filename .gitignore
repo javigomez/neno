@@ -31,3 +31,13 @@ media/*
 !/plugins/system
 /plugins/system/*
 !/plugins/system/neno
+!tests
+!composer.json
+!LICENSE.txt
+tests/_output/*
+!codeception.yml
+!cli/neno.php
+!pack.php
+!.travis.yml
+!RoboFile.php
+tests/acceptance.suite.yml

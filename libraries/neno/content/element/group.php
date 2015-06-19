@@ -706,6 +706,21 @@ class NenoContentElementGroup extends NenoContentElement implements NenoContentE
 			$languageString->remove();
 		}
 
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+			->delete('#__neno_content_element_groups_x_translation_methods')
+			->where('group_id = ' . $this->id);
+		$db->setQuery($query);
+		$db->execute();
+
+		$query
+			->clear()
+			->delete('#__neno_content_element_groups_x_extensions')
+			->where('group_id = ' . $this->id);
+		$db->setQuery($query);
+		$db->execute();
+
 		NenoLog::log('Group deleted successfully', 2);
 
 		return parent::remove();

@@ -89,8 +89,10 @@ if (!empty($this->extraSidebar))
 						</td>
 						<td>
 							<div class="btn-group">
-								<a href="index.php?option=com_neno&task=jobs.resend&jobId=<?php echo $item->id; ?>"
-								   class="btn btn-small"><?php echo JText::_('COM_NENO_JOBS_SEND_BUTTON'); ?></a>
+								<?php if ($item->state != NenoJob::JOB_STATE_PROCESSED): ?>
+									<a href="index.php?option=com_neno&task=jobs.resend&jobId=<?php echo $item->id; ?>"
+									   class="btn btn-small"><?php echo JText::_('COM_NENO_JOBS_SEND_BUTTON'); ?></a>
+								<?php endif; ?>
 								<?php if ($item->state == NenoJob::JOB_STATE_COMPLETED): ?><a
 									href="index.php?option=com_neno&task=jobs.fetch&jobId=<?php echo $item->id; ?>"
 									class="btn btn-small"><?php echo JText::_('COM_NENO_JOBS_FETCH_BUTTON'); ?></a>
@@ -100,11 +102,10 @@ if (!empty($this->extraSidebar))
 					</tr>
 				<?php endforeach; ?>
 				<tr>
-					<td colspan="89>
+					<td colspan="9">
 						<?php echo $this->pagination->getListFooter(); ?>
 					</td>
 				</tr>
-
 			</table>
 		</div>
 	</div>

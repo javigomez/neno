@@ -556,6 +556,8 @@ class NenoContentElementTranslation extends NenoContentElement
 							)
 						);
 
+					$inserted = array ();
+
 					// Loop through the data
 					foreach ($this->sourceElementData as $sourceData)
 					{
@@ -563,7 +565,13 @@ class NenoContentElementTranslation extends NenoContentElement
 						$field      = $sourceData['field'];
 						$fieldValue = $sourceData['value'];
 
-						$query->values($field->getId() . ',' . $this->getId() . ',' . $db->quote($fieldValue));
+						// Checks if this row has been inserted already
+						if (!in_array($field->getId() . '|' . $this->getId(), $inserted))
+						{
+							$query->values($field->getId() . ',' . $this->getId() . ',' . $db->quote($fieldValue));
+							$inserted[] = $field->getId() . '|' . $this->getId();
+						}
+
 					}
 
 					$db->setQuery($query);
@@ -914,6 +922,14 @@ class NenoContentElementTranslation extends NenoContentElement
 
 		$query
 			->delete('#__neno_content_element_fields_x_translations')
+			->where('translation_id =' . $this->getId());
+
+		$db->setQuery($query);
+		$db->execute();
+
+		$query
+			->clear()
+			->delete('#__neno_content_element_translation_x_translation_methods')
 			->where('translation_id =' . $this->getId());
 
 		$db->setQuery($query);

@@ -1255,7 +1255,7 @@ class NenoHelper
 		// Delete all the associations left
 		$query
 			->clear()
-			->delete('a USING jos_associations AS a')
+			->delete('a USING #__associations AS a')
 			->where(
 				array (
 					'context = ' . $db->quote('com_menus.item'),
@@ -1394,8 +1394,8 @@ class NenoHelper
 				->columns(
 					array (
 						'id',
-						'context',
-						'key'
+						$db->quoteName('context'),
+						$db->quoteName('key')
 					)
 				);
 
@@ -1492,6 +1492,7 @@ class NenoHelper
 
 			// Get all the modules assigned to this menu item using a different language from *
 			$query
+				->clear()
 				->select('m.*')
 				->from('#__modules AS m')
 				->innerJoin('#__modules_menu AS mm ON m.id = mm.moduleid')
