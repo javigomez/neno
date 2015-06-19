@@ -120,8 +120,8 @@ class RoboFile extends \Robo\Tasks
 
 	public function sendEmail()
 	{
-		$rootPath = realpath(' /home/travis/build/Jensen-Technologies/neno/tests/_output');
-		$zipPath  = ' /home/travis/build/Jensen-Technologies/neno/tests/output.zip';
+		$rootPath = realpath('/home/travis/build/Jensen-Technologies/neno/tests/_output');
+		$zipPath  = '/home/travis/build/Jensen-Technologies/neno/tests/output.zip';
 
 		// Initialize archive object
 		$zip = new ZipArchive();
