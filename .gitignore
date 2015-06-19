@@ -33,7 +33,7 @@ media/*
 !/plugins/system/neno
 !tests
 !composer.json
-!composer.lock
+composer.lock
 !RoboFile.php
 !LICENSE.txt
 tests/_output/*
