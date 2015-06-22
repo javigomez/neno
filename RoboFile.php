@@ -56,7 +56,7 @@ class RoboFile extends \Robo\Tasks
 		{
 			$seleniumPath = "START java.exe -jar .\\" . $seleniumPath;
 		}
-		
+
 		// Running Selenium server
 		$this->_exec($seleniumPath);
 		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
