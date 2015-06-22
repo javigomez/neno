@@ -56,13 +56,7 @@ class RoboFile extends \Robo\Tasks
 		{
 			$seleniumPath = "START java.exe -jar .\\" . $seleniumPath;
 		}
-
-		// Make sure we have Composer
-		if (!file_exists('./composer.phar'))
-		{
-			$this->_exec('curl' . $this->extension . ' -sS https://getcomposer.org/installer | php');
-		}
-		$this->taskComposerUpdate()->run();
+		
 		// Running Selenium server
 		$this->_exec($seleniumPath);
 		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
