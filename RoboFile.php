@@ -120,54 +120,15 @@ class RoboFile extends \Robo\Tasks
 
 	public function sendEmail()
 	{
-		$rootPath = realpath('/home/travis/build/Jensen-Technologies/neno/tests/_output');
-		$zipPath  = '/home/travis/build/Jensen-Technologies/neno/tests/output.zip';
-
-		// Initialize archive object
-		$zip = new ZipArchive();
-		$zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-
-		// Create recursive directory iterator
-		/** @var SplFileInfo[] $files */
-		$files = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($rootPath),
-			RecursiveIteratorIterator::LEAVES_ONLY
+		// Upload image
+		Cloudinary::config(
+			array (
+				'cloud_name' => 'jensen-technologies',
+				'api_key'    => '586876494264151',
+				'api_secret' => '0AlxHkbRyN28ZGlCQWV50DEH6Jc'
+			)
 		);
 
-		foreach ($files as $name => $file)
-		{
-			// Skip directories (they would be added automatically)
-			if (!$file->isDir())
-			{
-				// Get real and relative path for current file
-				$filePath     = $file->getRealPath();
-				$relativePath = substr($filePath, strlen($rootPath) + 1);
-
-				// Add current file to archive
-				$zip->addFile($filePath, $relativePath);
-			}
-		}
-
-		// Zip archive will be created only after closing object
-		$zip->close();
-
-		echo "File created\n";
-
-		$email           = new PHPMailer();
-		$email->From     = 'support@neno-translate.com';
-		$email->FromName = 'Neno Test';
-		$email->Subject  = 'Test fails';
-		$email->Body     = 'Fail';
-		$email->AddAddress('victor@notwebdesign.com');
-		$email->AddAttachment($zipPath, 'output.zip');
-
-		if ($email->Send())
-		{
-			echo "Email sent\n";
-		}
-		else
-		{
-			echo $email->ErrorInfo;
-		}
+		$result = \Cloudinary\Uploader::upload(realpath(dirname(__FILE__) . '/../_output/InstallNenoCest.installNeno.fail.png'));
 	}
 }
