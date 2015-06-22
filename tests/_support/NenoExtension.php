@@ -4,6 +4,8 @@ use Codeception\Event\SuiteEvent;
 use Codeception\Event\TestEvent;
 use Codeception\Events;
 
+require_once realpath(dirname(__FILE__) . '/../../vendor/autoload.php';
+
 class NenoExtension extends \Codeception\Platform\Extension
 {
 	// list events to listen to
