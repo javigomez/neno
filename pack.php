@@ -136,7 +136,7 @@ if (rmdirRecursive($extractPath . DIRECTORY_SEPARATOR . 'layouts') !== true)
 
 $files = files($extractPath);
 
-$rootFiles          = array ('pkg_neno.xml', 'script.php', 'codeception.yml');
+$rootFiles          = array ('pkg_neno.xml', 'script.php', 'codeception.yml', 'composer.json', 'RoboFile.php');
 $noExtensionFolders = array ('tests', 'media', 'layouts', 'cli', 'packages', 'vendor');
 
 foreach ($files as $file)
