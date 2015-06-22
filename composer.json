@@ -3,14 +3,13 @@
   "description": "The complete translation solution for Joomla",
   "license": "GPL-2.0+",
   "require": {
-    "php": ">=5.3.10",
-    "cloudinary/cloudinary_php": "1.1.1"
+    "php": ">=5.3.10"
   },
   "require-dev": {
     "codeception/codeception": "2.0.13",
     "joomla-projects/joomla-browser": "dev-develop",
     "codegyre/robo": "~0.5",
     "joomla-projects/robo": "dev-master",
-    "knplabs/github-api": "1.4.12"
+    "cloudinary/cloudinary_php": "1.1.1"
   }
 }

@@ -119,7 +119,7 @@ class RoboFile extends \Robo\Tasks
 		}
 	}
 
-	public function sendEmail($cloudName, $apiKey, $apiSecret, $oAuthToken)
+	public function sendEmail($cloudName, $apiKey, $apiSecret)
 	{
 		$this->printTaskInfo('Sending image');
 		// Upload image
