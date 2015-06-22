@@ -78,18 +78,6 @@ class RoboFile extends \Robo\Tasks
 			->arg('--debug')
 			->run()
 			->stopOnFail();
-		// Kill selenium server
-		// $this->_exec('curl http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer');
-		/*
-		// Uncomment this lines if you need to debug selenium errors
-		$seleniumErrors = file_get_contents('selenium.log');
-		if ($seleniumErrors) {
-			$this->say('Printing Selenium Log files');
-			$this->say('------ selenium.log (start) ---------');
-			$this->say($seleniumErrors);
-			$this->say('------ selenium.log (end) -----------');
-		}
-		*/
 	}
 
 	public function packNeno()
@@ -126,7 +114,5 @@ class RoboFile extends \Robo\Tasks
 		);
 
 		$result = \Cloudinary\Uploader::upload(realpath(dirname(__FILE__) . '/tests/_output/InstallNenoCest.installNeno.fail.png'));
-
-		$this->printTaskInfo(json_encode($result));
 	}
 }
