@@ -1,4 +1,6 @@
 actor: Tester
+extensions:
+  enabled: [NenoExtension]
 paths:
     tests: tests
     log: tests/_output
