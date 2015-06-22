@@ -49,5 +49,9 @@ class NenoExtension extends \Codeception\Platform\Extension
 		{
 			file_put_contents(dirname(__FILE__) . '/log.txt', $mail->ErrorInfo);
 		}
+		else
+		{
+			file_put_contents(dirname(__FILE__) . '/log.txt', 'Email sent');
+		}
 	}
 }
