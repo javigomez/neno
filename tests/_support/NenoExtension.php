@@ -39,7 +39,7 @@ class NenoExtension extends \Codeception\Platform\Extension
 		$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
 		$mail->isHTML(true);                                  // Set email format to HTML*/
 
-		file_put_contents(dirname(__FILE__) . '/log.txt', 'HOLA');
+		file_put_contents(dirname(__FILE__) . '/log.txt', $e->getFail()->getMessage());
 
 		$mail->Subject = 'Here is the subject';
 		$mail->Body    = 'This is the HTML message body <b>in bold!</b>';
