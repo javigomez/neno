@@ -101,9 +101,9 @@ class RoboFile extends \Robo\Tasks
 		}
 	}
 
-	public function sendEmail($cloudName, $apiKey, $apiSecret)
+	public function sendScreenshot($cloudName, $apiKey, $apiSecret, $authToken)
 	{
-		$this->printTaskInfo('Sending image');
+		$this->say('Sending image');
 		// Upload image
 		Cloudinary::config(
 			array (
@@ -114,5 +114,15 @@ class RoboFile extends \Robo\Tasks
 		);
 
 		$result = \Cloudinary\Uploader::upload(realpath(dirname(__FILE__) . '/tests/_output/InstallNenoCest.installNeno.fail.png'));
+
+		$this->say('Image sent');
+		$this->say('Creating Github issue');
+
+		$client = new \Github\Client();
+		$client->authenticate($authToken, \Github\Client::AUTH_HTTP_TOKEN);
+
+		$client
+			->api('issue')
+			->create('Jensen-Technologies', 'neno', array ('title' => 'Test error', 'body' => '![Screenshot](' . $result['secure_url'] . ')'));
 	}
 }
