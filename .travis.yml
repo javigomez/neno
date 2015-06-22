@@ -26,9 +26,13 @@ before_script:
 - sleep 3
 - composer self-update
 - composer update
+- pyrus install pear/PHP_CodeSniffer
+- phpenv rehash
+- git clone https://github.com/joomla/coding-standards.git `pear config-get php_dir`/PHP/CodeSniffer/Standards/Joomla
 script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
 - php vendor/bin/robo test:acceptance
+- phpcs --standard=Joomla *
 after_failure:
 - [ "${TRAVIS_PULL_REQUEST}" != "false" ] && php vendor/bin/robo send:email $CLOUD_NAME $API_KEY $API_SECRET $GITHUB_TOKEN
 env:
