@@ -22,12 +22,12 @@ class RoboFile extends \Robo\Tasks
 
 		$this->setExecExtension();
 		// Get Joomla Clean Testing sites
-		if (is_dir('tests/joomla-cms3'))
+		if (is_dir('tests/joomla-cms'))
 		{
-			$this->taskDeleteDir('tests/joomla-cms3')->run();
+			$this->taskDeleteDir('tests/joomla-cms')->run();
 		}
 		$this->_exec('git' . $this->extension . ' clone -b staging --single-branch --depth 1 https://github.com/joomla/joomla-cms.git tests/joomla-cms');
-		$this->say('Joomla CMS site created at tests/joomla-cms3');
+		$this->say('Joomla CMS site created at tests/joomla-cms');
 		if (!$seleniumPath)
 		{
 			if (!file_exists('selenium-server-standalone.jar'))
