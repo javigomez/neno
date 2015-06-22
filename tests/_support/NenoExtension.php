@@ -43,12 +43,7 @@ class NenoExtension extends \Codeception\Platform\Extension
 
 		if (!$mail->send())
 		{
-			echo 'Message could not be sent.';
-			echo 'Mailer Error: ' . $mail->ErrorInfo;
-		}
-		else
-		{
-			echo 'Message has been sent';
+			file_put_contents(dirname(__FILE__) . '/log.txt', $mail->ErrorInfo);
 		}
 	}
 }
