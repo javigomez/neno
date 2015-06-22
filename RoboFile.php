@@ -119,15 +119,15 @@ class RoboFile extends \Robo\Tasks
 		}
 	}
 
-	public function sendEmail()
+	public function sendEmail($cloudName, $apiKey, $apiSecret, $oAuthToken)
 	{
 		$this->printTaskInfo('Sending image');
 		// Upload image
 		Cloudinary::config(
 			array (
-				'cloud_name' => 'jensen-technologies',
-				'api_key'    => '586876494264151',
-				'api_secret' => '0AlxHkbRyN28ZGlCQWV50DEH6Jc'
+				'cloud_name' => $cloudName,
+				'api_key'    => $apiKey,
+				'api_secret' => $apiSecret
 			)
 		);
 
