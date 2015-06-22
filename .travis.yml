@@ -34,7 +34,9 @@ script:
 - php vendor/bin/robo test:acceptance
 - phpcs --standard=Joomla *
 after_failure:
-- [ "${TRAVIS_PULL_REQUEST}" != "false" ] && php vendor/bin/robo send:email $CLOUD_NAME $API_KEY $API_SECRET $GITHUB_TOKEN
+- if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
+    php vendor/bin/robo send:email $CLOUD_NAME $API_KEY $API_SECRET $GITHUB_TOKEN;
+  fi
 env:
   global:
   - secure: r7pXGMRBytpP4oGxGmzzsu2J+eELL2168164uIq3/XOvok/pAmjg6UQLR1jtpgHTGgw3TNNpVRMGSCMqP9Gi7nPm/0SLIkgj27HvPW8RhCSykPoYYIbxRn9ytb6DC94fOTwH6oHn4jLI2WCJ3zIZIwyJZ373Eq9aValgfyE9ZrAn50pzxlWERA74ivNLFSIuBX+nDive0F2aCQ+n5ABbX2AGwvYCzX0vvq+N/TzCOFNCtbw9NdTfeQMlBCxYG9T0/HKNg6ROq/lmBeBPsbS/al7sJiGG37rO/Z+E6wFcsor3v/uBMbgIOb4Z6qbfJd4hAJHOpLsC7IgvqW/hD5w1KwSGrhbP/sKAwhLcs5lqQVDKNnwcT4Ja/dcl2Dt1G7b8kBmU9K9EaxNvxhQtf1N58QVcUbvSetbu56E4GpW0XlqPgg1cq5HUgfo6/mbfGW22v6nDtwsjgVfGxfS1QpJmJc34wmK7a9JTAWSNf7OsnoAEJcOuH7pm30gynY377D9aIR4cRxRl2Lxo2bfh9ltsc6iaMy1YrZhcrQIx8K0Se5LfVPuD55fnNgZ7eFnRCb1lNbbI74pZeTeXW6Cqk48NiaF26f+8+g4AxZ4V5BHUalyc/qEurKBR2w6HzWy4oUVztja6r+NyR0kZ+CsVRRaTa358zuuRwTMKexFPYgs16NM=
