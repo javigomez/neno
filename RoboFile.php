@@ -26,7 +26,7 @@ class RoboFile extends \Robo\Tasks
 		{
 			$this->taskDeleteDir('tests/joomla-cms3')->run();
 		}
-		$this->_exec('git' . $this->extension . ' clone -b staging --single-branch --depth 1 https://github.com/joomla/joomla-cms.git tests/joomla-cms3');
+		$this->_exec('git' . $this->extension . ' clone -b staging --single-branch --depth 1 https://github.com/joomla/joomla-cms.git tests/joomla-cms');
 		$this->say('Joomla CMS site created at tests/joomla-cms3');
 		if (!$seleniumPath)
 		{
