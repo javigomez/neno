@@ -131,7 +131,7 @@ class RoboFile extends \Robo\Tasks
 			)
 		);
 
-		$result = \Cloudinary\Uploader::upload(realpath(dirname(__FILE__) . '/../_output/InstallNenoCest.installNeno.fail.png'));
+		$result = \Cloudinary\Uploader::upload(realpath(dirname(__FILE__) . '/tests/_output/InstallNenoCest.installNeno.fail.png'));
 
 		$this->printTaskInfo(json_encode($result));
 	}
