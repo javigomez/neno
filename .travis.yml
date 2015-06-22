@@ -15,7 +15,7 @@ before_script:
 - sudo chown -R $USER:$USER /var/www
 - ln -s $TRAVIS_BUILD_DIR/tests/ /var/www/tests
 - sudo sed -i -e "s,AllowOverride[ ]None,AllowOverride All,g" /etc/apache2/sites-available/default
-- cat /etc/apache2/sites-available/default
+- ls /etc/apache2/sites-enabled
 - sudo /etc/init.d/apache2 start
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
