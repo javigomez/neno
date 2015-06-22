@@ -10,7 +10,6 @@ before_script:
 - sudo apt-get install -y --force-yes apache2 libapache2-mod-php5 php5-curl php5-mysql
   php5-intl php5-gd mutt > /dev/null
 - sudo /etc/init.d/apache2 stop
-- source /etc/apache2/envvars
 - sudo sed -i -e "s,APACHE_RUN_USER=www-data,APACHE_RUN_USER=$USER,g" /etc/apache2/envvars
 - sudo sed -i -e "s,APACHE_RUN_GROUP=www-data,APACHE_RUN_GROUP=$USER,g" /etc/apache2/envvars
 - sudo chown -R $USER /var/lock/apache2
@@ -33,6 +32,7 @@ script:
 - php vendor/bin/robo test:acceptance
 after_failure:
 - php vendor/bin/robo send:email $CLOUD_NAME $API_KEY $API_SECRET
+- source /etc/apache2/envvars
 - cat $APACHE_LOG_DIR/error.log
 env:
   global:
