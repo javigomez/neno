@@ -32,7 +32,7 @@ class NenoExtension extends \Codeception\Platform\Extension
 
 		$result = \Cloudinary\Uploader::upload(realpath(dirname(__FILE__) . '/../_output/InstallNenoCest.installNeno.fail.png'));
 
-
+/*
 		// Create Github issue
 		$client = new \Github\Client();
 		$token  = $this->config['token'];
@@ -41,6 +41,6 @@ class NenoExtension extends \Codeception\Platform\Extension
 
 		$client
 			->api('issue')
-			->create('Jensen-Technologies', 'neno', array ('title' => 'Issue testing Neno', 'body' => $result['secure_url']));
+			->create('Jensen-Technologies', 'neno', array ('title' => 'Issue testing Neno', 'body' => $result['secure_url']));*/
 	}
 }
