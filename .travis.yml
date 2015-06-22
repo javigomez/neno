@@ -6,8 +6,8 @@ php:
 - 7.0
 before_script:
 - sudo apt-get update -qq
-# Install Apache
-- sudo apt-get install -y --force-yes apache2 libapache2-mod-php5 php5-curl php5-mysql php5-intl php5-gd mutt > /dev/null
+- sudo apt-get install -y --force-yes apache2 libapache2-mod-php5 php5-curl php5-mysql
+  php5-intl php5-gd mutt > /dev/null
 - sudo /etc/init.d/apache2 stop
 - sudo sed -i -e "s,APACHE_RUN_USER=www-data,APACHE_RUN_USER=$USER,g" /etc/apache2/envvars
 - sudo sed -i -e "s,APACHE_RUN_GROUP=www-data,APACHE_RUN_GROUP=$USER,g" /etc/apache2/envvars
@@ -15,23 +15,27 @@ before_script:
 - sudo chown -R $USER:$USER /var/www
 - ln -s $TRAVIS_BUILD_DIR/tests/ /var/www/tests
 - sudo sed -i -e "s,AllowOverride[ ]None,AllowOverride All,g" /etc/apache2/sites-available/default
+- cat /etc/apache2/sites-available/default
 - sudo /etc/init.d/apache2 start
-# Xvfb
-- "export DISPLAY=:99.0"
-- "sh -e /etc/init.d/xvfb start"
-- sleep 3 # give xvfb some time to start
-# Fluxbox
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- sleep 3
 - sudo apt-get install fluxbox -y --force-yes
 - fluxbox &
-- sleep 3 # give fluxbox some time to start
+- sleep 3
+- composer self-update
 - composer update
 script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
 - pwd
 - php vendor/bin/robo test:acceptance
 after_failure:
-- php vendor/bin/robo send:email
+- php vendor/bin/robo send:email $cloudName $apiKey $apiSecret
 env:
   global:
-    - secure: ZGsU5ARw6Z7S+IYu17hakdO0RjU40QnNfsEj56QD2kbADMXu0oqL7ZH0r2ONNJbWDi4nY79VpsNzaAtMMGURfidgqYFoqWRGEQav+R5nspffjxMoq4AFWv22M4gshOWAPNh557m29oxNgEw76AWHWL5Q7S4gbWWuUTkAx5g1yOeo0E8o57M/vuWdDaEvynk+rTFIoaVboAweMxyd/ugwgqmaqQKmHtr1QYqHi5ZQTs2VOOj94qfyFXBy4Z6KXwHFNMF2MGxMMrSMAaZYwc4IDP1LMFGvCHG2vwRYLJyEQ1YsTeZ3L8XxElwFk9ED0BbwnvfPkesoGk+kdQGkl1yXkVRcVUigN+G1WH7qfxK19CKUvVBmyY/c9uILzJHwlK7IiMIWrQJSD/TDxXNV34iuvBuMYQyHaJtZMNWD2mDOI1V7TssXxyqhkYGUuNLibTm2p26Wvk0FmAR/V0sgBvnHaGZQzQgoauAsCdGoaj3sj9Wi+rzFyzIUVZzkDuuXhjKnz8vGoMAOJiouiK8npvFPwSLAFRJFoGbIowahjM8OWp5NQtW48IailblNi7GzRweAUnfyVIAbsFYS7Hxk0USwbBrVZ79Qj8mc9aChcn8YTKke1BGP6OKnxT/FlJwJd1uU7UqgfW0psj1W6fkR+QkRH8PnO/66hTjRgHM7zl/ySZU=
-    - secure: TYV0+eBWYofyBb8DwjG/a+EMYlhSzlXA1Uy9NPyFNyb/HjAKMZ5cD5Fge1516B8zC9yM9envNcM4SeivCD6XZBIroiWiDVFK+o8CxqOie/VdO94unwHMoYaTQC9CKwiNypfyNkI4tharOh/U6xvxIlSmqKQFBHbKVUYgBaTvGHCGPHnin0c+tTP3zPwRVo/w101hgZ7aZLh5rltVW4vZ5Tvww/4uFbGFXOXmF6VMPhi8b20KBcgwlhnC2nufTIZdfhLUQ4PTv3L5VQ7yoVEtHxa8vgbcAQwmC4F+pNPRZS/bJ3trBr0Fg8gwoM3Bb2ZzU6GDIfVpxuOpAh88kcD6Hfen3PS6r3VgMTqjXhV+h0OaCvLZJsq/dvqs0uopk/RBIyYSZFUCEgEaocDo+R8NM0eRDbT/+p3PKkpSjU6wOgHyTJv9SGZlm8TjY6dD0N7bpE6FhCcXMBh+k5HaGGYpkZiW67A4S90mZqjTpBKCpmj0W6wS3MMGSYEfQTBBTLLpCaGeb4z/S3GGg3/q9n+T1/V1v+biVaF0dPtF3kddsxeoKClSxy+JqXUkA8fge4pnxu0TcA4Ri8PhuI+EWbHui2Y0xPYP4wdpJiWaBWig9+85GvtVtRjptuXaAJRhHy1waqt01aeBfTSKYPYypMPYDcDr7yLvgGR1roOU9jB79Zg=
+  - secure: ZGsU5ARw6Z7S+IYu17hakdO0RjU40QnNfsEj56QD2kbADMXu0oqL7ZH0r2ONNJbWDi4nY79VpsNzaAtMMGURfidgqYFoqWRGEQav+R5nspffjxMoq4AFWv22M4gshOWAPNh557m29oxNgEw76AWHWL5Q7S4gbWWuUTkAx5g1yOeo0E8o57M/vuWdDaEvynk+rTFIoaVboAweMxyd/ugwgqmaqQKmHtr1QYqHi5ZQTs2VOOj94qfyFXBy4Z6KXwHFNMF2MGxMMrSMAaZYwc4IDP1LMFGvCHG2vwRYLJyEQ1YsTeZ3L8XxElwFk9ED0BbwnvfPkesoGk+kdQGkl1yXkVRcVUigN+G1WH7qfxK19CKUvVBmyY/c9uILzJHwlK7IiMIWrQJSD/TDxXNV34iuvBuMYQyHaJtZMNWD2mDOI1V7TssXxyqhkYGUuNLibTm2p26Wvk0FmAR/V0sgBvnHaGZQzQgoauAsCdGoaj3sj9Wi+rzFyzIUVZzkDuuXhjKnz8vGoMAOJiouiK8npvFPwSLAFRJFoGbIowahjM8OWp5NQtW48IailblNi7GzRweAUnfyVIAbsFYS7Hxk0USwbBrVZ79Qj8mc9aChcn8YTKke1BGP6OKnxT/FlJwJd1uU7UqgfW0psj1W6fkR+QkRH8PnO/66hTjRgHM7zl/ySZU=
+  - secure: TYV0+eBWYofyBb8DwjG/a+EMYlhSzlXA1Uy9NPyFNyb/HjAKMZ5cD5Fge1516B8zC9yM9envNcM4SeivCD6XZBIroiWiDVFK+o8CxqOie/VdO94unwHMoYaTQC9CKwiNypfyNkI4tharOh/U6xvxIlSmqKQFBHbKVUYgBaTvGHCGPHnin0c+tTP3zPwRVo/w101hgZ7aZLh5rltVW4vZ5Tvww/4uFbGFXOXmF6VMPhi8b20KBcgwlhnC2nufTIZdfhLUQ4PTv3L5VQ7yoVEtHxa8vgbcAQwmC4F+pNPRZS/bJ3trBr0Fg8gwoM3Bb2ZzU6GDIfVpxuOpAh88kcD6Hfen3PS6r3VgMTqjXhV+h0OaCvLZJsq/dvqs0uopk/RBIyYSZFUCEgEaocDo+R8NM0eRDbT/+p3PKkpSjU6wOgHyTJv9SGZlm8TjY6dD0N7bpE6FhCcXMBh+k5HaGGYpkZiW67A4S90mZqjTpBKCpmj0W6wS3MMGSYEfQTBBTLLpCaGeb4z/S3GGg3/q9n+T1/V1v+biVaF0dPtF3kddsxeoKClSxy+JqXUkA8fge4pnxu0TcA4Ri8PhuI+EWbHui2Y0xPYP4wdpJiWaBWig9+85GvtVtRjptuXaAJRhHy1waqt01aeBfTSKYPYypMPYDcDr7yLvgGR1roOU9jB79Zg=
+  - secure: r3lnZ1yv5y2MjyzATZNqS7LEzNNVSVBW9CJOin4eCGPDnMyJhZUgTveJxv2DXqMlcBkIxkl1FrwUZ4RZ9Bm+WD4toltvraqB0mowhguGgN+SCE363NTt9mN9v/L7FMHP2yapTLCi7BcW9B2Qwi3ZCo0P4UrpVp8qfsyvHKUjQWlbtfo4lgk5AId4Hy3WyV0joFwFarfLhfdviYqE/Xf1aGV1rmR5MmSFLet3liLrCVSllbQdoKimC8FlQXcE4ntYAAo/abKNADOZy4U75h8zUt5QbKXz1JKKXsZSYfEBcdxWDaVOZFSOGjVHioMcaH6Hh+L3Doet81ItUJ4lx9PRAxGXFNqtLLyxwY6sf3uu/ZohHGFY46mOE8d3xVXwF8RDAC/2e1vxDL99R5xbAWGXGQIq9mkGYI6QBwIyTPbqf05NAL/CInToTDmkeCnvGSguANGfDjMh4SrRTsDKpYt3u94BdxH+uyg9tav79JxZxxhARxXu0amxA498R6ri8Gdo1UMmxPwVXOz9CLWYOOgyuorWwcbaizF2fRyQSE+ZXXlUNxf33VNaJwGcO72+DwMbZNWCXVFnbQh45wgiCugEQlDLDLd4bkrHK3HGQukBYlXMFAREhTwj6WZqMOl/+JOhUnFL8LjiHH+BG7mNdmAQgbjrAQXCXU99u65Pu1OthvY=
+  - secure: d93qfv67y1YEm7Yt1q6mEnS0HnDU1DwX9ldUmZppMMBPtWEI/roNwk04DaeluXS+1Nx3CezRuIdyda/cem4wM2yZ6pnT0hXetPnNpINJotoa4syc8CMu5rB+TqqcWMssxDaaTzBj9kolq/a7/2jclNtNRNU6vjah6lLVXB106JIwas2YzE5OUL4kBnEIi4QZ/T3kaLyowvYO68ttMwpN4W9/LKj9uU+XCtrNcUsyK/igXDCqzG5e9ff40AkJtDwq1OlGtG6wJzTqU26qDPwZvZabPcUFfo9QA+jDz3S0cGm3ca1C6052gCMPZPHZaLoPsvYHdaUOkgDNrKjnQIAq6nNlcxTuH2v/a43jAyJq1IDxEy3XsX7J4eWqQs0Ze+g/c7RXim7hbP5q96I66RJ/RUdsRflayJlEEu/WCXZk6ZyAXheKofhz9okQ0kP3XIukyM43ScJXIw11PMLuSqRj9QRuNmLUnDfcNQ67EHQ/49mTYoxQjGxfEdgUwy7IyLy5ZG88agYOdB0tvuaTUKHv2nCTaz5lyovlkHhJX+R5ibKBaWE7eVK6Df1g9xmZZCplNdnKvGFcS6RZ0yHq0wUmIaVatgWzpf8YBcTXpUalZDHZj2nKK606JLHYuM7Xo2lcHdxbEqpTZfhKm/AmDqMYWSBU3E9piAW3KPyJ+4lJfX4=
+dd:
+  secure: Gti3nFrU/5vQ7SOTOTDqRezrynQYM6AzQSIRtsCn/In63ReP4zep0+lk6N/xUSBJmjvMHdOMvyHQHCO/KqZYtfMy9Hbu3P6iBkTD2XHsdiPQTI+PmNvcIl3BQAEg1MPClmY8nHQLKq8f7kqg3R6gEEKcKrlZC796xNoGoOE+8+abNP/7aIVPZlLCJm4709wBobDBNJwrpt3HVIlZge1m5rWSktA8R4i7veMvWwEODeaakYxQXgmv0ksbncx1UspYpJqiVWUba/ZcvDsrWE36NIT+MMm2JvNpTJu6h2mss5YkA2hkb2egSXbj2ne6ABOYOy+sk7n3O0KXHCXIKBk4Mv1LQdnncZjrqZzVgdo4mw6kj3G+yuDT57eaQW6Rk+nEjMrQLZje5dKvoUy2Cq7H48niumcmSAllLwZnZPPnvPgGH9iBLEoo7EFFgze1CqNLRZuv0j+2Q+NAQKbNh5dn6ImtvxJPagORh6TH8DDWh7h+2AVD6wNVD1jMPIrUGT0WOUn9nTiFWTCzIKvdL8zVgmsOCVwRk+JPlyUoAlWfDDqZKp5UO+kQO5EQRQgE3vdtH2VVvxVB5UV6lreIGDp8xDWwf3Le4CopRT7CUmqT8nSsOnQ488wjhYKFZGBFsCiNd7YrQRwItRVogWhR7+8M2py6lW7j1cPqIWS0jEAOA/I=
