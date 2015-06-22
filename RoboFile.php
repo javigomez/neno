@@ -12,6 +12,7 @@ class RoboFile extends \Robo\Tasks
 {
 	// Load tasks from composer, see composer.json
 	use \joomla_projects\robo\loadTasks;
+	use \Robo\Common\TaskIO;
 
 	private $extension = '';
 
@@ -120,6 +121,7 @@ class RoboFile extends \Robo\Tasks
 
 	public function sendEmail()
 	{
+		$this->printTaskInfo('Sending image');
 		// Upload image
 		Cloudinary::config(
 			array (
@@ -130,5 +132,7 @@ class RoboFile extends \Robo\Tasks
 		);
 
 		$result = \Cloudinary\Uploader::upload(realpath(dirname(__FILE__) . '/../_output/InstallNenoCest.installNeno.fail.png'));
+
+		$this->printTaskInfo(json_encode($result));
 	}
 }
