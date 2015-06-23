@@ -42,4 +42,5 @@ cli/*
 !/cli/neno.php
 !pack.php
 !.travis.yml
+!phpmd.xml
 !RoboFile.php
