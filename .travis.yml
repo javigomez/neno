@@ -1,5 +1,7 @@
 language: php
-cache: bundler
+cache:
+- composer
+- apt
 php:
 - 5.4
 - 5.5
