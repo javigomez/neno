@@ -32,7 +32,6 @@ before_script:
 script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
 - php vendor/bin/robo test:acceptance
-- vendor/bin/phpmd ./ text phpmd.xml --suffixes php
 after_failure:
 - if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
     php vendor/bin/robo send:email $CLOUD_NAME $API_KEY $API_SECRET $GITHUB_TOKEN;
