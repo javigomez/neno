@@ -151,47 +151,51 @@ class PlgSystemNeno extends JPlugin
 	 *
 	 * @return void
 	 */
-	public function onContentAfterSave($context, JTable $content, $isNew)
+	public function onContentAfterSave($context, $content, $isNew)
 	{
-		/* @var $db NenoDatabaseDriverMysqlx */
-		$db        = JFactory::getDbo();
-		$tableName = $content->getTableName();
-
-		/* @var $table NenoContentElementTable */
-		$table = NenoContentElementTable::load(array ('table_name' => $tableName), false);
-
-		if (!empty($table))
+		// We only can process a record if the content is a JTable instance.
+		if ($content instanceof JTable)
 		{
-			$fields = $table->getFields(false, true);
+			/* @var $db NenoDatabaseDriverMysqlx */
+			$db        = JFactory::getDbo();
+			$tableName = $content->getTableName();
 
-			/* @var $field NenoContentElementField */
-			foreach ($fields as $field)
+			/* @var $table NenoContentElementTable */
+			$table = NenoContentElementTable::load(array ('table_name' => $tableName), false);
+
+			if (!empty($table))
 			{
-				if ($field->isTranslatable())
-				{
-					$primaryKeyData = array ();
+				$fields = $table->getFields(false, true);
 
-					foreach ($content->getPrimaryKey() as $primaryKeyName => $primaryKeyValue)
+				/* @var $field NenoContentElementField */
+				foreach ($fields as $field)
+				{
+					if ($field->isTranslatable())
 					{
-						$primaryKeyData[$primaryKeyName] = $primaryKeyValue;
+						$primaryKeyData = array ();
+
+						foreach ($content->getPrimaryKey() as $primaryKeyName => $primaryKeyValue)
+						{
+							$primaryKeyData[$primaryKeyName] = $primaryKeyValue;
+						}
+
+						$field->persistTranslations($primaryKeyData);
 					}
-
-					$field->persistTranslations($primaryKeyData);
 				}
-			}
 
-			$languages       = NenoHelper::getLanguages(false);
-			$defaultLanguage = NenoSettings::get('source_language');
+				$languages       = NenoHelper::getLanguages(false);
+				$defaultLanguage = NenoSettings::get('source_language');
 
-			foreach ($languages as $language)
-			{
-				if ($language->lang_code != $defaultLanguage)
+				foreach ($languages as $language)
 				{
-					$shadowTable = $db->generateShadowTableName($tableName, $language->lang_code);
-					$properties  = $content->getProperties();
-					$query       = 'REPLACE INTO ' . $db->quoteName($shadowTable) . ' (' . implode(',', $db->quoteName(array_keys($properties))) . ') VALUES(' . implode(',', $db->quote($properties)) . ')';
-					$db->setQuery($query);
-					$db->execute();
+					if ($language->lang_code != $defaultLanguage)
+					{
+						$shadowTable = $db->generateShadowTableName($tableName, $language->lang_code);
+						$properties  = $content->getProperties();
+						$query       = 'REPLACE INTO ' . $db->quoteName($shadowTable) . ' (' . implode(',', $db->quoteName(array_keys($properties))) . ') VALUES(' . implode(',', $db->quote($properties)) . ')';
+						$db->setQuery($query);
+						$db->execute();
+					}
 				}
 			}
 		}
