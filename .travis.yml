@@ -26,11 +26,14 @@ before_script:
 - sudo apt-get install fluxbox -y --force-yes
 - fluxbox &
 - sleep 3
+- pyrus install pear/PHP_CodeSniffer
+- phpenv rehash
 - composer self-update
 - composer update
 script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
 - php vendor/bin/robo test:acceptance
+- vendor/bin/phpmd ./ text codesize,unusedcode,naming,phpmd.xml
 after_failure:
 - if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then
     php vendor/bin/robo send:email $CLOUD_NAME $API_KEY $API_SECRET $GITHUB_TOKEN;
