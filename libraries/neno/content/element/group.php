@@ -842,6 +842,51 @@ class NenoContentElementGroup extends NenoContentElement implements NenoContentE
 				}
 			}
 		}
+
+		// Assign default methods
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->insert('#__neno_content_element_groups_x_translation_methods')
+			->columns(
+				array (
+					'group_id',
+					'lang',
+					'translation_method_id',
+					'ordering'
+				)
+			);
+
+		$firstTranslationMethod = NenoSettings::get('translation_method_1');
+		$query->values($this->id . ',' . $db->quote($languageTag) . ', ' . $firstTranslationMethod . ', 1');
+
+		$queryTranslations1 = 'INSERT INTO #__neno_content_element_translation_x_translation_methods (translation_id, translation_method_id, ordering)
+							SELECT id, ' . $db->quote($firstTranslationMethod) . ',1 FROM #__neno_content_element_translations
+							WHERE language = ' . $db->quote($languageTag) . ' AND state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE;
+
+		$secondTranslationMethod = NenoSettings::get('translation_method_2');
+		$queryTranslations2      = null;
+
+		if (!empty($secondTranslationMethod))
+		{
+			$query->values($this->id . ',' . $db->quote($languageTag) . ', ' . $secondTranslationMethod . ', 2');
+			$queryTranslations2 = 'INSERT INTO #__neno_content_element_translation_x_translation_methods (translation_id, translation_method_id, ordering)
+							SELECT id, ' . $db->quote($secondTranslationMethod) . ',2 FROM #__neno_content_element_translations
+							WHERE language = ' . $db->quote($languageTag) . ' AND state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE;
+		}
+
+		$db->setQuery($query);
+		$db->execute();
+
+		$db->setQuery($queryTranslations1);
+		$db->execute();
+
+		if (!empty($queryTranslations2))
+		{
+			$db->setQuery($queryTranslations2);
+			$db->execute();
+		}
 	}
 
 	/**
