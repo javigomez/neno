@@ -753,7 +753,8 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 		if (file_exists($filePath))
 		{
 			$xml             = simplexml_load_file($filePath);
-			$this->translate = ((int) $xml->xpath('/neno/reference/table/field[@name=\'' . $this->fieldName . '\']/@translate')) == 1;
+			$translate       = $xml->xpath('/neno/reference/table/field[@name=\'' . $this->fieldName . '\']/@translate');
+			$this->translate = $translate[0]['translate'] == 1;
 		}
 	}
 

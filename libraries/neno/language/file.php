@@ -63,7 +63,7 @@ class NenoLanguageFile
 		// Check if the file exists.
 		if (file_exists($filePath))
 		{
-			$strings = parse_ini_file($this->getFilePath());
+			$strings = NenoHelper::readLanguageFile($this->getFilePath());
 
 			if ($strings !== false)
 			{

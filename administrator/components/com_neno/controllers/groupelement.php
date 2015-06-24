@@ -38,26 +38,26 @@ class NenoControllerGroupElement extends JControllerForm
 	 */
 	public function downloadContentElementFile()
 	{
-		$input    = JFactory::getApplication()->input;
-		$table_id = $input->getInt('table_id');
+		$input   = JFactory::getApplication()->input;
+		$tableId = $input->getInt('table_id');
 
 		/* @var $table NenoContentElementTable */
-		$table = NenoContentElementTable::load($table_id, false, true);
+		$table = NenoContentElementTable::load($tableId, false, true);
 
 		/* @var $tableObject stdClass */
 		$tableObject = $table->prepareDataForView();
 
 		// Make file name
-		$table_name = str_replace('#__', '', $tableObject->table_name);
+		$tableName = str_replace('#__', '', $tableObject->table_name);
 
-		$file_name                 = $table_name . '_contentelements.xml';
+		$fileName                  = $tableName . '_contentelements.xml';
 		$displayData               = array ();
-		$displayData['table_name'] = $table_name;
+		$displayData['table_name'] = $tableName;
 		$displayData['table']      = $table;
 
 		// Output XML
 		header('Content-Type: application/xml; charset=utf-8');
-		header('Content-Disposition: attachment; filename="' . $file_name . '"');
+		header('Content-Disposition: attachment; filename="' . $fileName . '"');
 
 		echo JLayoutHelper::render('contentelementxml', $displayData, JPATH_NENO_LAYOUTS);
 
