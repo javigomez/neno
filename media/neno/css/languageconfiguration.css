@@ -30,6 +30,7 @@
     margin-left: -20px;
     margin-right: -20px;
     padding: 20px;
+    min-height: 70px;
 }
 .language-wrapper.language-dashboard .language-configuration {
     display: none;

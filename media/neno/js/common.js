@@ -320,14 +320,14 @@ function executeAjaxForTranslationMethodSelectors(listSelector, placement, n, se
             var select1 = element.parents(listSelector).find("[data-selector-container-id='1']");
             if (select1.length) {
                 if (!container.hasClass('expanded')) {
-                    container.height(
-                        container.height() + 26
+                    container.css( 'min-height',
+                        parseInt(container.css('min-height')) + 60
                     );
                     container.addClass('expanded');
                 }
             } else if (container.hasClass('expanded')) {
-                container.height(
-                    container.height() - 26
+                container.css( 'min-height',
+                    parseInt(container.css('min-height')) - 60
                 );
                 container.removeClass('expanded');
             }
