@@ -471,14 +471,14 @@ class NenoController extends JControllerLegacy
 
 				// Inserting translation methods for groups
 				$query = 'INSERT INTO #__neno_content_element_groups_x_translation_methods (group_id, lang, translation_method_id, ordering)
-							SELECT id, ' . $db->quote($language) . ', ' . $db->quote($translationMethod) . ',' . $db->quote($ordering) . ' FROM #__content_element_groups';
+							SELECT id, ' . $db->quote($language) . ', ' . $db->quote($translationMethod) . ',' . $db->quote($ordering) . ' FROM #__neno_content_element_groups';
 
 				$db->setQuery($query);
 				$db->execute();
 
 				// Inserting translation methods for translations
 				$query = 'INSERT INTO #__neno_content_element_translation_x_translation_methods (translation_id, translation_method_id, ordering)
-							SELECT id, ' . $db->quote($translationMethod) . ',' . $db->quote($ordering) . ' FROM #__content_element_translations
+							SELECT id, ' . $db->quote($translationMethod) . ',' . $db->quote($ordering) . ' FROM #__neno_content_element_translations
 							WHERE language = ' . $db->quote($language) . ' AND state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE;
 
 				$db->setQuery($query);

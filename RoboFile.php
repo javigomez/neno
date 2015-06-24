@@ -12,6 +12,7 @@ class RoboFile extends \Robo\Tasks
 {
 	// Load tasks from composer, see composer.json
 	use \joomla_projects\robo\loadTasks;
+	use \Robo\Common\TaskIO;
 
 	private $extension = '';
 
@@ -21,12 +22,12 @@ class RoboFile extends \Robo\Tasks
 
 		$this->setExecExtension();
 		// Get Joomla Clean Testing sites
-		if (is_dir('tests/joomla-cms3'))
+		if (is_dir('tests/joomla-cms'))
 		{
-			$this->taskDeleteDir('tests/joomla-cms3')->run();
+			$this->taskDeleteDir('tests/joomla-cms')->run();
 		}
-		$this->_exec('git' . $this->extension . ' clone -b staging --single-branch --depth 1 https://github.com/joomla/joomla-cms.git tests/joomla-cms3');
-		$this->say('Joomla CMS site created at tests/joomla-cms3');
+		$this->_exec('git' . $this->extension . ' clone -b staging --single-branch --depth 1 https://github.com/joomla/joomla-cms.git tests/joomla-cms');
+		$this->say('Joomla CMS site created at tests/joomla-cms');
 		if (!$seleniumPath)
 		{
 			if (!file_exists('selenium-server-standalone.jar'))
@@ -56,12 +57,6 @@ class RoboFile extends \Robo\Tasks
 			$seleniumPath = "START java.exe -jar .\\" . $seleniumPath;
 		}
 
-		// Make sure we have Composer
-		if (!file_exists('./composer.phar'))
-		{
-			$this->_exec('curl' . $this->extension . ' -sS https://getcomposer.org/installer | php');
-		}
-		$this->taskComposerUpdate()->run();
 		// Running Selenium server
 		$this->_exec($seleniumPath);
 		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
@@ -83,18 +78,6 @@ class RoboFile extends \Robo\Tasks
 			->arg('--debug')
 			->run()
 			->stopOnFail();
-		// Kill selenium server
-		// $this->_exec('curl http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer');
-		/*
-		// Uncomment this lines if you need to debug selenium errors
-		$seleniumErrors = file_get_contents('selenium.log');
-		if ($seleniumErrors) {
-			$this->say('Printing Selenium Log files');
-			$this->say('------ selenium.log (start) ---------');
-			$this->say($seleniumErrors);
-			$this->say('------ selenium.log (end) -----------');
-		}
-		*/
 	}
 
 	public function packNeno()
@@ -116,5 +99,30 @@ class RoboFile extends \Robo\Tasks
 		{
 			$this->extension = '.exe';
 		}
+	}
+
+	public function sendScreenshot($cloudName, $apiKey, $apiSecret, $authToken)
+	{
+		$this->say('Sending image');
+		// Upload image
+		Cloudinary::config(
+			array (
+				'cloud_name' => $cloudName,
+				'api_key'    => $apiKey,
+				'api_secret' => $apiSecret
+			)
+		);
+
+		$result = \Cloudinary\Uploader::upload(realpath(dirname(__FILE__) . '/tests/_output/InstallNenoCest.installNeno.fail.png'));
+
+		$this->say('Image sent');
+		$this->say('Creating Github issue');
+
+		$client = new \Github\Client();
+		$client->authenticate($authToken, \Github\Client::AUTH_HTTP_TOKEN);
+
+		$client
+			->api('issue')
+			->create('Jensen-Technologies', 'neno', array ('title' => 'Test error', 'body' => '![Screenshot](' . $result['secure_url'] . ')'));
 	}
 }

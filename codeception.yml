@@ -1,6 +1,25 @@
+actor: Tester
 extensions:
- config:
-   Codeception\Extension\SauceExtension:
-     env_variables: false
-     username: 'jensentech'
-     accesskey: '9ff2f739-2c87-4d79-aa97-da58db62c176'
+  enabled: [NenoExtension]
+  config:
+    NenoExtension:
+      token: 6186a26b84d34c7351b08ef13cbb5697e7180560
+      cloud_name: jensen-technologies
+      api_key: 586876494264151
+      api_secret: 0AlxHkbRyN28ZGlCQWV50DEH6Jc
+paths:
+    tests: tests
+    log: tests/_output
+    data: tests/_data
+    helpers: tests/_support
+settings:
+    bootstrap: _bootstrap.php
+    colors: true
+    memory_limit: 1024M
+modules:
+    config:
+        Db:
+            dsn: ''
+            user: ''
+            password: ''
+            dump: tests/_data/dump.sql

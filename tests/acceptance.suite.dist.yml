@@ -11,7 +11,7 @@ modules:
         - AcceptanceHelper
     config:
         JoomlaBrowser:
-            url: 'http://localhost/joomla-cms/'     # the url that points to the joomla installation at /tests/system/joomla-cms
+            url: 'http://localhost/tests/joomla-cms/'     # the url that points to the joomla installation at /tests/system/joomla-cms
             browser: 'firefox'
             window_size: 1024x768
             capabilities:
@@ -21,7 +21,7 @@ modules:
             database host: 'localhost'             # place where the Application is Hosted #server Address
             database user: 'root'                  # MySQL Server user ID, usually root
             database password: ''                  # MySQL Server password, usually empty or root
-            database name: 'testNeno'            # DB Name, at the Server
+            database name: 'dbname'            # DB Name, at the Server
             database type: 'mysqli'                # type in lowercase one of the options: MySQL\MySQLi\PDO
             database prefix: 'jos_'                # DB Prefix for tables
             install sample data: 'Yes'              # Do you want to Download the Sample Data Along with Joomla Installation, then keep it Yes
