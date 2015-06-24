@@ -523,10 +523,13 @@ class NenoContentElementGroup extends NenoContentElement implements NenoContentE
 					$db->setQuery($deleteQuery);
 					$db->execute();
 
-					$insert = true;
-					$insertQuery->values(
-						$this->id . ',' . $db->quote($translationMethod->lang) . ', ' . $translationMethod->translation_method_id . ', ' . $translationMethod->ordering
-					);
+					if (!empty($translationMethod))
+					{
+						$insert = true;
+						$insertQuery->values(
+							$this->id . ',' . $db->quote($translationMethod->lang) . ', ' . $db->quote($translationMethod->translation_method_id) . ', ' . $db->quote($translationMethod->ordering)
+						);
+					}
 				}
 
 				if ($insert)
@@ -859,7 +862,7 @@ class NenoContentElementGroup extends NenoContentElement implements NenoContentE
 			);
 
 		$firstTranslationMethod = NenoSettings::get('translation_method_1');
-		$query->values($this->id . ',' . $db->quote($languageTag) . ', ' . $firstTranslationMethod . ', 1');
+		$query->values($this->id . ',' . $db->quote($languageTag) . ', ' . $db->quote($firstTranslationMethod) . ', 1');
 
 		$queryTranslations1 = 'INSERT INTO #__neno_content_element_translation_x_translation_methods (translation_id, translation_method_id, ordering)
 							SELECT id, ' . $db->quote($firstTranslationMethod) . ',1 FROM #__neno_content_element_translations
@@ -870,7 +873,7 @@ class NenoContentElementGroup extends NenoContentElement implements NenoContentE
 
 		if (!empty($secondTranslationMethod))
 		{
-			$query->values($this->id . ',' . $db->quote($languageTag) . ', ' . $secondTranslationMethod . ', 2');
+			$query->values($this->id . ',' . $db->quote($languageTag) . ', ' . $db->quote($secondTranslationMethod) . ', 2');
 			$queryTranslations2 = 'INSERT INTO #__neno_content_element_translation_x_translation_methods (translation_id, translation_method_id, ordering)
 							SELECT id, ' . $db->quote($secondTranslationMethod) . ',2 FROM #__neno_content_element_translations
 							WHERE language = ' . $db->quote($languageTag) . ' AND state = ' . NenoContentElementTranslation::NOT_TRANSLATED_STATE;

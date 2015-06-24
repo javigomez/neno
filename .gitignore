@@ -286,3 +286,4 @@ cli/*
 !.travis.yml
 !phpmd.xml
 !RoboFile.php
+tests/acceptance.suite.yml
