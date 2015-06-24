@@ -6,8 +6,8 @@ class InstallLanguageCest
 	{
 		$I->am('Administrator');
 		$I->doAdministratorLogin();
-		$I->click("Extensions");
-		$I->click('Neno');
+		$I->click("Components");
+		$I->click("Neno");
 		$I->click("#add-languages-button");
 		$I->click("(//button[@type='button'])[77]");
 		$I->click("div.modal-footer");
