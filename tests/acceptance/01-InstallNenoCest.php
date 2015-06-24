@@ -22,7 +22,7 @@ class InstallNenoCest
 		$I->installExtensionFromDirectory($path . 'lib_neno');
 		$I->installExtensionFromDirectory($path . 'plg_system_neno');
 		$I->installExtensionFromDirectory($path . 'com_neno');
-		$I->enablePlugin('neno');
+		$I->enablePlugin('Neno');
 		$I->doAdministratorLogout();
 	}
 }
