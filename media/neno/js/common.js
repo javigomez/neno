@@ -20,6 +20,10 @@ function loadTranslation(string) {
             url: 'index.php?option=com_neno&task=editor.getTranslation&id=' + idString,
             success: function (data) {
                 jQuery('#editor-wrapper').html(data);
+                jQuery('.original-text').addClass('highlighted-text');
+                setTimeout(function(){
+                    jQuery('.original-text').removeClass('highlighted-text');
+                },1500);
             }
         }
     );

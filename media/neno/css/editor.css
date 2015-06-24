@@ -148,3 +148,11 @@ button .normal-text {
 td.setting-label {
     width: 50% !important;
 }
+.highlighted-text {
+    border-color: rgba(82,168,236,0.8) !important;
+    outline: 0 !important;
+    outline: thin dotted \9 !important;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;
+    -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;
+}
