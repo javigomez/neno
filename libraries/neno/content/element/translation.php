@@ -773,7 +773,7 @@ class NenoContentElementTranslation extends NenoContentElement
 
 				if (file_exists($filePath))
 				{
-					$existingStrings = parse_ini_file($filePath);
+					$existingStrings = NenoHelper::readLanguageFile($filePath);
 				}
 				else
 				{
@@ -781,7 +781,7 @@ class NenoContentElementTranslation extends NenoContentElement
 
 					if (file_exists(JPATH_ROOT . "/language/$defaultLanguage/" . $translationData['originalFilename']))
 					{
-						$existingStrings = parse_ini_file(JPATH_ROOT . "/language/$defaultLanguage/" . $translationData['originalFilename']);
+						$existingStrings = NenoHelper::readLanguageFile(JPATH_ROOT . "/language/$defaultLanguage/" . $translationData['originalFilename']);
 					}
 				}
 

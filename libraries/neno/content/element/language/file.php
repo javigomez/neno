@@ -271,7 +271,7 @@ class NenoContentElementLanguageFile extends NenoContentElement implements NenoC
 
 			if (file_exists($filePath))
 			{
-				$strings = parse_ini_file($this->getFilePath());
+				$strings = NenoHelper::readLanguageFile($this->getFilePath());
 			}
 
 			// Merging these two arrays
@@ -363,7 +363,7 @@ class NenoContentElementLanguageFile extends NenoContentElement implements NenoC
 
 			if (file_exists($filePath))
 			{
-				$strings = parse_ini_file($filePath);
+				$strings = NenoHelper::readLanguageFile($filePath);
 			}
 		}
 
@@ -458,6 +458,4 @@ class NenoContentElementLanguageFile extends NenoContentElement implements NenoC
 
 		return parent::remove();
 	}
-
-
 }

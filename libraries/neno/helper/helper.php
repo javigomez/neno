@@ -2764,6 +2764,9 @@ class NenoHelper
 	{
 		$res = array ();
 
+		// Unify strings
+		$strings = self::unifiedLanguageStrings($strings, false);
+
 		foreach ($strings as $key => $val)
 		{
 			if (is_array($val))
@@ -2810,6 +2813,62 @@ class NenoHelper
 		}
 
 		return false;
+	}
+
+	/**
+	 * Unified language strings
+	 *
+	 * @param array $strings language strings
+	 * @param bool  $read    which are the source of those strings
+	 *
+	 * @return array
+	 */
+	public static function unifiedLanguageStrings($strings, $read = true)
+	{
+		if ($read)
+		{
+			$strings = self::unifyLanguageStringsRead($strings);
+		}
+		else
+		{
+			$strings = self::unifyLanguageStringsWrite($strings);
+		}
+
+		return $strings;
+	}
+
+	/**
+	 * Unify strings from a ini file
+	 *
+	 * @param array $strings Strings
+	 *
+	 * @return array
+	 */
+	protected static function unifyLanguageStringsRead($strings)
+	{
+		foreach ($strings as $key => $string)
+		{
+			$strings[$key] = str_replace('_QQ_', '"', $string);
+		}
+
+		return $strings;
+	}
+
+	/**
+	 * Unify strings to a ini file
+	 *
+	 * @param array $strings Strings
+	 *
+	 * @return array
+	 */
+	protected static function unifyLanguageStringsWrite($strings)
+	{
+		foreach ($strings as $key => $string)
+		{
+			$strings[$key] = str_replace('"', '_QQ_', $string);
+		}
+
+		return $strings;
 	}
 
 	/**
@@ -2874,5 +2933,17 @@ class NenoHelper
 	public static function renderFilterHelperText()
 	{
 		echo htmlentities(JLayoutHelper::render('filtertooltip', null, JPATH_NENO_LAYOUTS));
+	}
+
+	/**
+	 * Read language file
+	 *
+	 * @param string $filename
+	 *
+	 * @return array
+	 */
+	public static function readLanguageFile($filename)
+	{
+		return NenoHelper::unifiedLanguageStrings(parse_ini_file($filename));
 	}
 }
