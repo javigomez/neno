@@ -5,7 +5,6 @@ class InstallLanguageCest
 	public function installLanguage(AcceptanceTester $I)
 	{
 		$I->am('Administrator');
-		$I->installJoomla();
 		$I->doAdministratorLogin();
 		$I->click("Extensions");
 		$I->click('Neno');
