@@ -25,11 +25,15 @@ class InstallNenoCest
 		$I->enablePlugin('Neno');
 		$I->click("Components");
 		$I->click("Neno");
-		$I->see('Get Started');
+		$I->waitForElement(['xpath' => "//button[@type='button']"], 10);
 		$I->click(['xpath' => "//button[@type='button']"]);
+		$I->waitForElement(['xpath' => "//button[@type='button']"], 10);
 		$I->click(['xpath' => "//button[@type='button']"]);
+		$I->waitForElement(['xpath' => "//button[@type='button']"], 10);
 		$I->click(['xpath' => "//button[@type='button']"]);
+		$I->waitForElement(['css' => "#add-languages-button"], 10);
 		$I->click(['css' => "#add-languages-button"]);
+		$I->waitForElementVisible(['css' => '#languages-modal']);
 		$I->click(['xpath' => "(//button[@type='button'])[29]"]);
 		$I->click(['xpath' => "(//button[@type='button'])[34]"]);
 		$I->click("Close");
