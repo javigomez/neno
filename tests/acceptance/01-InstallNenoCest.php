@@ -25,14 +25,14 @@ class InstallNenoCest
 		$I->enablePlugin('Neno');
 		$I->click("Components");
 		$I->click("Neno");
+		$I->waitForElement(['xpath' => ".//*[@id='j-main-container-installation']/div/div/button"]);
+		$I->waitForElement(".next-step-button");
+		$I->waitForElement(['xpath' => ".//*[@id='j-main-container-installation']/div/div/div[1]/div[4]/button"]);
 		$I->waitForElement(".next-step-button");
 		$I->waitForElement(".next-step-button");
 		$I->waitForElement(".next-step-button");
 		$I->waitForElement(".next-step-button");
-		$I->waitForElement(".next-step-button");
-		$I->waitForElement(".next-step-button");
-		$I->waitForElement(".next-step-button");
-		$I->click("#add-languages-button");
+		$I->click(['xpath' => ".//*[@id='add-languages-button']"]);
 		$I->click(['xpath' => "(//button[@type='button'])[39]"]);
 		$I->click(['xpath' => "(//button[@type='button'])[32]"]);
 		$I->click(['xpath' => "(//button[@type='button'])[20]"]);
