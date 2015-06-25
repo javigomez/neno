@@ -153,6 +153,7 @@ foreach ($this->items as $item)
 					<input type="text" name="<?php echo $item->setting_key; ?>"
 					       class="input-setting input-xxlarge"
 					       value="<?php echo $item->setting_value; ?>"/>
+                    <br /><a href="https://www.neno-translate.com/en/help/documentation/frequently-asked-questions/installation-and-upgrade/16-how-to-get-a-google-or-yandex-api-key" target="_blank"><?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_API_KEY_DOCS_LINK'); ?></a>
 				</td>
 			</tr>
 			<tr>
