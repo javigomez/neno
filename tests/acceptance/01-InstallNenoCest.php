@@ -33,9 +33,9 @@ class InstallNenoCest
 		$I->waitForElement(".next-step-button");
 		$I->waitForElement(".next-step-button");
 		$I->click("#add-languages-button");
-		$I->click("(//button[@type='button'])[39]");
-		$I->click("(//button[@type='button'])[32]");
-		$I->click("(//button[@type='button'])[20]");
+		$I->click(['xpath' => "(//button[@type='button'])[39]"]);
+		$I->click(['xpath' => "(//button[@type='button'])[32]"]);
+		$I->click(['xpath' => "(//button[@type='button'])[20]"]);
 		$I->click("Close");
 		$I->click(".next-step-button");
 		$I->waitForElement("#backup-created-checkbox");
