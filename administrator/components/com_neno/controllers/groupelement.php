@@ -53,7 +53,7 @@ class NenoControllerGroupElement extends JControllerForm
 		$fileName                  = $tableName . '_contentelements.xml';
 		$displayData               = array ();
 		$displayData['table_name'] = $tableName;
-		$displayData['table']      = $table;
+		$displayData['table']      = $tableObject;
 
 		// Output XML
 		header('Content-Type: application/xml; charset=utf-8');
