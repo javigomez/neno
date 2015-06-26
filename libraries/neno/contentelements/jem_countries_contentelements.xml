@@ -1,0 +1,32 @@
+		<? xml version = "1.0" encoding = "UTF-8" ?>
+<neno type="contentelement">
+	<name>jem_countries</name>
+	<author>Neno - http://www.neno-translate.com</author>
+	<version>1.0.0</version>
+	<description>Definition of the table jem_countries</description>
+	<translate>1</translate>
+	<reference type="content">
+		<table name="jem_countries">
+							<field type="text"
+				       name="continent"
+				       translate="1">continent</field>
+							<field type="referenceid"
+				       name="id"
+				       translate="0">id</field>
+							<field type="text"
+				       name="iso2"
+				       translate="1">iso2</field>
+							<field type="text"
+				       name="iso3"
+				       translate="1">iso3</field>
+							<field type="text"
+				       name="name"
+				       translate="1">name</field>
+							<field type="text"
+				       name="un"
+				       translate="0">un</field>
+					</table>
+	</reference>
+</neno>
+
+
