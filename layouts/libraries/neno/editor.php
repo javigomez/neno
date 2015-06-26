@@ -172,7 +172,7 @@ $translation = $displayData;
 	     aria-hidden="true">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			<h3 id="myModalLabel">&nbsp;</h3>
+			<h3 id="myModalLabel"><?php echo JText::_('COM_NENO_EDITOR_NO_TRANSLATOR_HEADER'); ?></h3>
 		</div>
 		<div class="modal-body">
 			<p><?php echo JText::_('COM_NENO_EDITOR_NO_TRANSLATOR_MESSAGE'); ?></p>
@@ -202,6 +202,9 @@ $translation = $displayData;
 			</table>
 		</div>
 		<div class="modal-footer">
+            <div class="pull-left">
+                <a href="https://www.neno-translate.com/en/help/documentation/frequently-asked-questions/installation-and-upgrade/16-how-to-get-a-google-or-yandex-api-key" target="_blank"><?php echo JText::_('COM_NENO_SETTINGS_SETTING_NAME_API_KEY_DOCS_LINK'); ?></a>
+            </div>
 			<button class="btn" data-dismiss="modal"
 			        aria-hidden="true"><?php echo JText::_('COM_NENO_VIEW_GROUPSELEMENTS_MODAL_GROUPFORM_BTN_CLOSE'); ?></button>
 			<button class="btn btn-primary"
