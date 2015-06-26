@@ -135,9 +135,11 @@ class PlgSystemNeno extends JPlugin
 	 */
 	public function onBeforeRender()
 	{
+		$document = JFactory::getDocument();
+		$document->addScript(JUri::root() . '/media/neno/js/common.js');
+
 		if (NenoSettings::get('schedule_task_option', 'ajax') == 'ajax' && NenoSettings::get('installation_completed') == 1)
 		{
-			$document = JFactory::getDocument();
 			$document->addScript(JUri::root() . '/media/neno/js/ajax_module.js');
 		}
 	}
