@@ -30,7 +30,6 @@ class InstallNenoCest
 		$I->installExtensionFromDirectory($path . 'com_neno');
 
 		/*
-
 		// Enabling plugin
 		$I->enablePlugin('Neno plugin');
 
