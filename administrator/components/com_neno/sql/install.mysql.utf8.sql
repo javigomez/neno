@@ -275,10 +275,11 @@ CREATE TABLE IF NOT EXISTS `#__neno_content_element_translations` (
 --
 
 CREATE TABLE IF NOT EXISTS `#__neno_content_element_translation_x_translation_methods` (
-  `id`                    INT(11) NOT NULL AUTO_INCREMENT,
-  `translation_id`        INT(11) NOT NULL,
-  `translation_method_id` INT(11) NOT NULL,
-  `ordering`              INT(11)          DEFAULT NULL,
+  `id`                    INT(11)    NOT NULL AUTO_INCREMENT,
+  `translation_id`        INT(11)    NOT NULL,
+  `translation_method_id` INT(11)    NOT NULL,
+  `ordering`              INT(11)    NOT NULL,
+  `completed`             TINYINT(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `translation_id` (`translation_id`, `translation_method_id`),
   KEY `tr_fk_idx` (`translation_id`),
