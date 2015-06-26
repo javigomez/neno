@@ -23,7 +23,7 @@ function loadTranslation(string) {
                 jQuery('.original-text').addClass('highlighted-text');
                 setTimeout(function(){
                     jQuery('.original-text').removeClass('highlighted-text');
-                },1500);
+                },500);
             }
         }
     );
