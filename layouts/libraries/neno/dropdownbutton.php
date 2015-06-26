@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 
 <div class="btn-group" data-field="<?php echo $displayData['fieldId']; ?>">
 	<a class="btn dropdown-toggle btn-small" data-toggle="dropdown" href="#">
-		<?php echo $displayData['selected']; ?>
+		<?php echo ($displayData['selected'])?$displayData['selected'] : JText::_('COM_NENO_VIEW_GROUPSELEMENTS_FILTER'); ?>
 		<span class="caret"></span>
 	</a>
 	<ul class="dropdown-menu">
