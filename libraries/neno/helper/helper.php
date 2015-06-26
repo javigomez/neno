@@ -1232,6 +1232,159 @@ class NenoHelper
 	}
 
 	/**
+	 * Create the menu structure for a particular language
+	 *
+	 * @param   string $languageTag Language tag
+	 *
+	 * @return void
+	 */
+	public static function createMenuStructureForLanguage($languageTag)
+	{
+		$db             = JFactory::getDbo();
+		$query          = $db->getQuery(true);
+		$sourceLanguage = NenoSettings::get('source_language');
+
+		// Get menutypes for source language
+		$query
+			->select('DISTINCT mt.*')
+			->from('#__menu AS m')
+			->innerJoin('#__menu_types AS mt ON mt.menutype = m.menutype')
+			->where('m.language = ' . $db->quote($sourceLanguage));
+
+		$db->setQuery($query);
+		$menuTypes = $db->loadObjectList();
+
+		foreach ($menuTypes as $menuType)
+		{
+			// Create each menu type
+			$newMenuType = self::createMenu($languageTag, $menuType, $sourceLanguage);
+
+			// For each menu items, create its copy in the new language
+			$query
+				->clear()
+				->select('m.*')
+				->from('#__menu AS m')
+				->where('m.menutype = ' . $db->quote($menuType->menutype));
+
+			$db->setQuery($query);
+			$menuItems = $db->loadObjectList();
+
+			foreach ($menuItems as $menuItem)
+			{
+				$newMenuItem = clone $menuItem;
+				unset($newMenuItem->id);
+				$newMenuItem->menutype = $newMenuType->menutype;
+				$newMenuItem->alias    = JFilterOutput::stringURLSafe($newMenuItem->alias . '-' . $languageTag);
+				$newMenuItem->language = $languageTag;
+
+				// If the menu item has been inserted properly, let's execute some actions
+				if ($db->insertObject('#__menu', $newMenuItem, 'id'))
+				{
+					// Assign all the modules to this item
+					$query = 'INSERT INTO #__modules_menu (moduleid,menuid) SELECT moduleid,' . $db->quote($newMenuItem->id) . ' FROM  #__modules_menu WHERE menuid = ' . $db->quote($menuItem->id);
+					$db->setQuery($query);
+					$db->execute();
+
+					// Add this menu to the association
+					$query = 'INSERT INTO #__associations (`id`,`context`,`key`) SELECT ' . $db->quote($newMenuItem->id) . ', ' . $db->quote('com_menus.item') . ', key FROM #__associations WHERE id =' . $db->quote($menuItem->id);
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Create a new menu
+	 *
+	 * @param   string   $language        Language
+	 * @param   stdClass $defaultMenuType Default language menu type
+	 * @param   string   $defaultLanguage Default language
+	 *
+	 * @return stdClass
+	 */
+	protected static function createMenu($language, stdClass $defaultMenuType, $defaultLanguage)
+	{
+		$db       = JFactory::getDbo();
+		$query    = $db->getQuery(true);
+		$menuType = $defaultMenuType->menutype . '-' . strtolower($language);
+
+		$query
+			->select('*')
+			->from('#__menu_types')
+			->where('menutype = ' . $db->quote($menuType));
+
+		$db->setQuery($query);
+		$item = $db->loadObject();
+
+		if (empty($item))
+		{
+			$query
+				->clear()
+				->insert('#__menu_types')
+				->columns(
+					array (
+						'menutype',
+						'title'
+					)
+				)
+				->values($db->quote($menuType) . ', ' . $db->quote($defaultMenuType->title . '(' . $language . ')'));
+
+			$db->setQuery($query);
+			$db->execute();
+
+			$query
+				->select('*')
+				->from('#__menu_types')
+				->where('menutype = ' . $db->quote($menuType));
+			$db->setQuery($query);
+			$item = $db->loadObject();
+
+			// Create menu modules
+
+			$query
+				->clear()
+				->select('*')
+				->from('#__modules')
+				->where(
+					array (
+						'module = ' . $db->quote('mod_menu'),
+						'client_id = 0',
+						'params LIKE ' . $db->quote('%' . $defaultMenuType->menutype . '%'),
+						'language = ' . $db->quote($defaultLanguage)
+					)
+				);
+
+			$db->setQuery($query);
+			$modules = $db->loadObjectList();
+
+			if (!empty($modules))
+			{
+				foreach ($modules as $module)
+				{
+					$previousId     = $module->id;
+					$module->params = json_decode($module->params, true);
+
+					$module->id                 = 0;
+					$module->params['menutype'] = $item->menutype;
+					$module->params             = json_encode($module->params);
+					$module->language           = $language;
+					$module->title              = $module->title . ' (' . $language . ')';
+
+					$db->insertObject('#__modules', $module, 'id');
+
+					// Assigning items
+					$query = 'INSERT INTO #__modules_menu (menuid,moduleid) SELECT menuid,' . $db->quote($module->id) . ' FROM  #__modules_menu WHERE moduleid = ' . $db->quote($previousId);
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+		}
+
+		return $item;
+	}
+
+	/**
 	 * Create menu structure
 	 *
 	 * @return void
@@ -1760,96 +1913,6 @@ class NenoHelper
 		$db->setQuery($query);
 
 		return $db->loadResult() != 1;
-	}
-
-	/**
-	 * Create a new menu
-	 *
-	 * @param   string   $language        Language
-	 * @param   stdClass $defaultMenuType Default language menu type
-	 * @param   string   $defaultLanguage Default language
-	 *
-	 * @return stdClass
-	 */
-	protected static function createMenu($language, stdClass $defaultMenuType, $defaultLanguage)
-	{
-		$db       = JFactory::getDbo();
-		$query    = $db->getQuery(true);
-		$menuType = $defaultMenuType->menutype . '-' . strtolower($language);
-
-		$query
-			->select('*')
-			->from('#__menu_types')
-			->where('menutype = ' . $db->quote($menuType));
-
-		$db->setQuery($query);
-		$item = $db->loadObject();
-
-		if (empty($item))
-		{
-			$query
-				->clear()
-				->insert('#__menu_types')
-				->columns(
-					array (
-						'menutype',
-						'title'
-					)
-				)
-				->values($db->quote($menuType) . ', ' . $db->quote($defaultMenuType->title . '(' . $language . ')'));
-
-			$db->setQuery($query);
-			$db->execute();
-
-			$query
-				->select('*')
-				->from('#__menu_types')
-				->where('menutype = ' . $db->quote($menuType));
-			$db->setQuery($query);
-			$item = $db->loadObject();
-
-			// Create menu modules
-
-			$query
-				->clear()
-				->select('*')
-				->from('#__modules')
-				->where(
-					array (
-						'module = ' . $db->quote('mod_menu'),
-						'client_id = 0',
-						'params LIKE ' . $db->quote('%' . $defaultMenuType->menutype . '%'),
-						'language = ' . $db->quote($defaultLanguage)
-					)
-				);
-
-			$db->setQuery($query);
-			$modules = $db->loadObjectList();
-
-			if (!empty($modules))
-			{
-				foreach ($modules as $module)
-				{
-					$previousId     = $module->id;
-					$module->params = json_decode($module->params, true);
-
-					$module->id                 = 0;
-					$module->params['menutype'] = $item->menutype;
-					$module->params             = json_encode($module->params);
-					$module->language           = $language;
-					$module->title              = $module->title . ' (' . $language . ')';
-
-					$db->insertObject('#__modules', $module, 'id');
-
-					// Assigning items
-					$query = 'INSERT INTO #__modules_menu (menuid,moduleid) SELECT menuid,' . $db->quote($module->id) . ' FROM  #__modules_menu WHERE moduleid = ' . $db->quote($previousId);
-					$db->setQuery($query);
-					$db->execute();
-				}
-			}
-		}
-
-		return $item;
 	}
 
 	/**

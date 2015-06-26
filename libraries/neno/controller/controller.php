@@ -259,7 +259,11 @@ class NenoController extends JControllerLegacy
 				// If the language was installed from the dashboard, let's add a task to set all the shadow tables structure
 				if ($placement == 'dashboard')
 				{
+					// Add task to
 					NenoTaskMonitor::addTask('language', array ('language' => $item->lang_code));
+
+					// Create menu structure for this language
+					NenoHelper::createMenuStructureForLanguage($item->lang_code);
 				}
 
 				$item->isInstalled = NenoHelper::isCompletelyInstall($language[0]->lang_code);
