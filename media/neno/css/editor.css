@@ -87,6 +87,7 @@ button .normal-text {
 .last-modified {
     color: #aaa;
     font-style: italic;
+    margin-bottom: 5px;
 }
 
 .translated-error,
@@ -155,4 +156,44 @@ td.setting-label {
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;
     -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;
+}
+.add-comment-to-translator {
+    background-color: #FBF4E2;
+    border: 1px solid #C9BF97;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    float: left;
+    padding: 10px;
+}
+.add-comment-to-translator.full-width {
+    width: 97% !important;
+}
+.add-comment-to-translator.full-width span {
+    float: right;
+}
+.add-comment-to-translator:hover {
+    background-color: #f6efdd;
+}
+.add-comment-to-translator a,
+.add-comment-to-translator a:active,
+.add-comment-to-translator a:focus,
+.add-comment-to-translator a:hover {
+    text-decoration: none;
+    color: #585342;
+}
+.comment-modal {
+    width: 580px !important;
+    margin-left: -290px !important;
+    left: 50% !important;
+}
+
+.comment-modal .modal-body p,
+.comment-modal .modal-body h3 {
+    padding: 0 15px !important;
+}
+
+.comment-modal .modal-body textarea {
+    width: 98%;
+    height: 70px;
 }
