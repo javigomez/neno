@@ -1,0 +1,74 @@
+		<? xml version = "1.0" encoding = "UTF-8" ?>
+<neno type="contentelement">
+	<name>phocagallery_fb_users</name>
+	<author>Neno - http://www.neno-translate.com</author>
+	<version>1.0.0</version>
+	<description>Definition of the table phocagallery_fb_users</description>
+	<translate>1</translate>
+	<reference type="content">
+		<table name="phocagallery_fb_users">
+							<field type="text"
+				       name="access_token"
+				       translate="1">access_token</field>
+							<field type="text"
+				       name="appid"
+				       translate="1">appid</field>
+							<field type="text"
+				       name="appsid"
+				       translate="1">appsid</field>
+							<field type="text"
+				       name="base_domain"
+				       translate="1">base_domain</field>
+							<field type="text"
+				       name="checked_out"
+				       translate="0">checked_out</field>
+							<field type="text"
+				       name="checked_out_time"
+				       translate="0">checked_out_time</field>
+							<field type="text"
+				       name="comments"
+				       translate="1">comments</field>
+							<field type="text"
+				       name="expires"
+				       translate="1">expires</field>
+							<field type="text"
+				       name="fanpageid"
+				       translate="1">fanpageid</field>
+							<field type="referenceid"
+				       name="id"
+				       translate="0">id</field>
+							<field type="text"
+				       name="language"
+				       translate="0">language</field>
+							<field type="text"
+				       name="link"
+				       translate="1">link</field>
+							<field type="text"
+				       name="name"
+				       translate="1">name</field>
+							<field type="text"
+				       name="ordering"
+				       translate="0">ordering</field>
+							<field type="text"
+				       name="params"
+				       translate="1">params</field>
+							<field type="text"
+				       name="published"
+				       translate="0">published</field>
+							<field type="text"
+				       name="secret"
+				       translate="1">secret</field>
+							<field type="text"
+				       name="session_key"
+				       translate="1">session_key</field>
+							<field type="text"
+				       name="sig"
+				       translate="1">sig</field>
+							<field type="text"
+				       name="uid"
+				       translate="1">uid</field>
+					</table>
+	</reference>
+</neno>
+
+
