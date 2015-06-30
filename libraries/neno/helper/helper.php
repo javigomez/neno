@@ -942,7 +942,12 @@ class NenoHelper
 						'EXISTS (' . (string) $subquery2 . ')',
 						'(NOT EXISTS (' . (string) $subquery1 . ') AND NOT EXISTS (' . (string) $subquery2 . ') AND NOT EXISTS(SELECT 1 FROM #__neno_content_element_groups_x_extensions AS ge WHERE g.id = ge.group_id))'
 					), 'OR')
-				->order('group_name');
+				->order(
+					array (
+						'IFNULL((SELECT DISTINCT 1 FROM #__neno_content_element_groups_x_translation_methods AS gtm WHERE gtm.group_id = g.id) ,0)',
+						'group_name'
+					)
+				);
 
 			$db->setQuery($query);
 			$groups = $db->loadObjectList();
