@@ -610,4 +610,25 @@ class NenoContentElementTable extends NenoContentElement implements NenoContentE
 
 		return $found;
 	}
+
+	/**
+	 *
+	 * @return array
+	 */
+	public function getPrimaryKeys()
+	{
+		$primaryKeys = array ();
+
+		foreach ($this->primaryKey as $primaryKey)
+		{
+			$primaryKeys[] = NenoContentElementField::load(
+				array (
+					'field_name' => $primaryKey,
+					'table_id'   => $this->id
+				)
+			);
+		}
+
+		return $primaryKeys;
+	}
 }
