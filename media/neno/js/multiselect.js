@@ -32,6 +32,7 @@ function loadHierarchy(row) {
                         row.removeClass('loading');
                         checkUncheckFamilyCheckboxes(row.find('input[type=checkbox]').first());
                         setFilterTags(document.adminForm);
+                        loadStrings(false);
                     }
                 }
             );
@@ -312,8 +313,8 @@ function setFilterTags(form) {
 }
 
 function printFilterTag(type, label) {
-    label = label.replace('<', '&lt;' );
-    label = label.replace('>', '&gt;' );
+    label = label.replace('<', '&lt;');
+    label = label.replace('>', '&gt;');
     var tag = jQuery('<div class="filter-tag btn btn-small disabled" data-type="' + type + '"><span class="removeTag icon-remove"></span>' + label + '</div>');
     jQuery('#filter-tags-wrapper').append(tag);
     tag.find('.removeTag').click(function () {
