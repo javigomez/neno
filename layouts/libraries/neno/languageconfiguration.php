@@ -36,8 +36,7 @@ $n                  = 0;
 		</div>
 	<?php endif; ?>
 	<h4>
-		<?php
-		if (file_exists(JPATH_SITE . '/media/mod_languages/images/' . $item['image'] . '.gif')): ?>
+		<?php if (file_exists(JPATH_SITE . '/media/mod_languages/images/' . $item['image'] . '.gif')): ?>
 			<img src="<?php echo JUri::root() . 'media/mod_languages/images/' . $item['image'] . '.gif'; ?>"/>
 		<?php endif; ?>
 		<?php echo $item['title']; ?>
@@ -89,26 +88,22 @@ $n                  = 0;
 				</label>
 			</fieldset>
 			<a
-					href="#addCommentFor<?php echo $item['lang_code']; ?>"
-			        role="button"
-			        class="btn add-comment-to-translator-button"
-			        title=""
-			        data-language="<?php echo $item['lang_code']; ?>"
-			        type="button"
-			        data-toggle="modal">
+				href="#addCommentFor<?php echo $item['lang_code']; ?>"
+				role="button"
+				class="btn add-comment-to-translator-button"
+				title=""
+				data-language="<?php echo $item['lang_code']; ?>"
+				type="button"
+				data-toggle="modal">
 				<span class="icon-pencil"></span>
-				<?php
-				if(empty($item['comment']))
-				{
-					$btnLabel = 'COM_NENO_COMMENTS_TO_TRANSLATOR_LANGUAGE_CREATE';
-				}
-				else
-				{
-					$btnLabel = 'COM_NENO_COMMENTS_TO_TRANSLATOR_LANGUAGE_EDIT';
-				}
-				?>
+				<?php if (empty($item['comment'])) : ?>
+					<?php $btnLabel = 'COM_NENO_COMMENTS_TO_TRANSLATOR_LANGUAGE_CREATE'; ?>
+				<?php else: ?>
+					<?php $btnLabel = 'COM_NENO_COMMENTS_TO_TRANSLATOR_LANGUAGE_EDIT'; ?>
+				<?php endif; ?>
 				<?php echo JText::sprintf($btnLabel, $item['lang_code']); ?>
 			</a>
+
 			<div class="method-selectors" data-language="<?php echo $item['lang_code']; ?>">
 				<?php $displayData = array (); ?>
 				<?php $displayData['n'] = $n; ?>
@@ -119,21 +114,27 @@ $n                  = 0;
 		</div>
 	</div>
 </div>
-<div id="addCommentFor<?php echo $item['lang_code']; ?>" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="addCommentFor<?php echo $item['lang_code']; ?>" class="modal hide fade" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-body">
 		<h3 class="myModalLabel"><?php echo JText::sprintf('COM_NENO_COMMENTS_TO_TRANSLATOR_LANGUAGE_MODAL_ADD_TITLE', $item['lang_code']); ?></h3>
+
 		<p><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_ADD_BODY_PRE'); ?></p>
+
 		<p><?php echo JText::sprintf('COM_NENO_COMMENTS_TO_TRANSLATOR_LANGUAGE_MODAL_ADD_BODY', JRoute::_('index.php?option=com_neno&view=externaltranslations&open=comment')); ?></p>
+
 		<p><?php echo JText::sprintf('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_ADD_BODY_POST', NenoSettings::get('source_language'), $item['lang_code']); ?></p>
-		<p><textarea class="comment-to-translator" data-language="<?php echo $item['lang_code']; ?>"><?php
-				if(!empty($item['comment']))
-				{
-					echo $item['comment'];
-				}
-				?></textarea></p>
+
+		<p>
+			<textarea class="comment-to-translator"
+			          data-language="<?php echo $item['lang_code']; ?>"><?php echo empty($item['comment']) ? '' : $item['comment']; ?></textarea>
+		</p>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_BTN_CLOSE'); ?></a>
-		<a href="#" class="btn btn-primary"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_BTN_SAVE'); ?></a>
+		<a href="#" class="btn" data-dismiss="modal"
+		   aria-hidden="true"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_BTN_CLOSE'); ?></a>
+		<a href="#"
+		   class="btn btn-primary save-translator-comment"
+		   data-language="<?php echo $item['lang_code']; ?>"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_BTN_SAVE'); ?></a>
 	</div>
 </div>

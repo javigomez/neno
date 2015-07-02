@@ -79,6 +79,11 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 	protected $discovered;
 
 	/**
+	 * @var string
+	 */
+	protected $comment;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data              Field data
@@ -206,6 +211,30 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 	public static function isTranslatableType($fieldType)
 	{
 		return in_array($fieldType, self::$translatableFields);
+	}
+
+	/**
+	 * Get comment
+	 *
+	 * @return string
+	 */
+	public function getComment()
+	{
+		return $this->comment;
+	}
+
+	/**
+	 * Set comment
+	 *
+	 * @param string $comment Comment
+	 *
+	 * @return $this
+	 */
+	public function setComment($comment)
+	{
+		$this->comment = $comment;
+
+		return $this;
 	}
 
 	/**
@@ -475,7 +504,8 @@ class NenoContentElementField extends NenoContentElement implements NenoContentE
 				'contentId'   => $this->getId(),
 				'content'     => $this,
 				'state'       => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
-				'timeAdded'   => new DateTime
+				'timeAdded'   => new DateTime,
+				'comment'     => $this->comment
 			);
 
 			if ($language != null)

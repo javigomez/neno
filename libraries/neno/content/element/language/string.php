@@ -57,6 +57,11 @@ class NenoContentElementLanguageString extends NenoContentElement implements Nen
 	protected $discovered;
 
 	/**
+	 * @var string
+	 */
+	protected $comment;
+
+	/**
 	 * Constructor
 	 *
 	 * @param   mixed $data          Language string data
@@ -85,6 +90,30 @@ class NenoContentElementLanguageString extends NenoContentElement implements Nen
 		{
 			$this->languageFile = NenoContentElementLanguageFile::load($data['languagefileId'], $loadExtraData, $loadParent);
 		}
+	}
+
+	/**
+	 * Get comment
+	 *
+	 * @return string
+	 */
+	public function getComment()
+	{
+		return $this->comment;
+	}
+
+	/**
+	 * Set comment
+	 *
+	 * @param string $comment Comment
+	 *
+	 * @return $this
+	 */
+	public function setComment($comment)
+	{
+		$this->comment = $comment;
+
+		return $this;
 	}
 
 	/**
@@ -336,7 +365,8 @@ class NenoContentElementLanguageString extends NenoContentElement implements Nen
 				'contentId'   => $this->getId(),
 				'state'       => NenoContentElementTranslation::NOT_TRANSLATED_STATE,
 				'string'      => $this->getString(),
-				'timeAdded'   => new DateTime
+				'timeAdded'   => new DateTime,
+				'comment'     => $this->comment
 			);
 
 			if ($language != null)

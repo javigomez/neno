@@ -89,4 +89,14 @@ class NenoModelExternalTranslations extends JModelList
 
 		return $query;
 	}
+
+	/**
+	 * Get translator comment
+	 *
+	 * @return string|null
+	 */
+	public function getComment()
+	{
+		return NenoSettings::get('external_translators_notes');
+	}
 }

@@ -44,6 +44,11 @@ class NenoViewExternalTranslations extends JViewLegacy
 	protected $extraSidebar;
 
 	/**
+	 * @var string
+	 */
+	protected $comment;
+
+	/**
 	 * Display the view
 	 *
 	 * @param   string $tpl Template
@@ -59,6 +64,7 @@ class NenoViewExternalTranslations extends JViewLegacy
 		$this->state    = $this->get('State');
 		$this->items    = $this->get('Items');
 		$this->tcNeeded = $this->get('TCNeeded');
+		$this->comment  = $this->get('Comment');
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))

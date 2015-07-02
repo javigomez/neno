@@ -168,7 +168,9 @@ $translation = $displayData;
 							title=""
 							type="button"
 							data-toggle="modal">
-							<h3><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_EDITOR_DISPLAY_COMMENT_TITLE'); ?><span class="icon-pencil"></span></h3>
+							<h3><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_EDITOR_DISPLAY_COMMENT_TITLE'); ?>
+								<span class="icon-pencil"></span></h3>
+
 							<p><?php echo nl2br($translation->comment); ?></p>
 						</a>
 					</div>
@@ -245,7 +247,8 @@ $translation = $displayData;
 	</div>
 <?php endif; ?>
 <?php if (!empty($translation)): ?>
-	<div id="addCommentFor<?php echo $translation->content_id . '-' . $translation->language; ?>" class="modal hide fade comment-modal"
+	<div id="addCommentFor<?php echo $translation->content_id . '-' . $translation->language; ?>"
+	     class="modal hide fade comment-modal"
 	     tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-body">
 			<h3 class="myModalLabel"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_GENERAL_MODAL_ADD_TITLE'); ?></h3>
@@ -256,24 +259,49 @@ $translation = $displayData;
 
 			<p><?php echo JText::sprintf('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_ADD_BODY_POST', NenoSettings::get('source_language'), $translation->language); ?></p>
 
-			<p><textarea class="comment-to-translator" data-language="<?php echo $translation->language; ?>"
-			             data-content-id="<?php echo $translation->content_id; ?>"><?php
-					if (!empty($translation->comment))
-					{
-						echo $translation->comment;
-					}
-					?></textarea></p>
+			<p><textarea class="comment-to-translator"
+			             data-translation="<?php echo $translation->id; ?>"><?php echo empty($translation->comment) ? '' : $translation->comment; ?></textarea>
+			</p>
 		</div>
 		<div class="modal-footer">
 			<p>
-				<input type="checkbox" id="comment-check-<?php echo $translation->content_id; ?>" class="comment-check" data-content-id="<?php echo $translation->content_id; ?>" />
-				<label for="comment-check-<?php echo $translation->content_id; ?>"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_EDITOR_MODAL_CHECK_LABEL'); ?></label>
-				<label for="comment-check-<?php echo $translation->content_id; ?>" class="comment-breadcrumbs"><?php echo implode(' &gt; ', $translation->breadcrumbs); ?></label>
+				<input type="checkbox" id="comment-check-<?php echo $translation->id; ?>" class="comment-check"
+				       data-content-id="<?php echo $translation->content_id; ?>"/>
+				<label
+					for="comment-check-<?php echo $translation->content_id; ?>"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_EDITOR_MODAL_CHECK_LABEL'); ?></label>
+				<label for="comment-check-<?php echo $translation->content_id; ?>"
+				       class="comment-breadcrumbs"><?php echo implode(' &gt; ', $translation->breadcrumbs); ?></label>
 			</p>
 			<a href="#" class="btn" data-dismiss="modal"
 			   aria-hidden="true"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_BTN_CLOSE'); ?></a>
 			<a href="#"
-			   class="btn btn-primary"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_BTN_SAVE'); ?></a>
+			   class="btn btn-primary save-translation-comment"
+			   data-translation="<?php echo $translation->id; ?>"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_BTN_SAVE'); ?></a>
 		</div>
 	</div>
 <?php endif; ?>
+
+<script>
+	jQuery('.save-translation-comment').off('click').on('click', function () {
+		var translation = jQuery(this).data('translation');
+		var checkbox = jQuery('#comment-check-' + translation);
+		var contentId = checkbox.data('content-id');
+		var data = {
+			placement: 'string',
+			stringId: translation,
+			comment: jQuery(".comment-to-translator[data-translation='" + translation + "']").val()
+		};
+
+		if (checkbox.is(':checked')) {
+			data['alltranslations'] = 1;
+			data['contentId'] = contentId;
+		}
+		jQuery.post(
+			'index.php?option=com_neno&task=saveExternalTranslatorsComment',
+			data,
+			function () {
+				jQuery('.comment-modal').modal('toggle');
+			}
+		);
+	});
+</script>
