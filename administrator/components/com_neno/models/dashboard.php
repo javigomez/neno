@@ -22,6 +22,7 @@ class NenoModelDashboard extends JModelList
 	/**
 	 * {@inheritdoc}
 	 *
+	 *
 	 * @return array
 	 */
 	public function getItems()
@@ -41,6 +42,7 @@ class NenoModelDashboard extends JModelList
 			$untranslated      = 0;
 			$item              = new stdClass;
 			$item->lang_code   = $language[0]->lang_code;
+			$item->comment     = $language[0]->comment;
 			$item->published   = $language[0]->published;
 			$item->title       = $language[0]->title;
 			$item->image       = $language[0]->image;
@@ -73,7 +75,8 @@ class NenoModelDashboard extends JModelList
 			$item->wordCount->untranslated = $untranslated;
 			$item->wordCount->total        = $translated + $queued + $changed + $untranslated;
 			$item->translationMethods      = NenoHelper::getLanguageDefault($item->lang_code);
-			$items[]                       = $item;
+
+			$items[] = $item;
 		}
 
 		return $items;
@@ -100,10 +103,12 @@ class NenoModelDashboard extends JModelList
 					'l.title',
 					'l.image',
 					'tr.state',
-					'SUM(tr.word_counter) AS word_count'
+					'SUM(tr.word_counter) AS word_count',
+					'lc.comment'
 				)
 			)
 			->from('#__languages AS l')
+			->leftJoin('#__neno_language_external_translators_comments AS lc ON l.lang_code = lc.language')
 			->leftJoin('#__neno_content_element_translations AS tr ON tr.language = l.lang_code')
 			->where('l.lang_code <> ' . $db->quote(NenoSettings::get('source_language')))
 			->group(

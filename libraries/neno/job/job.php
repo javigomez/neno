@@ -461,6 +461,7 @@ class NenoJob extends NenoObject
 			'translation_method' => NenoHelper::convertTranslationMethodIdToName($this->getTranslationMethod()->id),
 			'from'               => $this->getFromLanguage(),
 			'to'                 => $this->getToLanguage(),
+			'comment'           => NenoSettings::get('external_translators_notes'),
 			'strings'            => $this->getTranslations()
 		);
 
@@ -556,7 +557,8 @@ class NenoJob extends NenoObject
 					array (
 						't.id',
 						't.content_type',
-						't.content_id'
+						't.content_id',
+						't.comment'
 					)
 				)
 				->from('`#__neno_jobs_x_translations` AS jt')
@@ -573,7 +575,10 @@ class NenoJob extends NenoObject
 					$translation['content_type'],
 					$translation['content_id']
 				);
-				$this->translations[$translation['id']] = $translationOriginalText;
+				$this->translations[$translation['id']] = array (
+					'text'    => $translationOriginalText,
+					'comment' => $translation['comment']
+				);
 			}
 		}
 

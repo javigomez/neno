@@ -23,26 +23,49 @@ if (!empty($this->extraSidebar))
 		border: 1px solid #ccc;
 		margin: 10px 0;
 	}
-	
+
 	.translation-type .translation-type-header, .translation-type .translation-type-footer {
 		background-color: #eee;
 	}
-	
+
 	.translation-type > div {
 		padding: 15px;
 	}
-	
+
 	.translation-type .translation-introtext {
 		color: #888;
 	}
-	
+
 	.translation-type .translation {
 		padding: 20px 15px;
 	}
-	
+
 	.information-box {
 		padding: 20px 15px;
 	}
+
+	.add-comment-to-translator-button {
+		float: right;
+		font-weight: normal;
+		margin-top: -15px;
+	}
+
+	.modal {
+		width: 580px !important;
+		margin-left: -290px !important;
+		left: 50% !important;
+	}
+
+	.modal-body p,
+	.modal-body h3 {
+		padding: 0 15px !important;
+	}
+
+	.modal-body textarea {
+		width: 98%;
+		height: 70px;
+	}
+
 </style>
 
 <script>
@@ -80,6 +103,10 @@ if (!empty($this->extraSidebar))
 				}
 			});
 		});
+
+		if (window.location.search.toLowerCase().indexOf("open=comment") >= 0) {
+			jQuery('#addCommentForTranslators').modal('show');
+		}
 	})
 	;
 </script>
@@ -91,18 +118,18 @@ if (!empty($this->extraSidebar))
 	<div class="span9">
 		<div id="elements-wrapper">
 			<h1><?php echo JText::_('COM_NENO_TITLE_EXTERNALTRANSLATIONS'); ?></h1>
-			
+
 			<p>
 				<?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_INTROTEXT'); ?>
 			</p>
-			
+
 			<div class="translation-type">
 				<div class="translation-type-header">
 					<h3>
 					<span
 						class="icon-screen"></span> <?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_MACHINE_TRANSLATION_TITLE'); ?>
 					</h3>
-					
+
 					<p class="translation-introtext">
 						<?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_MACHINE_TRANSLATION_INTROTEXT', '#'); ?>
 					</p>
@@ -151,14 +178,29 @@ if (!empty($this->extraSidebar))
 					       value="1"/> <?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_AUTOMATICALLY_MACHINE_TRANSLATE'); ?>
 				</div>
 			</div>
-			
+
 			<div class="translation-type">
 				<div class="translation-type-header">
 					<h3>
-					<span
-						class="icon-users"></span> <?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_PROFESSIONAL_TRANSLATION_TITLE'); ?>
+						<span class="icon-users"></span>
+						<?php echo JText::_('COM_NENO_EXTERNALTRANSLATION_PROFESSIONAL_TRANSLATION_TITLE'); ?>
+						<a
+							href="#addCommentForTranslators"
+							role="button"
+							class="btn add-comment-to-translator-button"
+							title=""
+							type="button"
+							data-toggle="modal">
+							<span class="icon-pencil"></span>
+							<?php if (empty($this->comment)): ?>
+								<?php $btnLabel = 'COM_NENO_COMMENTS_TO_TRANSLATOR_GENERAL_CREATE'; ?>
+							<?php else: ?>
+								<?php $btnLabel = 'COM_NENO_COMMENTS_TO_TRANSLATOR_GENERAL_EDIT'; ?>
+							<?php endif; ?>
+							<?php echo JText::_($btnLabel); ?>
+						</a>
 					</h3>
-					
+
 					<p class="translation-introtext">
 						<?php echo JText::sprintf('COM_NENO_EXTERNALTRANSLATION_PROFESSIONAL_TRANSLATION_INTROTEXT', '#'); ?>
 					</p>
@@ -248,7 +290,8 @@ if (!empty($this->extraSidebar))
 			<div class="center">
 				<div>
 					<p class="left">
-						This section is currently not complete. Please do not try to order any external translations or
+						This section is currently not complete. Please do not try to order any external translations
+						or
 						buy Translation Credit.
 					</p>
 				</div>
@@ -258,3 +301,49 @@ if (!empty($this->extraSidebar))
 
 	</div>
 </div>
+<div id="addCommentForTranslators" class="modal hide fade" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel"
+     aria-hidden="true">
+	<div class="modal-body">
+		<h3 class="myModalLabel"><?php echo JText::sprintf('COM_NENO_COMMENTS_TO_TRANSLATOR_GENERAL_MODAL_ADD_TITLE'); ?></h3>
+
+		<p><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_ADD_BODY_PRE'); ?></p>
+
+		<p><?php echo JText::sprintf('COM_NENO_COMMENTS_TO_TRANSLATOR_GENERAL_MODAL_ADD_BODY', JRoute::_('index.php?option=com_neno&view=dashboard'), JRoute::_('index.php?option=com_neno&view=editor')); ?></p>
+
+		<p><?php echo JText::sprintf('COM_NENO_COMMENTS_TO_TRANSLATOR_GENERAL_MODAL_ADD_BODY_POST', NenoSettings::get('source_language')); ?></p>
+
+		<p>
+			<textarea
+				class="comment-to-translator"><?php echo empty($this->comment) ? '' : $this->comment; ?></textarea>
+		</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn" data-dismiss="modal"
+		   aria-hidden="true"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_BTN_CLOSE'); ?></a>
+		<a href="#"
+		   class="btn btn-primary"
+		   id="save-comment"><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_MODAL_BTN_SAVE'); ?></a>
+	</div>
+</div>
+
+<script>
+	jQuery(document).ready(function () {
+		jQuery('#save-comment').on('click', function () {
+			jQuery.post(
+				'index.php?option=com_neno&task=saveExternalTranslatorsComment',
+				{
+					placement: 'general',
+					comment: jQuery('.comment-to-translator').val()
+				},
+				function (response) {
+					if (response == 'ok') {
+						jQuery('.add-comment-to-translator-button').html('<span class="icon-pencil"></span> <?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_GENERAL_EDIT'); ?>');
+					}
+
+					jQuery('#addCommentForTranslators').modal('toggle');
+				}
+			)
+		});
+	});
+</script>

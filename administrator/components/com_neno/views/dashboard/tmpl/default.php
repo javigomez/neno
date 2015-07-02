@@ -65,6 +65,29 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 			e.preventDefault();
 			alert('<?php echo JText::_('COM_NENO_LANGUAGE_IS_NOT_READY_YET_MESSAGE'); ?>');
 		});
+
+		jQuery('.save-translator-comment').off('click').on('click', function () {
+			var language = jQuery(this).data('language');
+
+			jQuery.post(
+				'index.php?option=com_neno&task=saveExternalTranslatorsComment',
+				{
+					placement: 'language',
+					language: language,
+					comment: jQuery(".comment-to-translator[data-language='" + language + "']").val()
+				},
+				function (response) {
+
+					if (response == 'ok') {
+						var text = '<?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_LANGUAGE_EDIT'); ?>';
+						text = text.replace('%s', language);
+						jQuery(".add-comment-to-translator-button[data-language='" + language + "']").html('<span class="icon-pencil"></span> ' + text);
+					}
+
+					jQuery('#addCommentFor' + language).modal('toggle');
+				}
+			);
+		});
 	}
 
 </script>
@@ -104,7 +127,8 @@ $workingLanguage = NenoHelper::getWorkingLanguage();
 </div>
 <div class="modal hide fade" id="languages-modal">
 	<div class="modal-header">
-		&nbsp;<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		&nbsp;
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 	</div>
 	<div class="modal-body" style="height: 400px"></div>
 	<div class="modal-footer">

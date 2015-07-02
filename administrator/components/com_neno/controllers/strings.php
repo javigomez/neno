@@ -34,6 +34,7 @@ class NenoControllerStrings extends JControllerAdmin
 		$filterGroups   = array ();
 		$filterElements = array ();
 		$filterField    = array ();
+		$filterFile    = array ();
 		$filterMethods  = array ();
 		$filterStatus   = array ();
 		$outputLayout   = strtolower($input->getString('outputLayout'));
@@ -56,12 +57,17 @@ class NenoControllerStrings extends JControllerAdmin
 			{
 				$filterField[] = str_replace('field-', '', $filterItem);
 			}
+			elseif (NenoHelper::startsWith($filterItem, 'file-') !== false)
+			{
+				$filterFile[] = str_replace('file-', '', $filterItem);
+			}
 		}
 
 		// Set filters into the request.
 		$input->set('group', $filterGroups);
 		$input->set('table', $filterElements);
 		$input->set('field', $filterField);
+		$input->set('file', $filterFile);
 		$input->set('list', array ('limit' => $input->get('limit'), 'start' => $input->get('limitStart')));
 		$input->set('limitstart', $input->get('limitStart'));
 

@@ -136,6 +136,11 @@ class NenoContentElementTranslation extends NenoContentElement
 	protected $wordCounter;
 
 	/**
+	 * @var string
+	 */
+	protected $comment;
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @param   mixed $data          Element data
@@ -1049,6 +1054,29 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+<<<<<<< HEAD
+	 * Get external translators comment
+	 *
+	 * @return string
+	 */
+	public function getComment()
+	{
+		return $this->comment;
+	}
+
+	/**
+	 * Set external translators comment
+	 *
+	 * @param string $comment
+	 *
+	 * @return $this
+	 */
+	public function setComment($comment)
+	{
+		$this->comment = $comment;
+
+		return $this;
+=======
 	 * Mark a translation method as completed
 	 *
 	 * @param int $translationMethodId Translation method id
@@ -1099,5 +1127,6 @@ class NenoContentElementTranslation extends NenoContentElement
 		$result = $db->loadResult();
 
 		return empty($result);
+>>>>>>> master
 	}
 }
