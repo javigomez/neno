@@ -27,6 +27,7 @@ before_script:
 - sleep 3
 - pyrus install pear/PHP_CodeSniffer
 - phpenv rehash
+- echo 'default_socket_timeout = -1' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 - composer self-update
 - composer update
 script:

@@ -135,9 +135,11 @@ class PlgSystemNeno extends JPlugin
 	 */
 	public function onBeforeRender()
 	{
+		$document = JFactory::getDocument();
+		$document->addScript(JUri::root() . '/media/neno/js/common.js');
+
 		if (NenoSettings::get('schedule_task_option', 'ajax') == 'ajax' && NenoSettings::get('installation_completed') == 1)
 		{
-			$document = JFactory::getDocument();
 			$document->addScript(JUri::root() . '/media/neno/js/ajax_module.js');
 		}
 	}
@@ -165,38 +167,91 @@ class PlgSystemNeno extends JPlugin
 
 			if (!empty($table))
 			{
-				$fields = $table->getFields(false, true);
-
-				/* @var $field NenoContentElementField */
-				foreach ($fields as $field)
+				// If the record has changed the state to 'Trashed'
+				if (isset($content->state) && $content->state == -2)
 				{
-					if ($field->isTranslatable())
-					{
-						$primaryKeyData = array ();
+					$primaryKeys = $content->getPrimaryKey();
+					$this->trashTranslations($table, array ($content->{$primaryKeys[0]}));
+				}
+				else
+				{
+					$fields = $table->getFields(false, true);
 
-						foreach ($content->getPrimaryKey() as $primaryKeyName => $primaryKeyValue)
+					/* @var $field NenoContentElementField */
+					foreach ($fields as $field)
+					{
+						if ($field->isTranslatable())
 						{
-							$primaryKeyData[$primaryKeyName] = $primaryKeyValue;
+							$primaryKeyData = array ();
+
+							foreach ($content->getPrimaryKey() as $primaryKeyName => $primaryKeyValue)
+							{
+								$primaryKeyData[$primaryKeyName] = $primaryKeyValue;
+							}
+
+							$field->persistTranslations($primaryKeyData);
 						}
-
-						$field->persistTranslations($primaryKeyData);
 					}
-				}
 
-				$languages       = NenoHelper::getLanguages(false);
-				$defaultLanguage = NenoSettings::get('source_language');
+					$languages       = NenoHelper::getLanguages(false);
+					$defaultLanguage = NenoSettings::get('source_language');
 
-				foreach ($languages as $language)
-				{
-					if ($language->lang_code != $defaultLanguage)
+					foreach ($languages as $language)
 					{
-						$shadowTable = $db->generateShadowTableName($tableName, $language->lang_code);
-						$properties  = $content->getProperties();
-						$query       = 'REPLACE INTO ' . $db->quoteName($shadowTable) . ' (' . implode(',', $db->quoteName(array_keys($properties))) . ') VALUES(' . implode(',', $db->quote($properties)) . ')';
-						$db->setQuery($query);
-						$db->execute();
+						if ($language->lang_code != $defaultLanguage)
+						{
+							$shadowTable = $db->generateShadowTableName($tableName, $language->lang_code);
+							$properties  = $content->getProperties();
+							$query       = 'REPLACE INTO ' . $db->quoteName($shadowTable) . ' (' . implode(',', $db->quoteName(array_keys($properties))) . ') VALUES(' . implode(',', $db->quote($properties)) . ')';
+							$db->setQuery($query);
+							$db->execute();
+						}
 					}
 				}
+			}
+		}
+	}
+
+	protected function trashTranslations(NenoContentElementTable $table, $pk)
+	{
+		$db          = JFactory::getDbo();
+		$primaryKeys = $table->getPrimaryKeys();
+
+		$query    = $db->getQuery(true);
+		$subQuery = $db->getQuery(true);
+
+		$subQuery
+			->select('tr.id')
+			->from('#__neno_content_element_translations AS tr');
+
+		/* @var $primaryKey NenoContentElementField */
+		foreach ($primaryKeys as $key => $primaryKey)
+		{
+			$alias = 'ft' . $key;
+			$subQuery
+				->where(
+					"exists(SELECT 1 FROM #__neno_content_element_fields_x_translations AS $alias WHERE $alias.translation_id = tr.id AND $alias.field_id = " . $primaryKey->getId() . " AND $alias.value = " . $pk . ")"
+				);
+		}
+
+		$query
+			->delete('#__neno_content_element_translation_x_translation_methods')
+			->where('translation_id IN (' . ((string) $subQuery) . ')');
+
+		$db->setQuery($query);
+		$db->execute();
+	}
+
+	public function onCategoryChangeState($context, $pks, $value)
+	{
+		if ($value == -2)
+		{
+			/* @var $table NenoContentElementTable */
+			$table = NenoContentElementTable::load(array ('table_name' => '#__categories'), false);
+
+			foreach ($pks as $pk)
+			{
+				$this->trashTranslations($table, $pk);
 			}
 		}
 	}

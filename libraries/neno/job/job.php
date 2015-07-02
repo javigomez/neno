@@ -385,9 +385,17 @@ class NenoJob extends NenoObject
 			{
 				/* @var $translation NenoContentElementTranslation */
 				$translation = NenoContentElementTranslation::load($translationId);
-				$translation
-					->setString($translationText)
-					->persist();
+				$translation->setString($translationText);
+
+				// Mark this translation method as completed
+				$translation->markTranslationMethodAsCompleted($this->translationMethod->id);
+
+				if ($translation->isBeingCompleted())
+				{
+					$translation->setState(NenoContentElementTranslation::TRANSLATED_STATE);
+				}
+
+				$translation->persist();
 			}
 
 			return true;

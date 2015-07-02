@@ -37,15 +37,9 @@ class NenoLoader
 	 *
 	 * @since 1.0
 	 */
-	public static function init($includeJs = true)
+	public static function init()
 	{
 		// Registering Neno libraries prefix
 		JLoader::registerPrefix('Neno', JPATH_NENO);
-
-		if ($includeJs)
-		{
-			$document = JFactory::getDocument();
-			$document->addScript(JUri::root() . '/media/neno/js/common.js');
-		}
 	}
 }

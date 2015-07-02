@@ -1054,6 +1054,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Get external translators comment
 	 *
 	 * @return string
@@ -1075,5 +1076,57 @@ class NenoContentElementTranslation extends NenoContentElement
 		$this->comment = $comment;
 
 		return $this;
+=======
+	 * Mark a translation method as completed
+	 *
+	 * @param int $translationMethodId Translation method id
+	 *
+	 * @return bool
+	 */
+	public function markTranslationMethodAsCompleted($translationMethodId)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->update('#__neno_content_element_translation_x_translation_methods')
+			->set('completed = 1')
+			->where(
+				array (
+					'translation_method_id = ' . (int) $translationMethodId,
+					'translation_id = ' . (int) $this->id
+				)
+			);
+
+		$db->setQuery($query);
+
+		return $db->execute() !== false;
+	}
+
+	/**
+	 * Check if the translation has been completed
+	 *
+	 * @return bool
+	 */
+	public function isBeingCompleted()
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query
+			->select('COUNT(*)')
+			->from('#__neno_content_element_translation_x_translation_methods')
+			->where(
+				array (
+					'translation_id = ' . (int) $this->id,
+					'completed = 0'
+				)
+			);
+
+		$db->setQuery($query);
+		$result = $db->loadResult();
+
+		return empty($result);
+>>>>>>> master
 	}
 }

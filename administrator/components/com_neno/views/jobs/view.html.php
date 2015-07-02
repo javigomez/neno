@@ -78,7 +78,7 @@ class NenoViewJobs extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
 
-		NenoHelperBackend::addSubmenu('jobs');
+		NenoHelperBackend::addSubmenu('externaltranslations');
 		$this->addToolbar();
 
 		$this->sidebar = JHtmlSidebar::render();

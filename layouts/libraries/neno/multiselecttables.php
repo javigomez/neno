@@ -16,7 +16,7 @@ $files    = $displayData['files'];
 
 $isOverlay     = isset($displayData->isOverlay);
 $elements      = $displayData['state']->get('filter.element', array ());
-$filesSelected = $displayData['state']->get('filter.file', array ());
+$filesSelected = $displayData['state']->get('filter.files', array ());
 ?>
 <?php foreach ($tables as $table): ?>
 	<?php $class = !empty($table->fields) ? 'cell-expand' : ''; ?>
