@@ -286,10 +286,11 @@ $translation = $displayData;
 		var translation = jQuery(this).data('translation');
 		var checkbox = jQuery('#comment-check-' + translation);
 		var contentId = checkbox.data('content-id');
+		var comment = jQuery(".comment-to-translator[data-translation='" + translation + "']").val();
 		var data = {
 			placement: 'string',
 			stringId: translation,
-			comment: jQuery(".comment-to-translator[data-translation='" + translation + "']").val()
+			comment: comment
 		};
 
 		if (checkbox.is(':checked')) {
@@ -299,7 +300,15 @@ $translation = $displayData;
 		jQuery.post(
 			'index.php?option=com_neno&task=saveExternalTranslatorsComment',
 			data,
-			function () {
+			function (response) {
+				if (response == 'ok') {
+					var commentDiv = jQuery('.add-comment-to-translator');
+					commentDiv.find('a').html('<h3><?php echo JText::_('COM_NENO_COMMENTS_TO_TRANSLATOR_EDITOR_DISPLAY_COMMENT_TITLE'); ?> <span class="icon-pencil"></span></h3> <p>' + comment + '</p>');
+
+					if (!commentDiv.hasClass('full-width')) {
+						commentDiv.addClass('full-width')
+					}
+				}
 				jQuery('.comment-modal').modal('toggle');
 			}
 		);
