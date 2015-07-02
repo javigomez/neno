@@ -78,15 +78,16 @@ class NenoHelperApi
 					);
 				}
 
+				$data = json_decode($apiResponse->body, true);
+
+				if (!empty($data['response']))
+				{
+					$response = $data;
+				}
+
 				if ($apiResponse->code == 200)
 				{
-					$data = json_decode($apiResponse->body, true);
-
-					if (!empty($data['response']))
-					{
-						$response       = $data['response'];
-						$responseStatus = true;
-					}
+					$responseStatus = true;
 				}
 			}
 		}

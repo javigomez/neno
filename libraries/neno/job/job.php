@@ -453,7 +453,7 @@ class NenoJob extends NenoObject
 			'translation_method' => NenoHelper::convertTranslationMethodIdToName($this->getTranslationMethod()->id),
 			'from'               => $this->getFromLanguage(),
 			'to'                 => $this->getToLanguage(),
-			'comments'           => NenoSettings::get('external_translators_notes'),
+			'comment'           => NenoSettings::get('external_translators_notes'),
 			'strings'            => $this->getTranslations()
 		);
 
