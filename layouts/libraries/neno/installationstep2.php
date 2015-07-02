@@ -44,11 +44,11 @@ JHtml::_('bootstrap.tooltip');
 
 			<h3><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_MACHINE_TRANSLATION_TITLE'); ?></h3>
 
-			<p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_MACHINE_TRANSLATION_MESSAGE'); ?></p>
+            <p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_MACHINE_TRANSLATION_MESSAGE'); ?> <a href="https://www.neno-translate.com/help/documentation/translating/18-machine-translation" target="_blank"><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_LINK_LEARN_MORE'); ?></a></p>
 
 			<h3><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_PROFESSIONAL_TRANSLATION_TITLE'); ?></h3>
 
-			<p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_PROFESSIONAL_TRANSLATION_MESSAGE'); ?></p>
+			<p><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_DESCRIPTION_TEXT_PROFESSIONAL_TRANSLATION_MESSAGE'); ?> <a href="https://www.neno-translate.com/help/documentation/translating/19-professional-translation" target="_blank"><?php echo JText::_('COM_NENO_INSTALLATION_DEFAULT_SETTINGS_LINK_LEARN_MORE'); ?></a></p>
 		</div>
 		<div class="span12">
 			<button type="button" class="btn btn-success next-step-button">
