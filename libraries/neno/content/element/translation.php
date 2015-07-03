@@ -1054,7 +1054,7 @@ class NenoContentElementTranslation extends NenoContentElement
 	}
 
 	/**
-<<<<<<< HEAD
+	 * <<<<<<< HEAD
 	 * Get external translators comment
 	 *
 	 * @return string
@@ -1076,7 +1076,9 @@ class NenoContentElementTranslation extends NenoContentElement
 		$this->comment = $comment;
 
 		return $this;
-=======
+	}
+
+	/*
 	 * Mark a translation method as completed
 	 *
 	 * @param int $translationMethodId Translation method id
@@ -1127,6 +1129,5 @@ class NenoContentElementTranslation extends NenoContentElement
 		$result = $db->loadResult();
 
 		return empty($result);
->>>>>>> master
 	}
 }
