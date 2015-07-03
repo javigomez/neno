@@ -28,7 +28,7 @@ before_script:
 - pyrus install pear/PHP_CodeSniffer
 - phpenv rehash
 - curl --retry 3 --retry-delay 5 -sS https://getcomposer.org/installer | php
-- composer install
+- php composer.phar install
 script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
 - php vendor/bin/robo test:acceptance
