@@ -27,12 +27,11 @@ before_script:
 - sleep 3
 - pyrus install pear/PHP_CodeSniffer
 - phpenv rehash
-- curl --retry 3 --retry-delay 5 -sS https://getcomposer.org/installer | php
-- php composer.phar install
+- composer install
+- echo $TRAVIS_PULL_REQUEST
 script:
 - mv tests/acceptance.suite.dist.yml tests/acceptance.suite.yml
 - php vendor/bin/robo test:acceptance
-after_failure:
 - php vendor/bin/robo send:screenshot $CLOUD_NAME $API_KEY $API_SECRET $GITHUB_TOKEN
 env:
   global:
