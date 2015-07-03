@@ -399,8 +399,7 @@ CREATE TABLE IF NOT EXISTS `#__neno_language_external_translators_comments` (
   `comment`  TEXT       NOT NULL,
   PRIMARY KEY (`id`)
 )
-  ENGINE = InnoDB
-  DEFAULT CHARSET = uft8;
+  ENGINE = InnoDB;
 
 INSERT IGNORE INTO `#__neno_machine_translation_apis` VALUES (1, 'Google', 'machine'), (3, 'Yandex', 'machine');
 
