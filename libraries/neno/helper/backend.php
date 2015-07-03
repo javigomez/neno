@@ -143,7 +143,7 @@ class NenoHelperBackend
 		if ($showLanguageDropDown)
 		{
 			$displayData['workingLanguage'] = NenoHelper::getWorkingLanguage();
-			$displayData['targetLanguages'] = NenoHelper::getLanguages(false);
+			$displayData['targetLanguages'] = NenoHelper::getLanguages(false, false);
 		}
 
 		$adminTitleLayout     = JLayoutHelper::render('toolbar', $displayData, JPATH_NENO_LAYOUTS);

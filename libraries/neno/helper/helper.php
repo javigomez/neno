@@ -1861,11 +1861,12 @@ class NenoHelper
 	/**
 	 * Load all published languages on the site
 	 *
-	 * @param   boolean $published Weather or not only the published language should be loaded
+	 * @param   boolean $published     Weather or not only the published language should be loaded
+	 * @param   boolean $includeSource Include source language
 	 *
 	 * @return array objectList
 	 */
-	public static function getLanguages($published = true)
+	public static function getLanguages($published = true, $includeSource = true)
 	{
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -1882,13 +1883,22 @@ class NenoHelper
 		}
 
 		$db->setQuery($query);
-		$languages = $db->loadObjectList('lang_code');
+		$languages      = $db->loadObjectList('lang_code');
+		$sourceLanguage = NenoSettings::get('source_language');
 
 		if (!empty($languages))
 		{
 			foreach ($languages as $key => $language)
 			{
-				$languages[$key]->isInstalled = self::isCompletelyInstall($language->lang_code);
+				if (!$includeSource && $key == $sourceLanguage)
+				{
+					unset($languages[$key]);
+				}
+				else
+				{
+					$languages[$key]->isInstalled = self::isCompletelyInstall($language->lang_code);
+				}
+
 			}
 		}
 
